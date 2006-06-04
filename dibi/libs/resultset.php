@@ -12,7 +12,7 @@
  * @license    GNU GENERAL PUBLIC LICENSE
  * @package    dibi
  * @category   Database
- * @version    0.5alpha (2006-05-26) for PHP5
+ * @version    0.5b (2006-05-31) for PHP5
  */
 
 
@@ -350,7 +350,7 @@ class DibiResultIterator implements Iterator
     {
         $this->result = $result;
         $this->offset = (int) $offset;
-        $this->count = $count === NULL ? PHP_INT_MAX : (int) $count;
+        $this->count = $count === NULL ? 2147483647 /*PHP_INT_MAX till 5.0.5 */ : (int) $count;
     }
 
 

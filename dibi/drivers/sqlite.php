@@ -12,7 +12,7 @@
  * @license    GNU GENERAL PUBLIC LICENSE
  * @package    dibi
  * @category   Database
- * @version    0.5alpha (2006-05-26) for PHP5
+ * @version    0.5b (2006-05-31) for PHP5
  */
 
 
@@ -26,7 +26,9 @@ if (!defined('dibi')) die();
  */
 class DibiSqliteDriver extends DibiDriver {
     private
-        $conn;
+        $conn,
+        $insertId = FALSE,
+        $affectedRows = FALSE;
 
     public
         $formats = array(
@@ -67,6 +69,8 @@ class DibiSqliteDriver extends DibiDriver {
 
     public function query($sql)
     {
+        $this->insertId = $this->affectedRows = FALSE;
+
         $errorMsg = '';
         $res = @sqlite_query($this->conn, $sql, SQLITE_ASSOC, $errorMsg);
 
@@ -79,21 +83,25 @@ class DibiSqliteDriver extends DibiDriver {
         if (is_resource($res))
             return new DibiSqliteResult($res);
 
+        $this->affectedRows = sqlite_changes($this->conn);
+        if ($this->affectedRows < 0) $this->affectedRows = FALSE;
+
+        $this->insertId = sqlite_last_insert_rowid($this->conn);
+        if ($this->insertId < 1) $this->insertId = FALSE;
+
         return TRUE;
     }
 
 
     public function affectedRows()
     {
-        $rows = sqlite_changes($this->conn);
-        return $rows < 0 ? FALSE : $rows;
+        return $this->affectedRows;
     }
 
 
     public function insertId()
     {
-        $id = sqlite_last_insert_rowid($this->conn);
-        return $id < 1 ? FALSE : $id;
+        return $this->insertId;
     }
 
 

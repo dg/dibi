@@ -12,7 +12,7 @@
  * @license    GNU GENERAL PUBLIC LICENSE
  * @package    dibi
  * @category   Database
- * @version    0.5alpha (2006-05-26) for PHP5
+ * @version    0.5b (2006-05-31) for PHP5
  */
 
 
@@ -26,7 +26,9 @@ if (!defined('dibi')) die();
  */
 class DibiMySqlDriver extends DibiDriver {
     private
-        $conn;
+        $conn,
+        $insertId = FALSE,
+        $affectedRows = FALSE;
 
     public
         $formats = array(
@@ -100,6 +102,7 @@ class DibiMySqlDriver extends DibiDriver {
 
     public function query($sql)
     {
+        $this->insertId = $this->affectedRows = FALSE;
         $res = @mysql_query($sql, $this->conn);
 
         if (is_resource($res))
@@ -112,21 +115,25 @@ class DibiMySqlDriver extends DibiDriver {
                 'sql'     => $sql,
             ));
 
+        $this->affectedRows = mysql_affected_rows($this->conn);
+        if ($this->affectedRows < 0) $this->affectedRows = FALSE;
+
+        $this->insertId = mysql_insert_id($this->conn);
+        if ($this->insertId < 1) $this->insertId = FALSE;
+
         return TRUE;
     }
 
 
     public function affectedRows()
     {
-        $rows = mysql_affected_rows($this->conn);
-        return $rows < 0 ? FALSE : $rows;
+        return $this->affectedRows;
     }
 
 
     public function insertId()
     {
-        $id = mysql_insert_id($this->conn);
-        return $id < 0 ? FALSE : $id;
+        return $this->insertId;
     }
 
 

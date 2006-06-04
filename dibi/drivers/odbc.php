@@ -12,7 +12,7 @@
  * @license    GNU GENERAL PUBLIC LICENSE
  * @package    dibi
  * @category   Database
- * @version    0.5alpha (2006-05-26) for PHP5
+ * @version    0.5b (2006-05-31) for PHP5
  */
 
 
@@ -26,7 +26,8 @@ if (!defined('dibi')) die();
  */
 class DibiOdbcDriver extends DibiDriver {
     private
-        $conn;
+        $conn,
+        $affectedRows = FALSE;
 
     public
         $formats = array(
@@ -64,6 +65,8 @@ class DibiOdbcDriver extends DibiDriver {
 
     public function query($sql)
     {
+        $this->affectedRows = FALSE;
+
         $res = @odbc_exec($this->conn, $sql);
 
         if (is_resource($res))
@@ -72,14 +75,16 @@ class DibiOdbcDriver extends DibiDriver {
         if ($res === FALSE)
             return new DibiException("Query error", $this->errorInfo($sql));
 
+        $this->affectedRows = odbc_num_rows($this->conn);
+        if ($this->affectedRows < 0) $this->affectedRows = FALSE;
+
         return TRUE;
     }
 
 
     public function affectedRows()
     {
-        $rows = odbc_num_rows($this->conn);
-        return $rows < 0 ? FALSE : $rows;
+        return $this->affectedRows;
     }
 
 
