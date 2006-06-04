@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * dibi - Database Abstraction Layer according to dgx
+ * --------------------------------------------------
+ *
+ * This source file is subject to the GNU GPL license.
+ *
+ * @author     David Grudl aka -dgx- <dave@dgx.cz>
+ * @link       http://texy.info/dibi/
+ * @copyright  Copyright (c) 2005-2006 David Grudl
+ * @license    GNU GENERAL PUBLIC LICENSE
+ * @package    dibi
+ * @category   Database
+ * @version    0.5alpha (2006-05-26) for PHP5
+ */
+
+
+// security - include dibi.php, not this file
+if (!defined('dibi')) die();
+
+
+
+/**
+ * dibi exception class
+ *
+ */
+class DibiException extends Exception
+{
+    private
+        $info;
+
+
+    public function __construct($message, $info=NULL) {
+
+        $this->info = $info;
+
+        if (isset($info['message']))
+            $message = "$message: $info[message]";
+/*
+        if (isset($info['sql']))
+            $message .= "\n[SQL] $info[sql]";
+*/
+        parent::__construct($message);
+    }
+
+
+
+    public function getSql()
+    {
+        return @$this->info['sql'];
+    }
+
+
+} // class DibiException
+
+
+
+
+
+function is_error($var)
+{
+    return ($var === FALSE) || ($var instanceof Exception);
+}
+
+
+?>
