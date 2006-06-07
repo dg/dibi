@@ -56,53 +56,28 @@ class DibiParser
 
         // iterate
         $sql = array();
-        $count = count($args);
-        $i= -1;
-        while (++$i < $count) {
-            $arg = $args[$i];
+        foreach ($args as $arg)
+        {                      
+            // %if was opened  
+            if ($mod == 'if') { 
+                $mod = FALSE;
+                $this->ifLevel++;
+                if (!$comment && !$arg) {
+                    // open comment
+                    $sql[] = '/*';
+                    $this->ifLevelStart = $this->ifLevel;
+                    $comment = TRUE;
+                }
+                continue;
+            }
 
             // simple string means SQL
             if (is_string($arg) && !$mod) {
-
-                // speed-up - is regexp required?
-                $toSkip = strcspn($arg, '`[\'"%');
-
-                if ($toSkip == strlen($arg)) { // need be translated?
-                    $sql[] = $arg;
-                } else {
-                    $sql[] = substr($arg, 0, $toSkip)
-                         . preg_replace_callback('/
-                           (?=`|\[|\'|"|%)              ## speed-up
-                           (?:
-                              `(.+?)`|                  ## 1) `identifier`
-                              \[(.+?)\]|                ## 2) [identifier]
-                              (\')((?:\'\'|[^\'])*)\'|  ## 3,4) string
-                              (")((?:""|[^"])*)"|       ## 5,6) "string"
-                              %([a-zA-Z]{1,2})$|        ## 7) right modifier
-                              %(else|end)|              ## 8) conditional SQL
-                              (\'|")                    ## 9) lone-quote
-                           )/xs',
-                           array($this, 'callback'),
-                           substr($arg, $toSkip)
-                    );
-                    
-                    if ($mod == 'if') {
-                        $mod = FALSE;
-                        $this->ifLevel++;
-                        if (!$args[++$i] && !$comment) {
-                            // open comment
-                            $sql[] = '/*';
-                            $this->ifLevelStart = $this->ifLevel;
-                            $comment = TRUE;
-                        }
-                    }
-                } // if 
-
+                $sql[] = $this->formatValue($arg, 'p'); // preserve it                
                 continue;
-            }           
-                        
+            }
 
-            // array processing without modifier - autoselect between SET or VALUES
+            // array without modifier - autoselect between SET or VALUES
             if (is_array($arg) && !$mod && is_string(key($arg))) {
                 if (!$command)
                     $command = strtoupper(substr(ltrim($args[0]), 0, 6));
@@ -112,10 +87,10 @@ class DibiParser
 
             // default processing
             $sql[] = $comment
-                ? '...' 
+                ? '...'
                 : $this->formatValue($arg, $mod);
             $mod = FALSE;
-        } // for
+        } // foreach
 
         if ($comment) $sql[] = '*/';
 
@@ -136,7 +111,7 @@ class DibiParser
     {
         // array processing (with or without modifier)
         if (is_array($value)) {
-        
+
             $vx = $kx = array();
             switch ($modifier) {
             case 'S': // SET
@@ -193,7 +168,38 @@ class DibiParser
             case 'n':  // identifier name
                 return $this->driver->quoteName($value);
             case 'p':  // preserve as SQL
-                return (string) $value;
+                $value = (string) $value;
+
+                // speed-up - is regexp required?
+                $toSkip = strcspn($value, '`[\'"%');
+
+                if ($toSkip == strlen($value)) // needn't be translated
+                    return $value;
+
+                // note: only this can change $this->modifier
+                return substr($value, 0, $toSkip)
+                     . preg_replace_callback('/
+                       (?=`|\[|\'|"|%)              ## speed-up
+                       (?:
+                          `(.+?)`|                  ## 1) `identifier`
+                          \[(.+?)\]|                ## 2) [identifier]
+                          (\')((?:\'\'|[^\'])*)\'|  ## 3,4) string
+                          (")((?:""|[^"])*)"|       ## 5,6) "string"
+                          %(else|end)|              ## 7) conditional SQL
+                          %([a-zA-Z]{1,2})$|        ## 8) right modifier
+                          (\'|")                    ## 9) lone-quote
+                       )/xs',
+                       array($this, 'callback'),
+                       substr($value, $toSkip)
+                );
+
+            case 'S':
+            case 'V':
+                $this->hasError = TRUE;
+                return "**Unexpected ".gettype($value)."**";
+            case 'if':
+                $this->hasError = TRUE;
+                return "**The %$modifier is not allowed here**";
             default:
                 $this->hasError = TRUE;
                 return "**Unknown modifier %$modifier**";
@@ -251,27 +257,22 @@ class DibiParser
 
         if ($matches[3])  // SQL strings: '....'
             return $this->comment
-                ? '...' 
+                ? '...'
                 : $this->driver->escape( strtr($matches[4], array("''" => "'")), TRUE);
 
         if ($matches[5])  // SQL strings: "..."
             return $this->comment
-                ? '...' 
+                ? '...'
                 : $this->driver->escape( strtr($matches[6], array('""' => '"')), TRUE);
 
-        if ($matches[7]) { // modifier
-            $this->modifier = $matches[7];
-            return '';
-        }
-
-        if ($matches[8]) { // %end | %else
+        if ($matches[7]) { // %end | %else
             if (!$this->ifLevel) {
                 $this->hasError = TRUE;
-                return "**Unexpected condition $mod**";
+                return "**Unexpected condition $matches[8]**";
             }
-            
-            if ($matches[8] == 'end') {
-                $this->ifLevel--;                
+
+            if ($matches[7] == 'end') {
+                $this->ifLevel--;
                 if ($this->ifLevelStart == $this->ifLevel + 1) {
                     // close comment
                     $this->ifLevelStart = 0;
@@ -291,6 +292,11 @@ class DibiParser
                 $this->comment = TRUE;
                 return '/*';
             }
+        }
+
+        if ($matches[8]) { // modifier
+            $this->modifier = $matches[8];
+            return '';
         }
 
 

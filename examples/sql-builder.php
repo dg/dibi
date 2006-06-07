@@ -31,7 +31,7 @@ $arr4 = array(
     'c%T' => time(),  // modifier 'T' means datetime
     'd' => 'any string',
 );
-$arr5 = array('RAND()', 'ANY SQL');
+$arr5 = array('RAND()', '[col1] > [col2]');
 
 
 dibi::test("
