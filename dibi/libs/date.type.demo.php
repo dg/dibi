@@ -12,12 +12,12 @@
  * @license    GNU GENERAL PUBLIC LICENSE
  * @package    dibi
  * @category   Database
- * @version    0.5b (2006-05-31) for PHP5
+ * @version    $Revision$ $Date$
  */
 
 
 // security - include dibi.php, not this file
-if (!defined('dibi')) die();
+if (!defined('DIBI')) die();
 
 
 // required since PHP 5.1.0

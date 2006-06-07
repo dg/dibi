@@ -1,0 +1,6 @@
+limit/offset support for select?
+
+complete phpdoc
+ 
+PostgreSql driver
+
