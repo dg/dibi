@@ -18,7 +18,7 @@
  */
 
 
-define('DIBI', 'Version 0.5b $Revision$');
+define('DIBI', 'Version 0.6 $Revision$');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -277,6 +277,7 @@ class dibi
     }
 
 
+/* CURRENTLY DISABLED - try conditional SQL %if ... %else ... %end
     static public function queryStart()
     {
         self::$query = func_get_args();
@@ -288,7 +289,7 @@ class dibi
         $args = func_get_args();
         self::$query = array_merge(self::$query, $args);
     }
-
+*/
 
 
     /**

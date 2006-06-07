@@ -41,31 +41,32 @@ class DibiParser
      */
     public function parse($driver, $args)
     {
-        $sql = '';
         $this->driver = $driver;
-        $this->modifier = false;
+        $mod = & $this->modifier; // shortcut
+        $mod = false;
         $this->hasError = false;
         $command = null;
-        //$lastString = null;
 
-        foreach ($args as $index => $arg)  {
-            $sql .= ' '; // always add simple space
+        // conditional sql
+        static $condKeys = array('if'=>1, 'else'=>1, 'end'=>1);
+        $cond = true;
+        $conds = array();
+
+        // iterate
+        $sql = array();
+        $count = count($args);
+        $i= -1;
+        while (++$i < $count) {
+            $arg = $args[$i];
 
             // simple string means SQL
-            if (is_string($arg) && !$this->modifier) {
-                // double string warning
-                // (problematic with dibi::queryStart & dibi::queryAdd
-//                if ($lastString === $index-1)
-//                    trigger_error("Is seems there is error in SQL near '$arg'.", E_USER_WARNING);
-//                $lastString = $index;
+            if (is_string($arg) && !$mod) {
 
                 // speed-up - is regexp required?
                 $toSkip = strcspn($arg, '`[\'"%');
 
-                if ($toSkip == strlen($arg)) {
-                    $sql .= $arg;
-                } else {
-                    $sql .= substr($arg, 0, $toSkip)
+                if ($toSkip != strlen($arg)) // need be translated?
+                    $arg = substr($arg, 0, $toSkip)
                          . preg_replace_callback('/
                            (?=`|\[|\'|"|%)              ## speed-up
                            (?:
@@ -73,35 +74,70 @@ class DibiParser
                               \[(.+?)\]|                ## 2) [identifier]
                               (\')((?:\'\'|[^\'])*)\'|  ## 3,4) string
                               (")((?:""|[^"])*)"|       ## 5,6) "string"
-                              %([a-zA-Z])$|             ## 7) right modifier
+                              %([a-zA-Z]{1,4})$|             ## 7) right modifier
                               (\'|")                    ## 8) lone-quote
                            )/xs',
                            array($this, 'callback'),
                            substr($arg, $toSkip)
-                     );
-                }
+                    );
 
+                // add to SQL
+                if ($cond) $sql[] = $arg;
+                
+                // conditional sequence
+                if (isset($condKeys[$mod])) {
+                    switch ($mod) {
+                    case 'if':
+                        $conds[] = $cond;
+                        $cond = (bool) $args[++$i];
+                        break;
+                        
+                    case 'else':
+                        if ($conds) {
+                            $cond = !$cond;
+                            break;
+                        }
+                        // no break!
+
+                    case 'end':
+                        if ($conds) {
+                            $cond = array_pop($conds);
+                            break;
+                        }
+                        
+                        $this->hasError = true;
+                        $sql[] = "**Unexpected condition $mod**";
+                    } // switch
+                    
+                    $mod = false;
+                } // if cond comments
+                
                 continue;
-            }
+            }           
+            
+            // conditional sql (!!! or not?)
+            if (!$cond) continue;
+            
 
             // array processing without modifier - autoselect between SET or VALUES
-            if (is_array($arg) && !$this->modifier && is_string(key($arg))) {
+            if (is_array($arg) && !$mod && is_string(key($arg))) {
                 if (!$command)
                     $command = strtoupper(substr(ltrim($args[0]), 0, 6));
 
-                $this->modifier = ($command == 'INSERT' || $command == 'REPLAC') ? 'V' : 'S';
+                $mod = ($command == 'INSERT' || $command == 'REPLAC') ? 'V' : 'S';
             }
 
             // default processing
-            $sql .= $this->formatValue($arg, $this->modifier);
-            $this->modifier = false;
+            $sql[] = $this->formatValue($arg, $mod);
+            $mod = false;
         } // for
 
+        $sql = implode(' ', $sql);
 
         if ($this->hasError)
             return new DibiException('Errors during generating SQL', array('sql' => $sql));
 
-        return trim($sql);
+        return $sql;
     }
 
 
@@ -145,7 +181,7 @@ class DibiParser
         // with modifier procession
         if ($modifier) {
             if ($value instanceof IDibiVariable)
-                return $value->toSql($this->driver, $this->modifier);
+                return $value->toSql($this->driver, $modifier);
 
             if (!is_scalar($value) && !is_null($value)) {  // array is already processed
                 $this->hasError = true;
