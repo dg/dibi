@@ -17,30 +17,24 @@ dibi::connect(array(
 ));
 
 
-$user = NULL;
-// or
-$user = 'Jesus';
+$cond1 = rand(0,2) < 1; 
+$cond2 = rand(0,2) < 1; 
+
+
+$user = $cond1 ? 'Davidek' : NULL;
 
 
 dibi::test('
 SELECT *
-FROM [test]
-WHERE %if', isset($user), 'user=%s', $user, '%end' // last end is optional
+FROM [table]
+%if', isset($user), 'WHERE [user]=%s', $user, '%end'
 );
 
 
-$cond = rand(0,2) < 1; 
-
+// last end is optional
 dibi::test('
 SELECT *
-FROM %if', $cond, '[one_table]', '%else', '[second_table]', '%end'
-);
-
-
-// shorter way
-dibi::test('
-SELECT *
-FROM %if', $cond, '[one_table] %else', '[second_table] %end'
+FROM %if', $cond1, '[one_table] %else [second_table]'
 );
 
 
@@ -49,9 +43,9 @@ dibi::test('
 SELECT *
 FROM [test]
 WHERE 
-    %if', isset($user), 'user=%s', $user, '
-        %if', $cond, 'AND [admin]=1 %end', '
-    AND [visible]=1 %end'
+    %if', isset($user), '[user]=%s', $user, '
+        %if', $cond2, 'AND [admin]=1 %end
+    %else LIMIT 10 %end'
 );
 
 ?>

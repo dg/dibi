@@ -30,7 +30,9 @@ class DibiParser
     private
         $modifier,
         $hasError,
-        $driver;
+        $driver,
+        $ifLevel,
+        $ifLevelStart;
 
 
     /**
@@ -42,15 +44,15 @@ class DibiParser
     public function parse($driver, $args)
     {
         $this->driver = $driver;
-        $mod = & $this->modifier; // shortcut
-        $mod = false;
-        $this->hasError = false;
+        $this->hasError = FALSE;
         $command = null;
+        $mod = & $this->modifier; // shortcut
+        $mod = FALSE;
 
         // conditional sql
-        static $condKeys = array('if'=>1, 'else'=>1, 'end'=>1);
-        $cond = true;
-        $conds = array();
+        $this->ifLevel = $this->ifLevelStart = 0;
+        $comment = & $this->comment;
+        $comment = FALSE;
 
         // iterate
         $sql = array();
@@ -65,8 +67,10 @@ class DibiParser
                 // speed-up - is regexp required?
                 $toSkip = strcspn($arg, '`[\'"%');
 
-                if ($toSkip != strlen($arg)) // need be translated?
-                    $arg = substr($arg, 0, $toSkip)
+                if ($toSkip == strlen($arg)) { // need be translated?
+                    $sql[] = $arg;
+                } else {
+                    $sql[] = substr($arg, 0, $toSkip)
                          . preg_replace_callback('/
                            (?=`|\[|\'|"|%)              ## speed-up
                            (?:
@@ -74,50 +78,29 @@ class DibiParser
                               \[(.+?)\]|                ## 2) [identifier]
                               (\')((?:\'\'|[^\'])*)\'|  ## 3,4) string
                               (")((?:""|[^"])*)"|       ## 5,6) "string"
-                              %([a-zA-Z]{1,4})$|             ## 7) right modifier
-                              (\'|")                    ## 8) lone-quote
+                              %([a-zA-Z]{1,2})$|        ## 7) right modifier
+                              %(else|end)|              ## 8) conditional SQL
+                              (\'|")                    ## 9) lone-quote
                            )/xs',
                            array($this, 'callback'),
                            substr($arg, $toSkip)
                     );
-
-                // add to SQL
-                if ($cond) $sql[] = $arg;
-                
-                // conditional sequence
-                if (isset($condKeys[$mod])) {
-                    switch ($mod) {
-                    case 'if':
-                        $conds[] = $cond;
-                        $cond = (bool) $args[++$i];
-                        break;
-                        
-                    case 'else':
-                        if ($conds) {
-                            $cond = !$cond;
-                            break;
-                        }
-                        // no break!
-
-                    case 'end':
-                        if ($conds) {
-                            $cond = array_pop($conds);
-                            break;
-                        }
-                        
-                        $this->hasError = true;
-                        $sql[] = "**Unexpected condition $mod**";
-                    } // switch
                     
-                    $mod = false;
-                } // if cond comments
-                
+                    if ($mod == 'if') {
+                        $mod = FALSE;
+                        $this->ifLevel++;
+                        if (!$args[++$i] && !$comment) {
+                            // open comment
+                            $sql[] = '/*';
+                            $this->ifLevelStart = $this->ifLevel;
+                            $comment = TRUE;
+                        }
+                    }
+                } // if 
+
                 continue;
             }           
-            
-            // conditional sql (!!! or not?)
-            if (!$cond) continue;
-            
+                        
 
             // array processing without modifier - autoselect between SET or VALUES
             if (is_array($arg) && !$mod && is_string(key($arg))) {
@@ -128,9 +111,13 @@ class DibiParser
             }
 
             // default processing
-            $sql[] = $this->formatValue($arg, $mod);
-            $mod = false;
+            $sql[] = $comment
+                ? '...' 
+                : $this->formatValue($arg, $mod);
+            $mod = FALSE;
         } // for
+
+        if ($comment) $sql[] = '*/';
 
         $sql = implode(' ', $sql);
 
@@ -184,7 +171,7 @@ class DibiParser
                 return $value->toSql($this->driver, $modifier);
 
             if (!is_scalar($value) && !is_null($value)) {  // array is already processed
-                $this->hasError = true;
+                $this->hasError = TRUE;
                 return '**Unexpected '.gettype($value).'**';
             }
 
@@ -208,7 +195,7 @@ class DibiParser
             case 'p':  // preserve as SQL
                 return (string) $value;
             default:
-                $this->hasError = true;
+                $this->hasError = TRUE;
                 return "**Unknown modifier %$modifier**";
             }
         }
@@ -231,7 +218,7 @@ class DibiParser
         if ($value instanceof IDibiVariable)
             return $value->toSql($this->driver);
 
-        $this->hasError = true;
+        $this->hasError = TRUE;
         return '**Unexpected '.gettype($value).'**';
     }
 
@@ -253,7 +240,8 @@ class DibiParser
         //    [5] => "
         //    [6] => string
         //    [7] => right modifier
-        //    [8] => lone-quote
+        //    [8] => %else | %end
+        //    [9] => lone-quote
 
         if ($matches[1])  // SQL identifiers: `ident`
             return $this->driver->quoteName($matches[1]);
@@ -262,19 +250,53 @@ class DibiParser
             return $this->driver->quoteName($matches[2]);
 
         if ($matches[3])  // SQL strings: '....'
-            return $this->driver->escape( strtr($matches[4], array("''" => "'")), true);
+            return $this->comment
+                ? '...' 
+                : $this->driver->escape( strtr($matches[4], array("''" => "'")), TRUE);
 
         if ($matches[5])  // SQL strings: "..."
-            return $this->driver->escape( strtr($matches[6], array('""' => '"')), true);
+            return $this->comment
+                ? '...' 
+                : $this->driver->escape( strtr($matches[6], array('""' => '"')), TRUE);
 
         if ($matches[7]) { // modifier
             $this->modifier = $matches[7];
             return '';
         }
 
-        if ($matches[8]) { // string quote
+        if ($matches[8]) { // %end | %else
+            if (!$this->ifLevel) {
+                $this->hasError = TRUE;
+                return "**Unexpected condition $mod**";
+            }
+            
+            if ($matches[8] == 'end') {
+                $this->ifLevel--;                
+                if ($this->ifLevelStart == $this->ifLevel + 1) {
+                    // close comment
+                    $this->ifLevelStart = 0;
+                    $this->comment = FALSE;
+                    return '*/';
+                }
+                return '';
+            }
+
+            // else
+            if ($this->ifLevelStart == $this->ifLevel) {
+                $this->ifLevelStart = 0;
+                $this->comment = FALSE;
+                return '*/';
+            } elseif (!$this->comment) {
+                $this->ifLevelStart = $this->ifLevel;
+                $this->comment = TRUE;
+                return '/*';
+            }
+        }
+
+
+        if ($matches[9]) { // string quote
+            $this->hasError = TRUE;
             return '**Alone quote**';
-            $this->hasError = true;
         }
 
         die('this should be never executed');

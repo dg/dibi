@@ -347,6 +347,22 @@ class dibi
 
 
 
+    static private function dumpHighlight($matches)
+    {
+        if (!empty($matches[1])) // comment
+            return '<em style="color:gray">'.$matches[1].'</em>';
+
+        if (!empty($matches[2])) // error
+            return '<strong style="color:red">'.$matches[2].'</strong>';
+
+        if (!empty($matches[3])) // most important keywords
+            return '<strong style="color:blue">'.$matches[3].'</strong>';
+
+        if (!empty($matches[4])) // other keywords
+            return '<strong style="color:green">'.$matches[4].'</strong>';            
+    }
+
+
     /**
      * Prints out a syntax highlighted version of the SQL command
      *
@@ -354,12 +370,11 @@ class dibi
      * @return void
      */
     static public function dump($sql) {
-        static $highlight = array ('ALL', 'DISTINCT', 'AS', 'ON', 'INTO', 'AND', 'OR', 'AS', );
-        static $newline = array ('SELECT', 'UPDATE', 'INSERT', 'DELETE', 'FROM', 'WHERE', 'HAVING', 'GROUP BY', 'ORDER BY', 'LIMIT', 'SET', 'VALUES', 'LEFT JOIN', 'INNER JOIN',);
+        static $keywords2 = 'ALL|DISTINCT|AS|ON|INTO|AND|OR|AS';
+        static $keywords1 = 'SELECT|UPDATE|INSERT|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';
 
         // insert new lines
-        foreach ($newline as $word)
-            $sql = preg_replace('#\b'.$word.'\b#', "\n\$0", $sql);
+        $sql = preg_replace("#\\b(?:$keywords1)\\b#", "\n\$0", $sql);
 
         $sql = trim($sql);
         // reduce spaces
@@ -369,13 +384,8 @@ class dibi
         $sql = htmlSpecialChars($sql);
         $sql = strtr($sql, array("\n" => '<br />'));
 
-        foreach ($newline as $word)
-            $sql = preg_replace('#\b'.$word.'\b#', '<strong style="color:blue">$0</strong>', $sql);
-
-        foreach ($highlight as $word)
-            $sql = preg_replace('#\b'.$word.'\b#', '<strong style="color:green">$0</strong>', $sql);
-
-        $sql = preg_replace('#\*\*.+?\*\*#', '<strong style="color:red">$0</strong>', $sql);
+        // syntax highlight
+        $sql = preg_replace_callback("#(/\*.+?\*/)|(\*\*.+?\*\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#", array('dibi', 'dumpHighlight'), $sql);
 
         echo '<pre class="dibi">', $sql, '</pre>';
     }
