@@ -2,38 +2,46 @@
 
 require_once '../dibi/dibi.php';
 
-// use two connections:
 
-// first connection to mysql
+
+// connects to mysql
 $state = dibi::connect(array(
     'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
-    'password' => '***',
+    'password' => 'xxx',  // change to real password!
     'database' => 'test',
     'charset'  => 'utf8',
-), 1);
+));
 
-if ($state instanceof Exception) {
-    echo $state;
-}
-
-if (!dibi::isConnected()) {
-    die();
-}
-
-
-
-// second connection to odbc
+/* connects to ODBC
 dibi::connect(array(
     'driver'   => 'odbc',
     'username' => 'root',
     'password' => '***',
     'database' => 'Driver={Microsoft Access Driver (*.mdb)};Dbq=C:\\Database.mdb',
-), 3);
+));
+*/
 
 
-echo dibi::isConnected();
+// check status
+if (!dibi::isConnected()) {
+    echo 'dibi::isConnected(): Not connected';
+    echo "<br>\n";
+}
+
+
+// or checked status this way
+if (is_error($state)) {
+
+    // $state can be FALSE or Exception
+    if ($state instanceof Exception) 
+        echo $state;
+    else 
+        echo 'FALSE';
+
+    echo "<br>\n";
+}
 
 
 

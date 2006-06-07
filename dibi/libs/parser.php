@@ -43,133 +43,21 @@ class DibiParser
     {
         $sql = '';
         $this->driver = $driver;
-        $this->modifier = 0;
+        $this->modifier = false;
         $this->hasError = false;
         $command = null;
-        $lastString = null;
+        //$lastString = null;
 
         foreach ($args as $index => $arg)  {
             $sql .= ' '; // always add simple space
 
-
-            // array processing (with or without modifier)
-            if (is_array($arg)) {
-                // determine type:  set | values | list
-                if ($this->modifier) {
-                    $type = $this->modifier;
-                    $this->modifier = false;
-                } else {
-                    // autodetect
-                    if (is_int(key($arg)))
-                        $type = 'L'; // LIST
-                    else {
-                        if (!$command)
-                            $command = strtoupper(substr(ltrim($args[0]), 0, 6));
-
-                        $type = $command == 'UPDATE' ? 'S' : 'V'; // SET | VALUES
-                    }
-                }
-
-                // build array
-                $vx = $kx = array();
-                switch ($type) {
-                case 'S': // SET
-                    foreach ($arg as $k => $v)
-                        $vx[] = $this->driver->quoteName($k) . '=' . $this->formatValue($v);
-
-                    $sql .= implode(', ', $vx);
-                    break;
-
-                case 'V': // VALUES
-                    foreach ($arg as $k => $v) {
-                        $kx[] = $this->driver->quoteName($k);
-                        $vx[] = $this->formatValue($v);
-                    }
-
-                    $sql .= '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
-                    break;
-
-                case 'L': // LIST
-                    foreach ($arg as $k => $v)
-                        $vx[] = $this->formatValue($v);
-
-                    $sql .= implode(', ', $vx);
-                    break;
-
-                case 'N': // NAMES
-                    foreach ($arg as $v)
-                        $vx[] = $this->driver->quoteName($v);
-
-                    $sql .= implode(', ', $vx);
-                    break;
-
-                default:
-                    $this->hasError = true;
-                    $sql .= "**Unknown modifier %$type**";
-                }
-
-                continue;
-            }
-
-
-
-            // after-modifier procession
-            if ($this->modifier) {
-                if ($arg instanceof IDibiVariable) {
-                    $sql .= $arg->toSql($this->driver, $this->modifier);
-                    $this->modifier = false;
-                    continue;
-                }
-
-                if (!is_scalar($arg) && !is_null($arg)) {  // array is already processed
-                    $this->hasError = true;
-                    $this->modifier = false;
-                    $sql .= '**Unexpected '.gettype($arg).'**';
-                    continue;
-                }
-
-                switch ($this->modifier) {
-                case "s":  // string
-                    $sql .= $this->driver->escape($arg, TRUE);
-                    break;
-                case 'T':  // date
-                    $sql .= date($this->driver->formats['date'], is_string($arg) ? strtotime($arg) : $arg);
-                    break;
-                case 't': // datetime
-                    $sql .= date($this->driver->formats['datetime'], is_string($arg) ? strtotime($arg) : $arg);
-                    break;
-                case 'b':  // boolean
-                    $sql .= $arg ? $this->driver->formats['TRUE'] : $this->driver->formats['FALSE'];
-                    break;
-                case 'i':
-                case 'u':  // unsigned int
-                case 'd':  // signed int
-                    $sql .= (string) (int) $arg;
-                    break;
-                case 'f':  // float
-                    $sql .= (string) (float) $arg; // something like -9E-005 is accepted by SQL
-                    break;
-                case 'n':  // identifier name
-                    $sql .= $this->driver->quoteName($arg);
-                    break;
-                default:
-                    $this->hasError = true;
-                    $sql .= "**Unknown modifier %$this->modifier**";
-                }
-
-                $this->modifier = false;
-                continue;
-            }
-
-
             // simple string means SQL
-            if (is_string($arg)) {
+            if (is_string($arg) && !$this->modifier) {
                 // double string warning
                 // (problematic with dibi::queryStart & dibi::queryAdd
 //                if ($lastString === $index-1)
 //                    trigger_error("Is seems there is error in SQL near '$arg'.", E_USER_WARNING);
-
-                $lastString = $index;
+//                $lastString = $index;
 
                 // speed-up - is regexp required?
                 $toSkip = strcspn($arg, '`[\'"%');
@@ -196,10 +84,17 @@ class DibiParser
                 continue;
             }
 
+            // array processing without modifier - autoselect between SET or VALUES
+            if (is_array($arg) && !$this->modifier && is_string(key($arg))) {
+                if (!$command)
+                    $command = strtoupper(substr(ltrim($args[0]), 0, 6));
+
+                $this->modifier = ($command == 'INSERT' || $command == 'REPLAC') ? 'V' : 'S';
+            }
 
             // default processing
-            $sql .= $this->formatValue($arg);
-
+            $sql .= $this->formatValue($arg, $this->modifier);
+            $this->modifier = false;
         } // for
 
 
@@ -214,8 +109,77 @@ class DibiParser
 
 
 
-    private function formatValue($value)
+    private function formatValue($value, $modifier)
     {
+        // array processing (with or without modifier)
+        if (is_array($value)) {
+        
+            $vx = $kx = array();
+            switch ($modifier) {
+            case 'S': // SET
+                foreach ($value as $k => $v) {
+                    list($k, $mod) = explode('%', $k.'%', 3);  // split modifier
+                    $vx[] = $this->driver->quoteName($k) . '=' . $this->formatValue($v, $mod);
+                }
+
+                return implode(', ', $vx);
+
+            case 'V': // VALUES
+                foreach ($value as $k => $v) {
+                    list($k, $mod) = explode('%', $k.'%', 3);  // split modifier
+                    $kx[] = $this->driver->quoteName($k);
+                    $vx[] = $this->formatValue($v, $mod);
+                }
+
+                return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
+
+            default: // LIST
+                foreach ($value as $v)
+                    $vx[] = $this->formatValue($v, $modifier);
+
+                return implode(', ', $vx);
+            }
+        }
+
+
+        // with modifier procession
+        if ($modifier) {
+            if ($value instanceof IDibiVariable)
+                return $value->toSql($this->driver, $this->modifier);
+
+            if (!is_scalar($value) && !is_null($value)) {  // array is already processed
+                $this->hasError = true;
+                return '**Unexpected '.gettype($value).'**';
+            }
+
+            switch ($modifier) {
+            case "s":  // string
+                return $this->driver->escape($value, TRUE);
+            case 'b':  // boolean
+                return $value ? $this->driver->formats['TRUE'] : $this->driver->formats['FALSE'];
+            case 'i':
+            case 'u':  // unsigned int
+            case 'd':  // signed int
+                return (string) (int) $value;
+            case 'f':  // float
+                return (string) (float) $value; // something like -9E-005 is accepted by SQL
+            case 'D':  // date
+                return date($this->driver->formats['date'], is_string($value) ? strtotime($value) : $value);
+            case 'T':  // datetime
+                return date($this->driver->formats['datetime'], is_string($value) ? strtotime($value) : $value);
+            case 'n':  // identifier name
+                return $this->driver->quoteName($value);
+            case 'p':  // preserve as SQL
+                return (string) $value;
+            default:
+                $this->hasError = true;
+                return "**Unknown modifier %$modifier**";
+            }
+        }
+
+
+
+        // without modifier procession
         if (is_string($value))
             return $this->driver->escape($value, TRUE);
 
@@ -232,7 +196,7 @@ class DibiParser
             return $value->toSql($this->driver);
 
         $this->hasError = true;
-        return '**Unsupported type '.gettype($value).'**';
+        return '**Unexpected '.gettype($value).'**';
     }
 
 

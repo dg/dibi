@@ -9,15 +9,16 @@ dibi::connect(array(
     'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
-    'password' => '***',
+    'password' => 'xxx',  // change to real password!
     'database' => 'test',
     'charset'  => 'utf8',
 ));
 
-$res = dibi::query('SELECT * FROM [nucleus_item] WHERE [inumber] <> %i', 38);
-
 
 $res = dibi::query('SELECT * FROM [nucleus_item] WHERE [inumber] <> %i', 38);
+if (is_error($res))
+    die('SQL error');
+
 
 // auto-convert this field to integer
 $res->setType('inumber', DibiResult::FIELD_INTEGER);

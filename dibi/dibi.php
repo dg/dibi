@@ -14,7 +14,7 @@
  * @license    GNU GENERAL PUBLIC LICENSE
  * @package    dibi
  * @category   Database
- * @version    0.5b $Revision$ $Date$
+ * @version    0.6 $Revision$ $Date$
  */
 
 
@@ -31,9 +31,11 @@ require_once dirname(__FILE__).'/libs/resultset.php';
 require_once dirname(__FILE__).'/libs/parser.php';
 require_once dirname(__FILE__).'/libs/exception.php';
 
-// support
-require_once dirname(__FILE__).'/libs/date.type.demo.php';
 
+
+// required since PHP 5.1.0
+if (function_exists('date_default_timezone_set'))
+    date_default_timezone_set('Europe/Prague');    // or 'GMT'
 
 
 
@@ -374,7 +376,7 @@ class dibi
 
         $sql = preg_replace('#\*\*.+?\*\*#', '<strong style="color:red">$0</strong>', $sql);
 
-        echo '<pre>', $sql, '</pre>';
+        echo '<pre class="dibi">', $sql, '</pre>';
     }
 
 

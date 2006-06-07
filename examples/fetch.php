@@ -10,7 +10,7 @@ dibi::connect(array(
     'driver'   => 'mysqli',
     'host'     => 'localhost',
     'username' => 'root',
-    'password' => '***',
+    'password' => 'xxx',  // change to real password!
     'database' => 'test',
     'charset'  => 'utf8',
 ));
@@ -21,6 +21,7 @@ if (!dibi::isConnected())
 
 
 $res = dibi::query('SELECT * FROM table');
+
 
 // fetch a single value
 $value = $res->fetchSingle();

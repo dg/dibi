@@ -284,10 +284,10 @@ abstract class DibiResult implements IteratorAggregate, Countable
         }
 
         if ($type == self::FIELD_DATE)
-            return new TDate($value);   // !!! experimental
+            return strtotime($value);   // !!! not good
 
         if ($type == self::FIELD_DATETIME)
-            return new TDateTime($value);  // !!! experimental
+            return strtotime($value);  // !!! not good
 
         return $value;
     }

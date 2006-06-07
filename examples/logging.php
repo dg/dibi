@@ -4,6 +4,7 @@
 require_once '../dibi/dibi.php';
 
 
+// enable logging to this file
 dibi::$logfile = 'log.sql';
 
 
@@ -12,7 +13,7 @@ dibi::connect(array(
     'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
-    'password' => '***',
+    'password' => 'xxx',  // change to real password!
     'database' => 'test',
     'charset'  => 'utf8',
 ));
