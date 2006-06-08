@@ -84,7 +84,7 @@ class DibiParser
                 if (!$command)
                     $command = strtoupper(substr(ltrim($args[0]), 0, 6));
 
-                $mod = ('INSERT' == $command || 'REPLAC' == $command) ? 'v' : 'e';
+                $mod = ('INSERT' == $command || 'REPLAC' == $command) ? 'v' : 'a';
             }
 
             // default processing
@@ -116,7 +116,7 @@ class DibiParser
 
             $vx = $kx = array();
             switch ($modifier) {
-            case 'e': // SET
+            case 'a': // SET (assoc)
                 foreach ($value as $k => $v) {
                     // split into identifier & modifier
                     $pair = explode('%', $k, 2);
@@ -224,7 +224,7 @@ class DibiParser
                        substr($value, $toSkip)
                 );
 
-            case 'e':
+            case 'a':
             case 'v':
                 $this->hasError = TRUE;
                 return "**Unexpected ".gettype($value)."**";

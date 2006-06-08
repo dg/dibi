@@ -61,7 +61,7 @@ $n = 123;
 dibi::test("UPDATE [test] SET", $arr4, " WHERE [id]=%i", $n);
 
 
-// array with modifier %d - means strings
-dibi::test("UPDATE [test] SET%s", $arr4, " WHERE [id]=%i", $n);
+// array with modifier %a - means strings
+dibi::test("UPDATE [test] SET%a", $arr4, " WHERE [id]=%i", $n);
 
 ?>
