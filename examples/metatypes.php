@@ -21,7 +21,7 @@ if (is_error($res))
 
 
 // auto-convert this field to integer
-$res->setType('inumber', DibiResult::FIELD_INTEGER);
+$res->setType('inumber', Dibi::FIELD_INTEGER);
 $record = $res->fetch();
 var_dump($record);
 

@@ -273,38 +273,38 @@ class DibiMySqlResult extends DibiResult
     private function createMeta()
     {
         static $types = array(
-            'ENUM'      => self::FIELD_TEXT, // eventually self::FIELD_INTEGER
-            'SET'       => self::FIELD_TEXT,  // eventually self::FIELD_INTEGER
-            'CHAR'      => self::FIELD_TEXT,
-            'VARCHAR'   => self::FIELD_TEXT,
-            'STRING'    => self::FIELD_TEXT,
-            'TINYTEXT'  => self::FIELD_TEXT,
-            'TEXT'      => self::FIELD_TEXT,
-            'MEDIUMTEXT'=> self::FIELD_TEXT,
-            'LONGTEXT'  => self::FIELD_TEXT,
-            'BINARY'    => self::FIELD_BINARY,
-            'VARBINARY' => self::FIELD_BINARY,
-            'TINYBLOB'  => self::FIELD_BINARY,
-            'BLOB'      => self::FIELD_BINARY,
-            'MEDIUMBLOB'=> self::FIELD_BINARY,
-            'LONGBLOB'  => self::FIELD_BINARY,
-            'DATE'      => self::FIELD_DATE,
-            'DATETIME'  => self::FIELD_DATETIME,
-            'TIMESTAMP' => self::FIELD_DATETIME,
-            'TIME'      => self::FIELD_DATETIME,
-            'BIT'       => self::FIELD_BOOL,
-            'YEAR'      => self::FIELD_INTEGER,
-            'TINYINT'   => self::FIELD_INTEGER,
-            'SMALLINT'  => self::FIELD_INTEGER,
-            'MEDIUMINT' => self::FIELD_INTEGER,
-            'INT'       => self::FIELD_INTEGER,
-            'INTEGER'   => self::FIELD_INTEGER,
-            'BIGINT'    => self::FIELD_INTEGER,
-            'FLOAT'     => self::FIELD_FLOAT,
-            'DOUBLE'    => self::FIELD_FLOAT,
-            'REAL'      => self::FIELD_FLOAT,
-            'DECIMAL'   => self::FIELD_FLOAT,
-            'NUMERIC'   => self::FIELD_FLOAT,
+            'ENUM'      => dibi::FIELD_TEXT, // eventually dibi::FIELD_INTEGER
+            'SET'       => dibi::FIELD_TEXT,  // eventually dibi::FIELD_INTEGER
+            'CHAR'      => dibi::FIELD_TEXT,
+            'VARCHAR'   => dibi::FIELD_TEXT,
+            'STRING'    => dibi::FIELD_TEXT,
+            'TINYTEXT'  => dibi::FIELD_TEXT,
+            'TEXT'      => dibi::FIELD_TEXT,
+            'MEDIUMTEXT'=> dibi::FIELD_TEXT,
+            'LONGTEXT'  => dibi::FIELD_TEXT,
+            'BINARY'    => dibi::FIELD_BINARY,
+            'VARBINARY' => dibi::FIELD_BINARY,
+            'TINYBLOB'  => dibi::FIELD_BINARY,
+            'BLOB'      => dibi::FIELD_BINARY,
+            'MEDIUMBLOB'=> dibi::FIELD_BINARY,
+            'LONGBLOB'  => dibi::FIELD_BINARY,
+            'DATE'      => dibi::FIELD_DATE,
+            'DATETIME'  => dibi::FIELD_DATETIME,
+            'TIMESTAMP' => dibi::FIELD_DATETIME,
+            'TIME'      => dibi::FIELD_DATETIME,
+            'BIT'       => dibi::FIELD_BOOL,
+            'YEAR'      => dibi::FIELD_INTEGER,
+            'TINYINT'   => dibi::FIELD_INTEGER,
+            'SMALLINT'  => dibi::FIELD_INTEGER,
+            'MEDIUMINT' => dibi::FIELD_INTEGER,
+            'INT'       => dibi::FIELD_INTEGER,
+            'INTEGER'   => dibi::FIELD_INTEGER,
+            'BIGINT'    => dibi::FIELD_INTEGER,
+            'FLOAT'     => dibi::FIELD_FLOAT,
+            'DOUBLE'    => dibi::FIELD_FLOAT,
+            'REAL'      => dibi::FIELD_FLOAT,
+            'DECIMAL'   => dibi::FIELD_FLOAT,
+            'NUMERIC'   => dibi::FIELD_FLOAT,
         );
 
         $count = mysql_num_fields($this->resource);
@@ -317,12 +317,12 @@ class DibiMySqlResult extends DibiResult
             $info['table'] = mysql_field_table($this->resource, $index);
 
             if (in_array('auto_increment', $info['flags']))  // or 'primary_key' ?
-                $info['type'] = self::FIELD_COUNTER;
+                $info['type'] = dibi::FIELD_COUNTER;
             else {
-                $info['type'] = isset($types[$native]) ? $types[$native] : self::FIELD_UNKNOWN;
+                $info['type'] = isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN;
 
-//                if ($info['type'] == self::FIELD_TEXT && $info['length'] > 255)
-//                    $info['type'] = self::FIELD_LONG_TEXT;
+//                if ($info['type'] == dibi::FIELD_TEXT && $info['length'] > 255)
+//                    $info['type'] = dibi::FIELD_LONG_TEXT;
             }
 
             $name = mysql_field_name($this->resource, $index);

@@ -46,23 +46,6 @@ if (!interface_exists('Countable', false)) {
 abstract class DibiResult implements IteratorAggregate, Countable
 {
     /**
-     * Column type in relation to PHP native type
-     */
-    const
-        FIELD_TEXT =       's', // as 'string'
-        FIELD_BINARY =     'b',
-        FIELD_BOOL =       'l', // as 'logical'
-        FIELD_INTEGER =    'i',
-        FIELD_FLOAT =      'f',
-        FIELD_DATE =       'd',
-        FIELD_DATETIME =   't',
-        FIELD_UNKNOWN =    '?',
-
-        // special
-        FIELD_COUNTER =    'c'; // counter or autoincrement, is integer
-
-
-    /**
      * Describes columns types
      * @var array
      */
@@ -270,12 +253,12 @@ abstract class DibiResult implements IteratorAggregate, Countable
             return $value;
 
         static $conv = array(
-            self::FIELD_TEXT =>    'string',
-            self::FIELD_BINARY =>  'string',
-            self::FIELD_BOOL =>    'bool',
-            self::FIELD_INTEGER => 'int',
-            self::FIELD_FLOAT =>   'float',
-            self::FIELD_COUNTER => 'int',
+            dibi::FIELD_TEXT =>    'string',
+            dibi::FIELD_BINARY =>  'string',
+            dibi::FIELD_BOOL =>    'bool',
+            dibi::FIELD_INTEGER => 'int',
+            dibi::FIELD_FLOAT =>   'float',
+            dibi::FIELD_COUNTER => 'int',
         );
 
         if (isset($conv[$type])) {
@@ -283,10 +266,10 @@ abstract class DibiResult implements IteratorAggregate, Countable
             return $value;
         }
 
-        if ($type == self::FIELD_DATE)
+        if ($type == dibi::FIELD_DATE)
             return strtotime($value);   // !!! not good
 
-        if ($type == self::FIELD_DATETIME)
+        if ($type == dibi::FIELD_DATETIME)
             return strtotime($value);  // !!! not good
 
         return $value;

@@ -226,8 +226,8 @@ class DibiSqliteResult extends DibiResult
         $this->meta = $this->convert = array();
         for ($index = 0; $index < $count; $index++) {
             $name = sqlite_field_name($this->resource, $index);
-            $this->meta[$name] = array('type' => self::FIELD_UNKNOWN);
-            $this->convert[$name] = self::FIELD_UNKNOWN;
+            $this->meta[$name] = array('type' => dibi::FIELD_UNKNOWN);
+            $this->convert[$name] = dibi::FIELD_UNKNOWN;
         }
     }
 

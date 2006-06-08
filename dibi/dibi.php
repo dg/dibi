@@ -68,6 +68,23 @@ interface IDibiVariable
 class dibi
 {
     /**
+     * Column type in relation to PHP native type
+     */
+    const
+        FIELD_TEXT =       's', // as 'string'
+        FIELD_BINARY =     'b',
+        FIELD_BOOL =       'l', // as 'logical'
+        FIELD_INTEGER =    'i',
+        FIELD_FLOAT =      'f',
+        FIELD_DATE =       'd',
+        FIELD_DATETIME =   't',
+        FIELD_UNKNOWN =    '?',
+
+        // special
+        FIELD_COUNTER =    'c'; // counter or autoincrement, is integer
+
+
+    /**
      * Connection registry storage for DibiDriver objects
      * @var array
      */
@@ -191,7 +208,7 @@ class dibi
      */
     static public function getConnection($name = NULL)
     {
-        return $name === NULL
+        return NULL === $name
                ? self::$conn
                : @self::$registry[$name];
     }

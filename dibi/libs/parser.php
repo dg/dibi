@@ -57,9 +57,9 @@ class DibiParser
         // iterate
         $sql = array();
         foreach ($args as $arg)
-        {                      
-            // %if was opened  
-            if ($mod == 'if') { 
+        {
+            // %if was opened
+            if ('if' == $mod) {
                 $mod = FALSE;
                 $this->ifLevel++;
                 if (!$comment && !$arg) {
@@ -72,17 +72,19 @@ class DibiParser
             }
 
             // simple string means SQL
-            if (is_string($arg) && !$mod) {
-                $sql[] = $this->formatValue($arg, 'p'); // preserve it                
+            if (is_string($arg) && (!$mod || 'p'==$mod)) {
+                $mod = FALSE;
+                // will generate new mod
+                $sql[] = $this->formatValue($arg, 'p');
                 continue;
             }
 
-            // array without modifier - autoselect between SET or VALUES
-            if (is_array($arg) && !$mod && is_string(key($arg))) {
+            // associative array without modifier - autoselect between SET or VALUES
+            if (!$mod && is_array($arg) && is_string(key($arg))) {
                 if (!$command)
                     $command = strtoupper(substr(ltrim($args[0]), 0, 6));
 
-                $mod = ($command == 'INSERT' || $command == 'REPLAC') ? 'V' : 'S';
+                $mod = ('INSERT' == $command || 'REPLAC' == $command) ? 'V' : 'S';
             }
 
             // default processing
@@ -116,20 +118,44 @@ class DibiParser
             switch ($modifier) {
             case 'S': // SET
                 foreach ($value as $k => $v) {
-                    list($k, $mod) = explode('%', $k.'%', 3);  // split modifier
-                    $vx[] = $this->driver->quoteName($k) . '=' . $this->formatValue($v, $mod);
+                    // split into identifier & modifier
+                    $pair = explode('%', $k, 2); 
+                    
+                    if (isset($pair[1])) {
+                        $mod = $pair[1];
+                        // %? skips NULLS
+                        if (isset($mod[0]) && '?' == $mod[0]) {
+                            if (NULL === $v) continue;
+                            $mod = substr($mod, 1);
+                        }
+                    } else $mod = FALSE;
+                    
+                    // generate array
+                    $vx[] = $this->driver->quoteName($pair[0]) . '=' . $this->formatValue($v, $mod);
                 }
-
                 return implode(', ', $vx);
+                
 
             case 'V': // VALUES
                 foreach ($value as $k => $v) {
-                    list($k, $mod) = explode('%', $k.'%', 3);  // split modifier
-                    $kx[] = $this->driver->quoteName($k);
+                    // split into identifier & modifier
+                    $pair = explode('%', $k, 2); 
+                    
+                    if (isset($pair[1])) {
+                        $mod = $pair[1];
+                        // %m? skips NULLS
+                        if (isset($mod[0]) && '?' == $mod[0]) {
+                            if ($v === NULL) continue;
+                            $mod = substr($mod, 1);
+                        }
+                    } else $mod = FALSE;
+
+                    // generate arrays
+                    $kx[] = $this->driver->quoteName($pair[0]);
                     $vx[] = $this->formatValue($v, $mod);
                 }
-
                 return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
+                
 
             default: // LIST
                 foreach ($value as $v)
@@ -154,7 +180,9 @@ class DibiParser
             case "s":  // string
                 return $this->driver->escape($value, TRUE);
             case 'b':  // boolean
-                return $value ? $this->driver->formats['TRUE'] : $this->driver->formats['FALSE'];
+                return $value 
+                    ? $this->driver->formats['TRUE'] 
+                    : $this->driver->formats['FALSE'];
             case 'i':
             case 'u':  // unsigned int
             case 'd':  // signed int
@@ -162,9 +190,14 @@ class DibiParser
             case 'f':  // float
                 return (string) (float) $value; // something like -9E-005 is accepted by SQL
             case 'D':  // date
-                return date($this->driver->formats['date'], is_string($value) ? strtotime($value) : $value);
+                return date($this->driver->formats['date'], is_string($value) 
+                    ? strtotime($value) 
+                    : $value);
+            case 't':  // datetime
             case 'T':  // datetime
-                return date($this->driver->formats['datetime'], is_string($value) ? strtotime($value) : $value);
+                return date($this->driver->formats['datetime'], is_string($value) 
+                    ? strtotime($value) 
+                    : $value);
             case 'n':  // identifier name
                 return $this->driver->quoteName($value);
             case 'p':  // preserve as SQL
@@ -173,7 +206,7 @@ class DibiParser
                 // speed-up - is regexp required?
                 $toSkip = strcspn($value, '`[\'"%');
 
-                if ($toSkip == strlen($value)) // needn't be translated
+                if (strlen($value) == $toSkip) // needn't be translated
                     return $value;
 
                 // note: only this can change $this->modifier
@@ -245,8 +278,8 @@ class DibiParser
         //    [4] => string
         //    [5] => "
         //    [6] => string
-        //    [7] => right modifier
-        //    [8] => %else | %end
+        //    [7] => %else | %end
+        //    [8] => right modifier
         //    [9] => lone-quote
 
         if ($matches[1])  // SQL identifiers: `ident`
@@ -271,7 +304,7 @@ class DibiParser
                 return "**Unexpected condition $matches[8]**";
             }
 
-            if ($matches[7] == 'end') {
+            if ('end' == $matches[7]) {
                 $this->ifLevel--;
                 if ($this->ifLevelStart == $this->ifLevel + 1) {
                     // close comment

@@ -233,31 +233,31 @@ class DibiMySqliResult extends DibiResult
     private function createMeta()
     {
         static $types = array(
-            MYSQLI_TYPE_FLOAT     => self::FIELD_FLOAT,
-            MYSQLI_TYPE_DOUBLE    => self::FIELD_FLOAT,
-            MYSQLI_TYPE_DECIMAL   => self::FIELD_FLOAT,
-    //      MYSQLI_TYPE_NEWDECIMAL=> self::FIELD_FLOAT,
-    //      MYSQLI_TYPE_BIT       => self::FIELD_INTEGER,
-            MYSQLI_TYPE_TINY      => self::FIELD_INTEGER,
-            MYSQLI_TYPE_SHORT     => self::FIELD_INTEGER,
-            MYSQLI_TYPE_LONG      => self::FIELD_INTEGER,
-            MYSQLI_TYPE_LONGLONG  => self::FIELD_INTEGER,
-            MYSQLI_TYPE_INT24     => self::FIELD_INTEGER,
-            MYSQLI_TYPE_YEAR      => self::FIELD_INTEGER,
-            MYSQLI_TYPE_GEOMETRY  => self::FIELD_INTEGER,
-            MYSQLI_TYPE_DATE      => self::FIELD_DATE,
-            MYSQLI_TYPE_NEWDATE   => self::FIELD_DATE,
-            MYSQLI_TYPE_TIMESTAMP => self::FIELD_DATETIME,
-            MYSQLI_TYPE_TIME      => self::FIELD_DATETIME,
-            MYSQLI_TYPE_DATETIME  => self::FIELD_DATETIME,
-            MYSQLI_TYPE_ENUM      => self::FIELD_TEXT,   // eventually self::FIELD_INTEGER
-            MYSQLI_TYPE_SET       => self::FIELD_TEXT,    // eventually self::FIELD_INTEGER
-            MYSQLI_TYPE_STRING    => self::FIELD_TEXT,
-            MYSQLI_TYPE_VAR_STRING=> self::FIELD_TEXT,
-            MYSQLI_TYPE_TINY_BLOB => self::FIELD_BINARY,
-            MYSQLI_TYPE_MEDIUM_BLOB=> self::FIELD_BINARY,
-            MYSQLI_TYPE_LONG_BLOB => self::FIELD_BINARY,
-            MYSQLI_TYPE_BLOB      => self::FIELD_BINARY,
+            MYSQLI_TYPE_FLOAT     => dibi::FIELD_FLOAT,
+            MYSQLI_TYPE_DOUBLE    => dibi::FIELD_FLOAT,
+            MYSQLI_TYPE_DECIMAL   => dibi::FIELD_FLOAT,
+    //      MYSQLI_TYPE_NEWDECIMAL=> dibi::FIELD_FLOAT,
+    //      MYSQLI_TYPE_BIT       => dibi::FIELD_INTEGER,
+            MYSQLI_TYPE_TINY      => dibi::FIELD_INTEGER,
+            MYSQLI_TYPE_SHORT     => dibi::FIELD_INTEGER,
+            MYSQLI_TYPE_LONG      => dibi::FIELD_INTEGER,
+            MYSQLI_TYPE_LONGLONG  => dibi::FIELD_INTEGER,
+            MYSQLI_TYPE_INT24     => dibi::FIELD_INTEGER,
+            MYSQLI_TYPE_YEAR      => dibi::FIELD_INTEGER,
+            MYSQLI_TYPE_GEOMETRY  => dibi::FIELD_INTEGER,
+            MYSQLI_TYPE_DATE      => dibi::FIELD_DATE,
+            MYSQLI_TYPE_NEWDATE   => dibi::FIELD_DATE,
+            MYSQLI_TYPE_TIMESTAMP => dibi::FIELD_DATETIME,
+            MYSQLI_TYPE_TIME      => dibi::FIELD_DATETIME,
+            MYSQLI_TYPE_DATETIME  => dibi::FIELD_DATETIME,
+            MYSQLI_TYPE_ENUM      => dibi::FIELD_TEXT,   // eventually dibi::FIELD_INTEGER
+            MYSQLI_TYPE_SET       => dibi::FIELD_TEXT,    // eventually dibi::FIELD_INTEGER
+            MYSQLI_TYPE_STRING    => dibi::FIELD_TEXT,
+            MYSQLI_TYPE_VAR_STRING=> dibi::FIELD_TEXT,
+            MYSQLI_TYPE_TINY_BLOB => dibi::FIELD_BINARY,
+            MYSQLI_TYPE_MEDIUM_BLOB=> dibi::FIELD_BINARY,
+            MYSQLI_TYPE_LONG_BLOB => dibi::FIELD_BINARY,
+            MYSQLI_TYPE_BLOB      => dibi::FIELD_BINARY,
         );
 
         $count = mysqli_num_fields($this->resource);
@@ -267,11 +267,11 @@ class DibiMySqliResult extends DibiResult
             $native = $info['native'] = $info['type'];
 
             if ($info['flags'] & MYSQLI_AUTO_INCREMENT_FLAG)  // or 'primary_key' ?
-                $info['type'] = self::FIELD_COUNTER;
+                $info['type'] = dibi::FIELD_COUNTER;
             else {
-                $info['type'] = isset($types[$native]) ? $types[$native] : self::FIELD_UNKNOWN;
-//                if ($info['type'] == self::FIELD_TEXT && $info['length'] > 255)
-//                    $info['type'] = self::FIELD_LONG_TEXT;
+                $info['type'] = isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN;
+//                if ($info['type'] == dibi::FIELD_TEXT && $info['length'] > 255)
+//                    $info['type'] = dibi::FIELD_LONG_TEXT;
             }
 
             $this->meta[$info['name']] = $info;

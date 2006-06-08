@@ -26,10 +26,11 @@ $arr3 = array(
     'col3' => 'three',
 );
 $arr4 = array(
-    'a' => 12,
-    'b' => NULL,
-    'c%T' => time(),  // modifier 'T' means datetime
-    'd' => 'any string',
+    'a'   => 12,
+    'b'   => NULL,
+    'c%?' => NULL,
+    'd%T' => time(),  // modifier 'T' means datetime
+    'e'   => 'any string',
 );
 $arr5 = array('RAND()', '[col1] > [col2]');
 
