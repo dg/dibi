@@ -17,8 +17,8 @@ dibi::connect(array(
 ));
 
 
-$cond1 = rand(0,2) < 1; 
-$cond2 = rand(0,2) < 1; 
+$cond1 = rand(0,2) < 1;
+$cond2 = rand(0,2) < 1;
 
 
 $user = $cond1 ? 'Davidek' : NULL;
@@ -42,7 +42,7 @@ FROM %if', $cond1, '[one_table] %else [second_table]'
 dibi::test('
 SELECT *
 FROM [test]
-WHERE 
+WHERE
     %if', isset($user), '[user]=%s', $user, '
         %if', $cond2, 'AND [admin]=1 %end
     %else LIMIT 10 %end'

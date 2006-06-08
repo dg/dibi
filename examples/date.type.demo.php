@@ -56,7 +56,7 @@ class TDateTime implements IDibiVariable
 dibi::connect(array(
     'driver'   => 'mysqli',
     'host'     => 'localhost',
-    'username' => 'root', 
+    'username' => 'root',
     'password' => 'xxx',  // change to real password!
     'charset'  => 'utf8',
 ));

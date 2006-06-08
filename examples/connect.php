@@ -35,9 +35,9 @@ if (!dibi::isConnected()) {
 if (is_error($state)) {
 
     // $state can be FALSE or Exception
-    if ($state instanceof Exception) 
+    if ($state instanceof Exception)
         echo $state;
-    else 
+    else
         echo 'FALSE';
 
     echo "<br>\n";

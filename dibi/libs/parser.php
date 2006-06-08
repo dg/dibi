@@ -84,7 +84,7 @@ class DibiParser
                 if (!$command)
                     $command = strtoupper(substr(ltrim($args[0]), 0, 6));
 
-                $mod = ('INSERT' == $command || 'REPLAC' == $command) ? 'V' : 'S';
+                $mod = ('INSERT' == $command || 'REPLAC' == $command) ? 'v' : 'e';
             }
 
             // default processing
@@ -116,11 +116,11 @@ class DibiParser
 
             $vx = $kx = array();
             switch ($modifier) {
-            case 'S': // SET
+            case 'e': // SET
                 foreach ($value as $k => $v) {
                     // split into identifier & modifier
-                    $pair = explode('%', $k, 2); 
-                    
+                    $pair = explode('%', $k, 2);
+
                     if (isset($pair[1])) {
                         $mod = $pair[1];
                         // %? skips NULLS
@@ -129,18 +129,18 @@ class DibiParser
                             $mod = substr($mod, 1);
                         }
                     } else $mod = FALSE;
-                    
+
                     // generate array
                     $vx[] = $this->driver->quoteName($pair[0]) . '=' . $this->formatValue($v, $mod);
                 }
                 return implode(', ', $vx);
-                
 
-            case 'V': // VALUES
+
+            case 'v': // VALUES
                 foreach ($value as $k => $v) {
                     // split into identifier & modifier
-                    $pair = explode('%', $k, 2); 
-                    
+                    $pair = explode('%', $k, 2);
+
                     if (isset($pair[1])) {
                         $mod = $pair[1];
                         // %m? skips NULLS
@@ -155,7 +155,7 @@ class DibiParser
                     $vx[] = $this->formatValue($v, $mod);
                 }
                 return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
-                
+
 
             default: // LIST
                 foreach ($value as $v)
@@ -180,23 +180,21 @@ class DibiParser
             case "s":  // string
                 return $this->driver->escape($value, TRUE);
             case 'b':  // boolean
-                return $value 
-                    ? $this->driver->formats['TRUE'] 
+                return $value
+                    ? $this->driver->formats['TRUE']
                     : $this->driver->formats['FALSE'];
-            case 'i':
+            case 'i':  // signed int
             case 'u':  // unsigned int
-            case 'd':  // signed int
                 return (string) (int) $value;
             case 'f':  // float
                 return (string) (float) $value; // something like -9E-005 is accepted by SQL
-            case 'D':  // date
-                return date($this->driver->formats['date'], is_string($value) 
-                    ? strtotime($value) 
+            case 'd':  // date
+                return date($this->driver->formats['date'], is_string($value)
+                    ? strtotime($value)
                     : $value);
             case 't':  // datetime
-            case 'T':  // datetime
-                return date($this->driver->formats['datetime'], is_string($value) 
-                    ? strtotime($value) 
+                return date($this->driver->formats['datetime'], is_string($value)
+                    ? strtotime($value)
                     : $value);
             case 'n':  // identifier name
                 return $this->driver->quoteName($value);
@@ -226,8 +224,8 @@ class DibiParser
                        substr($value, $toSkip)
                 );
 
-            case 'S':
-            case 'V':
+            case 'e':
+            case 'v':
                 $this->hasError = TRUE;
                 return "**Unexpected ".gettype($value)."**";
             case 'if':

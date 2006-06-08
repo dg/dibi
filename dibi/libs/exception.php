@@ -59,7 +59,7 @@ class DibiException extends Exception
 
 
 /**
- * Checks result state 
+ * Checks result state
  */
 function is_error($var)
 {

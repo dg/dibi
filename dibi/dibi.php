@@ -14,11 +14,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE
  * @package    dibi
  * @category   Database
- * @version    0.6 $Revision$ $Date$
+ * @version    0.6b $Revision$ $Date$
  */
 
 
-define('DIBI', 'Version 0.6 $Revision$');
+define('DIBI', 'Version 0.6b $Revision$');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -72,8 +72,8 @@ class dibi
      */
     const
         FIELD_TEXT =       's', // as 'string'
-        FIELD_BINARY =     'b',
-        FIELD_BOOL =       'l', // as 'logical'
+        FIELD_BINARY =     'S',
+        FIELD_BOOL =       'b',
         FIELD_INTEGER =    'i',
         FIELD_FLOAT =      'f',
         FIELD_DATE =       'd',
@@ -376,7 +376,7 @@ class dibi
             return '<strong style="color:blue">'.$matches[3].'</strong>';
 
         if (!empty($matches[4])) // other keywords
-            return '<strong style="color:green">'.$matches[4].'</strong>';            
+            return '<strong style="color:green">'.$matches[4].'</strong>';
     }
 
 

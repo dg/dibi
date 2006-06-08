@@ -1,1 +1,1 @@
-Dibi Version 0.6
+Dibi Version 0.6b
