@@ -113,7 +113,8 @@ class dibi
      * File for logging SQL queryies - strongly recommended to use with NSafeStream
      * @var string|NULL
      */
-    static public $logfile;
+    static public $logFile;
+    static public $logMode = 'w';
 
     /**
      * Enable/disable debug mode
@@ -121,18 +122,13 @@ class dibi
      */
     static public $debug = false;
 
-    /**
-     * Progressive created query
-     * @var array
-     */
-    static private $query = array();
 
 
 
     /**
      * Creates a new DibiDriver object and connects it to specified database
      *
-     * @param  array        connection parameters
+     * @param  array|string connection parameters
      * @param  string       connection name
      * @return bool|object  TRUE on success, FALSE or Exception on failure
      */
@@ -141,9 +137,9 @@ class dibi
         // init parser
         if (!self::$parser) self::$parser = new DibiParser();
 
-        // $name must be unique
-        if (isset(self::$registry[$name]))
-            return new DibiException("Connection named '$name' already exists.");
+        // DSN string
+        if (is_string($config))
+            parse_str($config, $config);
 
         // config['driver'] is required
         if (empty($config['driver']))
@@ -163,13 +159,13 @@ class dibi
 
         // optionally log to file
         // todo: log other exceptions!
-        if (self::$logfile != NULL) {
+        if (self::$logFile != NULL && self::$logMode) {
             if (is_error($conn))
                 $msg = "Can't connect to DB '$config[driver]': ".$conn->getMessage();
             else
                 $msg = "Successfully connected to DB '$config[driver]'";
 
-            $f = fopen(self::$logfile, 'a');
+            $f = fopen(self::$logFile, self::$logMode);
             fwrite($f, "$msg\r\n\r\n");
             fclose($f);
         }
@@ -238,16 +234,16 @@ class dibi
     /**
      * Generates and executes SQL query
      *
-     * @param  mixed        one or more arguments
+     * @param  array|mixed    one or more arguments
      * @return int|DibiResult|Exception
      */
-    static public function query()
+    static public function query($args)
     {
         if (!self::$conn) return new DibiException('Dibi is not connected to DB'); // is connected?
 
         // receive arguments
-        $args = func_num_args() ? func_get_args() : self::$query;
-        self::$query = array();
+        if (!is_array($args))
+            $args = func_get_args();
 
         // and generate SQL
         self::$sql = self::$parser->parse(self::$conn, $args);
@@ -271,7 +267,7 @@ class dibi
         }
 
         // optionally log to file
-        if (self::$logfile != NULL)
+        if (self::$logFile != NULL)
         {
             if (is_error($res))
                 $msg = $res->getMessage();
@@ -280,7 +276,7 @@ class dibi
             else
                 $msg = 'OK';
 
-            $f = fopen(self::$logfile, 'a');
+            $f = fopen(self::$logFile, 'a');
             fwrite($f,
                self::$sql
                . ";\r\n-- Result: $msg"
@@ -294,44 +290,33 @@ class dibi
     }
 
 
-/* CURRENTLY DISABLED - try conditional SQL %if ... %else ... %end
-    static public function queryStart()
-    {
-        self::$query = func_get_args();
-    }
 
-
-    static public function queryAdd()
-    {
-        $args = func_get_args();
-        self::$query = array_merge(self::$query, $args);
-    }
-*/
 
 
     /**
      * Generates and returns SQL query
      *
-     * @param  mixed        one or more arguments
+     * @param  array|mixed  one or more arguments
      * @return string
      */
-    static public function test()
+    static public function test($args)
     {
         if (!self::$conn) return FALSE; // is connected?
 
         // receive arguments
-        $args = func_num_args() ? func_get_args() : self::$query;
-        self::$query = array();
+        if (!is_array($args))
+            $args = func_get_args();
 
         // and generate SQL
         $sql = self::$parser->parse(self::$conn, $args);
-        if (is_error($sql)) {
-            self::dump($sql->getSql());
-            return $sql->getSql();
-        } else {
-            self::dump($sql);
-            return $sql;
+        $dump = TRUE; // !!!
+        if ($dump) {
+            if (is_error($sql))
+                self::dump($sql->getSql());
+            else
+                self::dump($sql);
         }
+        return $sql;
     }
 
 

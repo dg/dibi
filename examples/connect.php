@@ -2,6 +2,8 @@
 
 require_once '../dibi/dibi.php';
 
+// using DSN
+$state = dibi::connect('driver=mysql&host=localhost&username=root&password=xxx&database=test&charset=utf8');
 
 
 // connects to mysql

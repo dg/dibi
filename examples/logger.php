@@ -5,7 +5,7 @@ require_once '../dibi/dibi.php';
 
 
 // enable log to this file
-dibi::$logfile = 'log.sql';
+dibi::$logFile = 'log.sql';
 
 
 // mysql
