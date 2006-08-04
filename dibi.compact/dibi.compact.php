@@ -10,7 +10,7 @@
  * @author     David Grudl aka -dgx- <dave@dgx.cz>
  * @link       http://texy.info/dibi/
  * @copyright  Copyright (c) 2005-2006 David Grudl
- * @license    GNU GENERAL PUBLIC LICENSE
+ * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
  * @version    0.6b $Revision: 11 $ $Date: 2006-06-08 04:02:05 +0200 (čt, 08 VI 2006) $

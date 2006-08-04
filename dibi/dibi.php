@@ -11,7 +11,7 @@
  * @author     David Grudl aka -dgx- <dave@dgx.cz>
  * @link       http://texy.info/dibi/
  * @copyright  Copyright (c) 2005-2006 David Grudl
- * @license    GNU GENERAL PUBLIC LICENSE
+ * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
  * @version    0.6b $Revision$ $Date$
