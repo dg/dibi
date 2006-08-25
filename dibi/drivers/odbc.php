@@ -45,10 +45,16 @@ class DibiOdbcDriver extends DibiDriver {
         if (!extension_loaded('odbc'))
             return new DibiException("PHP extension 'odbc' is not loaded");
 
-        if (@$config['persistent'])
-            $conn = @odbc_pconnect($config['database'], $config['username'], $config['password']);
-        else
+        if (!isset($config['username']))
+            return new DibiException("Username must be specified");
+
+        if (!isset($config['password']))
+            return new DibiException("Password must be specified");
+
+        if (empty($config['persistent']))
             $conn = @odbc_connect($config['database'], $config['username'], $config['password']);
+        else
+            $conn = @odbc_pconnect($config['database'], $config['username'], $config['password']);
 
         if (!is_resource($conn))
             return new DibiException("Connecting error", array(

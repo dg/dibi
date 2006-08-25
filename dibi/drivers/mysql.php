@@ -48,14 +48,15 @@ class DibiMySqlDriver extends DibiDriver {
         if (!extension_loaded('mysql'))
             return new DibiException("PHP extension 'mysql' is not loaded");
 
+        foreach (array('username', 'password', 'protocol') as $var)
+            if (!isset($config[$var])) $config[$var] = NULL;
 
         if (empty($config['host'])) $config['host'] = 'localhost';
 
-        if (@$config['protocol'] === 'unix')  // host can be socket
+        if ($config['protocol'] === 'unix')  // host can be socket
             $host = ':' . $config['host'];
         else
-            $host = $config['host'] . (empty($config['port']) ? '' : $config['port']);
-
+            $host = $config['host'] . (empty($config['port']) ? '' : ':'.$config['port']);
 
         // some errors aren't handled. Must use $php_errormsg
         if (function_exists('ini_set'))
@@ -63,9 +64,9 @@ class DibiMySqlDriver extends DibiDriver {
         $php_errormsg = '';
 
         if (empty($config['persistent']))
-            $conn = @mysql_connect($host, @$config['username'], @$config['password']);
+            $conn = @mysql_connect($host, $config['username'], $config['password']);
         else
-            $conn = @mysql_pconnect($host, @$config['username'], @$config['password']);
+            $conn = @mysql_pconnect($host, $config['username'], $config['password']);
 
         if (function_exists('ini_set'))
             ini_set('track_errors', $save);

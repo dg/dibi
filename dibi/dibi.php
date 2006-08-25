@@ -204,9 +204,13 @@ class dibi
      */
     static public function getConnection($name = NULL)
     {
-        return NULL === $name
-               ? self::$conn
-               : @self::$registry[$name];
+        if (NULL === $name)
+            return self::$conn;
+
+        if (isset(self::$registry[$name]))
+            return self::$registry[$name];
+
+        return FALSE;
     }
 
 

@@ -49,11 +49,14 @@ class DibiSqliteDriver extends DibiDriver {
         if (empty($config['database']))
             return new DibiException("Database must be specified");
 
+        if (!isset($config['mode']))
+            $config['mode'] = 0666;
+
         $errorMsg = '';
         if (empty($config['persistent']))
-            $conn = @sqlite_open($config['database'], @$config['mode'], $errorMsg);
+            $conn = @sqlite_open($config['database'], $config['mode'], $errorMsg);
         else
-            $conn = @sqlite_popen($config['database'], @$config['mode'], $errorMsg);
+            $conn = @sqlite_popen($config['database'], $config['mode'], $errorMsg);
 
         if (!$conn)
             return new DibiException("Connecting error", array(

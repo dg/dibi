@@ -48,7 +48,10 @@ class DibiMySqliDriver extends DibiDriver {
 
         if (empty($config['host'])) $config['host'] = 'localhost';
 
-        $conn = @mysqli_connect($config['host'], @$config['username'], @$config['password'], @$config['database'], @$config['port']);
+        foreach (array('username', 'password', 'database', 'port') as $var)
+            if (!isset($config[$var])) $config[$var] = NULL;
+
+        $conn = @mysqli_connect($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
 
         if (!$conn)
             return new DibiException("Connecting error", array(

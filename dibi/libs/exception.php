@@ -48,7 +48,7 @@ class DibiException extends Exception
 
     public function getSql()
     {
-        return @$this->info['sql'];
+        return $this->info['sql'];
     }
 
 
