@@ -14,11 +14,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.6b $Revision$ $Date$
+ * @version    0.6c $Revision$ $Date$
  */
 
 
-define('DIBI', 'Version 0.6b $Revision$');
+define('DIBI', 'Version 0.6c $Revision$');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -328,9 +328,7 @@ class dibi
      */
     static public function insertId()
     {
-        if (!self::$conn) return FALSE; // is connected?
-
-        return self::$conn->insertId();
+        return self::$conn ? self::$conn->insertId() : FALSE;
     }
 
 
@@ -342,9 +340,19 @@ class dibi
      */
     static public function affectedRows()
     {
-        if (!self::$conn) return FALSE; // is connected?
+        return self::$conn ? self::$conn->affectedRows() : FALSE;
+    }
 
-        return self::$conn->affectedRows();
+
+    /**
+     * Monostate for DibiDriver::addSubst()
+     * @param string
+     * @param string
+     * @return void
+     */
+    static public function addSubst($expr, $subst)
+    {
+        return self::$conn ? self::$conn->addSubst($expr, $subst) : FALSE;
     }
 
 

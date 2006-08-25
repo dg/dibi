@@ -133,7 +133,7 @@ class DibiSqliteDriver extends DibiDriver {
 
     public function quoteName($value)
     {
-        return $value;
+        return $this->applySubsts($value);
     }
 
 

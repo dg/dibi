@@ -4,4 +4,3 @@ complete phpdoc
 
 PostgreSql driver
 
-table prefix suppor

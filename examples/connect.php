@@ -30,21 +30,8 @@ dibi::connect(array(
 if (!dibi::isConnected()) {
     echo 'dibi::isConnected(): Not connected';
     echo "<br>\n";
+} else {
+    echo 'Connected';
 }
-
-
-// or checked status this way
-if (is_error($state)) {
-
-    // $state can be FALSE or Exception
-    if ($state instanceof Exception)
-        echo $state;
-    else
-        echo 'FALSE';
-
-    echo "<br>\n";
-}
-
-
 
 ?>
