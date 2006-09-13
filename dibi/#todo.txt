@@ -2,5 +2,4 @@ limit/offset support for select?
 
 complete phpdoc
 
-PostgreSql driver
-
+better logging, error logging, exceptions
