@@ -147,10 +147,12 @@ class dibi
 
         // include dibi driver
         $className = "Dibi$config[driver]Driver";
-        require_once dirname(__FILE__) . "/drivers/$config[driver].php";
+        if (!class_exists($className)) {
+            include_once dirname(__FILE__) . "/drivers/$config[driver].php";
 
-        if (!class_exists($className))
-            return new DibiException("Unable to create instance of dibi driver class '$className'.");
+            if (!class_exists($className))
+                return new DibiException("Unable to create instance of dibi driver class '$className'.");
+        }
 
 
         // create connection object

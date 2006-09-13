@@ -2,7 +2,7 @@
 
 require_once '../dibi/dibi.php';
 
-// using DSN
+// connects using DSN
 $state = dibi::connect('driver=mysql&host=localhost&username=root&password=xxx&database=test&charset=utf8');
 
 
@@ -22,6 +22,21 @@ dibi::connect(array(
     'username' => 'root',
     'password' => '***',
     'database' => 'Driver={Microsoft Access Driver (*.mdb)};Dbq=C:\\Database.mdb',
+));
+*/
+
+/* connects to SQlite
+dibi::connect(array(
+    'driver'   => 'sqlite',
+    'database' => 'mydb.sdb',
+));
+*/
+
+/* connects to PostgreSql
+dibi::connect(array(
+    'driver'     => 'postgre',
+    'string'     => 'host=localhost port=5432 dbname=mary',
+    'persistent' => TRUE,
 ));
 */
 
