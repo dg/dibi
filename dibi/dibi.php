@@ -97,12 +97,6 @@ class dibi
     static private $conn;
 
     /**
-     * Arguments -> SQL parser
-     * @var object DibiParser
-     */
-    static private $parser;
-
-    /**
      * Last SQL command @see dibi::query()
      * @var string
      */
@@ -123,6 +117,12 @@ class dibi
     static public $debug = false;
 
 
+    /**
+     * Substitutions for identifiers
+     * @var array
+     */
+    static private $substs = array();
+
 
 
     /**
@@ -132,11 +132,8 @@ class dibi
      * @param  string       connection name
      * @return bool|object  TRUE on success, FALSE or Exception on failure
      */
-    static public function connect($config, $name = 'def')
+    static public function connect($config, $name = '1')
     {
-        // init parser
-        if (!self::$parser) self::$parser = new DibiParser();
-
         // DSN string
         if (is_string($config))
             parse_str($config, $config);
@@ -201,19 +198,13 @@ class dibi
     /**
      * Retrieve active connection
      *
-     * @param  string   connection registy name or NULL for active connection
      * @return object   DibiDriver object.
      */
-    static public function getConnection($name = NULL)
+    static public function getConnection()
     {
-        if (NULL === $name)
-            return self::$conn;
-
-        if (isset(self::$registry[$name]))
-            return self::$registry[$name];
-
-        return FALSE;
+        return self::$conn;
     }
+
 
 
     /**
@@ -252,7 +243,8 @@ class dibi
             $args = func_get_args();
 
         // and generate SQL
-        self::$sql = self::$parser->parse(self::$conn, $args);
+        $parser = new DibiParser(self::$conn, self::$substs);
+        self::$sql = $parser->parse($args);
         if (is_error(self::$sql)) return self::$sql;  // reraise the exception
 
         // execute SQL
@@ -314,7 +306,8 @@ class dibi
             $args = func_get_args();
 
         // and generate SQL
-        $sql = self::$parser->parse(self::$conn, $args);
+        $parser = new DibiParser(self::$conn, self::$substs);
+        $sql = $parser->parse($args);
         $dump = TRUE; // !!!
         if ($dump) {
             if (is_error($sql))
@@ -347,18 +340,6 @@ class dibi
     static public function affectedRows()
     {
         return self::$conn ? self::$conn->affectedRows() : FALSE;
-    }
-
-
-    /**
-     * Monostate for DibiDriver::addSubst()
-     * @param string
-     * @param string
-     * @return void
-     */
-    static public function addSubst($expr, $subst)
-    {
-        return self::$conn ? self::$conn->addSubst($expr, $subst) : FALSE;
     }
 
 
@@ -398,7 +379,7 @@ class dibi
 
         $sql = wordwrap($sql, 100);
         $sql = htmlSpecialChars($sql);
-        $sql = strtr($sql, array("\n" => '<br />'));
+        $sql = str_replace("\n", '<br />', $sql);
 
         // syntax highlight
         $sql = preg_replace_callback("#(/\*.+?\*/)|(\*\*.+?\*\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#", array('dibi', 'dumpHighlight'), $sql);
@@ -438,10 +419,29 @@ class dibi
 
 
 
+    /**
+     * Create a new substitution pair for indentifiers
+     * @param string from
+     * @param string to
+     * @return void
+     */
+    static public function addSubst($expr, $subst)
+    {
+        self::$substs[':'.$expr.':'] = $subst;
+    }
+
+
+    /**
+     * Remove substitution pair
+     * @param string from
+     * @return void
+     */
+    static public function removeSubst($expr)
+    {
+        unset(self::$substs[':'.$expr.':']);
+    }
+
+
+
+
 } // class dibi
-
-
-
-
-
-?>

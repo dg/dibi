@@ -5,7 +5,7 @@ require_once '../dibi/dibi.php';
 
 // connects to mysqli
 dibi::connect(array(
-    'driver'   => 'mysqli',
+    'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
     'password' => 'xxx',  // change to real password!
@@ -14,7 +14,7 @@ dibi::connect(array(
 
 
 // create new substitution :blog:  ==>  wp_items_
-dibi::addSubst('blog', 'wp_items_');
+dibi::addSubst('blog', 'wp_');
 
 
 // generate and dump SQL

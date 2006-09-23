@@ -373,7 +373,3 @@ class DibiResultIterator implements Iterator
 
 
 } // class DibiResultIterator
-
-
-
-?>

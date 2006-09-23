@@ -65,6 +65,3 @@ function is_error($var)
 {
     return ($var === FALSE) || ($var instanceof Exception);
 }
-
-
-?>

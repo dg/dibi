@@ -144,7 +144,7 @@ class DibiOdbcDriver extends DibiDriver {
 
     public function quoteName($value)
     {
-        return '[' . strtr( $this->applySubsts($value), array('.' => '].[')) . ']';
+        return '[' . str_replace('.', '].[', $value) . ']';
     }
 
 
@@ -279,6 +279,3 @@ class DibiOdbcResult extends DibiResult
 
 
 } // class DibiOdbcResult
-
-
-?>

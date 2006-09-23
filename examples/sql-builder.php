@@ -9,7 +9,7 @@ require_once '../dibi/dibi.php';
 
 // mysql
 dibi::connect(array(
-    'driver'   => 'mysqli',
+    'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
     'password' => 'xxx',  // change to real password!

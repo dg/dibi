@@ -166,7 +166,7 @@ class DibiMySqlDriver extends DibiDriver {
 
     public function quoteName($value)
     {
-        return '`' . strtr( $this->applySubsts($value), array('.' => '`.`')) . '`';
+        return '`' . str_replace('.', '`.`', $value) . '`';
     }
 
 
@@ -334,9 +334,3 @@ class DibiMySqlResult extends DibiResult
 
 
 } // class DibiMySqlResult
-
-
-
-
-
-?>

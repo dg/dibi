@@ -136,7 +136,7 @@ class DibiPostgreDriver extends DibiDriver {
 
     public function quoteName($value)
     {
-        return $this->applySubsts($value);
+        return $value;
     }
 
 
@@ -260,9 +260,3 @@ class DibiPostgreResult extends DibiResult
 
 
 } // class DibiPostgreResult
-
-
-
-
-
-?>

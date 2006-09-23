@@ -35,13 +35,6 @@ abstract class DibiDriver
         $config;
 
     /**
-     * Substitutions for identifiers
-     * @var array
-     */
-    protected
-        $substs = array();
-
-    /**
      * Describes how convert some datatypes to SQL command
      * @var array
      */
@@ -159,52 +152,4 @@ abstract class DibiDriver
 
 
 
-
-    /**
-     * Create a new substitution pair for indentifiers
-     * @param string from
-     * @param string to
-     * @return void
-     */
-    public function addSubst($expr, $subst)
-    {
-        $this->substs[':'.$expr.':'] = $subst;
-    }
-
-
-    /**
-     * Remove substitution pair
-     * @param string from
-     * @return void
-     */
-    public function removeSubst($expr)
-    {
-        unset($this->substs[':'.$expr.':']);
-    }
-
-
-    /**
-     * Apply substitutions to indentifier
-     * @param string indentifier
-     * @return string
-     */
-    protected function applySubsts($value)
-    {
-        // apply substitutions
-        if ($this->substs && (strpos($value, ':') !== FALSE))
-            return strtr($value, $this->substs);
-
-        return $value;
-    }
-
-
-
 } // class DibiDriver
-
-
-
-
-
-
-
-?>
