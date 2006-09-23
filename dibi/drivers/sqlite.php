@@ -148,6 +148,15 @@ class DibiSqliteDriver extends DibiDriver {
 
 
 
+    /**
+     * @see DibiDriver::applyLimit()
+     */
+    public function applyLimit(&$sql, $limit, $offset = 0)
+    {
+        if ($limit < 0 && $offset < 1) return;
+        $sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+    }
+
 } // class DibiSqliteDriver
 
 

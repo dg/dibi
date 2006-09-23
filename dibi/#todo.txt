@@ -1,5 +1,3 @@
-limit/offset support for select?
+1) better logging, error logging, exceptions
 
-complete phpdoc
-
-better logging, error logging, exceptions
+2) complete phpdoc

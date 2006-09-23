@@ -176,21 +176,23 @@ class DibiMySqlDriver extends DibiDriver {
     }
 
 
-/*
-    // is this really needed?
+    /**
+     * @see DibiDriver::applyLimit()
+     */
+    public function applyLimit(&$sql, $limit, $offset = 0)
+    {
+        if ($limit < 0 && $offset < 1) return;
+
+        // see http://dev.mysql.com/doc/refman/5.0/en/select.html
+        $sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
+             . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+    }
+
+
+/* is this really needed?
     public function getResource()
     {
         return $this->conn;
-    }
-
-    // experimental
-    public function applyLimit(&$sql, $offset, $limit)
-    {
-        if ($limit > 0) {
-            $sql .= " LIMIT " . (int) $limit . ($offset > 0 ? " OFFSET " . (int) $offset : "");
-        } elseif ($offset > 0) {
-            $sql .= " LIMIT " . $offset . ", 18446744073709551615";
-        }
     }
 */
 

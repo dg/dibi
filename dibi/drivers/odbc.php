@@ -153,6 +153,18 @@ class DibiOdbcDriver extends DibiDriver {
         trigger_error('Meta is not implemented yet.', E_USER_WARNING);
     }
 
+
+    /**
+     * @see DibiDriver::applyLimit()
+     */
+    public function applyLimit(&$sql, $limit, $offset = 0)
+    {
+        // offset suppot is missing...
+        if ($limit >= 0)
+           $sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
+    }
+
+
 } // class DibiOdbcDriver
 
 

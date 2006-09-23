@@ -142,7 +142,6 @@ abstract class DibiDriver
 
 
 
-
     /**
      * Gets a information of the current database.
      *
@@ -150,6 +149,15 @@ abstract class DibiDriver
      */
     abstract public function getMetaData();
 
+
+    /**
+     * Experimental - injects LIMIT/OFFSET to the SQL query
+     * @param string &$sql  The SQL query that will be modified.
+     * @param int $limit
+     * @param int $offset
+     * @return void
+     */
+    abstract public function applyLimit(&$sql, $limit, $offset = 0);
 
 
 } // class DibiDriver

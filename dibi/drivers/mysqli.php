@@ -157,6 +157,19 @@ class DibiMySqliDriver extends DibiDriver {
     }
 
 
+    /**
+     * @see DibiDriver::applyLimit()
+     */
+    public function applyLimit(&$sql, $limit, $offset = 0)
+    {
+        if ($limit < 0 && $offset < 1) return;
+
+        // see http://dev.mysql.com/doc/refman/5.0/en/select.html
+        $sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
+             . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+    }
+
+
 } // class DibiMySqliDriver
 
 

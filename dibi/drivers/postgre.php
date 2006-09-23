@@ -148,6 +148,19 @@ class DibiPostgreDriver extends DibiDriver {
 
 
 
+    /**
+     * @see DibiDriver::applyLimit()
+     */
+    public function applyLimit(&$sql, $limit, $offset = 0)
+    {
+        if ($limit >= 0)
+            $sql .= ' LIMIT ' . (int) $limit;
+
+        if ($offset > 0)
+            $sql .= ' OFFSET ' . (int) $offset;
+    }
+
+
 } // class DibiPostgreDriver
 
 
