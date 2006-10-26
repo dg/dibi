@@ -28,14 +28,14 @@ if (version_compare(PHP_VERSION , '5.0.3', '<'))
 // libraries
 require_once dirname(__FILE__).'/libs/driver.php';
 require_once dirname(__FILE__).'/libs/resultset.php';
-require_once dirname(__FILE__).'/libs/parser.php';
+require_once dirname(__FILE__).'/libs/translator.php';
 require_once dirname(__FILE__).'/libs/exception.php';
 
 
 
 // required since PHP 5.1.0
-if (function_exists('date_default_timezone_set'))
-    date_default_timezone_set('Europe/Prague');    // or 'GMT'
+// if (function_exists('date_default_timezone_set'))
+//     date_default_timezone_set('Europe/Prague'); // or 'GMT'
 
 
 
@@ -123,6 +123,13 @@ class dibi
      */
     static private $substs = array();
 
+
+
+    /**
+     * Monostate class
+     */
+    private function __construct()
+    {}
 
 
     /**
@@ -243,8 +250,8 @@ class dibi
             $args = func_get_args();
 
         // and generate SQL
-        $parser = new DibiParser(self::$conn, self::$substs);
-        self::$sql = $parser->parse($args);
+        $trans = new DibiTranslator(self::$conn, self::$substs);
+        self::$sql = $trans->translate($args);
         if (is_error(self::$sql)) return self::$sql;  // reraise the exception
 
         // execute SQL
@@ -306,8 +313,8 @@ class dibi
             $args = func_get_args();
 
         // and generate SQL
-        $parser = new DibiParser(self::$conn, self::$substs);
-        $sql = $parser->parse($args);
+        $trans = new DibiTranslator(self::$conn, self::$substs);
+        $sql = $trans->translate($args);
         $dump = TRUE; // !!!
         if ($dump) {
             if (is_error($sql))

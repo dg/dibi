@@ -22,16 +22,17 @@ if (!defined('DIBI')) die();
 
 
 /**
- * dibi parser
+ * dibi translator
  *
  */
-class DibiParser
+class DibiTranslator
 {
     private
         $driver,
         $subK, $subV,
         $modifier,
         $hasError,
+        $comment,
         $ifLevel,
         $ifLevelStart;
 
@@ -50,7 +51,7 @@ class DibiParser
      * @param  array
      * @return string
      */
-    public function parse($args)
+    public function translate($args)
     {
         $this->hasError = FALSE;
         $command = null;
@@ -140,7 +141,7 @@ class DibiParser
                     } else $mod = FALSE;
 
                     // generate array
-                    $vx[] = $this->quoteName($pair[0]) . '=' . $this->formatValue($v, $mod);
+                    $vx[] = $this->quote($pair[0]) . '=' . $this->formatValue($v, $mod);
                 }
                 return implode(', ', $vx);
 
@@ -160,7 +161,7 @@ class DibiParser
                     } else $mod = FALSE;
 
                     // generate arrays
-                    $kx[] = $this->quoteName($pair[0]);
+                    $kx[] = $this->quote($pair[0]);
                     $vx[] = $this->formatValue($v, $mod);
                 }
                 return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
@@ -206,7 +207,7 @@ class DibiParser
                     ? strtotime($value)
                     : $value);
             case 'n':  // identifier name
-                return $this->quoteName($value);
+                return $this->quote($value);
             case 'p':  // preserve as SQL
                 $value = (string) $value;
 
@@ -330,10 +331,10 @@ class DibiParser
 
 
         if ($matches[1])  // SQL identifiers: `ident`
-            return $this->quoteName($matches[1]);
+            return $this->quote($matches[1]);
 
         if ($matches[2])  // SQL identifiers: [ident]
-            return $this->quoteName($matches[2]);
+            return $this->quote($matches[2]);
 
         if ($matches[3])  // SQL strings: '....'
             return $this->driver->escape( str_replace("''", "'", $matches[4]), TRUE);
@@ -357,7 +358,7 @@ class DibiParser
      * @param string indentifier
      * @return string
      */
-    private function quoteName($value)
+    private function quote($value)
     {
         // apply substitutions
         if ($this->subK && (strpos($value, ':') !== FALSE))
@@ -368,5 +369,12 @@ class DibiParser
 
 
 
+    /**
+     * Undefined property usage prevention
+     */
+    function __get($nm) { throw new Exception("Undefined property '" . get_class($this) . "::$$nm'"); }
+    function __set($nm, $val) { $this->__get($nm); }
+    private function __unset($nm) { $this->__get($nm); }
+    private function __isset($nm) { $this->__get($nm); }
 
 } // class DibiParser

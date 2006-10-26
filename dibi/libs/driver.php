@@ -58,9 +58,9 @@ abstract class DibiDriver
 
 
     /**
-     * Driver initialization
-     *
-     * @param array      connect configuration
+     * Protected constructor. Must be initialized using the factory method.
+     * @see DibiDriver::connect()
+     * @param array  connect configuration
      */
     protected function __construct($config)
     {
@@ -70,7 +70,7 @@ abstract class DibiDriver
 
     /**
      * Get the configuration descriptor used by connect() to connect to database.
-     * @see connect()
+     * @see DibiDriver::connect()
      * @return array
      */
     public function getConfig()
@@ -158,6 +158,15 @@ abstract class DibiDriver
      * @return void
      */
     abstract public function applyLimit(&$sql, $limit, $offset = 0);
+
+
+    /**
+     * Undefined property usage prevention
+     */
+    function __get($nm) { throw new Exception("Undefined property '" . get_class($this) . "::$$nm'"); }
+    function __set($nm, $val) { $this->__get($nm); }
+    private function __unset($nm) { $this->__get($nm); }
+    private function __isset($nm) { $this->__get($nm); }
 
 
 } // class DibiDriver
