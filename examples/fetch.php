@@ -7,17 +7,13 @@ dibi::$debug = true;
 
 // mysql
 dibi::connect(array(
-    'driver'   => 'mysqli',
+    'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
     'password' => 'xxx',  // change to real password!
     'database' => 'test',
     'charset'  => 'utf8',
 ));
-
-
-if (!dibi::isConnected())
-    die('Not connected');
 
 
 $res = dibi::query('SELECT * FROM table');

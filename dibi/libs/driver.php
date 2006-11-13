@@ -53,7 +53,7 @@ abstract class DibiDriver
      * @param array         connect configuration
      * @return bool|object  DibiDriver object on success, FALSE or Exception on failure
      */
-    abstract static public function connect($config);
+    /*abstract PHP 5.2*/ static public function connect($config) {}
 
 
 

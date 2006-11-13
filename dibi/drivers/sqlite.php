@@ -44,10 +44,10 @@ class DibiSqliteDriver extends DibiDriver {
     public static function connect($config)
     {
         if (!extension_loaded('sqlite'))
-            return new DibiException("PHP extension 'sqlite' is not loaded");
+            throw new DibiException("PHP extension 'sqlite' is not loaded");
 
         if (empty($config['database']))
-            return new DibiException("Database must be specified");
+            throw new DibiException("Database must be specified");
 
         if (!isset($config['mode']))
             $config['mode'] = 0666;
@@ -59,7 +59,7 @@ class DibiSqliteDriver extends DibiDriver {
             $conn = @sqlite_popen($config['database'], $config['mode'], $errorMsg);
 
         if (!$conn)
-            return new DibiException("Connecting error", array(
+            throw new DibiException("Connecting error", array(
                 'message' => $errorMsg,
             ));
 
@@ -136,7 +136,7 @@ class DibiSqliteDriver extends DibiDriver {
 
     public function quoteName($value)
     {
-        return $value;
+        return '[' . $value . ']';
     }
 
 

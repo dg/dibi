@@ -37,18 +37,21 @@ class DibiException extends Exception
 
         if (isset($info['message']))
             $message = "$message: $info[message]";
-/*
-        if (isset($info['sql']))
-            $message .= "\n[SQL] $info[sql]";
-*/
+
+        /* experimental */
+        dibi::log($message);
+        if (dibi::$debug) {
+            echo '[dibi error] ' . $message;
+            if (isset($info['sql'])) dibi::dump($info['sql']);
+        }
+
         parent::__construct($message);
     }
 
 
-
     public function getSql()
     {
-        return $this->info['sql'];
+        return @$this->info['sql'];
     }
 
 

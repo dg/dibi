@@ -14,11 +14,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.6c $Revision$ $Date$
+ * @version    0.6d $Revision$ $Date$
  */
 
 
-define('DIBI', 'Version 0.6c $Revision$');
+define('DIBI', 'Version 0.6d $Revision$');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -108,7 +108,8 @@ class dibi
      * @var string|NULL
      */
     static public $logFile;
-    static public $logMode = 'w';
+    static public $logMode = 'a';
+    static public $errorMode;
 
     /**
      * Enable/disable debug mode
@@ -137,7 +138,8 @@ class dibi
      *
      * @param  array|string connection parameters
      * @param  string       connection name
-     * @return bool|object  TRUE on success, FALSE or Exception on failure
+     * @return void
+     * @throw DibiException
      */
     static public function connect($config, $name = '1')
     {
@@ -147,7 +149,7 @@ class dibi
 
         // config['driver'] is required
         if (empty($config['driver']))
-            return new DibiException('Driver is not specified.');
+            throw new DibiException('Driver is not specified.');
 
         // include dibi driver
         $className = "Dibi$config[driver]Driver";
@@ -155,38 +157,15 @@ class dibi
             include_once dirname(__FILE__) . "/drivers/$config[driver].php";
 
             if (!class_exists($className))
-                return new DibiException("Unable to create instance of dibi driver class '$className'.");
+                throw new DibiException("Unable to create instance of dibi driver class '$className'.");
         }
 
 
-        // create connection object
+        // create connection object and store in list
         /** like $conn = $className::connect($config); */
-        $conn = call_user_func(array($className, 'connect'), $config);
+        self::$conn = self::$registry[$name] = call_user_func(array($className, 'connect'), $config);
 
-        // optionally log to file
-        // todo: log other exceptions!
-        if (self::$logFile != NULL && self::$logMode) {
-            if (is_error($conn))
-                $msg = "Can't connect to DB '$config[driver]': ".$conn->getMessage();
-            else
-                $msg = "Successfully connected to DB '$config[driver]'";
-
-            $f = fopen(self::$logFile, self::$logMode);
-            fwrite($f, "$msg\r\n\r\n");
-            fclose($f);
-        }
-
-        if (is_error($conn)) {
-            // optionally debug on display
-            if (self::$debug) echo '[dibi error] ' . $conn->getMessage();
-
-            return $conn; // reraise the exception
-        }
-
-        // store connection in list
-        self::$conn = self::$registry[$name] = $conn;
-
-        return TRUE;
+        dibi::log("Successfully connected to DB '$config[driver]'");
     }
 
 
@@ -209,6 +188,9 @@ class dibi
      */
     static public function getConnection()
     {
+        if (!self::$conn)
+            throw new DibiException('Dibi is not connected to database');
+
         return self::$conn;
     }
 
@@ -223,11 +205,10 @@ class dibi
     static public function activate($name)
     {
         if (!isset(self::$registry[$name]))
-            return FALSE;
+            throw new DibiException("There is no connection named '$name'.");
 
         // change active connection
         self::$conn = self::$registry[$name];
-        return TRUE;
     }
 
 
@@ -239,39 +220,31 @@ class dibi
      * Generates and executes SQL query
      *
      * @param  array|mixed    one or more arguments
-     * @return int|DibiResult|Exception
+     * @return int|DibiResult
+     * @throw DibiException
      */
     static public function query($args)
     {
-        if (!self::$conn) return new DibiException('Dibi is not connected to DB'); // is connected?
+        $conn = self::getConnection();
 
         // receive arguments
         if (!is_array($args))
             $args = func_get_args();
 
         // and generate SQL
-        $trans = new DibiTranslator(self::$conn, self::$substs);
+        $trans = new DibiTranslator($conn, self::$substs);
         self::$sql = $trans->translate($args);
         if (is_error(self::$sql)) return self::$sql;  // reraise the exception
 
         // execute SQL
         $timer = -microtime(true);
-        $res = self::$conn->query(self::$sql);
+        $res = $conn->query(self::$sql);
         $timer += microtime(true);
 
-        if (is_error($res)) {
-            // optionally debug on display
-            if (self::$debug) {
-                echo '[dibi error] ' . $res->getMessage();
-                self::dump(self::$sql);
-            }
-            // todo: log all errors!
-            self::$error = $res;
-        } else {
-            self::$error = FALSE;
-        }
+        // todo:
+        self::$error = is_error($res) ? $res : FALSE;
 
-        // optionally log to file
+        // optional log to file
         if (self::$logFile != NULL)
         {
             if (is_error($res))
@@ -281,14 +254,11 @@ class dibi
             else
                 $msg = 'OK';
 
-            $f = fopen(self::$logFile, 'a');
-            fwrite($f,
-               self::$sql
+            dibi::log(self::$sql
                . ";\r\n-- Result: $msg"
                . "\r\n-- Takes: " . sprintf('%0.3f', $timer * 1000) . ' ms'
                . "\r\n\r\n"
             );
-            fclose($f);
         }
 
         return $res;
@@ -306,14 +276,12 @@ class dibi
      */
     static public function test($args)
     {
-        if (!self::$conn) return FALSE; // is connected?
-
         // receive arguments
         if (!is_array($args))
             $args = func_get_args();
 
         // and generate SQL
-        $trans = new DibiTranslator(self::$conn, self::$substs);
+        $trans = new DibiTranslator(self::getConnection(), self::$substs);
         $sql = $trans->translate($args);
         $dump = TRUE; // !!!
         if ($dump) {
@@ -334,7 +302,7 @@ class dibi
      */
     static public function insertId()
     {
-        return self::$conn ? self::$conn->insertId() : FALSE;
+        return self::getConnection()->insertId();
     }
 
 
@@ -346,7 +314,7 @@ class dibi
      */
     static public function affectedRows()
     {
-        return self::$conn ? self::$conn->affectedRows() : FALSE;
+        return self::getConnection()->affectedRows();
     }
 
 
@@ -449,6 +417,18 @@ class dibi
     }
 
 
+    /**
+     * Error logging
+     * EXPERIMENTAL
+     */
+    static public function log($message)
+    {
+        if (self::$logFile == NULL || self::$logMode == NULL) return;
+
+        $f = fopen(self::$logFile, self::$logMode);
+        fwrite($f, $message. "\r\n\r\n");
+        fclose($f);
+    }
 
 
 } // class dibi

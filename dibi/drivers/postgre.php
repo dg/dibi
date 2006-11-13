@@ -43,10 +43,10 @@ class DibiPostgreDriver extends DibiDriver {
     public static function connect($config)
     {
         if (!extension_loaded('pgsql'))
-            return new DibiException("PHP extension 'pgsql' is not loaded");
+            throw new DibiException("PHP extension 'pgsql' is not loaded");
 
         if (empty($config['string']))
-            return new DibiException("Connection string must be specified");
+            throw new DibiException("Connection string must be specified");
 
         if (empty($config['type'])) $config['type'] = NULL;
 
@@ -57,7 +57,7 @@ class DibiPostgreDriver extends DibiDriver {
             $conn = @pg_pconnect($config['string'], $config['type']);
 
         if (!is_resource($conn))
-            return new DibiException("Connecting error", array(
+            throw new DibiException("Connecting error", array(
                 'message' => pg_last_error(),
             ));
 

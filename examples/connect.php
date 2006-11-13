@@ -2,12 +2,19 @@
 
 require_once '../dibi/dibi.php';
 
-// connects using DSN
-$state = dibi::connect('driver=mysql&host=localhost&username=root&password=xxx&database=test&charset=utf8');
+
+try {
+    // connects using DSN
+    dibi::connect('driver=mysql&host=localhost&username=root&password=xxx&database=test&charset=utf8');
+
+} catch (DibiException $e) {
+    echo "DibiException: " . $e->getMessage();
+    die();
+}
 
 
 // connects to mysql
-$state = dibi::connect(array(
+dibi::connect(array(
     'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
@@ -44,7 +51,6 @@ dibi::connect(array(
 // check status
 if (!dibi::isConnected()) {
     echo 'dibi::isConnected(): Not connected';
-    echo "<br>\n";
 } else {
     echo 'Connected';
 }

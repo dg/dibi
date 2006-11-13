@@ -42,11 +42,12 @@ class DibiMySqlDriver extends DibiDriver {
 
     /**
      * Driver factory
+     * @throw DibiException
      */
     public static function connect($config)
     {
         if (!extension_loaded('mysql'))
-            return new DibiException("PHP extension 'mysql' is not loaded");
+            throw new DibiException("PHP extension 'mysql' is not loaded");
 
         foreach (array('username', 'password', 'protocol') as $var)
             if (!isset($config[$var])) $config[$var] = NULL;
@@ -73,7 +74,7 @@ class DibiMySqlDriver extends DibiDriver {
 
 
         if (!is_resource($conn))
-            return new DibiException("Connecting error", array(
+            throw new DibiException("Connecting error", array(
                 'message' => mysql_error() ? mysql_error() : $php_errormsg,
                 'code'    => mysql_errno(),
             ));
@@ -87,7 +88,7 @@ class DibiMySqlDriver extends DibiDriver {
 
         if (!empty($config['database'])) {
             if (!@mysql_select_db($config['database'], $conn))
-                return new DibiException("Connecting error", array(
+                throw new DibiException("Connecting error", array(
                     'message' => mysql_error($conn),
                     'code'    => mysql_errno($conn),
                 ));

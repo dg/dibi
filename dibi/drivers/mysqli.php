@@ -44,7 +44,7 @@ class DibiMySqliDriver extends DibiDriver {
     public static function connect($config)
     {
         if (!extension_loaded('mysqli'))
-            return new DibiException("PHP extension 'mysqli' is not loaded");
+            throw new DibiException("PHP extension 'mysqli' is not loaded");
 
         if (empty($config['host'])) $config['host'] = 'localhost';
 
@@ -54,7 +54,7 @@ class DibiMySqliDriver extends DibiDriver {
         $conn = @mysqli_connect($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
 
         if (!$conn)
-            return new DibiException("Connecting error", array(
+            throw new DibiException("Connecting error", array(
                 'message' => mysqli_connect_error(),
                 'code'    => mysqli_connect_errno(),
             ));
