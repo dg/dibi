@@ -17,6 +17,8 @@ dibi::connect(array(
 
 
 $res = dibi::query('SELECT * FROM table');
+if (is_error($res))
+    die('SQL error');
 
 
 // fetch a single value

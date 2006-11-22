@@ -7,7 +7,7 @@
  * This source file is subject to the GNU GPL license.
  *
  * @author     David Grudl aka -dgx- <dave@dgx.cz>
- * @link       http://texy.info/dibi/
+ * @link       http://dibi.texy.info/
  * @copyright  Copyright (c) 2005-2006 David Grudl
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
@@ -50,6 +50,7 @@ class DibiTranslator
      *
      * @param  array
      * @return string
+     * @throw DibiException
      */
     public function translate($args)
     {
@@ -109,7 +110,7 @@ class DibiTranslator
         $sql = preg_replace('#\/\*.*?\*\/#s', '', $sql);
 
         if ($this->hasError)
-            return new DibiException('Errors during generating SQL', array('sql' => $sql));
+            throw new DibiException('Errors during generating SQL', array('sql' => $sql));
 
         return $sql;
     }

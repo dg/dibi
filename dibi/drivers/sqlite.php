@@ -7,7 +7,7 @@
  * This source file is subject to the GNU GPL license.
  *
  * @author     David Grudl aka -dgx- <dave@dgx.cz>
- * @link       http://texy.info/dibi/
+ * @link       http://dibi.texy.info/
  * @copyright  Copyright (c) 2005-2006 David Grudl
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
@@ -78,7 +78,7 @@ class DibiSqliteDriver extends DibiDriver {
         $res = @sqlite_query($this->conn, $sql, SQLITE_ASSOC, $errorMsg);
 
         if ($res === FALSE)
-            return new DibiException("Query error", array(
+            throw new DibiException("Query error", array(
                 'message' => $errorMsg,
                 'sql'      => $sql,
             ));

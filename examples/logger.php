@@ -28,5 +28,6 @@ $res = dibi::query('SELECT * FROM [nucleus_item] WHERE [inumber] < %i', 38);
 
 $res = dibi::query('SELECT * FROM [*nucleus_item] WHERE [inumber] < %i', 38);
 
+echo 'See file ', dibi::$logFile;
 
 ?>

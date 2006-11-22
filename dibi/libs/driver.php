@@ -7,7 +7,7 @@
  * This source file is subject to the GNU GPL license.
  *
  * @author     David Grudl aka -dgx- <dave@dgx.cz>
- * @link       http://texy.info/dibi/
+ * @link       http://dibi.texy.info/
  * @copyright  Copyright (c) 2005-2006 David Grudl
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
@@ -51,9 +51,10 @@ abstract class DibiDriver
      * DibiDriver factory: creates object and connects to a database
      *
      * @param array         connect configuration
-     * @return bool|object  DibiDriver object on success, FALSE or Exception on failure
+     * @return DibiDriver
+     * @throw DibiException
      */
-    /*abstract PHP 5.2*/ static public function connect($config) {}
+    /*abstract disallowed PHP 5.2*/ static public function connect($config) {}
 
 
 

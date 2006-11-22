@@ -3,7 +3,7 @@ Copyright notice
 
 dibi (C) David Grudl, 2005-2006 <dave@dgx.cz>
 
-For more information, visit the homepage http://texy.info/dibi
+For more information, visit the homepage http://dibi.texy.info/
 or author's weblog:  http://www.dgx.cz/trine/
 
 This program is free software; you can redistribute it and/or modify

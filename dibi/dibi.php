@@ -9,16 +9,16 @@
  * This source file is subject to the GNU GPL license.
  *
  * @author     David Grudl aka -dgx- <dave@dgx.cz>
- * @link       http://texy.info/dibi/
+ * @link       http://dibi.texy.info/
  * @copyright  Copyright (c) 2005-2006 David Grudl
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.6d $Revision$ $Date$
+ * @version    0.6e $Revision$ $Date$
  */
 
 
-define('DIBI', 'Version 0.6d $Revision$');
+define('DIBI', 'Version 0.6e $Revision$');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -85,6 +85,15 @@ class dibi
 
 
     /**
+     * Query rrror modes
+     */
+    const
+        ERR_SILENT    = 1,
+        ERR_WARNING   = 2,
+        ERR_EXCEPTION = 3;
+
+
+    /**
      * Connection registry storage for DibiDriver objects
      * @var array
      */
@@ -109,7 +118,11 @@ class dibi
      */
     static public $logFile;
     static public $logMode = 'a';
-    static public $errorMode;
+
+    /**
+     * Query error mode
+     */
+    static public $errorMode = dibi::ERR_SILENT;
 
     /**
      * Enable/disable debug mode
@@ -234,21 +247,27 @@ class dibi
         // and generate SQL
         $trans = new DibiTranslator($conn, self::$substs);
         self::$sql = $trans->translate($args);
-        if (is_error(self::$sql)) return self::$sql;  // reraise the exception
 
         // execute SQL
         $timer = -microtime(true);
-        $res = $conn->query(self::$sql);
-        $timer += microtime(true);
+        try {
+            $res = $conn->query(self::$sql);
+            self::$error = FALSE;
 
-        // todo:
-        self::$error = is_error($res) ? $res : FALSE;
+        } catch (DibiException $e) {
+            $res = FALSE;
+            self::$error = $e;
+            if (dibi::$errorMode === self::ERR_WARNING) {
+                trigger_error('[dibi] ' . $e->getMessage(), E_USER_WARNING);
+            }
+        }
+        $timer += microtime(true);
 
         // optional log to file
         if (self::$logFile != NULL)
         {
-            if (is_error($res))
-                $msg = $res->getMessage();
+            if (self::$error)
+                $msg = self::$error->getMessage();
             elseif ($res instanceof DibiResult)
                 $msg = 'object('.get_class($res).') rows: '.$res->rowCount();
             else
@@ -260,6 +279,9 @@ class dibi
                . "\r\n\r\n"
             );
         }
+
+        if (self::$error && dibi::$errorMode === self::ERR_EXCEPTION)
+            throw self::$error;
 
         return $res;
     }
@@ -280,17 +302,19 @@ class dibi
         if (!is_array($args))
             $args = func_get_args();
 
+        $dump = TRUE; // !!! todo
+
         // and generate SQL
-        $trans = new DibiTranslator(self::getConnection(), self::$substs);
-        $sql = $trans->translate($args);
-        $dump = TRUE; // !!!
-        if ($dump) {
-            if (is_error($sql))
-                self::dump($sql->getSql());
-            else
-                self::dump($sql);
+        try {
+            $trans = new DibiTranslator(self::getConnection(), self::$substs);
+            $sql = $trans->translate($args);
+            if ($dump) self::dump($sql);
+            return $sql;
+
+        } catch (DibiException $e) {
+            if ($dump) self::dump($e->getSql());
+            return FALSE;
         }
-        return $sql;
     }
 
 
@@ -339,9 +363,10 @@ class dibi
      * Prints out a syntax highlighted version of the SQL command
      *
      * @param string   SQL command
+     * @param bool   return or print?
      * @return void
      */
-    static public function dump($sql) {
+    static public function dump($sql, $return=FALSE) {
         static $keywords2 = 'ALL|DISTINCT|AS|ON|INTO|AND|OR|AS';
         static $keywords1 = 'SELECT|UPDATE|INSERT|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';
 
@@ -358,8 +383,11 @@ class dibi
 
         // syntax highlight
         $sql = preg_replace_callback("#(/\*.+?\*/)|(\*\*.+?\*\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#", array('dibi', 'dumpHighlight'), $sql);
+        $sql = '<pre class="dibi">' . $sql . '</pre>';
 
-        echo '<pre class="dibi">', $sql, '</pre>';
+        // print & return
+        if (!$return) echo $sql;
+        return $sql;
     }
 
 

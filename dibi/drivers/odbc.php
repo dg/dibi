@@ -7,7 +7,7 @@
  * This source file is subject to the GNU GPL license.
  *
  * @author     David Grudl aka -dgx- <dave@dgx.cz>
- * @link       http://texy.info/dibi/
+ * @link       http://dibi.texy.info/
  * @copyright  Copyright (c) 2005-2006 David Grudl
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
@@ -79,7 +79,7 @@ class DibiOdbcDriver extends DibiDriver {
             return new DibiOdbcResult($res);
 
         if ($res === FALSE)
-            return new DibiException("Query error", $this->errorInfo($sql));
+            throw new DibiException("Query error", $this->errorInfo($sql));
 
         $this->affectedRows = odbc_num_rows($this->conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;

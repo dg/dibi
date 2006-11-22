@@ -7,7 +7,7 @@
  * This source file is subject to the GNU GPL license.
  *
  * @author     David Grudl aka -dgx- <dave@dgx.cz>
- * @link       http://texy.info/dibi/
+ * @link       http://dibi.texy.info/
  * @copyright  Copyright (c) 2005-2006 David Grudl
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
@@ -55,16 +55,12 @@ class DibiException extends Exception
     }
 
 
+    public function __toString()
+    {
+        $s = parent::__toString();
+        if (isset($this->info['sql']))
+            $s .= "\nSQL: " . $this->info['sql'];
+        return $s;
+    }
+
 } // class DibiException
-
-
-
-
-
-/**
- * Checks result state
- */
-function is_error($var)
-{
-    return ($var === FALSE) || ($var instanceof Exception);
-}
