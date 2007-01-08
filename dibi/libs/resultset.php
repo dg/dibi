@@ -8,7 +8,7 @@
  *
  * @author     David Grudl aka -dgx- <dave@dgx.cz>
  * @link       http://dibi.texy.info/
- * @copyright  Copyright (c) 2005-2006 David Grudl
+ * @copyright  Copyright (c) 2005-2007 David Grudl
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
@@ -38,8 +38,8 @@ if (!interface_exists('Countable', false)) {
  * $result = dibi::query('SELECT * FROM [table]');
  * $value = $result->fetchSingle();
  * $all = $result->fetchAll();
- * $assoc = $result->fetchAll('id');
- * $assoc = $result->fetchAll('active', 'id');
+ * $assoc = $result->fetchAssoc('id');
+ * $assoc = $result->fetchAssoc('active', 'id');
  * unset($result);
  * </code>
  */
@@ -51,6 +51,15 @@ abstract class DibiResult implements IteratorAggregate, Countable
      */
     protected $convert;
 
+
+    static private $meta = array(
+        dibi::FIELD_TEXT =>    'string',
+        dibi::FIELD_BINARY =>  'string',
+        dibi::FIELD_BOOL =>    'bool',
+        dibi::FIELD_INTEGER => 'int',
+        dibi::FIELD_FLOAT =>   'float',
+        dibi::FIELD_COUNTER => 'int',
+    );
 
 
 
@@ -150,7 +159,6 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Fetches all records from table. Records , but returns only first field
-     * @param  string  associative colum [, param, ... ]
      * @return array
      */
     final function fetchAll()
@@ -160,17 +168,39 @@ abstract class DibiResult implements IteratorAggregate, Countable
         if (!$rec)
             return array();  // empty resultset
 
-        $assocBy = func_get_args();
         $arr = array();
-
-        if (!$assocBy) { // no associative array
-            $value = count($rec) == 1 ? key($rec) : NULL;
+        if (count($rec) == 1) {
+            $key = key($rec);
             do {
-                $arr[] = $value === NULL ? $rec : $rec[$value];
+                $arr[] = $rec[$key];
             } while ($rec = $this->fetch());
 
-            return $arr;
+        } else {
+
+            do {
+                $arr[] = $rec;
+            } while ($rec = $this->fetch());
         }
+
+        return $arr;
+    }
+
+
+
+    /**
+     * Fetches all records from table. Records , but returns only first field
+     * @param  string  associative colum [, param, ... ]
+     * @return array
+     */
+    final function fetchAssoc($assocBy)
+    {
+        @$this->seek(0);
+        $rec = $this->fetch();
+        if (!$rec)
+            return array();  // empty resultset
+
+        $assocBy = func_get_args();
+        $arr = array();
 
         do { // make associative arrays
             foreach ($assocBy as $n => $assoc) {
@@ -191,7 +221,6 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
         return $arr;
     }
-
 
 
     /**
@@ -246,23 +275,13 @@ abstract class DibiResult implements IteratorAggregate, Countable
     }
 
 
-
     public function convert($value, $type)
     {
         if ($value === NULL || $value === FALSE)
             return $value;
 
-        static $conv = array(
-            dibi::FIELD_TEXT =>    'string',
-            dibi::FIELD_BINARY =>  'string',
-            dibi::FIELD_BOOL =>    'bool',
-            dibi::FIELD_INTEGER => 'int',
-            dibi::FIELD_FLOAT =>   'float',
-            dibi::FIELD_COUNTER => 'int',
-        );
-
-        if (isset($conv[$type])) {
-            settype($value, $conv[$type]);
+        if (isset(self::$meta[$type])) {
+            settype($value, self::$meta[$type]);
             return $value;
         }
 

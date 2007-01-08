@@ -10,7 +10,7 @@
  *
  * @author     David Grudl aka -dgx- <dave@dgx.cz>
  * @link       http://dibi.texy.info/
- * @copyright  Copyright (c) 2005-2006 David Grudl
+ * @copyright  Copyright (c) 2005-2007 David Grudl
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
@@ -178,7 +178,7 @@ class dibi
         /** like $conn = $className::connect($config); */
         self::$conn = self::$registry[$name] = call_user_func(array($className, 'connect'), $config);
 
-        dibi::log("Successfully connected to DB '$config[driver]'");
+        if (dibi::$debug) dibi::log("Successfully connected to DB '$config[driver]'");
     }
 
 
@@ -278,6 +278,13 @@ class dibi
                . "\r\n-- Takes: " . sprintf('%0.3f', $timer * 1000) . ' ms'
                . "\r\n\r\n"
             );
+        }
+
+        if (dibi::$debug)
+        {
+            echo self::$error ? "\n[ERROR] " : "\n[OK] ";
+            echo htmlSpecialChars(trim(strtr(self::$sql, "\r\n\t", '   ')));
+            echo "\n<br />";
         }
 
         if (self::$error && dibi::$errorMode === self::ERR_EXCEPTION)

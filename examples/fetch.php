@@ -17,8 +17,7 @@ dibi::connect(array(
 
 
 $res = dibi::query('SELECT * FROM table');
-if (is_error($res))
-    die('SQL error');
+if (!$res) die('SQL error');
 
 
 // fetch a single value
@@ -28,9 +27,9 @@ $value = $res->fetchSingle();
 $all = $res->fetchAll();
 
 // fetch complete result set like association array
-$assoc = $res->fetchAll('id');
+$assoc = $res->fetchAssoc('id');
 
-$assoc = $res->fetchAll('id', 'id2');
+$assoc = $res->fetchAssoc('id', 'id2');
 
 // fetch complete result set like pairs key => value
 $pairs = $res->fetchPairs('id', 'name');
