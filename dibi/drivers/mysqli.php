@@ -32,7 +32,6 @@ class DibiMySqliDriver extends DibiDriver {
 
     public
         $formats = array(
-            'NULL'     => "NULL",
             'TRUE'     => "1",
             'FALSE'    => "0",
             'date'     => "'Y-m-d'",
@@ -74,11 +73,10 @@ class DibiMySqliDriver extends DibiDriver {
         $this->insertId = $this->affectedRows = FALSE;
         $res = @mysqli_query($this->conn, $sql);
 
+        if ($res === FALSE) return FALSE;
+
         if (is_object($res))
             return new DibiMySqliResult($res);
-
-        if ($res === FALSE)
-            throw new DibiException("Query error", $this->errorInfo($sql));
 
         $this->affectedRows = mysqli_affected_rows($this->conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
@@ -124,12 +122,11 @@ class DibiMySqliDriver extends DibiDriver {
     }
 
 
-    private function errorInfo($sql = NULL)
+    public function errorInfo()
     {
         return array(
             'message'  => mysqli_error($this->conn),
             'code'     => mysqli_errno($this->conn),
-            'sql'      => $sql,
         );
     }
 

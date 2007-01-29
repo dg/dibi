@@ -3,7 +3,6 @@
 
 require_once '../dibi/dibi.php';
 
-dibi::$debug = true;
 
 // mysql
 dibi::connect(array(

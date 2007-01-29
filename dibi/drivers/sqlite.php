@@ -28,11 +28,11 @@ class DibiSqliteDriver extends DibiDriver {
     private
         $conn,
         $insertId = FALSE,
-        $affectedRows = FALSE;
+        $affectedRows = FALSE,
+        $errorMsg;
 
     public
         $formats = array(
-            'NULL'     => "NULL",
             'TRUE'     => "1",
             'FALSE'    => "0",
             'date'     => "'Y-m-d'",
@@ -75,13 +75,9 @@ class DibiSqliteDriver extends DibiDriver {
         $this->insertId = $this->affectedRows = FALSE;
 
         $errorMsg = '';
-        $res = @sqlite_query($this->conn, $sql, SQLITE_ASSOC, $errorMsg);
+        $res = @sqlite_query($this->conn, $sql, SQLITE_ASSOC, $this->errorMsg);
 
-        if ($res === FALSE)
-            throw new DibiException("Query error", array(
-                'message' => $errorMsg,
-                'sql'      => $sql,
-            ));
+        if ($res === FALSE) return FALSE;
 
         if (is_resource($res))
             return new DibiSqliteResult($res);
@@ -123,6 +119,15 @@ class DibiSqliteDriver extends DibiDriver {
     public function rollback()
     {
         return sqlite_query($this->conn, 'ROLLBACK');
+    }
+
+
+    public function errorInfo()
+    {
+        return array(
+            'message'  => $this->errorMsg,
+            'code'     => NULL,
+        );
     }
 
 

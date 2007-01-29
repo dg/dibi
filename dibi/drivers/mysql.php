@@ -32,7 +32,6 @@ class DibiMySqlDriver extends DibiDriver {
 
     public
         $formats = array(
-            'NULL'     => "NULL",
             'TRUE'     => "1",
             'FALSE'    => "0",
             'date'     => "'Y-m-d'",
@@ -107,15 +106,10 @@ class DibiMySqlDriver extends DibiDriver {
         $this->insertId = $this->affectedRows = FALSE;
         $res = @mysql_query($sql, $this->conn);
 
+        if ($res === FALSE) return FALSE;
+
         if (is_resource($res))
             return new DibiMySqlResult($res);
-
-        if ($res === FALSE)
-            throw new DibiException("Query error", array(
-                'message' => mysql_error($this->conn),
-                'code'    => mysql_errno($this->conn),
-                'sql'     => $sql,
-            ));
 
         $this->affectedRows = mysql_affected_rows($this->conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
@@ -154,6 +148,15 @@ class DibiMySqlDriver extends DibiDriver {
     public function rollback()
     {
         return mysql_query('ROLLBACK', $this->conn);
+    }
+
+
+    public function errorInfo()
+    {
+        return array(
+            'message'  => mysql_error($this->conn),
+            'code'     => mysql_errno($this->conn),
+        );
     }
 
 

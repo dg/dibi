@@ -36,6 +36,8 @@ class DibiTranslator
         $ifLevel,
         $ifLevelStart;
 
+    public $sql;
+
 
     public function __construct($driver, $subst)
     {
@@ -74,7 +76,7 @@ class DibiTranslator
                 $this->ifLevel++;
                 if (!$comment && !$arg) {
                     // open comment
-                    $sql[] = '/*';
+                    $sql[] = "\0";
                     $this->ifLevelStart = $this->ifLevel;
                     $comment = TRUE;
                 }
@@ -102,13 +104,17 @@ class DibiTranslator
             $mod = FALSE;
         } // foreach
 
-        if ($comment) $sql[] = '*/';
+        if ($comment) $sql[] = "\0";
 
         $sql = implode(' ', $sql);
 
         // remove comments
-        $sql = preg_replace('#\/\*.*?\*\/#s', '', $sql);
+        // TODO: check !!!
+        $sql = preg_replace('#\x00.*?\x00#s', '', $sql);
 
+        $this->sql = $sql;
+
+        return !$this->hasError;
         if ($this->hasError)
             throw new DibiException('Errors during generating SQL', array('sql' => $sql));
 
@@ -132,17 +138,9 @@ class DibiTranslator
                     // split into identifier & modifier
                     $pair = explode('%', $k, 2);
 
-                    if (isset($pair[1])) {
-                        $mod = $pair[1];
-                        // %? skips NULLS
-                        if (isset($mod[0]) && '?' == $mod[0]) {
-                            if (NULL === $v) continue;
-                            $mod = substr($mod, 1);
-                        }
-                    } else $mod = FALSE;
-
                     // generate array
-                    $vx[] = $this->quote($pair[0]) . '=' . $this->formatValue($v, $mod);
+                    $vx[] = $this->quote($pair[0]) . '='
+                        . $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
                 }
                 return implode(', ', $vx);
 
@@ -152,18 +150,9 @@ class DibiTranslator
                     // split into identifier & modifier
                     $pair = explode('%', $k, 2);
 
-                    if (isset($pair[1])) {
-                        $mod = $pair[1];
-                        // %m? skips NULLS
-                        if (isset($mod[0]) && '?' == $mod[0]) {
-                            if ($v === NULL) continue;
-                            $mod = substr($mod, 1);
-                        }
-                    } else $mod = FALSE;
-
                     // generate arrays
                     $kx[] = $this->quote($pair[0]);
-                    $vx[] = $this->formatValue($v, $mod);
+                    $vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
                 }
                 return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
@@ -179,17 +168,21 @@ class DibiTranslator
 
         // with modifier procession
         if ($modifier) {
+            if ($value === NULL) return 'NULL';
+
             if ($value instanceof IDibiVariable)
                 return $value->toSql($this->driver, $modifier);
 
-            if (!is_scalar($value) && !is_null($value)) {  // array is already processed
+            if (!is_scalar($value)) {  // array is already processed
                 $this->hasError = TRUE;
-                return '**Unexpected '.gettype($value).'**';
+                return '**Unexpected ' . gettype($value) . '**';
             }
 
             switch ($modifier) {
-            case "s":  // string
+            case 's':  // string
                 return $this->driver->escape($value, TRUE);
+            case 'sn': // string or NULL
+                return $value == '' ? 'NULL' : $this->driver->escape($value, TRUE);
             case 'b':  // boolean
                 return $value
                     ? $this->driver->formats['TRUE']
@@ -209,7 +202,8 @@ class DibiTranslator
                     : $value);
             case 'n':  // identifier name
                 return $this->quote($value);
-            case 'p':  // preserve as SQL
+            case 'sql':// preserve as SQL
+            case 'p':  // back compatibility
                 $value = (string) $value;
 
                 // speed-up - is regexp required?
@@ -229,11 +223,11 @@ class DibiTranslator
                           (\')((?:\'\'|[^\'])*)\'|  ## 3,4) string
                           (")((?:""|[^"])*)"|       ## 5,6) "string"
                           %(else|end)|              ## 7) conditional SQL
-                          %([a-zA-Z]{1,2})$|        ## 8) right modifier
+                          %([a-zA-Z]{1,3})$|        ## 8) right modifier
                           (\'|")                    ## 9) lone-quote
                        )/xs',
 */
-                     . preg_replace_callback('/(?=`|\[|\'|"|%)(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|%(else|end)|%([a-zA-Z]{1,2})$|(\'|"))/s',
+                     . preg_replace_callback('/(?=`|\[|\'|"|%)(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|%(else|end)|%([a-zA-Z]{1,3})$|(\'|"))/s',
                            array($this, 'cb'),
                            substr($value, $toSkip)
                        );
@@ -263,14 +257,14 @@ class DibiTranslator
         if (is_bool($value))
             return $value ? $this->driver->formats['TRUE'] : $this->driver->formats['FALSE'];
 
-        if (is_null($value))
-            return $this->driver->formats['NULL'];
+        if ($value === NULL)
+            return 'NULL';
 
         if ($value instanceof IDibiVariable)
             return $value->toSql($this->driver);
 
         $this->hasError = TRUE;
-        return '**Unexpected '.gettype($value).'**';
+        return '**Unexpected ' . gettype($value) . '**';
     }
 
 
@@ -306,7 +300,7 @@ class DibiTranslator
                     // close comment
                     $this->ifLevelStart = 0;
                     $this->comment = FALSE;
-                    return '*/';
+                    return "\0";
                 }
                 return '';
             }
@@ -315,11 +309,11 @@ class DibiTranslator
             if ($this->ifLevelStart == $this->ifLevel) {
                 $this->ifLevelStart = 0;
                 $this->comment = FALSE;
-                return '*/';
+                return "\0";
             } elseif (!$this->comment) {
                 $this->ifLevelStart = $this->ifLevel;
                 $this->comment = TRUE;
-                return '/*';
+                return "\0";
             }
         }
 

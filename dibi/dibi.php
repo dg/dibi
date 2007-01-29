@@ -14,11 +14,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.6e $Revision$ $Date$
+ * @version    0.7a $Revision$ $Date$
  */
 
 
-define('DIBI', 'Version 0.6e $Revision$');
+define('DIBI', 'Version 0.7a $Revision$');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -32,10 +32,6 @@ require_once dirname(__FILE__).'/libs/translator.php';
 require_once dirname(__FILE__).'/libs/exception.php';
 
 
-
-// required since PHP 5.1.0
-// if (function_exists('date_default_timezone_set'))
-//     date_default_timezone_set('Europe/Prague'); // or 'GMT'
 
 
 
@@ -62,7 +58,7 @@ interface IDibiVariable
  * Interface for database drivers
  *
  * This class is static container class for creating DB objects and
- * store debug & connections info.
+ * store connections info.
  *
  */
 class dibi
@@ -85,23 +81,14 @@ class dibi
 
 
     /**
-     * Query rrror modes
-     */
-    const
-        ERR_SILENT    = 1,
-        ERR_WARNING   = 2,
-        ERR_EXCEPTION = 3;
-
-
-    /**
      * Connection registry storage for DibiDriver objects
-     * @var array
+     * @var DibiDriver[]
      */
     static private $registry = array();
 
     /**
      * Current connection
-     * @var object DibiDriver
+     * @var DibiDriver
      */
     static private $conn;
 
@@ -110,26 +97,30 @@ class dibi
      * @var string
      */
     static public $sql;
-    static public $error;
 
     /**
-     * File for logging SQL queryies - strongly recommended to use with NSafeStream
+     * File for logging SQL queries
      * @var string|NULL
      */
     static public $logFile;
+
+    /**
+     * Mode parameter used by fopen()
+     * @var string
+     */
     static public $logMode = 'a';
 
     /**
-     * Query error mode
-     */
-    static public $errorMode = dibi::ERR_SILENT;
-
-    /**
-     * Enable/disable debug mode
+     * To log all queries or error queries (debug mode)
      * @var bool
      */
-    static public $debug = false;
+    static public $logAll = FALSE;
 
+    /**
+     * dibi::query() error mode
+     * @var bool
+     */
+    static public $throwExceptions = FALSE;
 
     /**
      * Substitutions for identifiers
@@ -178,7 +169,7 @@ class dibi
         /** like $conn = $className::connect($config); */
         self::$conn = self::$registry[$name] = call_user_func(array($className, 'connect'), $config);
 
-        if (dibi::$debug) dibi::log("Successfully connected to DB '$config[driver]'");
+        if (dibi::$logAll) dibi::log("OK: connected to DB '$config[driver]'");
     }
 
 
@@ -198,6 +189,7 @@ class dibi
      * Retrieve active connection
      *
      * @return object   DibiDriver object.
+     * @throw DibiException
      */
     static public function getConnection()
     {
@@ -214,6 +206,7 @@ class dibi
      *
      * @param  string   connection registy name
      * @return void
+     * @throw DibiException
      */
     static public function activate($name)
     {
@@ -246,49 +239,60 @@ class dibi
 
         // and generate SQL
         $trans = new DibiTranslator($conn, self::$substs);
-        self::$sql = $trans->translate($args);
+        if (!$trans->translate($args)) {
+            if (self::$logFile)  // log to file
+                self::log(
+                    "ERROR: SQL generate error"
+                    . "\n-- SQL: " . $trans->sql
+                    . ";\n-- " . date('Y-m-d H:i:s ')
+                );
+
+            if (dibi::$throwExceptions)
+                throw new DibiException('SQL generate error', array('sql' => $trans->sql));
+            else {
+                trigger_error("dibi: SQL generate error: $trans->sql", E_USER_WARNING);
+                return FALSE;
+            }
+        }
+
+        self::$sql = $trans->sql;
 
         // execute SQL
         $timer = -microtime(true);
-        try {
-            $res = $conn->query(self::$sql);
-            self::$error = FALSE;
+        $res = $conn->query(self::$sql);
 
-        } catch (DibiException $e) {
-            $res = FALSE;
-            self::$error = $e;
-            if (dibi::$errorMode === self::ERR_WARNING) {
-                trigger_error('[dibi] ' . $e->getMessage(), E_USER_WARNING);
+        if ($res === FALSE) { // query error
+            if (self::$logFile) { // log to file
+                $info = $conn->errorInfo();
+                self::log(
+                    "ERROR: [$info[code]] $info[message]"
+                    . "\n-- SQL: " . self::$sql
+                    . ";\n-- " . date('Y-m-d H:i:s ')
+                );
+            }
+
+            if (dibi::$throwExceptions) {
+                $info = $conn->errorInfo();
+                $info['sql'] = self::$sql;
+                throw new DibiException('Query error', $info);
+            } else {
+                $info = $conn->errorInfo();
+                trigger_error("dibi: [$info[code]] $info[message]", E_USER_WARNING);
+                return FALSE;
             }
         }
-        $timer += microtime(true);
 
-        // optional log to file
-        if (self::$logFile != NULL)
-        {
-            if (self::$error)
-                $msg = self::$error->getMessage();
-            elseif ($res instanceof DibiResult)
-                $msg = 'object('.get_class($res).') rows: '.$res->rowCount();
-            else
-                $msg = 'OK';
+        if (self::$logFile && self::$logAll) { // log success
+            $timer += microtime(true);
+            $msg = $res instanceof DibiResult ? 'object('.get_class($res).') rows: '.$res->rowCount() : 'OK';
 
-            dibi::log(self::$sql
-               . ";\r\n-- Result: $msg"
-               . "\r\n-- Takes: " . sprintf('%0.3f', $timer * 1000) . ' ms'
-               . "\r\n\r\n"
+            self::log(
+                "OK: " . self::$sql
+                . ";\n-- result: $msg"
+                . "\n-- takes: " . sprintf('%0.3f', $timer * 1000) . ' ms'
+                . ";\n-- " . date('Y-m-d H:i:s ')
             );
         }
-
-        if (dibi::$debug)
-        {
-            echo self::$error ? "\n[ERROR] " : "\n[OK] ";
-            echo htmlSpecialChars(trim(strtr(self::$sql, "\r\n\t", '   ')));
-            echo "\n<br />";
-        }
-
-        if (self::$error && dibi::$errorMode === self::ERR_EXCEPTION)
-            throw self::$error;
 
         return $res;
     }
@@ -298,10 +302,10 @@ class dibi
 
 
     /**
-     * Generates and returns SQL query
+     * Generates and prints SQL query
      *
      * @param  array|mixed  one or more arguments
-     * @return string
+     * @return bool
      */
     static public function test($args)
     {
@@ -309,19 +313,14 @@ class dibi
         if (!is_array($args))
             $args = func_get_args();
 
-        $dump = TRUE; // !!! todo
-
         // and generate SQL
-        try {
-            $trans = new DibiTranslator(self::getConnection(), self::$substs);
-            $sql = $trans->translate($args);
-            if ($dump) self::dump($sql);
-            return $sql;
+        $trans = new DibiTranslator(self::getConnection(), self::$substs);
+        $ok = $trans->translate($args);
+        if (!$ok) echo 'ERROR: ';
 
-        } catch (DibiException $e) {
-            if ($dump) self::dump($e->getSql());
-            return FALSE;
-        }
+        self::dump($trans->sql);
+
+        return $ok;
     }
 
 
@@ -382,15 +381,15 @@ class dibi
 
         $sql = trim($sql);
         // reduce spaces
-        // $sql = preg_replace('#  +#', ' ', $sql);
+        $sql = preg_replace('# {2,}#', ' ', $sql);
 
         $sql = wordwrap($sql, 100);
         $sql = htmlSpecialChars($sql);
-        $sql = str_replace("\n", '<br />', $sql);
+        $sql = preg_replace("#\n{2,}#", "\n", $sql);
 
         // syntax highlight
         $sql = preg_replace_callback("#(/\*.+?\*/)|(\*\*.+?\*\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#", array('dibi', 'dumpHighlight'), $sql);
-        $sql = '<pre class="dibi">' . $sql . '</pre>';
+        $sql = '<pre class="dibi">' . $sql . "</pre>\n";
 
         // print & return
         if (!$return) echo $sql;
@@ -461,7 +460,9 @@ class dibi
         if (self::$logFile == NULL || self::$logMode == NULL) return;
 
         $f = fopen(self::$logFile, self::$logMode);
-        fwrite($f, $message. "\r\n\r\n");
+        if (!$f) return;
+        flock($f, LOCK_EX);
+        fwrite($f, $message. "\n\n");
         fclose($f);
     }
 

@@ -39,7 +39,6 @@ abstract class DibiDriver
      * @var array
      */
     public $formats = array(
-        'NULL'     => "NULL",          // NULL
         'TRUE'     => "1",             // boolean true
         'FALSE'    => "0",             // boolean false
         'date'     => "'Y-m-d'",       // format used by date()
@@ -54,7 +53,7 @@ abstract class DibiDriver
      * @return DibiDriver
      * @throw DibiException
      */
-    /*abstract disallowed PHP 5.2*/ static public function connect($config) {}
+    /*abstract disallowed since PHP 5.2*/ static public function connect($config) {}
 
 
 
@@ -85,7 +84,7 @@ abstract class DibiDriver
      * Executes the SQL query
      *
      * @param string        SQL statement.
-     * @return object|bool  Result set object or TRUE on success, Exception on failure
+     * @return object|bool  Result set object or TRUE on success, FALSE on failure
      */
     abstract public function query($sql);
 
@@ -123,6 +122,11 @@ abstract class DibiDriver
     abstract public function rollback();
 
 
+    /**
+     * Returns last error
+     * @return array with items 'message' and 'code'
+     */
+    abstract public function errorInfo();
 
 
     /**

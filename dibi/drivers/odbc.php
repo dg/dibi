@@ -31,7 +31,6 @@ class DibiOdbcDriver extends DibiDriver {
 
     public
         $formats = array(
-            'NULL'     => "NULL",
             'TRUE'     => "-1",
             'FALSE'    => "0",
             'date'     => "#m/d/Y#",
@@ -75,11 +74,10 @@ class DibiOdbcDriver extends DibiDriver {
 
         $res = @odbc_exec($this->conn, $sql);
 
+        if ($res === FALSE) return FALSE;
+
         if (is_resource($res))
             return new DibiOdbcResult($res);
-
-        if ($res === FALSE)
-            throw new DibiException("Query error", $this->errorInfo($sql));
 
         $this->affectedRows = odbc_num_rows($this->conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
@@ -122,12 +120,11 @@ class DibiOdbcDriver extends DibiDriver {
     }
 
 
-    private function errorInfo($sql = NULL)
+    public function errorInfo()
     {
         return array(
             'message'  => odbc_errormsg($this->conn),
             'code'     => odbc_error($this->conn),
-            'sql'      => $sql,
         );
     }
 

@@ -31,7 +31,6 @@ class DibiPostgreDriver extends DibiDriver {
 
     public
         $formats = array(
-            'NULL'     => "NULL",
             'TRUE'     => "1",
             'FALSE'    => "0",
             'date'     => "'Y-m-d'",
@@ -80,14 +79,10 @@ class DibiPostgreDriver extends DibiDriver {
         $errorMsg = '';
         $res = @pg_query($this->conn, $sql);
 
+        if ($res === FALSE) return FALSE;
+
         if (is_resource($res))
             return new DibiPostgreResult($res);
-
-        if ($res === FALSE)
-            throw new DibiException("Query error", array(
-                'message' => pg_last_error($this->conn),
-                'sql'     => $sql,
-            ));
 
         $this->affectedRows = pg_affected_rows($this->conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
@@ -123,6 +118,15 @@ class DibiPostgreDriver extends DibiDriver {
     public function rollback()
     {
         return pg_query($this->conn, 'ROLLBACK');
+    }
+
+
+    public function errorInfo()
+    {
+        return array(
+            'message'  => pg_last_error($this->conn),
+            'code'     => NULL,
+        );
     }
 
 

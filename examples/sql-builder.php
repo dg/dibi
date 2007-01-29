@@ -6,7 +6,6 @@ pre.dibi { padding-bottom: 10px; }
 
 require_once '../dibi/dibi.php';
 
-
 // required since PHP 5.1.0
 if (function_exists('date_default_timezone_set'))
      date_default_timezone_set('Europe/Prague'); // or 'GMT'
@@ -33,9 +32,8 @@ $arr3 = array(
 $arr4 = array(
     'a'   => 12,
     'b'   => NULL,
-    'c%?' => NULL,
-    'd%t' => time(),  // modifier 'T' means datetime
-    'e'   => 'any string',
+    'c%t' => time(),  // modifier 'T' means datetime
+    'd'   => 'any string',
 );
 $arr5 = array('RAND()', '[col1] > [col2]');
 
@@ -48,12 +46,15 @@ WHERE ([test.a] LIKE %d", '1995-03-01', "
   OR [b2] IN (%s", $arr1, ")
   OR [b3] IN (", $arr2, ")
   OR [b4] IN (%n", $arr3, ")
-  OR [b4] IN (%p", $arr5, ")
+  OR [b5] IN (%sql", $arr5, ")
+  OR [b6] IN (", array(), ")
   AND [c] = 'embedded '' string'
   OR [d]=%i", 10.3, "
-  OR [true]=", true, "
-  OR [false]=", false, "
-  OR [null]=", NULL, "
+  OR [e]=%i", NULL, "
+  OR [true]=", TRUE, "
+  OR [false]=", FALSE, "
+  OR [str_null]=%sn", '', "
+  OR [str_not_null]=%sn", 'hello', "
 LIMIT 10");
 
 
@@ -66,7 +67,8 @@ $n = 123;
 dibi::test("UPDATE [test] SET", $arr4, " WHERE [id]=%i", $n);
 
 
-// array with modifier %a - means strings
+// array with modifier %a - assoc
 dibi::test("UPDATE [test] SET%a", $arr4, " WHERE [id]=%i", $n);
 
-?>
+
+

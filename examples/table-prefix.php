@@ -13,7 +13,7 @@ dibi::connect(array(
 ));
 
 
-// create new substitution :blog:  ==>  wp_items_
+// create new substitution :blog:  ==>  wp_
 dibi::addSubst('blog', 'wp_');
 
 

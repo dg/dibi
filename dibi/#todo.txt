@@ -1,3 +1,2 @@
-1) better logging, error logging, exceptions
-
-2) complete phpdoc
+- better examples
+- documentation

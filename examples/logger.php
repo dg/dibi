@@ -4,8 +4,19 @@
 require_once '../dibi/dibi.php';
 
 
+// required since PHP 5.1.0
+if (function_exists('date_default_timezone_set'))
+     date_default_timezone_set('Europe/Prague'); // or 'GMT'
+
+
 // enable log to this file
 dibi::$logFile = 'log.sql';
+
+// append mode
+dibi::$logMode = 'a';
+
+// log all queries
+dibi::$logAll = TRUE;
 
 
 // mysql
@@ -14,7 +25,7 @@ dibi::connect(array(
     'host'     => 'localhost',
     'username' => 'root',
     'password' => 'xxx',  // change to real password!
-    'database' => 'test',
+    'database' => 'xxx',
     'charset'  => 'utf8',
 ));
 
