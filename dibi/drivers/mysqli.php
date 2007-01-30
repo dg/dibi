@@ -59,7 +59,7 @@ class DibiMySqliDriver extends DibiDriver {
             ));
 
         if (!empty($config['charset']))
-            mysqli_query($conn, 'SET CHARACTER SET '.$config['charset']);
+            mysqli_query($conn, "SET NAMES '" . $config['charset'] . "'");
 
         $obj = new self($config);
         $obj->conn = $conn;

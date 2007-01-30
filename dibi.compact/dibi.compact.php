@@ -13,11 +13,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.7a $Revision: 25 $ $Date: 2007-01-08 01:55:11 +0100 (po, 08 I 2007) $
+ * @version    0.7b $Revision: 26 $ $Date: 2007-01-29 06:08:52 +0100 (po, 29 I 2007) $
  */
 
 
-define('DIBI','Version 0.7a $Revision: 25 $');if(version_compare(PHP_VERSION,'5.0.3','<'))die('dibi needs PHP 5.0.3 or newer');abstract
+define('DIBI','Version 0.7b $Revision: 26 $');if(version_compare(PHP_VERSION,'5.0.3','<'))die('dibi needs PHP 5.0.3 or newer');abstract
 class
 DibiDriver{protected$config;public$formats=array('TRUE'=>"1",'FALSE'=>"0",'date'=>"'Y-m-d'",'datetime'=>"'Y-m-d H:i:s'",);static
 public
@@ -163,7 +163,7 @@ function
 __construct($driver,$subst){$this->driver=$driver;$this->subK=array_keys($subst);$this->subV=array_values($subst);}public
 function
 translate($args){$this->hasError=FALSE;$command=null;$mod=&$this->modifier;$mod=FALSE;$this->ifLevel=$this->ifLevelStart=0;$comment=&$this->comment;$comment=FALSE;$sql=array();foreach($args
-as$arg){if('if'==$mod){$mod=FALSE;$this->ifLevel++;if(!$comment&&!$arg){$sql[]="\0";$this->ifLevelStart=$this->ifLevel;$comment=TRUE;}continue;}if(is_string($arg)&&(!$mod||'p'==$mod)){$mod=FALSE;$sql[]=$this->formatValue($arg,'p');continue;}if(!$mod&&is_array($arg)&&is_string(key($arg))){if(!$command)$command=strtoupper(substr(ltrim($args[0]),0,6));$mod=('INSERT'==$command||'REPLAC'==$command)?'v':'a';}if(!$comment)$sql[]=$this->formatValue($arg,$mod);$mod=FALSE;}if($comment)$sql[]="\0";$sql=implode(' ',$sql);$sql=preg_replace('#\x00.*?\x00#s','',$sql);$this->sql=$sql;return!$this->hasError;if($this->hasError)throw
+as$arg){if('if'==$mod){$mod=FALSE;$this->ifLevel++;if(!$comment&&!$arg){$sql[]="\0";$this->ifLevelStart=$this->ifLevel;$comment=TRUE;}continue;}if(is_string($arg)&&(!$mod||'sql'==$mod)){$mod=FALSE;$sql[]=$this->formatValue($arg,'sql');continue;}if(!$mod&&is_array($arg)&&is_string(key($arg))){if(!$command)$command=strtoupper(substr(ltrim($args[0]),0,6));$mod=('INSERT'==$command||'REPLAC'==$command)?'v':'a';}if(!$comment)$sql[]=$this->formatValue($arg,$mod);$mod=FALSE;}if($comment)$sql[]="\0";$sql=implode(' ',$sql);$sql=preg_replace('#\x00.*?\x00#s','',$sql);$this->sql=$sql;return!$this->hasError;if($this->hasError)throw
 new
 DibiException('Errors during generating SQL',array('sql'=>$sql));return$sql;}private
 function
@@ -294,7 +294,7 @@ connect($config){if(!extension_loaded('mysql'))throw
 new
 DibiException("PHP extension 'mysql' is not loaded");foreach(array('username','password','protocol')as$var)if(!isset($config[$var]))$config[$var]=NULL;if(empty($config['host']))$config['host']='localhost';if($config['protocol']==='unix')$host=':'.$config['host'];else$host=$config['host'].(empty($config['port'])?'':':'.$config['port']);if(function_exists('ini_set'))$save=ini_set('track_errors',TRUE);$php_errormsg='';if(empty($config['persistent']))$conn=@mysql_connect($host,$config['username'],$config['password']);else$conn=@mysql_pconnect($host,$config['username'],$config['password']);if(function_exists('ini_set'))ini_set('track_errors',$save);if(!is_resource($conn))throw
 new
-DibiException("Connecting error",array('message'=>mysql_error()?mysql_error():$php_errormsg,'code'=>mysql_errno(),));if(!empty($config['charset'])){$succ=@mysql_query('SET CHARACTER SET '.$config['charset'],$conn);}if(!empty($config['database'])){if(!@mysql_select_db($config['database'],$conn))throw
+DibiException("Connecting error",array('message'=>mysql_error()?mysql_error():$php_errormsg,'code'=>mysql_errno(),));if(!empty($config['charset'])){$succ=@mysql_query("SET NAMES '".$config['charset']."'",$conn);}if(!empty($config['database'])){if(!@mysql_select_db($config['database'],$conn))throw
 new
 DibiException("Connecting error",array('message'=>mysql_error($conn),'code'=>mysql_errno($conn),));}$obj=new
 self($config);$obj->conn=$conn;return$obj;}public
@@ -363,7 +363,7 @@ connect($config){if(!extension_loaded('mysqli'))throw
 new
 DibiException("PHP extension 'mysqli' is not loaded");if(empty($config['host']))$config['host']='localhost';foreach(array('username','password','database','port')as$var)if(!isset($config[$var]))$config[$var]=NULL;$conn=@mysqli_connect($config['host'],$config['username'],$config['password'],$config['database'],$config['port']);if(!$conn)throw
 new
-DibiException("Connecting error",array('message'=>mysqli_connect_error(),'code'=>mysqli_connect_errno(),));if(!empty($config['charset']))mysqli_query($conn,'SET CHARACTER SET '.$config['charset']);$obj=new
+DibiException("Connecting error",array('message'=>mysqli_connect_error(),'code'=>mysqli_connect_errno(),));if(!empty($config['charset']))mysqli_query($conn,"SET NAMES '".$config['charset']."'");$obj=new
 self($config);$obj->conn=$conn;return$obj;}public
 function
 query($sql){$this->insertId=$this->affectedRows=FALSE;$res=@mysqli_query($this->conn,$sql);if($res===FALSE)return

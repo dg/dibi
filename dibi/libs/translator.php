@@ -84,10 +84,10 @@ class DibiTranslator
             }
 
             // simple string means SQL
-            if (is_string($arg) && (!$mod || 'p' == $mod)) {
+            if (is_string($arg) && (!$mod || 'sql' == $mod)) {
                 $mod = FALSE;
                 // will generate new mod
-                $sql[] = $this->formatValue($arg, 'p');
+                $sql[] = $this->formatValue($arg, 'sql');
                 continue;
             }
 

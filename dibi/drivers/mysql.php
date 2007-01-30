@@ -80,7 +80,7 @@ class DibiMySqlDriver extends DibiDriver {
 
 
         if (!empty($config['charset'])) {
-            $succ = @mysql_query('SET CHARACTER SET '.$config['charset'], $conn);
+            $succ = @mysql_query("SET NAMES '" . $config['charset'] . "'", $conn);
             // don't handle this error...
         }
 
