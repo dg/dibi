@@ -1,4 +1,3 @@
-<pre>
 <?php
 
 require_once '../dibi/dibi.php';
@@ -19,26 +18,56 @@ dibi::$logMode = 'a';
 dibi::$logAll = TRUE;
 
 
-// mysql
+
+// CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
     'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
-    'password' => 'xxx',  // change to real password!
-    'database' => 'xxx',
+    'password' => 'xxx',
+    'database' => 'dibi',
     'charset'  => 'utf8',
 ));
 
 
 
-$res = dibi::query('SELECT * FROM [nucleus_item] WHERE [inumber] = %i', 38);
+// generate user-level errors
+dibi::$throwExceptions = FALSE;
+echo '<h1>User-level errors</h1>';
 
 
-$res = dibi::query('SELECT * FROM [nucleus_item] WHERE [inumber] < %i', 38);
+$res = dibi::query('SELECT * FROM [mytable] WHERE [inumber] = %i', 38);
 
 
-$res = dibi::query('SELECT * FROM [*nucleus_item] WHERE [inumber] < %i', 38);
+$res = dibi::query('SELECT * FROM [mytable] WHERE [inumber] < %i', 38);
 
-echo 'See file ', dibi::$logFile;
 
-?>
+$res = dibi::query('SELECT FROM [mytable] WHERE [inumber] < %i', 38);
+
+echo "<br />See file ", dibi::$logFile;
+
+
+
+// generate DibiException
+dibi::$throwExceptions = TRUE;
+echo '<h1>DibiException</h1>';
+
+try {
+
+    $res = dibi::query('SELECT FROM [mytable] WHERE [inumber] < %i', 38);
+
+} catch (DibiException $e) {
+
+    echo '<pre>', $e, '</pre>';
+
+    echo '<h2>$e->getSql()</h2>';
+    $sql = $e->getSql();
+    echo "SQL: $sql\n";
+
+    echo '<h2>$e->getDbError()</h2>';
+    $error = $e->getDbError();
+    echo '<pre>';
+    print_r($error);
+    echo '</pre>';
+
+}

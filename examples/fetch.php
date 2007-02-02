@@ -4,18 +4,18 @@
 require_once '../dibi/dibi.php';
 
 
-// mysql
+// CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
     'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
-    'password' => 'xxx',  // change to real password!
-    'database' => 'test',
+    'password' => 'xxx',
+    'database' => 'dibi',
     'charset'  => 'utf8',
 ));
 
 
-$res = dibi::query('SELECT * FROM table');
+$res = dibi::query('SELECT * FROM [mytable]');
 if (!$res) die('SQL error');
 
 
@@ -46,4 +46,3 @@ foreach ($res->getIterator(2, 3) as $row => $fields) {
 
 
 
-?>

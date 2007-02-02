@@ -4,18 +4,18 @@
 require_once '../dibi/dibi.php';
 
 
-// mysql
+// CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
-    'driver'   => 'mysqli',
+    'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
-    'password' => 'xxx',  // change to real password!
-    'database' => 'dgx',
+    'password' => 'xxx',
+    'database' => 'dibi',
     'charset'  => 'utf8',
 ));
 
 
-$res = dibi::query('SELECT * FROM [nucleus_item] WHERE [inumber] <> %i', 38);
+$res = dibi::query('SELECT * FROM [mytable] WHERE [inumber] <> %i', 38);
 if (!$res) die('SQL error');
 
 
@@ -30,5 +30,3 @@ $res->setType(TRUE);
 $record = $res->fetch();
 var_dump($record);
 
-
-?>

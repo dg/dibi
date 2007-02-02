@@ -11,12 +11,13 @@ if (function_exists('date_default_timezone_set'))
      date_default_timezone_set('Europe/Prague'); // or 'GMT'
 
 
-// mysql
+// CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
     'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
-    'password' => 'xxx',  // change to real password!
+    'password' => 'xxx',
+    'database' => 'dibi',
     'charset'  => 'utf8',
 ));
 
@@ -59,16 +60,16 @@ LIMIT 10");
 
 
 // dibi detects INSERT or REPLACE command
-dibi::test("INSERT INTO [test]", $arr4);
+dibi::test("INSERT INTO [mytable]", $arr4);
 
 
 // dibi detects UPDATE command
 $n = 123;
-dibi::test("UPDATE [test] SET", $arr4, " WHERE [id]=%i", $n);
+dibi::test("UPDATE [mytable] SET", $arr4, " WHERE [id]=%i", $n);
 
 
 // array with modifier %a - assoc
-dibi::test("UPDATE [test] SET%a", $arr4, " WHERE [id]=%i", $n);
+dibi::test("UPDATE [mytable] SET%a", $arr4, " WHERE [id]=%i", $n);
 
 
 

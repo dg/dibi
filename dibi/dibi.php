@@ -14,11 +14,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.7b $Revision$ $Date$
+ * @version    0.7c $Revision$ $Date$
  */
 
 
-define('DIBI', 'Version 0.7b $Revision$');
+define('DIBI', 'Version 0.7c $Revision$');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -143,7 +143,7 @@ class dibi
      * @param  array|string connection parameters
      * @param  string       connection name
      * @return void
-     * @throw DibiException
+     * @throw  DibiException
      */
     static public function connect($config, $name = '1')
     {
@@ -189,7 +189,7 @@ class dibi
      * Retrieve active connection
      *
      * @return object   DibiDriver object.
-     * @throw DibiException
+     * @throw  DibiException
      */
     static public function getConnection()
     {
@@ -206,7 +206,7 @@ class dibi
      *
      * @param  string   connection registy name
      * @return void
-     * @throw DibiException
+     * @throw  DibiException
      */
     static public function activate($name)
     {
@@ -227,7 +227,7 @@ class dibi
      *
      * @param  array|mixed    one or more arguments
      * @return int|DibiResult
-     * @throw DibiException
+     * @throw  DibiException
      */
     static public function query($args)
     {
@@ -248,7 +248,7 @@ class dibi
                 );
 
             if (dibi::$throwExceptions)
-                throw new DibiException('SQL generate error', array('sql' => $trans->sql));
+                throw new DibiException('SQL generate error', NULL, $trans->sql);
             else {
                 trigger_error("dibi: SQL generate error: $trans->sql", E_USER_WARNING);
                 return FALSE;
@@ -264,8 +264,9 @@ class dibi
         if ($res === FALSE) { // query error
             if (self::$logFile) { // log to file
                 $info = $conn->errorInfo();
+                if ($info['code']) $info['message'] = "[$info[code]] $info[message]";
                 self::log(
-                    "ERROR: [$info[code]] $info[message]"
+                    "ERROR: $info[message]"
                     . "\n-- SQL: " . self::$sql
                     . ";\n-- " . date('Y-m-d H:i:s ')
                 );
@@ -273,11 +274,11 @@ class dibi
 
             if (dibi::$throwExceptions) {
                 $info = $conn->errorInfo();
-                $info['sql'] = self::$sql;
-                throw new DibiException('Query error', $info);
+                throw new DibiException('Query error', $info, self::$sql);
             } else {
                 $info = $conn->errorInfo();
-                trigger_error("dibi: [$info[code]] $info[message]", E_USER_WARNING);
+                if ($info['code']) $info['message'] = "[$info[code]] $info[message]";
+                trigger_error("dibi: $info[message]", E_USER_WARNING);
                 return FALSE;
             }
         }
@@ -290,7 +291,7 @@ class dibi
                 "OK: " . self::$sql
                 . ";\n-- result: $msg"
                 . "\n-- takes: " . sprintf('%0.3f', $timer * 1000) . ' ms'
-                . ";\n-- " . date('Y-m-d H:i:s ')
+                . "\n-- " . date('Y-m-d H:i:s ')
             );
         }
 
@@ -389,7 +390,7 @@ class dibi
 
         // syntax highlight
         $sql = preg_replace_callback("#(/\*.+?\*/)|(\*\*.+?\*\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#", array('dibi', 'dumpHighlight'), $sql);
-        $sql = '<pre class="dibi">' . $sql . "</pre>\n";
+        $sql = '<pre class="dump">' . $sql . "</pre>\n";
 
         // print & return
         if (!$return) echo $sql;
@@ -407,12 +408,9 @@ class dibi
     static public function dumpResult(DibiResult $res)
     {
         echo '<table class="dump"><tr>';
-        echo '<th>Row</th>';
-        $fieldCount = $res->fieldCount();
-        for ($i = 0; $i < $fieldCount; $i++) {
-            $info = $res->fieldMeta($i);
-            echo '<th>'.htmlSpecialChars($info['name']).'</th>';
-        }
+        echo '<th>#row</th>';
+        foreach ($res->getFields() as $field)
+            echo '<th>' . $field . '</th>';
         echo '</tr>';
 
         foreach ($res as $row => $fields) {

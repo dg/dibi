@@ -28,31 +28,44 @@ if (!defined('DIBI')) die();
 class DibiException extends Exception
 {
     private
-        $info;
+        $sql,
+        $dbError;
 
 
-    public function __construct($message, $info=NULL) {
-
-        $this->info = $info;
-
-        if (isset($info['message']))
-            $message = "$message: $info[message]";
-
+    public function __construct($message, $dbError=NULL, $sql=NULL)
+    {
+        $this->dbError = $dbError;
+        $this->sql = $sql;
         parent::__construct($message);
     }
 
 
     public function getSql()
     {
-        return isset($this->info['sql']) ? $this->info['sql'] : NULL;
+        return $this->sql;
+    }
+
+
+    public function getDbError()
+    {
+        return $this->dbError;
     }
 
 
     public function __toString()
     {
         $s = parent::__toString();
-        if (isset($this->info['sql']))
-            $s .= "\nSQL: " . $this->info['sql'];
+
+        if ($this->dbError) {
+            $s .= "\nERROR: ";
+            if (isset($this->dbError['code'])) 
+                $s .= "[" . $this->dbError['code'] . "] ";
+
+            $s .= $this->dbError['message'];
+        }
+
+        if ($this->sql) $s .= "\nSQL: " . $this->sql;
+
         return $s;
     }
 

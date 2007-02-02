@@ -13,11 +13,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.7b $Revision: 26 $ $Date: 2007-01-29 06:08:52 +0100 (po, 29 I 2007) $
+ * @version    0.7c $Revision: 27 $ $Date: 2007-01-30 22:50:04 +0100 (út, 30 I 2007) $
  */
 
 
-define('DIBI','Version 0.7b $Revision: 26 $');if(version_compare(PHP_VERSION,'5.0.3','<'))die('dibi needs PHP 5.0.3 or newer');abstract
+define('DIBI','Version 0.7c $Revision: 27 $');if(version_compare(PHP_VERSION,'5.0.3','<'))die('dibi needs PHP 5.0.3 or newer');abstract
 class
 DibiDriver{protected$config;public$formats=array('TRUE'=>"1",'FALSE'=>"0",'date'=>"'Y-m-d'",'datetime'=>"'Y-m-d H:i:s'",);static
 public
@@ -111,12 +111,14 @@ fetchAll(){@$this->seek(0);$rec=$this->fetch();if(!$rec)return
 array();$arr=array();if(count($rec)==1){$key=key($rec);do{$arr[]=$rec[$key];}while($rec=$this->fetch());}else{do{$arr[]=$rec;}while($rec=$this->fetch());}return$arr;}final
 function
 fetchAssoc($assocBy){@$this->seek(0);$rec=$this->fetch();if(!$rec)return
-array();$assocBy=func_get_args();$arr=array();do{foreach($assocBy
+array();$assocBy=func_get_args();foreach($assocBy
+as$n=>$assoc)if(!array_key_exists($assoc,$rec))unset($assocBy[$n]);$arr=array();do{foreach($assocBy
 as$n=>$assoc){$val[$n]=$rec[$assoc];unset($rec[$assoc]);}foreach($assocBy
 as$n=>$assoc){if($n==0)$tmp=&$arr[$val[$n]];else$tmp=&$tmp[$assoc][$val[$n]];if($tmp===NULL)$tmp=$rec;}}while($rec=$this->fetch());return$arr;}final
 function
 fetchPairs($key,$value){@$this->seek(0);$rec=$this->fetch();if(!$rec)return
-array();$arr=array();do{$arr[$rec[$key]]=$rec[$value];}while($rec=$this->fetch());return$arr;}public
+array();if(!array_key_exists($key,$rec)||!array_key_exists($value,$rec))return
+FALSE;$arr=array();do{$arr[$rec[$key]]=$rec[$value];}while($rec=$this->fetch());return$arr;}public
 function
 __destruct(){@$this->free();}public
 function
@@ -163,9 +165,7 @@ function
 __construct($driver,$subst){$this->driver=$driver;$this->subK=array_keys($subst);$this->subV=array_values($subst);}public
 function
 translate($args){$this->hasError=FALSE;$command=null;$mod=&$this->modifier;$mod=FALSE;$this->ifLevel=$this->ifLevelStart=0;$comment=&$this->comment;$comment=FALSE;$sql=array();foreach($args
-as$arg){if('if'==$mod){$mod=FALSE;$this->ifLevel++;if(!$comment&&!$arg){$sql[]="\0";$this->ifLevelStart=$this->ifLevel;$comment=TRUE;}continue;}if(is_string($arg)&&(!$mod||'sql'==$mod)){$mod=FALSE;$sql[]=$this->formatValue($arg,'sql');continue;}if(!$mod&&is_array($arg)&&is_string(key($arg))){if(!$command)$command=strtoupper(substr(ltrim($args[0]),0,6));$mod=('INSERT'==$command||'REPLAC'==$command)?'v':'a';}if(!$comment)$sql[]=$this->formatValue($arg,$mod);$mod=FALSE;}if($comment)$sql[]="\0";$sql=implode(' ',$sql);$sql=preg_replace('#\x00.*?\x00#s','',$sql);$this->sql=$sql;return!$this->hasError;if($this->hasError)throw
-new
-DibiException('Errors during generating SQL',array('sql'=>$sql));return$sql;}private
+as$arg){if('if'==$mod){$mod=FALSE;$this->ifLevel++;if(!$comment&&!$arg){$sql[]="\0";$this->ifLevelStart=$this->ifLevel;$comment=TRUE;}continue;}if(is_string($arg)&&(!$mod||'sql'==$mod)){$mod=FALSE;$sql[]=$this->formatValue($arg,'sql');continue;}if(!$mod&&is_array($arg)&&is_string(key($arg))){if(!$command)$command=strtoupper(substr(ltrim($args[0]),0,6));$mod=('INSERT'==$command||'REPLAC'==$command)?'v':'a';}if(!$comment)$sql[]=$this->formatValue($arg,$mod);$mod=FALSE;}if($comment)$sql[]="\0";$sql=implode(' ',$sql);$sql=preg_replace('#\x00.*?\x00#s','',$sql);$this->sql=$sql;return!$this->hasError;}private
 function
 formatValue($value,$modifier){if(is_array($value)){$vx=$kx=array();switch($modifier){case'a':foreach($value
 as$k=>$v){$pair=explode('%',$k,2);$vx[]=$this->quote($pair[0]).'='.$this->formatValue($v,isset($pair[1])?$pair[1]:FALSE);}return
@@ -195,14 +195,15 @@ function
 __isset($nm){$this->__get($nm);}}class
 DibiException
 extends
-Exception{private$info;public
+Exception{private$sql,$dbError;public
 function
-__construct($message,$info=NULL){$this->info=$info;if(isset($info['message']))$message="$message: $info[message]";parent::__construct($message);}public
+__construct($message,$dbError=NULL,$sql=NULL){$this->dbError=$dbError;$this->sql=$sql;parent::__construct($message);}public
 function
-getSql(){return
-isset($this->info['sql'])?$this->info['sql']:NULL;}public
+getSql(){return$this->sql;}public
 function
-__toString(){$s=parent::__toString();if(isset($this->info['sql']))$s.="\nSQL: ".$this->info['sql'];return$s;}} 
+getDbError(){return$this->dbError;}public
+function
+__toString(){$s=parent::__toString();if($this->dbError){$s.="\nERROR: ";if(isset($this->dbError['code']))$s.="[".$this->dbError['code']."] ";$s.=$this->dbError['message'];}if($this->sql)$s.="\nSQL: ".$this->sql;return$s;}} 
 interface
 IDibiVariable{public
 function
@@ -246,13 +247,13 @@ function
 query($args){$conn=self::getConnection();if(!is_array($args))$args=func_get_args();$trans=new
 DibiTranslator($conn,self::$substs);if(!$trans->translate($args)){if(self::$logFile)self::log("ERROR: SQL generate error"."\n-- SQL: ".$trans->sql.";\n-- ".date('Y-m-d H:i:s '));if(dibi::$throwExceptions)throw
 new
-DibiException('SQL generate error',array('sql'=>$trans->sql));else{trigger_error("dibi: SQL generate error: $trans->sql",E_USER_WARNING);return
-FALSE;}}self::$sql=$trans->sql;$timer=-microtime(true);$res=$conn->query(self::$sql);if($res===FALSE){if(self::$logFile){$info=$conn->errorInfo();self::log("ERROR: [$info[code]] $info[message]"."\n-- SQL: ".self::$sql.";\n-- ".date('Y-m-d H:i:s '));}if(dibi::$throwExceptions){$info=$conn->errorInfo();$info['sql']=self::$sql;throw
+DibiException('SQL generate error',NULL,$trans->sql);else{trigger_error("dibi: SQL generate error: $trans->sql",E_USER_WARNING);return
+FALSE;}}self::$sql=$trans->sql;$timer=-microtime(true);$res=$conn->query(self::$sql);if($res===FALSE){if(self::$logFile){$info=$conn->errorInfo();if($info['code'])$info['message']="[$info[code]] $info[message]";self::log("ERROR: $info[message]"."\n-- SQL: ".self::$sql.";\n-- ".date('Y-m-d H:i:s '));}if(dibi::$throwExceptions){$info=$conn->errorInfo();throw
 new
-DibiException('Query error',$info);}else{$info=$conn->errorInfo();trigger_error("dibi: [$info[code]] $info[message]",E_USER_WARNING);return
+DibiException('Query error',$info,self::$sql);}else{$info=$conn->errorInfo();if($info['code'])$info['message']="[$info[code]] $info[message]";trigger_error("dibi: $info[message]",E_USER_WARNING);return
 FALSE;}}if(self::$logFile&&self::$logAll){$timer+=microtime(true);$msg=$res
 instanceof
-DibiResult?'object('.get_class($res).') rows: '.$res->rowCount():'OK';self::log("OK: ".self::$sql.";\n-- result: $msg"."\n-- takes: ".sprintf('%0.3f',$timer*1000).' ms'.";\n-- ".date('Y-m-d H:i:s '));}return$res;}static
+DibiResult?'object('.get_class($res).') rows: '.$res->rowCount():'OK';self::log("OK: ".self::$sql.";\n-- result: $msg"."\n-- takes: ".sprintf('%0.3f',$timer*1000).' ms'."\n-- ".date('Y-m-d H:i:s '));}return$res;}static
 public
 function
 test($args){if(!is_array($args))$args=func_get_args();$trans=new
@@ -270,10 +271,10 @@ function
 dumpHighlight($matches){if(!empty($matches[1]))return'<em style="color:gray">'.$matches[1].'</em>';if(!empty($matches[2]))return'<strong style="color:red">'.$matches[2].'</strong>';if(!empty($matches[3]))return'<strong style="color:blue">'.$matches[3].'</strong>';if(!empty($matches[4]))return'<strong style="color:green">'.$matches[4].'</strong>';}static
 public
 function
-dump($sql,$return=FALSE){static$keywords2='ALL|DISTINCT|AS|ON|INTO|AND|OR|AS';static$keywords1='SELECT|UPDATE|INSERT|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';$sql=preg_replace("#\\b(?:$keywords1)\\b#","\n\$0",$sql);$sql=trim($sql);$sql=preg_replace('# {2,}#',' ',$sql);$sql=wordwrap($sql,100);$sql=htmlSpecialChars($sql);$sql=preg_replace("#\n{2,}#","\n",$sql);$sql=preg_replace_callback("#(/\*.+?\*/)|(\*\*.+?\*\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#",array('dibi','dumpHighlight'),$sql);$sql='<pre class="dibi">'.$sql."</pre>\n";if(!$return)echo$sql;return$sql;}static
+dump($sql,$return=FALSE){static$keywords2='ALL|DISTINCT|AS|ON|INTO|AND|OR|AS';static$keywords1='SELECT|UPDATE|INSERT|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';$sql=preg_replace("#\\b(?:$keywords1)\\b#","\n\$0",$sql);$sql=trim($sql);$sql=preg_replace('# {2,}#',' ',$sql);$sql=wordwrap($sql,100);$sql=htmlSpecialChars($sql);$sql=preg_replace("#\n{2,}#","\n",$sql);$sql=preg_replace_callback("#(/\*.+?\*/)|(\*\*.+?\*\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#",array('dibi','dumpHighlight'),$sql);$sql='<pre class="dump">'.$sql."</pre>\n";if(!$return)echo$sql;return$sql;}static
 public
 function
-dumpResult(DibiResult$res){echo'<table class="dump"><tr>';echo'<th>Row</th>';$fieldCount=$res->fieldCount();for($i=0;$i<$fieldCount;$i++){$info=$res->fieldMeta($i);echo'<th>'.htmlSpecialChars($info['name']).'</th>';}echo'</tr>';foreach($res
+dumpResult(DibiResult$res){echo'<table class="dump"><tr>';echo'<th>#row</th>';foreach($res->getFields()as$field)echo'<th>'.$field.'</th>';echo'</tr>';foreach($res
 as$row=>$fields){echo'<tr><th>',$row,'</th>';foreach($fields
 as$field){if(is_object($field))$field=$field->__toString();echo'<td>',htmlSpecialChars($field),'</td>';}echo'</tr>';}echo'</table>';}static
 public

@@ -49,9 +49,9 @@ abstract class DibiDriver
     /**
      * DibiDriver factory: creates object and connects to a database
      *
-     * @param array         connect configuration
+     * @param  array         connect configuration
      * @return DibiDriver
-     * @throw DibiException
+     * @throw  DibiException
      */
     /*abstract disallowed since PHP 5.2*/ static public function connect($config) {}
 

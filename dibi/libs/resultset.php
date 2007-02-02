@@ -200,6 +200,11 @@ abstract class DibiResult implements IteratorAggregate, Countable
             return array();  // empty resultset
 
         $assocBy = func_get_args();
+
+        // check function parameters - !!! ignore or throw error?
+        foreach ($assocBy as $n => $assoc) //
+            if (!array_key_exists($assoc, $rec)) unset($assocBy[$n]);
+
         $arr = array();
 
         do { // make associative arrays
@@ -233,6 +238,9 @@ abstract class DibiResult implements IteratorAggregate, Countable
         $rec = $this->fetch();
         if (!$rec)
             return array();  // empty resultset
+
+        if (!array_key_exists($key, $rec) ||
+            !array_key_exists($value, $rec)) return FALSE;
 
         $arr = array();
         do {

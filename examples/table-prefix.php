@@ -3,12 +3,13 @@
 require_once '../dibi/dibi.php';
 
 
-// connects to mysqli
+// CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
     'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
-    'password' => 'xxx',  // change to real password!
+    'password' => 'xxx',
+    'database' => 'dibi',
     'charset'  => 'utf8',
 ));
 
@@ -29,4 +30,3 @@ dibi::addSubst('', 'my_');
 dibi::test("UPDATE [database.::table] SET [text]='Hello World'");
 
 
-?>

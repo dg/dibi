@@ -52,7 +52,7 @@ class DibiTranslator
      *
      * @param  array
      * @return string
-     * @throw DibiException
+     * @throw  DibiException
      */
     public function translate($args)
     {
@@ -115,10 +115,6 @@ class DibiTranslator
         $this->sql = $sql;
 
         return !$this->hasError;
-        if ($this->hasError)
-            throw new DibiException('Errors during generating SQL', array('sql' => $sql));
-
-        return $sql;
     }
 
 

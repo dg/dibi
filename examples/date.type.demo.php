@@ -4,7 +4,7 @@ require_once '../dibi/dibi.php';
 
 // required since PHP 5.1.0
 if (function_exists('date_default_timezone_set'))
-     date_default_timezone_set('Europe/Prague'); // or 'GMT'
+     date_default_timezone_set('Europe/Prague');
 
 
 /**
@@ -55,12 +55,13 @@ class TDateTime implements IDibiVariable
 
 
 
-// connects to mysqli
+// CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
     'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
-    'password' => 'xxx',  // change to real password!
+    'password' => 'xxx',
+    'database' => 'dibi',
     'charset'  => 'utf8',
 ));
 
@@ -68,7 +69,7 @@ dibi::connect(array(
 
 // generate and dump SQL
 dibi::test("
-INSERT INTO [test]", array(
+INSERT INTO [mytable]", array(
     'A' => 12,
     'B' => NULL,
     'C' => new TDateTime(31542),  // using out class
@@ -76,4 +77,3 @@ INSERT INTO [test]", array(
 ));
 
 
-?>

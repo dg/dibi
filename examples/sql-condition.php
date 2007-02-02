@@ -7,12 +7,13 @@ pre.dibi { padding-bottom: 10px; }
 require_once '../dibi/dibi.php';
 
 
-// mysql
+// CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
     'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
-    'password' => 'xxx',  // change to real password!
+    'password' => 'xxx',
+    'database' => 'dibi',
     'charset'  => 'utf8',
 ));
 
@@ -26,7 +27,7 @@ $user = $cond1 ? 'Davidek' : NULL;
 
 dibi::test('
 SELECT *
-FROM [table]
+FROM [mytable]
 %if', isset($user), 'WHERE [user]=%s', $user, '%end'
 );
 
@@ -41,11 +42,11 @@ FROM %if', $cond1, '[one_table] %else [second_table]'
 // nested condition
 dibi::test('
 SELECT *
-FROM [test]
+FROM [mytable]
 WHERE
     %if', isset($user), '[user]=%s', $user, '
         %if', $cond2, 'AND [admin]=1 %end
     %else LIMIT 10 %end'
 );
 
-?>
+
