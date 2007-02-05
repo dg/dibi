@@ -58,7 +58,7 @@ class DibiException extends Exception
 
         if ($this->dbError) {
             $s .= "\nERROR: ";
-            if (isset($this->dbError['code'])) 
+            if (isset($this->dbError['code']))
                 $s .= "[" . $this->dbError['code'] . "] ";
 
             $s .= $this->dbError['message'];

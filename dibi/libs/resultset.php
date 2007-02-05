@@ -158,7 +158,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
 
     /**
-     * Fetches all records from table. Records , but returns only first field
+     * Fetches all records from table.
      * @return array
      */
     final function fetchAll()
@@ -188,44 +188,64 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
 
     /**
-     * Fetches all records from table. Records , but returns only first field
-     * @param  string  associative colum [, param, ... ]
+     * Fetches all records from table and returns associative tree
+     * Associative descriptor:  assoc1,*,assoc2,#,assco3
+     * builds a tree:           $arr[value1][index][value2]['assoc3'][value3] = {record}
+     *
+     * @param  string  associative descriptor
      * @return array
      */
-    final function fetchAssoc($assocBy)
+    final function fetchAssoc($assoc)
     {
         @$this->seek(0);
         $rec = $this->fetch();
-        if (!$rec)
-            return array();  // empty resultset
+        if (!$rec) return array();  // empty resultset
 
-        $assocBy = func_get_args();
+        $arr = NULL;
+        $assoc = explode(',', $assoc);
 
-        // check function parameters - !!! ignore or throw error?
-        foreach ($assocBy as $n => $assoc) //
-            if (!array_key_exists($assoc, $rec)) unset($assocBy[$n]);
+        if (count($assoc) === 1) {  // speed-up
+            $as = $assoc[0];
+            do {
+                $arr[ $rec[$as] ] = $rec;
+            } while ($rec = $this->fetch());
+            return $arr;
+        }
 
-        $arr = array();
+        $last = count($assoc) - 1;
+        if ($assoc[$last] === '#') unset($assoc[$last]);
 
-        do { // make associative arrays
-            foreach ($assocBy as $n => $assoc) {
-                $val[$n] = $rec[$assoc];
-                unset($rec[$assoc]);
+        // make associative tree
+        do {
+            $x = & $arr;
+
+            // iterative deepening
+            foreach ($assoc as $i => $as) {
+                if ($as === '*') { // indexed-array node
+                    $x = & $x[];
+
+                } elseif ($as === '#') { // "record" node
+                    if ($x === NULL) {
+                        $x = $rec;
+                        $x = & $x[ $assoc[$i+1] ];
+                        $x = NULL; // prepare child node
+                    } else {
+                        $x = & $x[ $assoc[$i+1] ];
+                    }
+
+                } else { // associative-array node
+                    $x = & $x[ $rec[ $as ] ];
+                }
             }
 
-            foreach ($assocBy as $n => $assoc) {
-                if ($n == 0)
-                    $tmp = &$arr[ $val[$n] ];
-                else
-                    $tmp = &$tmp[$assoc][ $val[$n] ];
+            if ($x === NULL) $x = $rec; // build leaf
 
-                if ($tmp === NULL)
-                    $tmp = $rec;
-            }
         } while ($rec = $this->fetch());
 
+        unset($x);
         return $arr;
     }
+
 
 
     /**

@@ -13,11 +13,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.7c $Revision: 27 $ $Date: 2007-01-30 22:50:04 +0100 (út, 30 I 2007) $
+ * @version    0.7c $Revision: 28 $ $Date: 2007-02-02 04:51:43 +0100 (pá, 02 II 2007) $
  */
 
 
-define('DIBI','Version 0.7c $Revision: 27 $');if(version_compare(PHP_VERSION,'5.0.3','<'))die('dibi needs PHP 5.0.3 or newer');abstract
+define('DIBI','Version 0.7c $Revision: 28 $');if(version_compare(PHP_VERSION,'5.0.3','<'))die('dibi needs PHP 5.0.3 or newer');abstract
 class
 DibiDriver{protected$config;public$formats=array('TRUE'=>"1",'FALSE'=>"0",'date'=>"'Y-m-d'",'datetime'=>"'Y-m-d H:i:s'",);static
 public
@@ -110,11 +110,9 @@ function
 fetchAll(){@$this->seek(0);$rec=$this->fetch();if(!$rec)return
 array();$arr=array();if(count($rec)==1){$key=key($rec);do{$arr[]=$rec[$key];}while($rec=$this->fetch());}else{do{$arr[]=$rec;}while($rec=$this->fetch());}return$arr;}final
 function
-fetchAssoc($assocBy){@$this->seek(0);$rec=$this->fetch();if(!$rec)return
-array();$assocBy=func_get_args();foreach($assocBy
-as$n=>$assoc)if(!array_key_exists($assoc,$rec))unset($assocBy[$n]);$arr=array();do{foreach($assocBy
-as$n=>$assoc){$val[$n]=$rec[$assoc];unset($rec[$assoc]);}foreach($assocBy
-as$n=>$assoc){if($n==0)$tmp=&$arr[$val[$n]];else$tmp=&$tmp[$assoc][$val[$n]];if($tmp===NULL)$tmp=$rec;}}while($rec=$this->fetch());return$arr;}final
+fetchAssoc($assoc){@$this->seek(0);$rec=$this->fetch();if(!$rec)return
+array();$arr=NULL;$assoc=explode(',',$assoc);if(count($assoc)===1){$as=$assoc[0];do{$arr[$rec[$as]]=$rec;}while($rec=$this->fetch());return$arr;}$last=count($assoc)-1;if($assoc[$last]==='#')unset($assoc[$last]);do{$x=&$arr;foreach($assoc
+as$i=>$as){if($as==='*'){$x=&$x[];}elseif($as==='#'){if($x===NULL){$x=$rec;$x=&$x[$assoc[$i+1]];$x=NULL;}else{$x=&$x[$assoc[$i+1]];}}else{$x=&$x[$rec[$as]];}}if($x===NULL)$x=$rec;}while($rec=$this->fetch());unset($x);return$arr;}final
 function
 fetchPairs($key,$value){@$this->seek(0);$rec=$this->fetch();if(!$rec)return
 array();if(!array_key_exists($key,$rec)||!array_key_exists($value,$rec))return
