@@ -48,12 +48,16 @@ class DibiMySqlDriver extends DibiDriver {
         if (!extension_loaded('mysql'))
             throw new DibiException("PHP extension 'mysql' is not loaded");
 
-        foreach (array('username', 'password', 'protocol') as $var)
-            if (!isset($config[$var])) $config[$var] = NULL;
+        // default values
+        if (empty($config['username'])) $config['username'] = ini_get('mysql.default_user');
+        if (empty($config['password'])) $config['password'] = ini_get('mysql.default_password');
+        if (empty($config['host'])) {
+            $config['host'] = ini_get('mysql.default_host');
+            if (empty($config['port'])) ini_get('mysql.default_port');
+            if (empty($config['host'])) $config['host'] = 'localhost';
+        }
 
-        if (empty($config['host'])) $config['host'] = 'localhost';
-
-        if ($config['protocol'] === 'unix')  // host can be socket
+        if (isset($config['protocol']) && $config['protocol'] === 'unix')  // host can be socket
             $host = ':' . $config['host'];
         else
             $host = $config['host'] . (empty($config['port']) ? '' : ':'.$config['port']);

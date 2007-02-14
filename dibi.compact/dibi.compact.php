@@ -13,11 +13,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.7c $Revision: 28 $ $Date: 2007-02-02 04:51:43 +0100 (pá, 02 II 2007) $
+ * @version    0.7d $Revision: 28 $ $Date: 2007-02-02 04:51:43 +0100 (pá, 02 II 2007) $
  */
 
 
-define('DIBI','Version 0.7c $Revision: 28 $');if(version_compare(PHP_VERSION,'5.0.3','<'))die('dibi needs PHP 5.0.3 or newer');abstract
+define('DIBI','Version 0.7d $Revision: 28 $');if(version_compare(PHP_VERSION,'5.0.3','<'))die('dibi needs PHP 5.0.3 or newer');abstract
 class
 DibiDriver{protected$config;public$formats=array('TRUE'=>"1",'FALSE'=>"0",'date'=>"'Y-m-d'",'datetime'=>"'Y-m-d H:i:s'",);static
 public
@@ -291,7 +291,7 @@ static
 function
 connect($config){if(!extension_loaded('mysql'))throw
 new
-DibiException("PHP extension 'mysql' is not loaded");foreach(array('username','password','protocol')as$var)if(!isset($config[$var]))$config[$var]=NULL;if(empty($config['host']))$config['host']='localhost';if($config['protocol']==='unix')$host=':'.$config['host'];else$host=$config['host'].(empty($config['port'])?'':':'.$config['port']);if(function_exists('ini_set'))$save=ini_set('track_errors',TRUE);$php_errormsg='';if(empty($config['persistent']))$conn=@mysql_connect($host,$config['username'],$config['password']);else$conn=@mysql_pconnect($host,$config['username'],$config['password']);if(function_exists('ini_set'))ini_set('track_errors',$save);if(!is_resource($conn))throw
+DibiException("PHP extension 'mysql' is not loaded");if(empty($config['username']))$config['username']=ini_get('mysql.default_user');if(empty($config['password']))$config['password']=ini_get('mysql.default_password');if(empty($config['host'])){$config['host']=ini_get('mysql.default_host');if(empty($config['port']))ini_get('mysql.default_port');if(empty($config['host']))$config['host']='localhost';}if(isset($config['protocol'])&&$config['protocol']==='unix')$host=':'.$config['host'];else$host=$config['host'].(empty($config['port'])?'':':'.$config['port']);if(function_exists('ini_set'))$save=ini_set('track_errors',TRUE);$php_errormsg='';if(empty($config['persistent']))$conn=@mysql_connect($host,$config['username'],$config['password']);else$conn=@mysql_pconnect($host,$config['username'],$config['password']);if(function_exists('ini_set'))ini_set('track_errors',$save);if(!is_resource($conn))throw
 new
 DibiException("Connecting error",array('message'=>mysql_error()?mysql_error():$php_errormsg,'code'=>mysql_errno(),));if(!empty($config['charset'])){$succ=@mysql_query("SET NAMES '".$config['charset']."'",$conn);}if(!empty($config['database'])){if(!@mysql_select_db($config['database'],$conn))throw
 new
@@ -360,7 +360,7 @@ static
 function
 connect($config){if(!extension_loaded('mysqli'))throw
 new
-DibiException("PHP extension 'mysqli' is not loaded");if(empty($config['host']))$config['host']='localhost';foreach(array('username','password','database','port')as$var)if(!isset($config[$var]))$config[$var]=NULL;$conn=@mysqli_connect($config['host'],$config['username'],$config['password'],$config['database'],$config['port']);if(!$conn)throw
+DibiException("PHP extension 'mysqli' is not loaded");if(empty($config['username']))$config['username']=ini_get('mysqli.default_user');if(empty($config['password']))$config['password']=ini_get('mysqli.default_password');if(empty($config['host'])){$config['host']=ini_get('mysqli.default_host');if(empty($config['port']))ini_get('mysqli.default_port');if(empty($config['host']))$config['host']='localhost';}if(!isset($config['database']))$config['database']=NULL;$conn=@mysqli_connect($config['host'],$config['username'],$config['password'],$config['database'],$config['port']);if(!$conn)throw
 new
 DibiException("Connecting error",array('message'=>mysqli_connect_error(),'code'=>mysqli_connect_errno(),));if(!empty($config['charset']))mysqli_query($conn,"SET NAMES '".$config['charset']."'");$obj=new
 self($config);$obj->conn=$conn;return$obj;}public
@@ -425,11 +425,13 @@ static
 function
 connect($config){if(!extension_loaded('odbc'))throw
 new
-DibiException("PHP extension 'odbc' is not loaded");if(!isset($config['username']))throw
+DibiException("PHP extension 'odbc' is not loaded");if(empty($config['username']))$config['username']=ini_get('odbc.default_user');if(empty($config['password']))$config['password']=ini_get('odbc.default_pw');if(empty($config['database']))$config['database']=ini_get('odbc.default_db');if(empty($config['username']))throw
 new
-DibiException("Username must be specified");if(!isset($config['password']))throw
+DibiException("Username must be specified");if(empty($config['password']))throw
 new
-DibiException("Password must be specified");if(empty($config['persistent']))$conn=@odbc_connect($config['database'],$config['username'],$config['password']);else$conn=@odbc_pconnect($config['database'],$config['username'],$config['password']);if(!is_resource($conn))throw
+DibiException("Password must be specified");if(empty($config['database']))throw
+new
+DibiException("Database must be specified");if(empty($config['persistent']))$conn=@odbc_connect($config['database'],$config['username'],$config['password']);else$conn=@odbc_pconnect($config['database'],$config['username'],$config['password']);if(!is_resource($conn))throw
 new
 DibiException("Connecting error",array('message'=>odbc_errormsg(),'code'=>odbc_error(),));$obj=new
 self($config);$obj->conn=$conn;return$obj;}public

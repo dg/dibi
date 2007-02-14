@@ -14,11 +14,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.7c $Revision$ $Date$
+ * @version    0.7d $Revision$ $Date$
  */
 
 
-define('DIBI', 'Version 0.7c $Revision$');
+define('DIBI', 'Version 0.7d $Revision$');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))

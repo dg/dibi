@@ -45,10 +45,15 @@ class DibiMySqliDriver extends DibiDriver {
         if (!extension_loaded('mysqli'))
             throw new DibiException("PHP extension 'mysqli' is not loaded");
 
-        if (empty($config['host'])) $config['host'] = 'localhost';
-
-        foreach (array('username', 'password', 'database', 'port') as $var)
-            if (!isset($config[$var])) $config[$var] = NULL;
+        // default values
+        if (empty($config['username'])) $config['username'] = ini_get('mysqli.default_user');
+        if (empty($config['password'])) $config['password'] = ini_get('mysqli.default_password');
+        if (empty($config['host'])) {
+            $config['host'] = ini_get('mysqli.default_host');
+            if (empty($config['port'])) ini_get('mysqli.default_port');
+            if (empty($config['host'])) $config['host'] = 'localhost';
+        }
+        if (!isset($config['database'])) $config['database'] = NULL;
 
         $conn = @mysqli_connect($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
 
