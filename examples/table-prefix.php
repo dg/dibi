@@ -28,5 +28,3 @@ dibi::addSubst('', 'my_');
 
 // generate and dump SQL
 dibi::test("UPDATE [database.::table] SET [text]='Hello World'");
-
-

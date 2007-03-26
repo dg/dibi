@@ -84,11 +84,11 @@ class DibiOdbcDriver extends DibiDriver {
 
         if ($res === FALSE) return FALSE;
 
-        if (is_resource($res))
-            return new DibiOdbcResult($res);
-
         $this->affectedRows = odbc_num_rows($this->conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
+
+        if (is_resource($res))
+            return new DibiOdbcResult($res);
 
         return TRUE;
     }
@@ -167,6 +167,8 @@ class DibiOdbcDriver extends DibiDriver {
         // offset suppot is missing...
         if ($limit >= 0)
            $sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
+
+        if ($offset) throw new DibiException('Offset is not implemented.');
     }
 
 

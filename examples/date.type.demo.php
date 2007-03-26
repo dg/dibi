@@ -75,5 +75,3 @@ INSERT INTO [mytable]", array(
     'C' => new TDateTime(31542),  // using out class
     'D' => 'any string',
 ));
-
-

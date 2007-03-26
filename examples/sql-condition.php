@@ -48,5 +48,3 @@ WHERE
         %if', $cond2, 'AND [admin]=1 %end
     %else LIMIT 10 %end'
 );
-
-

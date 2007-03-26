@@ -80,14 +80,14 @@ class DibiMySqliDriver extends DibiDriver {
 
         if ($res === FALSE) return FALSE;
 
-        if (is_object($res))
-            return new DibiMySqliResult($res);
-
         $this->affectedRows = mysqli_affected_rows($this->conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
         $this->insertId = mysqli_insert_id($this->conn);
         if ($this->insertId < 1) $this->insertId = FALSE;
+
+        if (is_object($res))
+            return new DibiMySqliResult($res);
 
         return TRUE;
     }

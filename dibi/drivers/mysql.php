@@ -84,7 +84,7 @@ class DibiMySqlDriver extends DibiDriver {
 
 
         if (!empty($config['charset'])) {
-            $succ = @mysql_query("SET NAMES '" . $config['charset'] . "'", $conn);
+            @mysql_query("SET NAMES '" . $config['charset'] . "'", $conn);
             // don't handle this error...
         }
 
@@ -112,14 +112,14 @@ class DibiMySqlDriver extends DibiDriver {
 
         if ($res === FALSE) return FALSE;
 
-        if (is_resource($res))
-            return new DibiMySqlResult($res);
-
         $this->affectedRows = mysql_affected_rows($this->conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
         $this->insertId = mysql_insert_id($this->conn);
         if ($this->insertId < 1) $this->insertId = FALSE;
+
+        if (is_resource($res))
+            return new DibiMySqlResult($res);
 
         return TRUE;
     }

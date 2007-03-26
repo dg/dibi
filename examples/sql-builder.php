@@ -70,6 +70,3 @@ dibi::test("UPDATE [mytable] SET", $arr4, " WHERE [id]=%i", $n);
 
 // array with modifier %a - assoc
 dibi::test("UPDATE [mytable] SET%a", $arr4, " WHERE [id]=%i", $n);
-
-
-

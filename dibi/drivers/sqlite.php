@@ -74,19 +74,19 @@ class DibiSqliteDriver extends DibiDriver {
     {
         $this->insertId = $this->affectedRows = FALSE;
 
-        $errorMsg = '';
+        $this->errorMsg = '';
         $res = @sqlite_query($this->conn, $sql, SQLITE_ASSOC, $this->errorMsg);
 
         if ($res === FALSE) return FALSE;
-
-        if (is_resource($res))
-            return new DibiSqliteResult($res);
 
         $this->affectedRows = sqlite_changes($this->conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
         $this->insertId = sqlite_last_insert_rowid($this->conn);
         if ($this->insertId < 1) $this->insertId = FALSE;
+
+        if (is_resource($res))
+            return new DibiSqliteResult($res);
 
         return TRUE;
     }

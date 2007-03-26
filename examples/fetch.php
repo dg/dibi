@@ -43,6 +43,3 @@ foreach ($res as $row => $fields) {
 foreach ($res->getIterator(2, 3) as $row => $fields) {
     print_r($fields);
 }
-
-
-

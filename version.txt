@@ -1,1 +1,1 @@
-Dibi Version 0.7d
+Dibi Version 0.7e

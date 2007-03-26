@@ -49,8 +49,3 @@ try {
     echo "DibiException: <pre>", $e;
 
 }
-
-
-
-
-

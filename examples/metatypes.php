@@ -29,4 +29,3 @@ var_dump($record);
 $res->setType(TRUE);
 $record = $res->fetch();
 var_dump($record);
-

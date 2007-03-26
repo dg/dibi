@@ -49,7 +49,6 @@ class DibiPostgreDriver extends DibiDriver {
 
         if (empty($config['type'])) $config['type'] = NULL;
 
-        $errorMsg = '';
         if (isset($config['persistent']))
             $conn = @pg_connect($config['string'], $config['type']);
         else
@@ -61,7 +60,7 @@ class DibiPostgreDriver extends DibiDriver {
             ));
 
         if (!empty($config['charset'])) {
-            $succ = @pg_set_client_encoding($conn, $config['charset']);
+            @pg_set_client_encoding($conn, $config['charset']);
             // don't handle this error...
         }
 
@@ -76,16 +75,15 @@ class DibiPostgreDriver extends DibiDriver {
     {
         $this->affectedRows = FALSE;
 
-        $errorMsg = '';
         $res = @pg_query($this->conn, $sql);
 
         if ($res === FALSE) return FALSE;
 
-        if (is_resource($res))
-            return new DibiPostgreResult($res);
-
         $this->affectedRows = pg_affected_rows($this->conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
+
+        if (is_resource($res))
+            return new DibiPostgreResult($res);
 
         return TRUE;
     }

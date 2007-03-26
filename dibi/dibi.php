@@ -14,11 +14,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.7d $Revision$ $Date$
+ * @version    0.7e $Revision$ $Date$
  */
 
 
-define('DIBI', 'Version 0.7d $Revision$');
+define('DIBI', 'Version 0.7e $Revision$');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -389,7 +389,7 @@ class dibi
         $sql = preg_replace("#\n{2,}#", "\n", $sql);
 
         // syntax highlight
-        $sql = preg_replace_callback("#(/\*.+?\*/)|(\*\*.+?\*\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#", array('dibi', 'dumpHighlight'), $sql);
+        $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#", array('dibi', 'dumpHighlight'), $sql);
         $sql = '<pre class="dump">' . $sql . "</pre>\n";
 
         // print & return

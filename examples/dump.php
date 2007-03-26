@@ -34,5 +34,3 @@ dibi::dump($sql);
 echo '<h1>dibi::dumpResult()</h1>';
 
 dibi::dumpResult($res);
-
-
