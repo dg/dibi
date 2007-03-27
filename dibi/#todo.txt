@@ -1,2 +1,3 @@
+- PDO driver (current PDO driver is alpha version)
 - better examples
 - documentation

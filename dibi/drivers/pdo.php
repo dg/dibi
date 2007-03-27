@@ -29,9 +29,7 @@ class DibiPdoDriver extends DibiDriver
     /** @var PDO */
     private $conn;
 
-    private $affectedRows = FALSE,
-
-    private $errorMsg;
+    private $affectedRows = FALSE;
 
     public
         $formats = array(
@@ -67,16 +65,13 @@ class DibiPdoDriver extends DibiDriver
     {
         $this->affectedRows = FALSE;
 
-        $this->errorMsg = '';
+        // TODO: or exec() ?
         $res = $this->conn->query($sql);
 
         if ($res === FALSE) return FALSE;
 
-        //$this->affectedRows = 0;
-        //if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-
-        if (is_resource($res))
-            return new DibiSqliteResult($res);
+        if ($res instanceof PDOStatement)
+            return new DibiPdoResult($res);
 
         return TRUE;
     }
@@ -125,15 +120,18 @@ class DibiPdoDriver extends DibiDriver
 
     public function escape($value, $appendQuotes = FALSE)
     {
-        return $appendQuotes
-               ? $this->conn->quote($value)
-               : FALSE; // error
+        if (!$appendQuotes) {
+            trigger_error('dibi: escaping without qoutes is not supported by PDO', E_USER_WARNING);
+            return NULL;
+        }
+        return $this->conn->quote($value);
     }
 
 
     public function quoteName($value)
     {
-        return FALSE; // error
+        // quoting is not supported by PDO
+        return $value;
     }
 
 
@@ -150,8 +148,7 @@ class DibiPdoDriver extends DibiDriver
      */
     public function applyLimit(&$sql, $limit, $offset = 0)
     {
-        if ($limit < 0 && $offset < 1) return;
-        $sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+        trigger_error('Meta is not implemented.', E_USER_WARNING);
     }
 
 } // class DibiPdoDriver
@@ -207,7 +204,8 @@ class DibiPdoResult extends DibiResult
         $count = $this->resource->columnCount();
         $this->meta = $this->convert = array();
         for ($index = 0; $index < $count; $index++) {
-            $meta = $this->resource->getColumnMeta($i);
+            $meta = $this->resource->getColumnMeta($index);
+            // TODO:
             $meta['type'] = dibi::FIELD_UNKNOWN;
             $name = $meta['name'];
             $this->meta[$name] =  $meta;

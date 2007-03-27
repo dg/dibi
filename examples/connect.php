@@ -44,6 +44,13 @@ try {
     ));
 
 
+    // connects to PDO
+    dibi::connect(array(
+        'driver'  => 'pdo',
+        'dsn'     => 'sqlite2::memory:',
+    ));
+
+
 } catch (DibiException $e) {
 
     echo "DibiException: <pre>", $e;
