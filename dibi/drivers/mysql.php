@@ -24,7 +24,8 @@ if (!defined('DIBI')) die();
  * The dibi driver for MySQL database
  *
  */
-class DibiMySqlDriver extends DibiDriver {
+class DibiMySqlDriver extends DibiDriver
+{
     private
         $conn,
         $insertId = FALSE,
@@ -105,7 +106,7 @@ class DibiMySqlDriver extends DibiDriver {
 
 
 
-    public function query($sql)
+    public function nativeQuery($sql)
     {
         $this->insertId = $this->affectedRows = FALSE;
         $res = @mysql_query($sql, $this->conn);
@@ -216,9 +217,7 @@ class DibiMySqlDriver extends DibiDriver {
 
 class DibiMySqlResult extends DibiResult
 {
-    private
-        $resource,
-        $meta;
+    private $resource;
 
 
     public function __construct($resource)
@@ -251,37 +250,8 @@ class DibiMySqlResult extends DibiResult
     }
 
 
-    public function getFields()
-    {
-        // cache
-        if ($this->meta === NULL)
-            $this->createMeta();
-
-        return array_keys($this->meta);
-    }
-
-
-    protected function detectTypes()
-    {
-        if ($this->meta === NULL)
-            $this->createMeta();
-    }
-
-
     /** this is experimental */
-    public function getMetaData($field)
-    {
-        // cache
-        if ($this->meta === NULL)
-            $this->createMeta();
-
-        return isset($this->meta[$field]) ? $this->meta[$field] : FALSE;
-    }
-
-
-
-    /** this is experimental */
-    private function createMeta()
+    protected function buildMeta()
     {
         static $types = array(
             'ENUM'      => dibi::FIELD_TEXT, // eventually dibi::FIELD_INTEGER

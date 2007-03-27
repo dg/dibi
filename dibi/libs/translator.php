@@ -29,29 +29,26 @@ class DibiTranslator
 {
     private
         $driver,
-        $subK, $subV,
         $modifier,
         $hasError,
         $comment,
         $ifLevel,
         $ifLevelStart;
 
-    public $sql;
 
 
-    public function __construct($driver, $subst)
+    public function __construct($driver)
     {
         $this->driver = $driver;
-        $this->subK = array_keys($subst);
-        $this->subV = array_values($subst);
     }
+
 
 
     /**
      * Generates SQL
      *
      * @param  array
-     * @return string
+     * @return string|FALSE
      * @throw  DibiException
      */
     public function translate($args)
@@ -112,12 +109,26 @@ class DibiTranslator
         // TODO: check !!!
         $sql = preg_replace('#\x00.*?\x00#s', '', $sql);
 
-        $this->sql = $sql;
+        // error handling
+        if ($this->hasError) {
+            if (dibi::$logFile)  // log to file
+                dibi::log(
+                    "ERROR: SQL generate error"
+                    . "\n-- SQL: " . $sql
+                    . ";\n-- " . date('Y-m-d H:i:s ')
+                );
 
-        return !$this->hasError;
+            if (dibi::$throwExceptions)
+                throw new DibiException('SQL generate error', NULL, $sql);
+            else {
+                trigger_error("dibi: SQL generate error: $sql", E_USER_WARNING);
+                return FALSE;
+            }
+        }
+
+        // OK
+        return $sql;
     }
-
-
 
 
 
@@ -266,7 +277,6 @@ class DibiTranslator
 
 
 
-
     /**
      * PREG callback for @see self::formatValue()
      * @param  array
@@ -351,11 +361,7 @@ class DibiTranslator
      */
     private function quote($value)
     {
-        // apply substitutions
-        if ($this->subK && (strpos($value, ':') !== FALSE))
-            return str_replace($this->subK, $this->subV, $value);
-
-        return $this->driver->quoteName($value);
+        return $this->driver->quoteName( dibi::substitute($value) );
     }
 
 

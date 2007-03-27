@@ -24,7 +24,8 @@ if (!defined('DIBI')) die();
  * The dibi driver for PostgreSql database
  *
  */
-class DibiPostgreDriver extends DibiDriver {
+class DibiPostgreDriver extends DibiDriver
+{
     private
         $conn,
         $affectedRows = FALSE;
@@ -71,7 +72,7 @@ class DibiPostgreDriver extends DibiDriver {
 
 
 
-    public function query($sql)
+    public function nativeQuery($sql)
     {
         $this->affectedRows = FALSE;
 
@@ -175,9 +176,7 @@ class DibiPostgreDriver extends DibiDriver {
 
 class DibiPostgreResult extends DibiResult
 {
-    private
-        $resource,
-        $meta;
+    private $resource;
 
 
     public function __construct($resource)
@@ -210,36 +209,8 @@ class DibiPostgreResult extends DibiResult
     }
 
 
-    public function getFields()
-    {
-        // cache
-        if ($this->meta === NULL)
-            $this->createMeta();
-
-        return array_keys($this->meta);
-    }
-
-
-    protected function detectTypes()
-    {
-        if ($this->meta === NULL)
-            $this->createMeta();
-    }
-
-
     /** this is experimental */
-    public function getMetaData($field)
-    {
-        // cache
-        if ($this->meta === NULL)
-            $this->createMeta();
-
-        return isset($this->meta[$field]) ? $this->meta[$field] : FALSE;
-    }
-
-
-    /** this is experimental */
-    private function createMeta()
+    protected function buildMeta()
     {
         static $types = array(
             'bool'      => dibi::FIELD_BOOL,

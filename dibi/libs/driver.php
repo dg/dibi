@@ -31,8 +31,7 @@ abstract class DibiDriver
      * Current connection configuration
      * @var array
      */
-    protected
-        $config;
+    protected $config;
 
     /**
      * Describes how convert some datatypes to SQL command
@@ -81,12 +80,75 @@ abstract class DibiDriver
 
 
     /**
+     * Generates and executes SQL query
+     *
+     * @param  array|mixed    one or more arguments
+     * @return int|DibiResult
+     * @throw  DibiException
+     */
+    public function query($args)
+    {
+        // receive arguments
+        if (!is_array($args))
+            $args = func_get_args();
+
+        // and generate SQL
+        $trans = new DibiTranslator($this);
+        dibi::$sql = $sql = $trans->translate($args);
+
+        if ($sql === FALSE) return FALSE;
+
+        // execute SQL
+        $timer = -microtime(true);
+        $res = $this->nativeQuery($sql);
+
+        if ($res === FALSE) { // query error
+            if (dibi::$logFile) { // log to file
+                $info = $this->errorInfo();
+                if ($info['code']) $info['message'] = "[$info[code]] $info[message]";
+                dibi::log(
+                    "ERROR: $info[message]"
+                    . "\n-- SQL: " . $sql
+                    . ";\n-- " . date('Y-m-d H:i:s ')
+                );
+            }
+
+            if (dibi::$throwExceptions) {
+                $info = $this->errorInfo();
+                throw new DibiException('Query error', $info, $sql);
+            } else {
+                $info = $this->errorInfo();
+                if ($info['code']) $info['message'] = "[$info[code]] $info[message]";
+                trigger_error("dibi: $info[message]", E_USER_WARNING);
+                return FALSE;
+            }
+        }
+
+        if (dibi::$logFile && dibi::$logAll) { // log success
+            $timer += microtime(true);
+            $msg = $res instanceof DibiResult ? 'object('.get_class($res).') rows: '.$res->rowCount() : 'OK';
+
+            dibi::log(
+                "OK: " . $sql
+                . ";\n-- result: $msg"
+                . "\n-- takes: " . sprintf('%0.3f', $timer * 1000) . ' ms'
+                . "\n-- " . date('Y-m-d H:i:s ')
+            );
+        }
+
+        return $res;
+    }
+
+
+
+    /**
      * Executes the SQL query
      *
      * @param string        SQL statement.
      * @return object|bool  Result set object or TRUE on success, FALSE on failure
      */
-    abstract public function query($sql);
+    abstract public function nativeQuery($sql);
+
 
 
     /**
@@ -97,11 +159,13 @@ abstract class DibiDriver
     abstract public function affectedRows();
 
 
+
     /**
      * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
      * @return int|bool  int on success or FALSE on failure
      */
     abstract public function insertId();
+
 
 
     /**
@@ -110,16 +174,19 @@ abstract class DibiDriver
     abstract public function begin();
 
 
+
     /**
      * Commits statements in a transaction.
      */
     abstract public function commit();
 
 
+
     /**
      * Rollback changes in a transaction.
      */
     abstract public function rollback();
+
 
 
     /**
@@ -129,6 +196,7 @@ abstract class DibiDriver
     abstract public function errorInfo();
 
 
+
     /**
      * Escapes the string
      * @param string     unescaped string
@@ -136,6 +204,7 @@ abstract class DibiDriver
      * @return string    escaped and optionally quoted string
      */
     abstract public function escape($value, $appendQuotes = FALSE);
+
 
 
     /**
@@ -155,6 +224,7 @@ abstract class DibiDriver
     abstract public function getMetaData();
 
 
+
     /**
      * Experimental - injects LIMIT/OFFSET to the SQL query
      * @param string &$sql  The SQL query that will be modified.
@@ -163,6 +233,7 @@ abstract class DibiDriver
      * @return void
      */
     abstract public function applyLimit(&$sql, $limit, $offset = 0);
+
 
 
     /**

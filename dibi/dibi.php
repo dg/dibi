@@ -14,11 +14,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.7e $Revision$ $Date$
+ * @version    0.7f $Revision$ $Date$
  */
 
 
-define('DIBI', 'Version 0.7e $Revision$');
+define('DIBI', 'Version 0.7f $Revision$');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -219,9 +219,6 @@ class dibi
 
 
 
-
-
-
     /**
      * Generates and executes SQL query
      *
@@ -231,74 +228,9 @@ class dibi
      */
     static public function query($args)
     {
-        $conn = self::getConnection();
-
-        // receive arguments
-        if (!is_array($args))
-            $args = func_get_args();
-
-        // and generate SQL
-        $trans = new DibiTranslator($conn, self::$substs);
-        if (!$trans->translate($args)) {
-            if (self::$logFile)  // log to file
-                self::log(
-                    "ERROR: SQL generate error"
-                    . "\n-- SQL: " . $trans->sql
-                    . ";\n-- " . date('Y-m-d H:i:s ')
-                );
-
-            if (dibi::$throwExceptions)
-                throw new DibiException('SQL generate error', NULL, $trans->sql);
-            else {
-                trigger_error("dibi: SQL generate error: $trans->sql", E_USER_WARNING);
-                return FALSE;
-            }
-        }
-
-        self::$sql = $trans->sql;
-
-        // execute SQL
-        $timer = -microtime(true);
-        $res = $conn->query(self::$sql);
-
-        if ($res === FALSE) { // query error
-            if (self::$logFile) { // log to file
-                $info = $conn->errorInfo();
-                if ($info['code']) $info['message'] = "[$info[code]] $info[message]";
-                self::log(
-                    "ERROR: $info[message]"
-                    . "\n-- SQL: " . self::$sql
-                    . ";\n-- " . date('Y-m-d H:i:s ')
-                );
-            }
-
-            if (dibi::$throwExceptions) {
-                $info = $conn->errorInfo();
-                throw new DibiException('Query error', $info, self::$sql);
-            } else {
-                $info = $conn->errorInfo();
-                if ($info['code']) $info['message'] = "[$info[code]] $info[message]";
-                trigger_error("dibi: $info[message]", E_USER_WARNING);
-                return FALSE;
-            }
-        }
-
-        if (self::$logFile && self::$logAll) { // log success
-            $timer += microtime(true);
-            $msg = $res instanceof DibiResult ? 'object('.get_class($res).') rows: '.$res->rowCount() : 'OK';
-
-            self::log(
-                "OK: " . self::$sql
-                . ";\n-- result: $msg"
-                . "\n-- takes: " . sprintf('%0.3f', $timer * 1000) . ' ms'
-                . "\n-- " . date('Y-m-d H:i:s ')
-            );
-        }
-
-        return $res;
+        $args = func_get_args();
+        return self::getConnection()->query($args);
     }
-
-
 
 
 
@@ -315,13 +247,18 @@ class dibi
             $args = func_get_args();
 
         // and generate SQL
-        $trans = new DibiTranslator(self::getConnection(), self::$substs);
-        $ok = $trans->translate($args);
-        if (!$ok) echo 'ERROR: ';
+        $trans = new DibiTranslator(self::getConnection());
+        try {
+            $sql = $trans->translate($args);
+        } catch (DibiException $e) {
+            return FALSE;
+        }
 
-        self::dump($trans->sql);
+        if ($sql === FALSE) return FALSE;
 
-        return $ok;
+        self::dump($sql);
+
+        return TRUE;
     }
 
 
@@ -364,6 +301,7 @@ class dibi
         if (!empty($matches[4])) // other keywords
             return '<strong style="color:green">'.$matches[4].'</strong>';
     }
+
 
 
     /**
@@ -446,6 +384,18 @@ class dibi
     static public function removeSubst($expr)
     {
         unset(self::$substs[':'.$expr.':']);
+    }
+
+
+    /**
+     * Process substitutions in string
+     * @param string
+     * @return string
+     */
+    static public function substitute($s)
+    {
+        if (strpos($s, ':') === FALSE) return $s;
+        return strtr($s, self::$substs);
     }
 
 

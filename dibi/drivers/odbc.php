@@ -24,7 +24,8 @@ if (!defined('DIBI')) die();
  * The dibi driver interacting with databases via ODBC connections
  *
  */
-class DibiOdbcDriver extends DibiDriver {
+class DibiOdbcDriver extends DibiDriver
+{
     private
         $conn,
         $affectedRows = FALSE;
@@ -76,7 +77,7 @@ class DibiOdbcDriver extends DibiDriver {
 
 
 
-    public function query($sql)
+    public function nativeQuery($sql)
     {
         $this->affectedRows = FALSE;
 
@@ -182,10 +183,8 @@ class DibiOdbcDriver extends DibiDriver {
 
 class DibiOdbcResult extends DibiResult
 {
-    private
-        $resource,
-        $meta,
-        $row = 0;
+    private $resource;
+    private $row = 0;
 
 
     public function __construct($resource)
@@ -219,36 +218,8 @@ class DibiOdbcResult extends DibiResult
     }
 
 
-    public function getFields()
-    {
-        // cache
-        if ($this->meta === NULL)
-            $this->createMeta();
-
-        return array_keys($this->meta);
-    }
-
-
-    protected function detectTypes()
-    {
-        if ($this->meta === NULL)
-            $this->createMeta();
-    }
-
-
     /** this is experimental */
-    public function getMetaData($field)
-    {
-        // cache
-        if ($this->meta === NULL)
-            $this->createMeta();
-
-        return isset($this->meta[$field]) ? $this->meta[$field] : FALSE;
-    }
-
-
-    /** this is experimental */
-    private function createMeta()
+    protected function buildMeta()
     {
         // cache
         if ($this->meta !== NULL)

@@ -51,8 +51,14 @@ abstract class DibiResult implements IteratorAggregate, Countable
      */
     protected $convert;
 
+    /**
+     * Describes columns types
+     * @var array
+     */
+    protected $meta;
 
-    static private $meta = array(
+
+    static private $types = array(
         dibi::FIELD_TEXT =>    'string',
         dibi::FIELD_BINARY =>  'string',
         dibi::FIELD_BOOL =>    'bool',
@@ -70,30 +76,15 @@ abstract class DibiResult implements IteratorAggregate, Countable
      */
     abstract public function seek($row);
 
+
+
     /**
      * Returns the number of rows in a result set
      * @return int
      */
     abstract public function rowCount();
 
-    /**
-     * Gets an array of field names
-     * @return array
-     */
-    abstract public function getFields();
 
-    /**
-     * Gets an array of meta informations about column
-     * @param  string  column name
-     * @return array
-     */
-    abstract public function getMetaData($field);
-
-    /**
-     * Acquires ....
-     * @return void
-     */
-    abstract protected function detectTypes();
 
     /**
      * Frees the resources allocated for this result set
@@ -101,12 +92,15 @@ abstract class DibiResult implements IteratorAggregate, Countable
      */
     abstract protected function free();
 
+
+
     /**
      * Fetches the row at current position and moves the internal cursor to the next position
      * internal usage only
      * @return array|FALSE  array() on success, FALSE if no next record
      */
     abstract protected function doFetch();
+
 
 
     /**
@@ -296,6 +290,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
     }
 
 
+
     /** is this needed? */
     public function getType($field)
     {
@@ -303,13 +298,14 @@ abstract class DibiResult implements IteratorAggregate, Countable
     }
 
 
+
     public function convert($value, $type)
     {
         if ($value === NULL || $value === FALSE)
             return $value;
 
-        if (isset(self::$meta[$type])) {
-            settype($value, self::$meta[$type]);
+        if (isset(self::$types[$type])) {
+            settype($value, self::$types[$type]);
             return $value;
         }
 
@@ -323,6 +319,52 @@ abstract class DibiResult implements IteratorAggregate, Countable
     }
 
 
+
+    /**
+     * Gets an array of field names
+     * @return array
+     */
+    public function getFields()
+    {
+        // lazy init
+        if ($this->meta === NULL) $this->buildMeta();
+        return array_keys($this->meta);
+    }
+
+
+
+    /**
+     * Gets an array of meta informations about column
+     * @param  string  column name
+     * @return array
+     */
+    public function getMetaData($field)
+    {
+        // lazy init
+        if ($this->meta === NULL) $this->buildMeta();
+        return isset($this->meta[$field]) ? $this->meta[$field] : FALSE;
+    }
+
+
+
+    /**
+     * Acquires ....
+     * @return void
+     */
+    protected function detectTypes()
+    {
+        if ($this->meta === NULL) $this->buildMeta();
+    }
+
+
+
+    /**
+     * @return void
+     */
+    abstract protected function buildMeta();
+
+
+
     /** these are the required IteratorAggregate functions */
     public function getIterator($offset = NULL, $count = NULL)
     {
@@ -331,12 +373,14 @@ abstract class DibiResult implements IteratorAggregate, Countable
     /** end required IteratorAggregate functions */
 
 
+
     /** these are the required Countable functions */
     public function count()
     {
         return $this->rowCount();
     }
     /** end required Countable functions */
+
 
 
     /**
@@ -393,6 +437,7 @@ class DibiResultIterator implements Iterator
     }
 
 
+
     /** these are the required Iterator functions */
     public function rewind()
     {
@@ -402,10 +447,12 @@ class DibiResultIterator implements Iterator
     }
 
 
+
     public function key()
     {
         return $this->row;
     }
+
 
 
     public function current()
@@ -414,11 +461,13 @@ class DibiResultIterator implements Iterator
     }
 
 
+
     public function next()
     {
         $this->record = $this->result->fetch();
         $this->row++;
     }
+
 
 
     public function valid()

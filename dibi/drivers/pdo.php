@@ -21,16 +21,17 @@ if (!defined('DIBI')) die();
 
 
 /**
- * The dibi driver for SQlite database
+ * The dibi driver for PDO
  *
  */
-class DibiSqliteDriver extends DibiDriver
+class DibiPdoDriver extends DibiDriver
 {
-    private
-        $conn,
-        $insertId = FALSE,
-        $affectedRows = FALSE,
-        $errorMsg;
+    /** @var PDO */
+    private $conn;
+
+    private $affectedRows = FALSE,
+
+    private $errorMsg;
 
     public
         $formats = array(
@@ -44,25 +45,16 @@ class DibiSqliteDriver extends DibiDriver
 
     public static function connect($config)
     {
-        if (!extension_loaded('sqlite'))
-            throw new DibiException("PHP extension 'sqlite' is not loaded");
+        if (!extension_loaded('pdo'))
+            throw new DibiException("PHP extension 'pdo' is not loaded");
 
-        if (empty($config['database']))
-            throw new DibiException("Database must be specified");
+        if (empty($config['dsn']))
+            throw new DibiException("DSN must be specified");
 
-        if (!isset($config['mode']))
-            $config['mode'] = 0666;
+        if (empty($config['username'])) $config['username'] = NULL;
+        if (empty($config['password'])) $config['password'] = NULL;
 
-        $errorMsg = '';
-        if (empty($config['persistent']))
-            $conn = @sqlite_open($config['database'], $config['mode'], $errorMsg);
-        else
-            $conn = @sqlite_popen($config['database'], $config['mode'], $errorMsg);
-
-        if (!$conn)
-            throw new DibiException("Connecting error", array(
-                'message' => $errorMsg,
-            ));
+        $conn = new PDO($config['dsn'], $config['username'], $config['password']);
 
         $obj = new self($config);
         $obj->conn = $conn;
@@ -73,18 +65,15 @@ class DibiSqliteDriver extends DibiDriver
 
     public function nativeQuery($sql)
     {
-        $this->insertId = $this->affectedRows = FALSE;
+        $this->affectedRows = FALSE;
 
         $this->errorMsg = '';
-        $res = @sqlite_query($this->conn, $sql, SQLITE_ASSOC, $this->errorMsg);
+        $res = $this->conn->query($sql);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = sqlite_changes($this->conn);
-        if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-
-        $this->insertId = sqlite_last_insert_rowid($this->conn);
-        if ($this->insertId < 1) $this->insertId = FALSE;
+        //$this->affectedRows = 0;
+        //if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
         if (is_resource($res))
             return new DibiSqliteResult($res);
@@ -101,33 +90,35 @@ class DibiSqliteDriver extends DibiDriver
 
     public function insertId()
     {
-        return $this->insertId;
+        return $this->conn->lastInsertId();
     }
 
 
     public function begin()
     {
-        return sqlite_query($this->conn, 'BEGIN');
+        return $this->conn->beginTransaction();
     }
 
 
     public function commit()
     {
-        return sqlite_query($this->conn, 'COMMIT');
+        return $this->conn->commit();
     }
 
 
     public function rollback()
     {
-        return sqlite_query($this->conn, 'ROLLBACK');
+        return $this->conn->rollBack();
     }
 
 
     public function errorInfo()
     {
+        $error = $this->conn->errorInfo();
         return array(
-            'message'  => $this->errorMsg,
-            'code'     => NULL,
+            'message'  => $error[2],
+            'code'     => $error[1],
+            'SQLSTATE '=> $error[0],
         );
     }
 
@@ -135,14 +126,14 @@ class DibiSqliteDriver extends DibiDriver
     public function escape($value, $appendQuotes = FALSE)
     {
         return $appendQuotes
-               ? "'" . sqlite_escape_string($value) . "'"
-               : sqlite_escape_string($value);
+               ? $this->conn->quote($value)
+               : FALSE; // error
     }
 
 
     public function quoteName($value)
     {
-        return '[' . $value . ']';
+        return FALSE; // error
     }
 
 
@@ -163,7 +154,7 @@ class DibiSqliteDriver extends DibiDriver
         $sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
     }
 
-} // class DibiSqliteDriver
+} // class DibiPdoDriver
 
 
 
@@ -173,9 +164,12 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
-class DibiSqliteResult extends DibiResult
+class DibiPdoResult extends DibiResult
 {
+    /** @var PDOStatement */
     private $resource;
+
+    private $row = 0;
 
 
     public function __construct($resource)
@@ -186,19 +180,19 @@ class DibiSqliteResult extends DibiResult
 
     public function rowCount()
     {
-        return sqlite_num_rows($this->resource);
+        return $this->resource->rowCount();
     }
 
 
     protected function doFetch()
     {
-        return sqlite_fetch_array($this->resource, SQLITE_ASSOC);
+        return $this->resource->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT, $this->row++);
     }
 
 
     public function seek($row)
     {
-        return sqlite_seek($this->resource, $row);
+        $this->row = $row;
     }
 
 
@@ -210,14 +204,16 @@ class DibiSqliteResult extends DibiResult
     /** this is experimental */
     protected function buildMeta()
     {
-        $count = sqlite_num_fields($this->resource);
+        $count = $this->resource->columnCount();
         $this->meta = $this->convert = array();
         for ($index = 0; $index < $count; $index++) {
-            $name = sqlite_field_name($this->resource, $index);
-            $this->meta[$name] = array('type' => dibi::FIELD_UNKNOWN);
-            $this->convert[$name] = dibi::FIELD_UNKNOWN;
+            $meta = $this->resource->getColumnMeta($i);
+            $meta['type'] = dibi::FIELD_UNKNOWN;
+            $name = $meta['name'];
+            $this->meta[$name] =  $meta;
+            $this->convert[$name] = $meta['type'];
         }
     }
 
 
-} // class DibiSqliteResult
+} // class DibiPdoResult
