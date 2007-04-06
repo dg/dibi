@@ -36,6 +36,7 @@ class DibiException extends Exception
     {
         $this->dbError = $dbError;
         $this->sql = $sql;
+
         parent::__construct($message);
     }
 
@@ -57,7 +58,7 @@ class DibiException extends Exception
         $s = parent::__toString();
 
         if ($this->dbError) {
-            $s .= "\nERROR: ";
+            $s .= "\n\nDatabase error: ";
             if (isset($this->dbError['code']))
                 $s .= "[" . $this->dbError['code'] . "] ";
 

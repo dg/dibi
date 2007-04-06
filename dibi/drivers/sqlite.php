@@ -29,8 +29,7 @@ class DibiSqliteDriver extends DibiDriver
     private
         $conn,
         $insertId = FALSE,
-        $affectedRows = FALSE,
-        $errorMsg;
+        $affectedRows = FALSE;
 
     public
         $formats = array(
@@ -75,8 +74,7 @@ class DibiSqliteDriver extends DibiDriver
     {
         $this->insertId = $this->affectedRows = FALSE;
 
-        $this->errorMsg = '';
-        $res = @sqlite_query($this->conn, $sql, SQLITE_ASSOC, $this->errorMsg);
+        $res = @sqlite_query($this->conn, $sql, SQLITE_ASSOC);
 
         if ($res === FALSE) return FALSE;
 
@@ -125,9 +123,10 @@ class DibiSqliteDriver extends DibiDriver
 
     public function errorInfo()
     {
+        $code = sqlite_last_error($this->conn);
         return array(
-            'message'  => $this->errorMsg,
-            'code'     => NULL,
+            'message'  => sqlite_error_string($code),
+            'code'     => $code,
         );
     }
 

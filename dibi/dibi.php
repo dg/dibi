@@ -14,11 +14,11 @@
  * @license    GNU GENERAL PUBLIC LICENSE v2
  * @package    dibi
  * @category   Database
- * @version    0.7f $Revision$ $Date$
+ * @version    0.7g $Revision$ $Date$
  */
 
 
-define('DIBI', 'Version 0.7f $Revision$');
+define('DIBI', 'Version 0.7g $Revision$');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -145,7 +145,7 @@ class dibi
      * @return void
      * @throw  DibiException
      */
-    static public function connect($config, $name = '1')
+    static public function connect($config, $name='1')
     {
         // DSN string
         if (is_string($config))
@@ -188,15 +188,23 @@ class dibi
     /**
      * Retrieve active connection
      *
+     * @param  string   connection registy name
      * @return object   DibiDriver object.
      * @throw  DibiException
      */
-    static public function getConnection()
+    static public function getConnection($name=NULL)
     {
-        if (!self::$conn)
-            throw new DibiException('Dibi is not connected to database');
+        if ($name === NULL) {
+            if (!self::$conn)
+                throw new DibiException('Dibi is not connected to database');
 
-        return self::$conn;
+            return self::$conn;
+        }
+
+        if (!isset(self::$registry[$name]))
+            throw new DibiException("There is no connection named '$name'.");
+
+        return self::$registry[$name];
     }
 
 
@@ -210,11 +218,7 @@ class dibi
      */
     static public function activate($name)
     {
-        if (!isset(self::$registry[$name]))
-            throw new DibiException("There is no connection named '$name'.");
-
-        // change active connection
-        self::$conn = self::$registry[$name];
+        self::$conn = self::getConnection($name);
     }
 
 
