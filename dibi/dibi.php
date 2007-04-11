@@ -12,7 +12,6 @@
  * @license   GNU GENERAL PUBLIC LICENSE version 2
  * @package   dibi
  * @category  Database
- * @version   2.0 beta (Revision: $WCREV$, Date: $WCDATE$)
  * @version   0.7g (Revision: $WCREV$, Date: $WCDATE$)
  */
 
@@ -27,7 +26,7 @@
  */
 
 
-define('DIBI', 'Version 0.7g $Revision$');
+define('DIBI', '0.7g (Revision: $WCREV$, Date: $WCDATE$)');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
