@@ -1,18 +1,12 @@
 <?php
 
 /**
- * dibi - Database Abstraction Layer according to dgx
- * --------------------------------------------------
+ * This file is part of the "dibi" project (http://dibi.texy.info/)
  *
- * This source file is subject to the GNU GPL license.
+ * Copyright (c) 2005-2007 David Grudl aka -dgx- <dave@dgx.cz>
  *
- * @author     David Grudl aka -dgx- <dave@dgx.cz>
- * @link       http://dibi.texy.info/
- * @copyright  Copyright (c) 2005-2007 David Grudl
- * @license    GNU GENERAL PUBLIC LICENSE v2
- * @package    dibi
- * @category   Database
- * @version    $Revision$ $Date$
+ * @version  $Revision$ $Date$
+ * @package  dibi
  */
 
 

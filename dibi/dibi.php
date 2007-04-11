@@ -4,17 +4,26 @@
  * dibi - Database Abstraction Layer according to dgx
  * --------------------------------------------------
  *
- * For PHP 5.0.3 or newer
+ * Copyright (c) 2005-2007 David Grudl aka -dgx- <dave@dgx.cz>
  *
- * This source file is subject to the GNU GPL license.
+ * for PHP 5.0.3 and newer
  *
- * @author     David Grudl aka -dgx- <dave@dgx.cz>
- * @link       http://dibi.texy.info/
- * @copyright  Copyright (c) 2005-2007 David Grudl
- * @license    GNU GENERAL PUBLIC LICENSE v2
- * @package    dibi
- * @category   Database
- * @version    0.7g $Revision$ $Date$
+ * @link      http://dibi.texy.info/
+ * @license   GNU GENERAL PUBLIC LICENSE version 2
+ * @package   dibi
+ * @category  Database
+ * @version   2.0 beta (Revision: $WCREV$, Date: $WCDATE$)
+ * @version   0.7g (Revision: $WCREV$, Date: $WCDATE$)
+ */
+
+
+/**
+ * This file is part of the "dibi" project (http://dibi.texy.info/)
+ *
+ * Copyright (c) 2005-2007 David Grudl aka -dgx- <dave@dgx.cz>
+ *
+ * @version  $Revision$ $Date$
+ * @package  dibi
  */
 
 
