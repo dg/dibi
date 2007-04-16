@@ -140,7 +140,7 @@ class DibiTranslator
                     $pair = explode('%', $k, 2);
 
                     // generate array
-                    $vx[] = $this->quote($pair[0]) . '='
+                    $vx[] = $this->delimite($pair[0]) . '='
                         . $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
                 }
                 return implode(', ', $vx);
@@ -152,7 +152,7 @@ class DibiTranslator
                     $pair = explode('%', $k, 2);
 
                     // generate arrays
-                    $kx[] = $this->quote($pair[0]);
+                    $kx[] = $this->delimite($pair[0]);
                     $vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
                 }
                 return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
@@ -181,9 +181,9 @@ class DibiTranslator
 
             switch ($modifier) {
             case 's':  // string
-                return $this->driver->escape($value, TRUE);
+                return $this->driver->escape($value);
             case 'sn': // string or NULL
-                return $value == '' ? 'NULL' : $this->driver->escape($value, TRUE);
+                return $value == '' ? 'NULL' : $this->driver->escape($value);
             case 'b':  // boolean
                 return $value
                     ? $this->driver->formats['TRUE']
@@ -202,7 +202,7 @@ class DibiTranslator
                     ? strtotime($value)
                     : $value);
             case 'n':  // identifier name
-                return $this->quote($value);
+                return $this->delimite($value);
             case 'sql':// preserve as SQL
             case 'p':  // back compatibility
                 $value = (string) $value;
@@ -250,7 +250,7 @@ class DibiTranslator
 
         // without modifier procession
         if (is_string($value))
-            return $this->driver->escape($value, TRUE);
+            return $this->driver->escape($value);
 
         if (is_int($value) || is_float($value))
             return (string) $value;  // something like -9E-005 is accepted by SQL
@@ -326,16 +326,16 @@ class DibiTranslator
 
 
         if ($matches[1])  // SQL identifiers: `ident`
-            return $this->quote($matches[1]);
+            return $this->delimite($matches[1]);
 
         if ($matches[2])  // SQL identifiers: [ident]
-            return $this->quote($matches[2]);
+            return $this->delimite($matches[2]);
 
         if ($matches[3])  // SQL strings: '....'
-            return $this->driver->escape( str_replace("''", "'", $matches[4]), TRUE);
+            return $this->driver->escape( str_replace("''", "'", $matches[4]));
 
         if ($matches[5])  // SQL strings: "..."
-            return $this->driver->escape( str_replace('""', '"', $matches[6]), TRUE);
+            return $this->driver->escape( str_replace('""', '"', $matches[6]));
 
 
         if ($matches[9]) { // string quote
@@ -349,13 +349,13 @@ class DibiTranslator
 
 
     /**
-     * Apply substitutions to indentifier and quotes it
+     * Apply substitutions to indentifier and delimites it
      * @param string indentifier
      * @return string
      */
-    private function quote($value)
+    private function delimite($value)
     {
-        return $this->driver->quoteName( dibi::substitute($value) );
+        return $this->driver->delimite( dibi::substitute($value) );
     }
 
 

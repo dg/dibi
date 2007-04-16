@@ -112,7 +112,7 @@ class DibiPdoDriver extends DibiDriver
     }
 
 
-    public function escape($value, $appendQuotes = FALSE)
+    public function escape($value, $appendQuotes=TRUE)
     {
         if (!$appendQuotes) {
             trigger_error('dibi: escaping without qoutes is not supported by PDO', E_USER_WARNING);
@@ -122,7 +122,7 @@ class DibiPdoDriver extends DibiDriver
     }
 
 
-    public function quoteName($value)
+    public function delimite($value)
     {
         // quoting is not supported by PDO
         return $value;

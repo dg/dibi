@@ -133,7 +133,7 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
-    public function escape($value, $appendQuotes = FALSE)
+    public function escape($value, $appendQuotes=TRUE)
     {
         return $appendQuotes
                ? "'" . mysqli_real_escape_string($this->conn, $value) . "'"
@@ -141,7 +141,7 @@ class DibiMySqliDriver extends DibiDriver
     }
 
 
-    public function quoteName($value)
+    public function delimite($value)
     {
         return '`' . str_replace('.', '`.`', $value) . '`';
     }

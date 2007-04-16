@@ -123,7 +123,7 @@ class DibiPostgreDriver extends DibiDriver
     }
 
 
-    public function escape($value, $appendQuotes = FALSE)
+    public function escape($value, $appendQuotes=TRUE)
     {
         return $appendQuotes
                ? "'" . pg_escape_string($value) . "'"
@@ -131,7 +131,7 @@ class DibiPostgreDriver extends DibiDriver
     }
 
 
-    public function quoteName($value)
+    public function delimite($value)
     {
         return $value;
     }

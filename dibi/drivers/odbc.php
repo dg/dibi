@@ -133,7 +133,7 @@ class DibiOdbcDriver extends DibiDriver
 
 
 
-    public function escape($value, $appendQuotes = FALSE)
+    public function escape($value, $appendQuotes=TRUE)
     {
         $value = str_replace("'", "''", $value);
         return $appendQuotes
@@ -142,7 +142,7 @@ class DibiOdbcDriver extends DibiDriver
     }
 
 
-    public function quoteName($value)
+    public function delimite($value)
     {
         return '[' . str_replace('.', '].[', $value) . ']';
     }

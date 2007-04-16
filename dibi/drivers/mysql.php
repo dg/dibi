@@ -63,7 +63,7 @@ class DibiMySqlDriver extends DibiDriver
         $php_errormsg = '';
 
         if (empty($config['persistent']))
-            $conn = @mysql_connect($host, $config['username'], $config['password']);
+            $conn = @mysql_connect($host, $config['username'], $config['password'], TRUE);
         else
             $conn = @mysql_pconnect($host, $config['username'], $config['password']);
 
@@ -159,7 +159,7 @@ class DibiMySqlDriver extends DibiDriver
     }
 
 
-    public function escape($value, $appendQuotes = FALSE)
+    public function escape($value, $appendQuotes=TRUE)
     {
         return $appendQuotes
                ? "'" . mysql_real_escape_string($value, $this->conn) . "'"
@@ -167,7 +167,7 @@ class DibiMySqlDriver extends DibiDriver
     }
 
 
-    public function quoteName($value)
+    public function delimite($value)
     {
         return '`' . str_replace('.', '`.`', $value) . '`';
     }

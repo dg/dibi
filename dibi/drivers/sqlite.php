@@ -125,7 +125,7 @@ class DibiSqliteDriver extends DibiDriver
     }
 
 
-    public function escape($value, $appendQuotes = FALSE)
+    public function escape($value, $appendQuotes=TRUE)
     {
         return $appendQuotes
                ? "'" . sqlite_escape_string($value) . "'"
@@ -133,7 +133,7 @@ class DibiSqliteDriver extends DibiDriver
     }
 
 
-    public function quoteName($value)
+    public function delimite($value)
     {
         return '[' . $value . ']';
     }

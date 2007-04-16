@@ -12,7 +12,7 @@
  * @license   GNU GENERAL PUBLIC LICENSE version 2
  * @package   dibi
  * @category  Database
- * @version   0.7g (Revision: $WCREV$, Date: $WCDATE$)
+ * @version   0.7h (Revision: $WCREV$, Date: $WCDATE$)
  */
 
 
@@ -26,7 +26,7 @@
  */
 
 
-define('DIBI', '0.7g (Revision: $WCREV$, Date: $WCDATE$)');
+define('DIBI', '0.7h (Revision: $WCREV$, Date: $WCDATE$)');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -153,7 +153,7 @@ class dibi
      * @return void
      * @throw  DibiException
      */
-    static public function connect($config, $name='1')
+    static public function connect($config, $name=0)
     {
         // DSN string
         if (is_string($config))

@@ -197,16 +197,16 @@ abstract class DibiDriver
      * @param bool       quote string?
      * @return string    escaped and optionally quoted string
      */
-    abstract public function escape($value, $appendQuotes = FALSE);
+    abstract public function escape($value, $appendQuotes=TRUE);
 
 
 
     /**
-     * Quotes SQL identifier (table's or column's name, etc.)
+     * Delimites identifier (table's or column's name, etc.)
      * @param string     identifier
-     * @return string    quoted identifier
+     * @return string    delimited identifier
      */
-    abstract public function quoteName($value);
+    abstract public function delimite($value);
 
 
 
