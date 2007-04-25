@@ -238,17 +238,25 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Fetches all records from table like $key => $value pairs
+     * @param  string  associative key
+     * @param  string  value
      * @return array
      */
-    final function fetchPairs($key, $value)
+    final function fetchPairs($key=NULL, $value=NULL)
     {
         @$this->seek(0);
         $rec = $this->fetch();
-        if (!$rec)
-            return array();  // empty resultset
 
-        if (!array_key_exists($key, $rec) ||
-            !array_key_exists($value, $rec)) return FALSE;
+        if ($value === NULL) {
+            $tmp = array_keys($rec);
+            $key = $tmp[0];
+            $value = $tmp[1];
+        } else {
+            if (!array_key_exists($key, $rec)) return FALSE;
+            if (!array_key_exists($value, $rec)) return FALSE;
+        }
+
+        if (!$rec) return array();  // empty resultset
 
         $arr = array();
         do {
