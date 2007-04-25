@@ -307,7 +307,7 @@ class dibi
      * @param string        SQL statement.
      * @return object|bool  Result set object or TRUE on success, FALSE on failure
      */
-    static public function nativeQuery($sql);
+    static public function nativeQuery($sql)
     {
         return self::getConnection()->nativeQuery($sql);
     }
