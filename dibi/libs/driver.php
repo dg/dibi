@@ -157,7 +157,6 @@ abstract class DibiDriver
 
     /**
      * Executes the SQL query
-     *
      * @param string        SQL statement.
      * @return object|bool  Result set object or TRUE on success, FALSE on failure
      */
@@ -167,7 +166,6 @@ abstract class DibiDriver
 
     /**
      * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
-     *
      * @return int       number of rows or FALSE on error
      */
     abstract public function affectedRows();

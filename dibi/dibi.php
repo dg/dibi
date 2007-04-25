@@ -232,7 +232,7 @@ class dibi
 
 
     /**
-     * Generates and executes SQL query
+     * Generates and executes SQL query - Monostate for DibiDriver::query()
      *
      * @param  array|mixed    one or more arguments
      * @return int|DibiResult
@@ -276,9 +276,10 @@ class dibi
 
 
     /**
+     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
      * Monostate for DibiDriver::insertId()
      *
-     * @return int
+     * @return int|bool  int on success or FALSE on failure
      */
     static public function insertId()
     {
@@ -288,13 +289,27 @@ class dibi
 
 
     /**
+     * Gets the number of affected rows
      * Monostate for DibiDriver::affectedRows()
      *
-     * @return int
+     * @return int  number of rows or FALSE on error
      */
     static public function affectedRows()
     {
         return self::getConnection()->affectedRows();
+    }
+
+
+
+    /**
+     * Executes the SQL query - Monostate for DibiDriver::nativeQuery()
+     *
+     * @param string        SQL statement.
+     * @return object|bool  Result set object or TRUE on success, FALSE on failure
+     */
+    static public function nativeQuery($sql);
+    {
+        return self::getConnection()->nativeQuery($sql);
     }
 
 
