@@ -54,8 +54,7 @@ class DibiPdoDriver extends DibiDriver
 
     protected function connect()
     {
-        $config = $this->config;
-        return new PDO($config['dsn'], $config['username'], $config['password']);
+        return new PDO($this->config['dsn'], $this->config['username'], $this->config['password']);
     }
 
 

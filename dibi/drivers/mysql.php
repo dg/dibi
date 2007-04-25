@@ -51,11 +51,6 @@ class DibiMySqlDriver extends DibiDriver
             if (empty($config['host'])) $config['host'] = 'localhost';
         }
 
-        if (isset($config['protocol']) && $config['protocol'] === 'unix')  // host can be socket
-            $host = ':' . $config['host'];
-        else
-            $host = $config['host'] . (empty($config['port']) ? '' : ':'.$config['port']);
-
         parent::__construct($config);
     }
 
@@ -64,6 +59,11 @@ class DibiMySqlDriver extends DibiDriver
     protected function connect()
     {
         $config = $this->config;
+
+        if (isset($config['protocol']) && $config['protocol'] === 'unix')  // host can be socket
+            $host = ':' . $config['host'];
+        else
+            $host = $config['host'] . (empty($config['port']) ? '' : ':'.$config['port']);
 
         // some errors aren't handled. Must use $php_errormsg
         if (function_exists('ini_set'))
