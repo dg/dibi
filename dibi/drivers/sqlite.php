@@ -21,7 +21,6 @@ if (!defined('DIBI')) die();
 class DibiSqliteDriver extends DibiDriver
 {
     private
-        $conn,
         $insertId = FALSE,
         $affectedRows = FALSE;
 
@@ -35,7 +34,11 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
-    public static function connect($config)
+    /**
+     * @param array  connect configuration
+     * @throw  DibiException
+     */
+    public function __construct($config)
     {
         if (!extension_loaded('sqlite'))
             throw new DibiException("PHP extension 'sqlite' is not loaded");
@@ -45,6 +48,15 @@ class DibiSqliteDriver extends DibiDriver
 
         if (!isset($config['mode']))
             $config['mode'] = 0666;
+
+        parent::__construct($config);
+    }
+
+
+
+    protected function connect()
+    {
+        $config = $this->config;
 
         $errorMsg = '';
         if (empty($config['persistent']))
@@ -57,9 +69,7 @@ class DibiSqliteDriver extends DibiDriver
                 'message' => $errorMsg,
             ));
 
-        $obj = new self($config);
-        $obj->conn = $conn;
-        return $obj;
+        return $conn;
     }
 
 
@@ -68,14 +78,15 @@ class DibiSqliteDriver extends DibiDriver
     {
         $this->insertId = $this->affectedRows = FALSE;
 
-        $res = @sqlite_query($this->conn, $sql, SQLITE_ASSOC);
+        $conn = $this->getResource();
+        $res = @sqlite_query($conn, $sql, SQLITE_ASSOC);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = sqlite_changes($this->conn);
+        $this->affectedRows = sqlite_changes($conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
-        $this->insertId = sqlite_last_insert_rowid($this->conn);
+        $this->insertId = sqlite_last_insert_rowid($conn);
         if ($this->insertId < 1) $this->insertId = FALSE;
 
         if (is_resource($res))
@@ -99,25 +110,25 @@ class DibiSqliteDriver extends DibiDriver
 
     public function begin()
     {
-        return sqlite_query($this->conn, 'BEGIN');
+        return sqlite_query($this->getResource(), 'BEGIN');
     }
 
 
     public function commit()
     {
-        return sqlite_query($this->conn, 'COMMIT');
+        return sqlite_query($this->getResource(), 'COMMIT');
     }
 
 
     public function rollback()
     {
-        return sqlite_query($this->conn, 'ROLLBACK');
+        return sqlite_query($this->getResource(), 'ROLLBACK');
     }
 
 
     public function errorInfo()
     {
-        $code = sqlite_last_error($this->conn);
+        $code = sqlite_last_error($this->getResource());
         return array(
             'message'  => sqlite_error_string($code),
             'code'     => $code,
@@ -135,7 +146,7 @@ class DibiSqliteDriver extends DibiDriver
 
     public function delimite($value)
     {
-        return '[' . $value . ']';
+        return '[' . str_replace('.', '].[', $value) . ']';
     }
 
 

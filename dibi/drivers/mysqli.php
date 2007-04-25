@@ -21,7 +21,6 @@ if (!defined('DIBI')) die();
 class DibiMySqliDriver extends DibiDriver
 {
     private
-        $conn,
         $insertId = FALSE,
         $affectedRows = FALSE;
 
@@ -35,7 +34,11 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
-    public static function connect($config)
+    /**
+     * @param array  connect configuration
+     * @throw  DibiException
+     */
+    public function __construct($config)
     {
         if (!extension_loaded('mysqli'))
             throw new DibiException("PHP extension 'mysqli' is not loaded");
@@ -50,6 +53,15 @@ class DibiMySqliDriver extends DibiDriver
         }
         if (!isset($config['database'])) $config['database'] = NULL;
 
+        parent::__construct($config);
+    }
+
+
+
+    protected function connect()
+    {
+        $config = $this->config;
+
         $conn = @mysqli_connect($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
 
         if (!$conn)
@@ -61,9 +73,7 @@ class DibiMySqliDriver extends DibiDriver
         if (!empty($config['charset']))
             mysqli_query($conn, "SET NAMES '" . $config['charset'] . "'");
 
-        $obj = new self($config);
-        $obj->conn = $conn;
-        return $obj;
+        return $conn;
     }
 
 
@@ -71,14 +81,15 @@ class DibiMySqliDriver extends DibiDriver
     public function nativeQuery($sql)
     {
         $this->insertId = $this->affectedRows = FALSE;
-        $res = @mysqli_query($this->conn, $sql);
+        $conn = $this->getResource();
+        $res = @mysqli_query($conn, $sql);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = mysqli_affected_rows($this->conn);
+        $this->affectedRows = mysqli_affected_rows($conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
-        $this->insertId = mysqli_insert_id($this->conn);
+        $this->insertId = mysqli_insert_id($conn);
         if ($this->insertId < 1) $this->insertId = FALSE;
 
         if (is_object($res))
@@ -102,31 +113,34 @@ class DibiMySqliDriver extends DibiDriver
 
     public function begin()
     {
-        return mysqli_autocommit($this->conn, FALSE);
+        return mysqli_autocommit($this->getResource(), FALSE);
     }
 
 
     public function commit()
     {
-        $ok = mysqli_commit($this->conn);
-        mysqli_autocommit($this->conn, TRUE);
+        $conn = $this->getResource();
+        $ok = mysqli_commit($conn);
+        mysqli_autocommit($conn, TRUE);
         return $ok;
     }
 
 
     public function rollback()
     {
-        $ok = mysqli_rollback($this->conn);
-        mysqli_autocommit($this->conn, TRUE);
+        $conn = $this->getResource();
+        $ok = mysqli_rollback($conn);
+        mysqli_autocommit($conn, TRUE);
         return $ok;
     }
 
 
     public function errorInfo()
     {
+        $conn = $this->getResource();
         return array(
-            'message'  => mysqli_error($this->conn),
-            'code'     => mysqli_errno($this->conn),
+            'message'  => mysqli_error($conn),
+            'code'     => mysqli_errno($conn),
         );
     }
 
@@ -135,9 +149,10 @@ class DibiMySqliDriver extends DibiDriver
 
     public function escape($value, $appendQuotes=TRUE)
     {
+        $conn = $this->getResource();
         return $appendQuotes
-               ? "'" . mysqli_real_escape_string($this->conn, $value) . "'"
-               : mysqli_real_escape_string($this->conn, $value);
+               ? "'" . mysqli_real_escape_string($conn, $value) . "'"
+               : mysqli_real_escape_string($conn, $value);
     }
 
 

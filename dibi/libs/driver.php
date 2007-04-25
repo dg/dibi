@@ -28,6 +28,12 @@ abstract class DibiDriver
     protected $config;
 
     /**
+     * Connection resource
+     * @var resource
+     */
+    private $res;
+
+    /**
      * Describes how convert some datatypes to SQL command
      * @var array
      */
@@ -39,36 +45,50 @@ abstract class DibiDriver
     );
 
 
+
     /**
-     * DibiDriver factory: creates object and connects to a database
-     *
-     * @param  array         connect configuration
-     * @return DibiDriver
+     * Creates object and (optionally) connects to a database
+     * @param array  connect configuration
      * @throw  DibiException
      */
-    /*abstract disallowed since PHP 5.2*/ static public function connect($config) {}
-
-
-
-    /**
-     * Protected constructor. Must be initialized using the factory method.
-     * @see DibiDriver::connect()
-     * @param array  connect configuration
-     */
-    protected function __construct($config)
+    public function __construct($config)
     {
         $this->config = $config;
+        if (empty($config['lazy'])) $this->res = $this->connect();
     }
 
 
+
     /**
-     * Get the configuration descriptor used by connect() to connect to database.
-     * @see DibiDriver::connect()
+     * Connects to a database
+     * @throw  DibiException
+     * @return resource
+     */
+    abstract protected function connect();
+
+
+
+    /**
+     * Gets the configuration descriptor
+     * @see DibiDriver::__construct
      * @return array
      */
     public function getConfig()
     {
         return $this->config;
+    }
+
+
+
+    /**
+     * Returns the connection resource
+     * @return resource
+     */
+    public function getResource()
+    {
+        if (!$this->res) $this->res = $this->connect();
+
+        return $this->res;
     }
 
 

@@ -20,9 +20,6 @@ if (!defined('DIBI')) die();
  */
 class DibiPdoDriver extends DibiDriver
 {
-    /** @var PDO */
-    private $conn;
-
     private $affectedRows = FALSE;
 
     public
@@ -35,7 +32,11 @@ class DibiPdoDriver extends DibiDriver
 
 
 
-    public static function connect($config)
+    /**
+     * @param array  connect configuration
+     * @throw  DibiException
+     */
+    public function __construct($config)
     {
         if (!extension_loaded('pdo'))
             throw new DibiException("PHP extension 'pdo' is not loaded");
@@ -46,11 +47,15 @@ class DibiPdoDriver extends DibiDriver
         if (empty($config['username'])) $config['username'] = NULL;
         if (empty($config['password'])) $config['password'] = NULL;
 
-        $conn = new PDO($config['dsn'], $config['username'], $config['password']);
+        parent::__construct($config);
+    }
 
-        $obj = new self($config);
-        $obj->conn = $conn;
-        return $obj;
+
+
+    protected function connect()
+    {
+        $config = $this->config;
+        return new PDO($config['dsn'], $config['username'], $config['password']);
     }
 
 
@@ -60,7 +65,7 @@ class DibiPdoDriver extends DibiDriver
         $this->affectedRows = FALSE;
 
         // TODO: or exec() ?
-        $res = $this->conn->query($sql);
+        $res = $this->getResource()->query($sql);
 
         if ($res === FALSE) return FALSE;
 
@@ -79,31 +84,31 @@ class DibiPdoDriver extends DibiDriver
 
     public function insertId()
     {
-        return $this->conn->lastInsertId();
+        return $this->getResource()->lastInsertId();
     }
 
 
     public function begin()
     {
-        return $this->conn->beginTransaction();
+        return $this->getResource()->beginTransaction();
     }
 
 
     public function commit()
     {
-        return $this->conn->commit();
+        return $this->getResource()->commit();
     }
 
 
     public function rollback()
     {
-        return $this->conn->rollBack();
+        return $this->getResource()->rollBack();
     }
 
 
     public function errorInfo()
     {
-        $error = $this->conn->errorInfo();
+        $error = $this->getResource()->errorInfo();
         return array(
             'message'  => $error[2],
             'code'     => $error[1],
@@ -118,7 +123,7 @@ class DibiPdoDriver extends DibiDriver
             trigger_error('dibi: escaping without qoutes is not supported by PDO', E_USER_WARNING);
             return NULL;
         }
-        return $this->conn->quote($value);
+        return $this->getResource()->quote($value);
     }
 
 

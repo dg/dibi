@@ -21,7 +21,6 @@ if (!defined('DIBI')) die();
 class DibiOdbcDriver extends DibiDriver
 {
     private
-        $conn,
         $affectedRows = FALSE;
 
     public
@@ -34,7 +33,11 @@ class DibiOdbcDriver extends DibiDriver
 
 
 
-    public static function connect($config)
+    /**
+     * @param array  connect configuration
+     * @throw  DibiException
+     */
+    public function __construct($config)
     {
         if (!extension_loaded('odbc'))
             throw new DibiException("PHP extension 'odbc' is not loaded");
@@ -53,6 +56,15 @@ class DibiOdbcDriver extends DibiDriver
         if (empty($config['database']))
             throw new DibiException("Database must be specified");
 
+        parent::__construct($config);
+    }
+
+
+
+    protected function connect()
+    {
+        $config = $this->config;
+
         if (empty($config['persistent']))
             $conn = @odbc_connect($config['database'], $config['username'], $config['password']);
         else
@@ -64,9 +76,7 @@ class DibiOdbcDriver extends DibiDriver
                 'code'    => odbc_error(),
             ));
 
-        $obj = new self($config);
-        $obj->conn = $conn;
-        return $obj;
+        return $conn;
     }
 
 
@@ -75,11 +85,12 @@ class DibiOdbcDriver extends DibiDriver
     {
         $this->affectedRows = FALSE;
 
-        $res = @odbc_exec($this->conn, $sql);
+        $conn = $this->getResource();
+        $res = @odbc_exec($conn, $sql);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = odbc_num_rows($this->conn);
+        $this->affectedRows = odbc_num_rows($conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
         if (is_resource($res))
@@ -103,31 +114,34 @@ class DibiOdbcDriver extends DibiDriver
 
     public function begin()
     {
-        return odbc_autocommit($this->conn, FALSE);
+        return odbc_autocommit($this->getResource(), FALSE);
     }
 
 
     public function commit()
     {
-        $ok = odbc_commit($this->conn);
-        odbc_autocommit($this->conn, TRUE);
+        $conn = $this->getResource();
+        $ok = odbc_commit($conn);
+        odbc_autocommit($conn, TRUE);
         return $ok;
     }
 
 
     public function rollback()
     {
-        $ok = odbc_rollback($this->conn);
-        odbc_autocommit($this->conn, TRUE);
+        $conn = $this->getResource();
+        $ok = odbc_rollback($conn);
+        odbc_autocommit($conn, TRUE);
         return $ok;
     }
 
 
     public function errorInfo()
     {
+        $conn = $this->getResource();
         return array(
-            'message'  => odbc_errormsg($this->conn),
-            'code'     => odbc_error($this->conn),
+            'message'  => odbc_errormsg($conn),
+            'code'     => odbc_error($conn),
         );
     }
 

@@ -21,7 +21,6 @@ if (!defined('DIBI')) die();
 class DibiPostgreDriver extends DibiDriver
 {
     private
-        $conn,
         $affectedRows = FALSE;
 
     public
@@ -34,7 +33,11 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
-    public static function connect($config)
+    /**
+     * @param array  connect configuration
+     * @throw  DibiException
+     */
+    public function __construct($config)
     {
         if (!extension_loaded('pgsql'))
             throw new DibiException("PHP extension 'pgsql' is not loaded");
@@ -43,6 +46,15 @@ class DibiPostgreDriver extends DibiDriver
             throw new DibiException("Connection string must be specified");
 
         if (empty($config['type'])) $config['type'] = NULL;
+
+        parent::__construct($config);
+    }
+
+
+
+    protected function connect()
+    {
+        $config = $this->config;
 
         if (isset($config['persistent']))
             $conn = @pg_connect($config['string'], $config['type']);
@@ -58,10 +70,7 @@ class DibiPostgreDriver extends DibiDriver
             @pg_set_client_encoding($conn, $config['charset']);
             // don't handle this error...
         }
-
-        $obj = new self($config);
-        $obj->conn = $conn;
-        return $obj;
+        return $conn;
     }
 
 
@@ -70,11 +79,12 @@ class DibiPostgreDriver extends DibiDriver
     {
         $this->affectedRows = FALSE;
 
-        $res = @pg_query($this->conn, $sql);
+        $conn = $this->getResource();
+        $res = @pg_query($conn, $sql);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = pg_affected_rows($this->conn);
+        $this->affectedRows = pg_affected_rows($conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
         if (is_resource($res))
@@ -98,26 +108,26 @@ class DibiPostgreDriver extends DibiDriver
 
     public function begin()
     {
-        return pg_query($this->conn, 'BEGIN');
+        return pg_query($this->getResource(), 'BEGIN');
     }
 
 
     public function commit()
     {
-        return pg_query($this->conn, 'COMMIT');
+        return pg_query($this->getResource(), 'COMMIT');
     }
 
 
     public function rollback()
     {
-        return pg_query($this->conn, 'ROLLBACK');
+        return pg_query($this->getResource(), 'ROLLBACK');
     }
 
 
     public function errorInfo()
     {
         return array(
-            'message'  => pg_last_error($this->conn),
+            'message'  => pg_last_error($this->getResource()),
             'code'     => NULL,
         );
     }

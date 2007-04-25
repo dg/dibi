@@ -21,7 +21,6 @@ if (!defined('DIBI')) die();
 class DibiMySqlDriver extends DibiDriver
 {
     private
-        $conn,
         $insertId = FALSE,
         $affectedRows = FALSE;
 
@@ -35,10 +34,10 @@ class DibiMySqlDriver extends DibiDriver
 
 
     /**
-     * Driver factory
-     * @throw DibiException
+     * @param array  connect configuration
+     * @throw  DibiException
      */
-    public static function connect($config)
+    public function __construct($config)
     {
         if (!extension_loaded('mysql'))
             throw new DibiException("PHP extension 'mysql' is not loaded");
@@ -56,6 +55,15 @@ class DibiMySqlDriver extends DibiDriver
             $host = ':' . $config['host'];
         else
             $host = $config['host'] . (empty($config['port']) ? '' : ':'.$config['port']);
+
+        parent::__construct($config);
+    }
+
+
+
+    protected function connect()
+    {
+        $config = $this->config;
 
         // some errors aren't handled. Must use $php_errormsg
         if (function_exists('ini_set'))
@@ -92,25 +100,24 @@ class DibiMySqlDriver extends DibiDriver
                 ));
         }
 
-
-        $obj = new self($config);
-        $obj->conn = $conn;
-        return $obj;
+        return $conn;
     }
+
 
 
 
     public function nativeQuery($sql)
     {
         $this->insertId = $this->affectedRows = FALSE;
-        $res = @mysql_query($sql, $this->conn);
+        $conn = $this->getResource();
+        $res = @mysql_query($sql, $conn);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = mysql_affected_rows($this->conn);
+        $this->affectedRows = mysql_affected_rows($conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
-        $this->insertId = mysql_insert_id($this->conn);
+        $this->insertId = mysql_insert_id($conn);
         if ($this->insertId < 1) $this->insertId = FALSE;
 
         if (is_resource($res))
@@ -134,36 +141,38 @@ class DibiMySqlDriver extends DibiDriver
 
     public function begin()
     {
-        return mysql_query('BEGIN', $this->conn);
+        return mysql_query('BEGIN', $this->getResource());
     }
 
 
     public function commit()
     {
-        return mysql_query('COMMIT', $this->conn);
+        return mysql_query('COMMIT', $this->getResource());
     }
 
 
     public function rollback()
     {
-        return mysql_query('ROLLBACK', $this->conn);
+        return mysql_query('ROLLBACK', $this->getResource());
     }
 
 
     public function errorInfo()
     {
+        $conn = $this->getResource();
         return array(
-            'message'  => mysql_error($this->conn),
-            'code'     => mysql_errno($this->conn),
+            'message'  => mysql_error($conn),
+            'code'     => mysql_errno($conn),
         );
     }
 
 
     public function escape($value, $appendQuotes=TRUE)
     {
+        $conn = $this->getResource();
         return $appendQuotes
-               ? "'" . mysql_real_escape_string($value, $this->conn) . "'"
-               : mysql_real_escape_string($value, $this->conn);
+               ? "'" . mysql_real_escape_string($value, $conn) . "'"
+               : mysql_real_escape_string($value, $conn);
     }
 
 
@@ -191,13 +200,6 @@ class DibiMySqlDriver extends DibiDriver
              . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
     }
 
-
-/* is this really needed?
-    public function getResource()
-    {
-        return $this->conn;
-    }
-*/
 
 }  // DibiMySqlDriver
 

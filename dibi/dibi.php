@@ -12,7 +12,7 @@
  * @license   GNU GENERAL PUBLIC LICENSE version 2
  * @package   dibi
  * @category  Database
- * @version   0.7h (Revision: $WCREV$, Date: $WCDATE$)
+ * @version   0.8 (Revision: $WCREV$, Date: $WCDATE$)
  */
 
 
@@ -26,7 +26,7 @@
  */
 
 
-define('DIBI', '0.7h (Revision: $WCREV$, Date: $WCDATE$)');
+define('DIBI', '0.8 (Revision: $WCREV$, Date: $WCDATE$)');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -172,10 +172,10 @@ class dibi
                 throw new DibiException("Unable to create instance of dibi driver class '$className'.");
         }
 
-
         // create connection object and store in list
         /** like $conn = $className::connect($config); */
-        self::$conn = self::$registry[$name] = call_user_func(array($className, 'connect'), $config);
+        self::$conn = self::$registry[$name] = new $className($config);
+
 
         if (dibi::$logAll) dibi::log("OK: connected to DB '$config[driver]'");
     }
