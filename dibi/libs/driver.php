@@ -123,13 +123,14 @@ abstract class DibiDriver
                 dibi::log(
                     "ERROR: $info[message]"
                     . "\n-- SQL: " . $sql
+                    . "\n-- driver: " . $this->config['driver']
                     . ";\n-- " . date('Y-m-d H:i:s ')
                 );
             }
 
             if (dibi::$throwExceptions) {
                 $info = $this->errorInfo();
-                throw new DibiException('Query error', $info, $sql);
+                throw new DibiException('Query error (driver ' . $this->config['driver'] . ')', $info, $sql);
             } else {
                 $info = $this->errorInfo();
                 if ($info['code']) $info['message'] = "[$info[code]] $info[message]";
@@ -146,6 +147,7 @@ abstract class DibiDriver
                 "OK: " . $sql
                 . ";\n-- result: $msg"
                 . "\n-- takes: " . sprintf('%0.3f', $timer * 1000) . ' ms'
+                . "\n-- driver: " . $this->config['driver']
                 . "\n-- " . date('Y-m-d H:i:s ')
             );
         }

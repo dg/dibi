@@ -42,7 +42,7 @@ class DibiPdoDriver extends DibiDriver
             throw new DibiException("PHP extension 'pdo' is not loaded");
 
         if (empty($config['dsn']))
-            throw new DibiException("DSN must be specified");
+            throw new DibiException("DSN must be specified (driver odbc)");
 
         if (empty($config['username'])) $config['username'] = NULL;
         if (empty($config['password'])) $config['password'] = NULL;

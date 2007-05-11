@@ -7,14 +7,9 @@ pre.dibi { padding-bottom: 10px; }
 require_once '../dibi/dibi.php';
 
 
-// CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
-    'driver'   => 'mysql',
-    'host'     => 'localhost',
-    'username' => 'root',
-    'password' => 'xxx',
-    'database' => 'dibi',
-    'charset'  => 'utf8',
+    'driver'   => 'sqlite',
+    'database' => 'sample.sdb',
 ));
 
 
@@ -22,29 +17,29 @@ $cond1 = rand(0,2) < 1;
 $cond2 = rand(0,2) < 1;
 
 
-$user = $cond1 ? 'Davidek' : NULL;
+$name = $cond1 ? 'K%' : NULL;
 
-
+// if & end
 dibi::test('
 SELECT *
-FROM [mytable]
-%if', isset($user), 'WHERE [user]=%s', $user, '%end'
+FROM [customers]
+%if', isset($name), 'WHERE [name] LIKE %s', $name, '%end'
 );
 
 
-// last end is optional
+// if & else & end (last end is optional)
 dibi::test('
 SELECT *
-FROM %if', $cond1, '[one_table] %else [second_table]'
+FROM %if', $cond1, '[customers] %else [products]'
 );
 
 
 // nested condition
 dibi::test('
 SELECT *
-FROM [mytable]
+FROM [customers]
 WHERE
-    %if', isset($user), '[user]=%s', $user, '
+    %if', isset($name), '[name] LIKE %s', $name, '
         %if', $cond2, 'AND [admin]=1 %end
     %else LIMIT 10 %end'
 );

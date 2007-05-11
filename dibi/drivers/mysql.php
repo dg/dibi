@@ -80,7 +80,7 @@ class DibiMySqlDriver extends DibiDriver
 
 
         if (!is_resource($conn))
-            throw new DibiException("Connecting error", array(
+            throw new DibiException("Connecting error (driver mysql)'", array(
                 'message' => mysql_error() ? mysql_error() : $php_errormsg,
                 'code'    => mysql_errno(),
             ));
@@ -94,7 +94,7 @@ class DibiMySqlDriver extends DibiDriver
 
         if (!empty($config['database'])) {
             if (!@mysql_select_db($config['database'], $conn))
-                throw new DibiException("Connecting error", array(
+                throw new DibiException("Connecting error (driver mysql)", array(
                     'message' => mysql_error($conn),
                     'code'    => mysql_errno($conn),
                 ));

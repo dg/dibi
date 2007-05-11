@@ -11,14 +11,9 @@ if (function_exists('date_default_timezone_set'))
      date_default_timezone_set('Europe/Prague'); // or 'GMT'
 
 
-// CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
-    'driver'   => 'mysql',
-    'host'     => 'localhost',
-    'username' => 'root',
-    'password' => 'xxx',
-    'database' => 'dibi',
-    'charset'  => 'utf8',
+    'driver'   => 'sqlite',
+    'database' => 'sample.sdb',
 ));
 
 

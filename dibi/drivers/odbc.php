@@ -48,13 +48,13 @@ class DibiOdbcDriver extends DibiDriver
         if (empty($config['database'])) $config['database'] = ini_get('odbc.default_db');
 
         if (empty($config['username']))
-            throw new DibiException("Username must be specified");
+            throw new DibiException("Username must be specified (driver odbc)");
 
         if (empty($config['password']))
-            throw new DibiException("Password must be specified");
+            throw new DibiException("Password must be specified (driver odbc)");
 
         if (empty($config['database']))
-            throw new DibiException("Database must be specified");
+            throw new DibiException("Database must be specified (driver odbc)");
 
         parent::__construct($config);
     }
@@ -71,7 +71,7 @@ class DibiOdbcDriver extends DibiDriver
             $conn = @odbc_pconnect($config['database'], $config['username'], $config['password']);
 
         if (!is_resource($conn))
-            throw new DibiException("Connecting error", array(
+            throw new DibiException("Connecting error (driver odbc)", array(
                 'message' => odbc_errormsg(),
                 'code'    => odbc_error(),
             ));
@@ -177,7 +177,7 @@ class DibiOdbcDriver extends DibiDriver
         if ($limit >= 0)
            $sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
 
-        if ($offset) throw new DibiException('Offset is not implemented.');
+        if ($offset) throw new DibiException('Offset is not implemented in driver odbc');
     }
 
 

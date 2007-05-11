@@ -6,19 +6,18 @@ if (function_exists('date_default_timezone_set'))
      date_default_timezone_set('Europe/Prague');
 
 
-// CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
-    'driver'   => 'mysql',
-    'host'     => 'localhost',
-    'username' => 'root',
-    'password' => 'xxx',
-    'database' => 'dibi',
-    'charset'  => 'utf8',
+    'driver'   => 'sqlite',
+    'database' => 'sample.sdb',
 ));
 
 
 
-$res = dibi::query('SELECT * FROM [mytable]');
+$res = dibi::query('
+SELECT * FROM [products]
+INNER JOIN [orders] USING ([product_id])
+INNER JOIN [customers] USING ([customer_id])
+');
 
 // get last SQL
 $sql = dibi::$sql;

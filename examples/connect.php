@@ -5,6 +5,12 @@ require_once '../dibi/dibi.php';
 
 try {
 
+    // connects to SQlite
+    dibi::connect(array(
+        'driver'   => 'sqlite',
+        'database' => 'sample.sdb',
+    ));
+
     // connects to MySQL using DSN
     dibi::connect('driver=mysql&host=localhost&username=root&password=xxx&database=test&charset=utf8');
 
@@ -26,13 +32,6 @@ try {
         'username' => 'root',
         'password' => '***',
         'database' => 'Driver={Microsoft Access Driver (*.mdb)};Dbq=C:\\Database.mdb',
-    ));
-
-
-    // connects to SQlite
-    dibi::connect(array(
-        'driver'   => 'sqlite',
-        'database' => 'mydb.sdb',
     ));
 
 

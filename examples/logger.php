@@ -19,14 +19,9 @@ dibi::$logAll = TRUE;
 
 
 
-// CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
-    'driver'   => 'mysql',
-    'host'     => 'localhost',
-    'username' => 'root',
-    'password' => 'xxx',
-    'database' => 'dibi',
-    'charset'  => 'utf8',
+    'driver'   => 'sqlite',
+    'database' => 'sample.sdb',
 ));
 
 
@@ -36,13 +31,13 @@ dibi::$throwExceptions = FALSE;
 echo '<h1>User-level errors</h1>';
 
 
-$res = dibi::query('SELECT * FROM [mytable] WHERE [inumber] = %i', 38);
+$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] = %i', 1);
 
 
-$res = dibi::query('SELECT * FROM [mytable] WHERE [inumber] < %i', 38);
+$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] < %i', 5);
 
 
-$res = dibi::query('SELECT FROM [mytable] WHERE [inumber] < %i', 38);
+$res = dibi::query('SELECT FROM [customers] WHERE [customer_id] < %i', 5);
 
 echo "<br />See file ", dibi::$logFile;
 
@@ -54,7 +49,7 @@ echo '<h1>DibiException</h1>';
 
 try {
 
-    $res = dibi::query('SELECT FROM [mytable] WHERE [inumber] < %i', 38);
+    $res = dibi::query('SELECT FROM [customers] WHERE [customer_id] < %i', 38);
 
 } catch (DibiException $e) {
 

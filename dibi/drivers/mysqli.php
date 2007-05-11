@@ -65,7 +65,7 @@ class DibiMySqliDriver extends DibiDriver
         $conn = @mysqli_connect($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
 
         if (!$conn)
-            throw new DibiException("Connecting error", array(
+            throw new DibiException("Connecting error (driver mysqli)", array(
                 'message' => mysqli_connect_error(),
                 'code'    => mysqli_connect_errno(),
             ));

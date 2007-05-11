@@ -43,7 +43,7 @@ class DibiPostgreDriver extends DibiDriver
             throw new DibiException("PHP extension 'pgsql' is not loaded");
 
         if (empty($config['string']))
-            throw new DibiException("Connection string must be specified");
+            throw new DibiException("Connection string must be specified (driver postgre)");
 
         if (empty($config['type'])) $config['type'] = NULL;
 
@@ -62,7 +62,7 @@ class DibiPostgreDriver extends DibiDriver
             $conn = @pg_pconnect($config['string'], $config['type']);
 
         if (!is_resource($conn))
-            throw new DibiException("Connecting error", array(
+            throw new DibiException("Connecting error (driver postgre)", array(
                 'message' => pg_last_error(),
             ));
 

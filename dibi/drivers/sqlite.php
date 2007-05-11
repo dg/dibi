@@ -44,7 +44,7 @@ class DibiSqliteDriver extends DibiDriver
             throw new DibiException("PHP extension 'sqlite' is not loaded");
 
         if (empty($config['database']))
-            throw new DibiException("Database must be specified");
+            throw new DibiException("Database must be specified (driver sqlite)");
 
         if (!isset($config['mode']))
             $config['mode'] = 0666;
@@ -65,7 +65,7 @@ class DibiSqliteDriver extends DibiDriver
             $conn = @sqlite_popen($config['database'], $config['mode'], $errorMsg);
 
         if (!$conn)
-            throw new DibiException("Connecting error", array(
+            throw new DibiException("Connecting error (driver sqlite)", array(
                 'message' => $errorMsg,
             ));
 
