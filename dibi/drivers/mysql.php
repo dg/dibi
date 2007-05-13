@@ -11,7 +11,7 @@
 
 
 // security - include dibi.php, not this file
-if (!defined('DIBI')) die();
+if (!class_exists('dibi', FALSE)) die();
 
 
 /**

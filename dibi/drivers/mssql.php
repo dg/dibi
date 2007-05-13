@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2005-2007 David Grudl aka -dgx- <dave@dgx.cz>
  *
- * @version  $Revision$ $Date$
+ * @version  $Revision: 43 $ $Date: 2007-05-12 00:25:32 +0200 (so, 12 V 2007) $
  * @package  dibi
  */
 
@@ -15,22 +15,21 @@ if (!class_exists('dibi', FALSE)) die();
 
 
 /**
- * The dibi driver interacting with databases via ODBC connections
+ * The dibi driver for MS SQL database
  *
  */
-class DibiOdbcDriver extends DibiDriver
+class DibiMSSqlDriver extends DibiDriver
 {
     private
         $affectedRows = FALSE;
 
     public
         $formats = array(
-            'TRUE'     => "-1",
+            'TRUE'     => "1",
             'FALSE'    => "0",
-            'date'     => "#m/d/Y#",
-            'datetime' => "#m/d/Y H:i:s#",
+            'date'     => "'Y-m-d'",
+            'datetime' => "'Y-m-d H:i:s'",
         );
-
 
 
     /**
@@ -39,22 +38,12 @@ class DibiOdbcDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('odbc'))
-            throw new DibiException("PHP extension 'odbc' is not loaded");
+        if (!extension_loaded('mssql'))
+            throw new DibiException("PHP extension 'mssql' is not loaded");
 
-        // default values
-        if (empty($config['username'])) $config['username'] = ini_get('odbc.default_user');
-        if (empty($config['password'])) $config['password'] = ini_get('odbc.default_pw');
-        if (empty($config['database'])) $config['database'] = ini_get('odbc.default_db');
-
-        if (empty($config['username']))
-            throw new DibiException("Username must be specified (driver odbc)");
-
-        if (empty($config['password']))
-            throw new DibiException("Password must be specified (driver odbc)");
-
-        if (empty($config['database']))
-            throw new DibiException("Database must be specified (driver odbc)");
+        if (!isset($config['host'])) $config['host'] = NULL;
+        if (!isset($config['username'])) $config['username'] = NULL;
+        if (!isset($config['password'])) $config['password'] = NULL;
 
         parent::__construct($config);
     }
@@ -66,35 +55,37 @@ class DibiOdbcDriver extends DibiDriver
         $config = $this->config;
 
         if (empty($config['persistent']))
-            $conn = @odbc_connect($config['database'], $config['username'], $config['password']);
+            $conn = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE);
         else
-            $conn = @odbc_pconnect($config['database'], $config['username'], $config['password']);
+            $conn = @mssql_pconnect($config['host'], $config['username'], $config['password']);
 
         if (!is_resource($conn))
-            throw new DibiException("Connecting error (driver odbc)", array(
-                'message' => odbc_errormsg(),
-                'code'    => odbc_error(),
-            ));
+            throw new DibiException("Connecting error (driver mssql)'");
+
+        if (!empty($config['database'])) {
+            if (!@mssql_select_db($config['database'], $conn))
+                throw new DibiException("Connecting error (driver mssql)");
+        }
 
         return $conn;
     }
 
 
 
+
     public function nativeQuery($sql)
     {
         $this->affectedRows = FALSE;
-
         $conn = $this->getResource();
-        $res = @odbc_exec($conn, $sql);
+        $res = @mssql_query($sql, $conn);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = odbc_num_rows($conn);
+        $this->affectedRows = mssql_rows_affected($conn);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
         if (is_resource($res))
-            return new DibiOdbcResult($res);
+            return new DibiMSSqlResult($res);
 
         return TRUE;
     }
@@ -114,37 +105,26 @@ class DibiOdbcDriver extends DibiDriver
 
     public function begin()
     {
-        return odbc_autocommit($this->getResource(), FALSE);
+        return mssql_query('BEGIN TRANSACTION', $this->getResource());
     }
 
 
     public function commit()
     {
-        $conn = $this->getResource();
-        $ok = odbc_commit($conn);
-        odbc_autocommit($conn, TRUE);
-        return $ok;
+        return mssql_query('COMMIT', $this->getResource());
     }
 
 
     public function rollback()
     {
-        $conn = $this->getResource();
-        $ok = odbc_rollback($conn);
-        odbc_autocommit($conn, TRUE);
-        return $ok;
+        return mssql_query('ROLLBACK', $this->getResource());
     }
 
 
     public function errorInfo()
     {
-        $conn = $this->getResource();
-        return array(
-            'message'  => odbc_errormsg($conn),
-            'code'     => odbc_error($conn),
-        );
+        return FALSE;
     }
-
 
 
     public function escape($value, $appendQuotes=TRUE)
@@ -181,7 +161,7 @@ class DibiOdbcDriver extends DibiDriver
     }
 
 
-} // class DibiOdbcDriver
+}  // DibiMSSqlDriver
 
 
 
@@ -189,10 +169,11 @@ class DibiOdbcDriver extends DibiDriver
 
 
 
-class DibiOdbcResult extends DibiResult
+
+
+class DibiMSSqlResult extends DibiResult
 {
     private $resource;
-    private $row = 0;
 
 
     public function __construct($resource)
@@ -203,36 +184,31 @@ class DibiOdbcResult extends DibiResult
 
     public function rowCount()
     {
-        // will return -1 with many drivers :-(
-        return odbc_num_rows($this->resource);
+        return mssql_num_rows($this->resource);
     }
 
 
     protected function doFetch()
     {
-        return odbc_fetch_array($this->resource, $this->row++);
+        return mssql_fetch_assoc($this->resource);
     }
 
 
     public function seek($row)
     {
-        $this->row = $row;
+        return mssql_data_seek($this->resource, $row);
     }
 
 
     protected function free()
     {
-        odbc_free_result($this->resource);
+        mssql_free_result($this->resource);
     }
 
 
     /** this is experimental */
     protected function buildMeta()
     {
-        // cache
-        if ($this->meta !== NULL)
-            return $this->meta;
-
         static $types = array(
             'CHAR'      => dibi::FIELD_TEXT,
             'COUNTER'   => dibi::FIELD_COUNTER,
@@ -259,21 +235,21 @@ class DibiOdbcResult extends DibiResult
             // and many others?
         );
 
-        $count = odbc_num_fields($this->resource);
+        $count = mssql_num_fields($this->resource);
         $this->meta = $this->convert = array();
-        for ($index = 1; $index <= $count; $index++) {
-            $native = strtoupper(odbc_field_type($this->resource, $index));
-            $name = odbc_field_name($this->resource, $index);
-            $this->meta[$name] = array(
-                'type'      => isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN,
-                'native'    => $native,
-                'length'    => odbc_field_len($this->resource, $index),
-                'scale'     => odbc_field_scale($this->resource, $index),
-                'precision' => odbc_field_precision($this->resource, $index),
-            );
-            $this->convert[$name] = $this->meta[$name]['type'];
+        for ($index = 0; $index < $count; $index++) {
+
+            $tmp = mssql_fetch_field($this->resource, $index);
+            $type = strtoupper($tmp->type);
+            $info['native'] = $tmp->type;
+            $info['type'] = isset($types[$type]) ? $types[$type] : dibi::FIELD_UNKNOWN;
+            $info['length'] = $tmp->max_length;
+            $info['table'] = $tmp->column_source;
+
+            $this->meta[$tmp->name] = $info;
+            $this->convert[$tmp->name] = $info['type'];
         }
     }
 
 
-} // class DibiOdbcResult
+} // class DibiMSSqlResult

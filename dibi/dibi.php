@@ -12,7 +12,7 @@
  * @license   GNU GENERAL PUBLIC LICENSE version 2
  * @package   dibi
  * @category  Database
- * @version   0.8b (Revision: $WCREV$, Date: $WCDATE$)
+ * @version   0.8c (Revision: $WCREV$, Date: $WCDATE$)
  */
 
 
@@ -24,9 +24,6 @@
  * @version  $Revision$ $Date$
  * @package  dibi
  */
-
-
-define('DIBI', '0.8b (Revision: $WCREV$, Date: $WCDATE$)');
 
 
 if (version_compare(PHP_VERSION , '5.0.3', '<'))
@@ -85,7 +82,10 @@ class dibi
         FIELD_UNKNOWN =    '?',
 
         // special
-        FIELD_COUNTER =    'c'; // counter or autoincrement, is integer
+        FIELD_COUNTER =    'c', // counter or autoincrement, is integer
+
+        // dibi version
+        VERSION =          '0.8c (Revision: $WCREV$, Date: $WCDATE$)';
 
 
     /**

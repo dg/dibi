@@ -1,3 +1,3 @@
-- PDO driver (current PDO driver is alpha version)
-- better examples
-- documentation
+- current PDO & MSSQL drivers are untested alphas!
+- make better examples & documentation
+

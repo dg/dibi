@@ -49,6 +49,13 @@ try {
         'dsn'     => 'sqlite2::memory:',
     ));
 
+    // connects to MS SQL
+    dibi::connect(array(
+        'driver'   => 'mssql',
+        'host'     => 'localhost',
+        'username' => 'root',
+        'password' => 'xxx',
+    ));
 
 } catch (DibiException $e) {
 
