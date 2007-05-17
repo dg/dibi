@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2005-2007 David Grudl aka -dgx- <dave@dgx.cz>
  *
- * @version  $Revision: 43 $ $Date: 2007-05-12 00:25:32 +0200 (so, 12 V 2007) $
+ * @version  $Revision$ $Date$
  * @package  dibi
  */
 
@@ -123,7 +123,10 @@ class DibiMSSqlDriver extends DibiDriver
 
     public function errorInfo()
     {
-        return FALSE;
+        return array(
+            'message'  => NULL,
+            'code'     => NULL,
+        );
     }
 
 

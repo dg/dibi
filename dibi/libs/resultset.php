@@ -246,6 +246,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
     {
         @$this->seek(0);
         $rec = $this->fetch();
+        if (!$rec) return array();  // empty resultset
 
         if ($value === NULL) {
             $tmp = array_keys($rec);
@@ -255,8 +256,6 @@ abstract class DibiResult implements IteratorAggregate, Countable
             if (!array_key_exists($key, $rec)) return FALSE;
             if (!array_key_exists($value, $rec)) return FALSE;
         }
-
-        if (!$rec) return array();  // empty resultset
 
         $arr = array();
         do {
