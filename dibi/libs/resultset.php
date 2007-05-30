@@ -157,7 +157,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
             return array();  // empty resultset
 
         $arr = array();
-        if (count($rec) == 1) {
+        if (count($rec) === 1) {
             $key = key($rec);
             do {
                 $arr[] = $rec[$key];
@@ -310,10 +310,10 @@ abstract class DibiResult implements IteratorAggregate, Countable
             return $value;
         }
 
-        if ($type == dibi::FIELD_DATE)
+        if ($type === dibi::FIELD_DATE)
             return strtotime($value);   // !!! not good
 
-        if ($type == dibi::FIELD_DATETIME)
+        if ($type === dibi::FIELD_DATETIME)
             return strtotime($value);  // !!! not good
 
         return $value;

@@ -268,7 +268,7 @@ class DibiMySqliResult extends DibiResult
                 $info['type'] = dibi::FIELD_COUNTER;
             else {
                 $info['type'] = isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN;
-//                if ($info['type'] == dibi::FIELD_TEXT && $info['length'] > 255)
+//                if ($info['type'] === dibi::FIELD_TEXT && $info['length'] > 255)
 //                    $info['type'] = dibi::FIELD_LONG_TEXT;
             }
 

@@ -48,7 +48,8 @@ class DibiTranslator
     public function translate($args)
     {
         $this->hasError = FALSE;
-        $command = null;
+        $commandIns = NULL;
+        $lastArr = NULL;
         $mod = & $this->modifier; // shortcut
         $mod = FALSE;
 
@@ -59,10 +60,13 @@ class DibiTranslator
 
         // iterate
         $sql = array();
+        $i = 0;
         foreach ($args as $arg)
         {
+            $i++;
+
             // %if was opened
-            if ('if' == $mod) {
+            if ($mod === 'if') {
                 $mod = FALSE;
                 $this->ifLevel++;
                 if (!$comment && !$arg) {
@@ -75,19 +79,24 @@ class DibiTranslator
             }
 
             // simple string means SQL
-            if (is_string($arg) && (!$mod || 'sql' == $mod)) {
+            if (is_string($arg) && (!$mod || $mod === 'sql')) {
                 $mod = FALSE;
                 // will generate new mod
                 $sql[] = $this->formatValue($arg, 'sql');
                 continue;
             }
 
-            // associative array without modifier - autoselect between SET or VALUES
+            // associative array without modifier - autoselect between SET or VALUES & LIST
             if (!$mod && is_array($arg) && is_string(key($arg))) {
-                if (!$command)
-                    $command = strtoupper(substr(ltrim($args[0]), 0, 6));
-
-                $mod = ('INSERT' == $command || 'REPLAC' == $command) ? 'v' : 'a';
+                if ($commandIns === NULL) {
+                    $commandIns = strtoupper(substr(ltrim($args[0]), 0, 6));
+                    $commandIns = $commandIns === 'INSERT' || $commandIns === 'REPLAC';
+                    $mod = $commandIns ? 'v' : 'a';
+                } else {
+                    $mod = $commandIns ? 'l' : 'a';
+                    if ($lastArr === $i - 1) $sql[] = ',';
+                }
+                $lastArr = $i;
             }
 
             // default processing
@@ -146,19 +155,25 @@ class DibiTranslator
                 return implode(', ', $vx);
 
 
+            case 'l': // LIST
+                $kx = NULL;
             case 'v': // VALUES
                 foreach ($value as $k => $v) {
                     // split into identifier & modifier
                     $pair = explode('%', $k, 2);
 
                     // generate arrays
-                    $kx[] = $this->delimite($pair[0]);
+                    if ($kx !== NULL) $kx[] = $this->delimite($pair[0]);
                     $vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
                 }
-                return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
+
+                if ($kx === NULL)
+                    return '(' . implode(', ', $vx) . ')';
+                else
+                    return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
 
-            default: // LIST
+            default:
                 foreach ($value as $v)
                     $vx[] = $this->formatValue($v, $modifier);
 
@@ -210,7 +225,7 @@ class DibiTranslator
                 // speed-up - is regexp required?
                 $toSkip = strcspn($value, '`[\'"%');
 
-                if (strlen($value) == $toSkip) // needn't be translated
+                if (strlen($value) === $toSkip) // needn't be translated
                     return $value;
 
                 // note: only this can change $this->modifier
@@ -294,9 +309,9 @@ class DibiTranslator
                 return "**Unexpected condition $matches[7]**";
             }
 
-            if ('end' == $matches[7]) {
+            if ($matches[7] === 'end') {
                 $this->ifLevel--;
-                if ($this->ifLevelStart == $this->ifLevel + 1) {
+                if ($this->ifLevelStart === $this->ifLevel + 1) {
                     // close comment
                     $this->ifLevelStart = 0;
                     $this->comment = FALSE;
@@ -306,7 +321,7 @@ class DibiTranslator
             }
 
             // else
-            if ($this->ifLevelStart == $this->ifLevel) {
+            if ($this->ifLevelStart === $this->ifLevel) {
                 $this->ifLevelStart = 0;
                 $this->comment = FALSE;
                 return "\0";

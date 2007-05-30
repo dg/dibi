@@ -58,6 +58,10 @@ LIMIT 10");
 dibi::test("INSERT INTO [mytable]", $arr4);
 
 
+// dibi detects MULTI INSERT or REPLACE command
+dibi::test("REPLACE INTO [mytable]", $arr4, $arr4, $arr4);
+
+
 // dibi detects UPDATE command
 $n = 123;
 dibi::test("UPDATE [mytable] SET", $arr4, " WHERE [id]=%i", $n);

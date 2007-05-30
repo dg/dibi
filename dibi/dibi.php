@@ -12,7 +12,7 @@
  * @license   GNU GENERAL PUBLIC LICENSE version 2
  * @package   dibi
  * @category  Database
- * @version   0.8c (Revision: $WCREV$, Date: $WCDATE$)
+ * @version   0.8d (Revision: $WCREV$, Date: $WCDATE$)
  */
 
 
@@ -85,7 +85,7 @@ class dibi
         FIELD_COUNTER =    'c', // counter or autoincrement, is integer
 
         // dibi version
-        VERSION =          '0.8c (Revision: $WCREV$, Date: $WCDATE$)';
+        VERSION =          '0.8d (Revision: $WCREV$, Date: $WCDATE$)';
 
 
     /**
@@ -150,7 +150,7 @@ class dibi
      *
      * @param  array|string connection parameters
      * @param  string       connection name
-     * @return void
+     * @return DibiDriver
      * @throw  DibiException
      */
     static public function connect($config, $name=0)
@@ -176,8 +176,9 @@ class dibi
         /** like $conn = $className::connect($config); */
         self::$conn = self::$registry[$name] = new $className($config);
 
-
         if (dibi::$logAll) dibi::log("OK: connected to DB '$config[driver]'");
+
+        return self::$conn;
     }
 
 
