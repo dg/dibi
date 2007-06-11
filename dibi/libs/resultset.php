@@ -248,16 +248,30 @@ abstract class DibiResult implements IteratorAggregate, Countable
         $rec = $this->fetch();
         if (!$rec) return array();  // empty resultset
 
+        $arr = array();
+
         if ($value === NULL) {
+            if ($key !== NULL) return FALSE; // error
+
+            // autodetect
+            if (count($rec) < 2) return FALSE;
             $tmp = array_keys($rec);
             $key = $tmp[0];
             $value = $tmp[1];
+
         } else {
-            if (!array_key_exists($key, $rec)) return FALSE;
             if (!array_key_exists($value, $rec)) return FALSE;
+
+            if ($key === NULL) { // autodetect
+                do {
+                    $arr[] = $rec[$value];
+                } while ($rec = $this->fetch());
+                return $arr;
+            }
+
+            if (!array_key_exists($key, $rec)) return FALSE;
         }
 
-        $arr = array();
         do {
             $arr[ $rec[$key] ] = $rec[$value];
         } while ($rec = $this->fetch());
