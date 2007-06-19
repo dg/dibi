@@ -3,7 +3,7 @@
 /**
  * This file is part of the "dibi" project (http://dibi.texy.info/)
  *
- * Copyright (c) 2005-2007 David Grudl aka -dgx- <dave@dgx.cz>
+ * Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
  *
  * @version  $Revision$ $Date$
  * @package  dibi

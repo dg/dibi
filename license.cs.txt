@@ -1,0 +1,34 @@
+----------------------------------------------------------------------------------
+Tento text je NEOFICIÁLNÍM pøekladem NEW BSD LICENSE. Nevyjadøuje právní podstatu
+podmínek pro šíøení tohoto softwaru - k tomuto úèelu slouí vıhradnì pùvodní
+anglická verze licence.
+----------------------------------------------------------------------------------
+
+
+Copyright (c) 2005-2007, David Grudl (http://www.dgx.cz)
+Všechna práva vyhrazena.
+
+Redistribuce a pouití zdrojovıch i binárních forem díla, v pùvodním i upravovaném
+tvaru, jsou povoleny za následujících podmínek:
+
+    * Šíøenı zdrojovı kód musí obsahovat vıše uvedenou informaci o copyrightu,
+      tento seznam podmínek a níe uvedené zøeknutí se odpovìdnosti.
+
+    * Šíøenı binární tvar musí nést vıše uvedenou informaci o copyrightu,
+      tento seznam podmínek a níe uvedené zøeknutí se odpovìdnosti ve své
+      dokumentaci a/nebo dalších poskytovanıch materiálech.
+
+    * Ani jméno Davida Grudla, ani jména pøispìvatelù nemohou bıt pouita
+      pøi podpoøe nebo právních aktech souvisejících s produkty odvozenımi
+      z tohoto software bez vıslovného písemného povolení.
+
+TENTO SOFTWARE JE POSKYTOVÁN DRITELEM LICENCE A JEHO PØISPÌVATELI "JAK STOJÍ A LEÍ"
+A JAKÉKOLIV VİSLOVNÉ NEBO PØEDPOKLÁDANÉ ZÁRUKY VÈETNÌ, ALE NEJEN, PØEDPOKLÁDANİCH
+OBCHODNÍCH ZÁRUK A ZÁRUKY VHODNOSTI PRO JAKİKOLIV ÚÈEL JSOU POPØENY.
+DRITEL, ANI PØISPÌVATELÉ NEBUDOU V ÁDNÉM PØÍPADÌ ODPOVÌDNI ZA JAKÉKOLIV PØÍMÉ,
+NEPØÍMÉ, NÁHODNÉ, ZVLÁŠTNÍ, PØÍKLADNÉ NEBO VYPLİVAJÍCÍ ŠKODY (VÈETNÌ, ALE NEJEN,
+ŠKOD VZNIKLİCH NARUŠENÍM DODÁVEK ZBOÍ NEBO SLUEB; ZTRÁTOU POUITELNOSTI,
+DAT NEBO ZISKÙ; NEBO PØERUŠENÍM OBCHODNÍ ÈINNOSTI) JAKKOLIV ZPÙSOBENÉ NA ZÁKLADÌ
+JAKÉKOLIV TEORIE O ZODPOVÌDNOSTI, A U PLYNOUCÍ Z JINÉHO SMLUVNÍHO VZTAHU,
+URÈITÉ ZODPOVÌDNOSTI NEBO PØEÈINU (VÈETNÌ NEDBALOSTI) NA JAKÉMKOLIV ZPÙSOBU POUITÍ
+TOHOTO SOFTWARE, I V PØÍPADÌ, E DRITEL PRÁV BYL UPOZORNÌN NA MONOST TAKOVİCH ŠKOD.
