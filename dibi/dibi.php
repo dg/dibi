@@ -8,24 +8,23 @@
  *
  * for PHP 5.0.3 and newer
  *
- * This source file is subject to the NEW BSD license that is bundled
+ * This source file is subject to the new BSD license that is bundled
  * with this package in the file license.txt.
  *
- * @link      http://dibi.texy.info/
- * @license   NEW BSD LICENSE
- * @package   dibi
- * @category  Database
- * @version   0.8d (Revision: $WCREV$, Date: $WCDATE$)
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2004-2007 David Grudl aka -dgx- (http://www.dgx.cz)
+ * @license    New BSD License
+ * @version    0.8d (Revision: $WCREV$, Date: $WCDATE$)
+ * @category   Database
+ * @package    Dibi
+ * @link       http://dibi.texy.info/
  */
 
 
 /**
  * This file is part of the "dibi" project (http://dibi.texy.info/)
  *
- * Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
- *
- * @version  $Revision$ $Date$
- * @package  dibi
+ * @version    $Revision$ $Date$
  */
 
 
@@ -154,7 +153,7 @@ class dibi
      * @param  array|string connection parameters
      * @param  string       connection name
      * @return DibiDriver
-     * @throw  DibiException
+     * @throws DibiException
      */
     static public function connect($config, $name=0)
     {
@@ -202,7 +201,7 @@ class dibi
      *
      * @param  string   connection registy name
      * @return object   DibiDriver object.
-     * @throw  DibiException
+     * @throws DibiException
      */
     static public function getConnection($name=NULL)
     {
@@ -226,7 +225,7 @@ class dibi
      *
      * @param  string   connection registy name
      * @return void
-     * @throw  DibiException
+     * @throws DibiException
      */
     static public function activate($name)
     {
@@ -240,7 +239,7 @@ class dibi
      *
      * @param  array|mixed    one or more arguments
      * @return int|DibiResult
-     * @throw  DibiException
+     * @throws DibiException
      */
     static public function query($args)
     {

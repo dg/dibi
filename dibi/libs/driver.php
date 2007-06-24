@@ -3,10 +3,12 @@
 /**
  * This file is part of the "dibi" project (http://dibi.texy.info/)
  *
- * Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
- *
- * @version  $Revision$ $Date$
- * @package  dibi
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
+ * @license    New BSD License
+ * @version    $Revision$ $Date$
+ * @category   Database
+ * @package    Dibi
  */
 
 
@@ -49,7 +51,7 @@ abstract class DibiDriver
     /**
      * Creates object and (optionally) connects to a database
      * @param array  connect configuration
-     * @throw  DibiException
+     * @throws DibiException
      */
     public function __construct($config)
     {
@@ -61,7 +63,7 @@ abstract class DibiDriver
 
     /**
      * Connects to a database
-     * @throw  DibiException
+     * @throws DibiException
      * @return resource
      */
     abstract protected function connect();
@@ -98,7 +100,7 @@ abstract class DibiDriver
      *
      * @param  array|mixed    one or more arguments
      * @return int|DibiResult
-     * @throw  DibiException
+     * @throws DibiException
      */
     public function query($args)
     {

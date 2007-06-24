@@ -3,10 +3,12 @@
 /**
  * This file is part of the "dibi" project (http://dibi.texy.info/)
  *
- * Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
- *
- * @version  $Revision$ $Date$
- * @package  dibi
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
+ * @license    New BSD License
+ * @version    $Revision$ $Date$
+ * @category   Database
+ * @package    Dibi
  */
 
 
@@ -43,7 +45,7 @@ class DibiTranslator
      *
      * @param  array
      * @return string|FALSE
-     * @throw  DibiException
+     * @throws DibiException
      */
     public function translate($args)
     {
