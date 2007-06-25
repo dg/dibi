@@ -73,15 +73,15 @@ class DibiMySqlDriver extends DibiDriver
         $php_errormsg = '';
 
         if (empty($config['persistent']))
-            $conn = @mysql_connect($host, $config['username'], $config['password'], TRUE);
+            $connection = @mysql_connect($host, $config['username'], $config['password'], TRUE);
         else
-            $conn = @mysql_pconnect($host, $config['username'], $config['password']);
+            $connection = @mysql_pconnect($host, $config['username'], $config['password']);
 
         if (function_exists('ini_set'))
             ini_set('track_errors', $save);
 
 
-        if (!is_resource($conn))
+        if (!is_resource($connection))
             throw new DibiException("Connecting error (driver mysql)'", array(
                 'message' => mysql_error() ? mysql_error() : $php_errormsg,
                 'code'    => mysql_errno(),
@@ -89,20 +89,20 @@ class DibiMySqlDriver extends DibiDriver
 
 
         if (!empty($config['charset'])) {
-            @mysql_query("SET NAMES '" . $config['charset'] . "'", $conn);
+            @mysql_query("SET NAMES '" . $config['charset'] . "'", $connection);
             // don't handle this error...
         }
 
 
         if (!empty($config['database'])) {
-            if (!@mysql_select_db($config['database'], $conn))
+            if (!@mysql_select_db($config['database'], $connection))
                 throw new DibiException("Connecting error (driver mysql)", array(
-                    'message' => mysql_error($conn),
-                    'code'    => mysql_errno($conn),
+                    'message' => mysql_error($connection),
+                    'code'    => mysql_errno($connection),
                 ));
         }
 
-        return $conn;
+        return $connection;
     }
 
 
@@ -111,15 +111,15 @@ class DibiMySqlDriver extends DibiDriver
     public function nativeQuery($sql)
     {
         $this->insertId = $this->affectedRows = FALSE;
-        $conn = $this->getResource();
-        $res = @mysql_query($sql, $conn);
+        $connection = $this->getConnection();
+        $res = @mysql_query($sql, $connection);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = mysql_affected_rows($conn);
+        $this->affectedRows = mysql_affected_rows($connection);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
-        $this->insertId = mysql_insert_id($conn);
+        $this->insertId = mysql_insert_id($connection);
         if ($this->insertId < 1) $this->insertId = FALSE;
 
         if (is_resource($res))
@@ -143,38 +143,38 @@ class DibiMySqlDriver extends DibiDriver
 
     public function begin()
     {
-        return mysql_query('BEGIN', $this->getResource());
+        return mysql_query('BEGIN', $this->getConnection());
     }
 
 
     public function commit()
     {
-        return mysql_query('COMMIT', $this->getResource());
+        return mysql_query('COMMIT', $this->getConnection());
     }
 
 
     public function rollback()
     {
-        return mysql_query('ROLLBACK', $this->getResource());
+        return mysql_query('ROLLBACK', $this->getConnection());
     }
 
 
     public function errorInfo()
     {
-        $conn = $this->getResource();
+        $connection = $this->getConnection();
         return array(
-            'message'  => mysql_error($conn),
-            'code'     => mysql_errno($conn),
+            'message'  => mysql_error($connection),
+            'code'     => mysql_errno($connection),
         );
     }
 
 
     public function escape($value, $appendQuotes=TRUE)
     {
-        $conn = $this->getResource();
+        $connection = $this->getConnection();
         return $appendQuotes
-               ? "'" . mysql_real_escape_string($value, $conn) . "'"
-               : mysql_real_escape_string($value, $conn);
+               ? "'" . mysql_real_escape_string($value, $connection) . "'"
+               : mysql_real_escape_string($value, $connection);
     }
 
 

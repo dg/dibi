@@ -12,7 +12,7 @@
  * with this package in the file license.txt.
  *
  * @author     David Grudl
- * @copyright  Copyright (c) 2004-2007 David Grudl aka -dgx- (http://www.dgx.cz)
+ * @copyright  Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
  * @license    New BSD License
  * @version    0.8d (Revision: $WCREV$, Date: $WCDATE$)
  * @category   Database
@@ -100,7 +100,7 @@ class dibi
      * Current connection
      * @var DibiDriver
      */
-    static private $conn;
+    static private $connection;
 
     /**
      * Last SQL command @see dibi::query()
@@ -175,12 +175,12 @@ class dibi
         }
 
         // create connection object and store in list
-        /** like $conn = $className::connect($config); */
-        self::$conn = self::$registry[$name] = new $className($config);
+        /** like $connection = $className::connect($config); */
+        self::$connection = self::$registry[$name] = new $className($config);
 
         if (dibi::$logAll) dibi::log("OK: connected to DB '$config[driver]'");
 
-        return self::$conn;
+        return self::$connection;
     }
 
 
@@ -192,7 +192,7 @@ class dibi
      */
     static public function isConnected()
     {
-        return (bool) self::$conn;
+        return (bool) self::$connection;
     }
 
 
@@ -206,10 +206,10 @@ class dibi
     static public function getConnection($name=NULL)
     {
         if ($name === NULL) {
-            if (!self::$conn)
+            if (!self::$connection)
                 throw new DibiException('Dibi is not connected to database');
 
-            return self::$conn;
+            return self::$connection;
         }
 
         if (!isset(self::$registry[$name]))
@@ -229,7 +229,7 @@ class dibi
      */
     static public function activate($name)
     {
-        self::$conn = self::getConnection($name);
+        self::$connection = self::getConnection($name);
     }
 
 

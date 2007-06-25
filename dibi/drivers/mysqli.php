@@ -64,18 +64,18 @@ class DibiMySqliDriver extends DibiDriver
     {
         $config = $this->config;
 
-        $conn = @mysqli_connect($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
+        $connection = @mysqli_connect($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
 
-        if (!$conn)
+        if (!$connection)
             throw new DibiException("Connecting error (driver mysqli)", array(
                 'message' => mysqli_connect_error(),
                 'code'    => mysqli_connect_errno(),
             ));
 
         if (!empty($config['charset']))
-            mysqli_query($conn, "SET NAMES '" . $config['charset'] . "'");
+            mysqli_query($connection, "SET NAMES '" . $config['charset'] . "'");
 
-        return $conn;
+        return $connection;
     }
 
 
@@ -83,15 +83,15 @@ class DibiMySqliDriver extends DibiDriver
     public function nativeQuery($sql)
     {
         $this->insertId = $this->affectedRows = FALSE;
-        $conn = $this->getResource();
-        $res = @mysqli_query($conn, $sql);
+        $connection = $this->getConnection();
+        $res = @mysqli_query($connection, $sql);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = mysqli_affected_rows($conn);
+        $this->affectedRows = mysqli_affected_rows($connection);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
-        $this->insertId = mysqli_insert_id($conn);
+        $this->insertId = mysqli_insert_id($connection);
         if ($this->insertId < 1) $this->insertId = FALSE;
 
         if (is_object($res))
@@ -115,34 +115,34 @@ class DibiMySqliDriver extends DibiDriver
 
     public function begin()
     {
-        return mysqli_autocommit($this->getResource(), FALSE);
+        return mysqli_autocommit($this->getConnection(), FALSE);
     }
 
 
     public function commit()
     {
-        $conn = $this->getResource();
-        $ok = mysqli_commit($conn);
-        mysqli_autocommit($conn, TRUE);
+        $connection = $this->getConnection();
+        $ok = mysqli_commit($connection);
+        mysqli_autocommit($connection, TRUE);
         return $ok;
     }
 
 
     public function rollback()
     {
-        $conn = $this->getResource();
-        $ok = mysqli_rollback($conn);
-        mysqli_autocommit($conn, TRUE);
+        $connection = $this->getConnection();
+        $ok = mysqli_rollback($connection);
+        mysqli_autocommit($connection, TRUE);
         return $ok;
     }
 
 
     public function errorInfo()
     {
-        $conn = $this->getResource();
+        $connection = $this->getConnection();
         return array(
-            'message'  => mysqli_error($conn),
-            'code'     => mysqli_errno($conn),
+            'message'  => mysqli_error($connection),
+            'code'     => mysqli_errno($connection),
         );
     }
 
@@ -151,10 +151,10 @@ class DibiMySqliDriver extends DibiDriver
 
     public function escape($value, $appendQuotes=TRUE)
     {
-        $conn = $this->getResource();
+        $connection = $this->getConnection();
         return $appendQuotes
-               ? "'" . mysqli_real_escape_string($conn, $value) . "'"
-               : mysqli_real_escape_string($conn, $value);
+               ? "'" . mysqli_real_escape_string($connection, $value) . "'"
+               : mysqli_real_escape_string($connection, $value);
     }
 
 

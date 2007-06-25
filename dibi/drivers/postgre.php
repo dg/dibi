@@ -59,20 +59,20 @@ class DibiPostgreDriver extends DibiDriver
         $config = $this->config;
 
         if (isset($config['persistent']))
-            $conn = @pg_connect($config['string'], $config['type']);
+            $connection = @pg_connect($config['string'], $config['type']);
         else
-            $conn = @pg_pconnect($config['string'], $config['type']);
+            $connection = @pg_pconnect($config['string'], $config['type']);
 
-        if (!is_resource($conn))
+        if (!is_resource($connection))
             throw new DibiException("Connecting error (driver postgre)", array(
                 'message' => pg_last_error(),
             ));
 
         if (!empty($config['charset'])) {
-            @pg_set_client_encoding($conn, $config['charset']);
+            @pg_set_client_encoding($connection, $config['charset']);
             // don't handle this error...
         }
-        return $conn;
+        return $connection;
     }
 
 
@@ -81,12 +81,12 @@ class DibiPostgreDriver extends DibiDriver
     {
         $this->affectedRows = FALSE;
 
-        $conn = $this->getResource();
-        $res = @pg_query($conn, $sql);
+        $connection = $this->getConnection();
+        $res = @pg_query($connection, $sql);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = pg_affected_rows($conn);
+        $this->affectedRows = pg_affected_rows($connection);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
         if (is_resource($res))
@@ -110,26 +110,26 @@ class DibiPostgreDriver extends DibiDriver
 
     public function begin()
     {
-        return pg_query($this->getResource(), 'BEGIN');
+        return pg_query($this->getConnection(), 'BEGIN');
     }
 
 
     public function commit()
     {
-        return pg_query($this->getResource(), 'COMMIT');
+        return pg_query($this->getConnection(), 'COMMIT');
     }
 
 
     public function rollback()
     {
-        return pg_query($this->getResource(), 'ROLLBACK');
+        return pg_query($this->getConnection(), 'ROLLBACK');
     }
 
 
     public function errorInfo()
     {
         return array(
-            'message'  => pg_last_error($this->getResource()),
+            'message'  => pg_last_error($this->getConnection()),
             'code'     => NULL,
         );
     }

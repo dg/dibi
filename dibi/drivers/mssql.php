@@ -57,19 +57,19 @@ class DibiMSSqlDriver extends DibiDriver
         $config = $this->config;
 
         if (empty($config['persistent']))
-            $conn = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE);
+            $connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE);
         else
-            $conn = @mssql_pconnect($config['host'], $config['username'], $config['password']);
+            $connection = @mssql_pconnect($config['host'], $config['username'], $config['password']);
 
-        if (!is_resource($conn))
+        if (!is_resource($connection))
             throw new DibiException("Connecting error (driver mssql)'");
 
         if (!empty($config['database'])) {
-            if (!@mssql_select_db($config['database'], $conn))
+            if (!@mssql_select_db($config['database'], $connection))
                 throw new DibiException("Connecting error (driver mssql)");
         }
 
-        return $conn;
+        return $connection;
     }
 
 
@@ -78,12 +78,12 @@ class DibiMSSqlDriver extends DibiDriver
     public function nativeQuery($sql)
     {
         $this->affectedRows = FALSE;
-        $conn = $this->getResource();
-        $res = @mssql_query($sql, $conn);
+        $connection = $this->getConnection();
+        $res = @mssql_query($sql, $connection);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = mssql_rows_affected($conn);
+        $this->affectedRows = mssql_rows_affected($connection);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
         if (is_resource($res))
@@ -107,19 +107,19 @@ class DibiMSSqlDriver extends DibiDriver
 
     public function begin()
     {
-        return mssql_query('BEGIN TRANSACTION', $this->getResource());
+        return mssql_query('BEGIN TRANSACTION', $this->getConnection());
     }
 
 
     public function commit()
     {
-        return mssql_query('COMMIT', $this->getResource());
+        return mssql_query('COMMIT', $this->getConnection());
     }
 
 
     public function rollback()
     {
-        return mssql_query('ROLLBACK', $this->getResource());
+        return mssql_query('ROLLBACK', $this->getConnection());
     }
 
 

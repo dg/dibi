@@ -66,7 +66,7 @@ class DibiPdoDriver extends DibiDriver
         $this->affectedRows = FALSE;
 
         // TODO: or exec() ?
-        $res = $this->getResource()->query($sql);
+        $res = $this->getConnection()->query($sql);
 
         if ($res === FALSE) return FALSE;
 
@@ -85,31 +85,31 @@ class DibiPdoDriver extends DibiDriver
 
     public function insertId()
     {
-        return $this->getResource()->lastInsertId();
+        return $this->getConnection()->lastInsertId();
     }
 
 
     public function begin()
     {
-        return $this->getResource()->beginTransaction();
+        return $this->getConnection()->beginTransaction();
     }
 
 
     public function commit()
     {
-        return $this->getResource()->commit();
+        return $this->getConnection()->commit();
     }
 
 
     public function rollback()
     {
-        return $this->getResource()->rollBack();
+        return $this->getConnection()->rollBack();
     }
 
 
     public function errorInfo()
     {
-        $error = $this->getResource()->errorInfo();
+        $error = $this->getConnection()->errorInfo();
         return array(
             'message'  => $error[2],
             'code'     => $error[1],
@@ -124,7 +124,7 @@ class DibiPdoDriver extends DibiDriver
             trigger_error('dibi: escaping without qoutes is not supported by PDO', E_USER_WARNING);
             return NULL;
         }
-        return $this->getResource()->quote($value);
+        return $this->getConnection()->quote($value);
     }
 
 

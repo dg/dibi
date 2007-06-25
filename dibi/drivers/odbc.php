@@ -68,17 +68,17 @@ class DibiOdbcDriver extends DibiDriver
         $config = $this->config;
 
         if (empty($config['persistent']))
-            $conn = @odbc_connect($config['database'], $config['username'], $config['password']);
+            $connection = @odbc_connect($config['database'], $config['username'], $config['password']);
         else
-            $conn = @odbc_pconnect($config['database'], $config['username'], $config['password']);
+            $connection = @odbc_pconnect($config['database'], $config['username'], $config['password']);
 
-        if (!is_resource($conn))
+        if (!is_resource($connection))
             throw new DibiException("Connecting error (driver odbc)", array(
                 'message' => odbc_errormsg(),
                 'code'    => odbc_error(),
             ));
 
-        return $conn;
+        return $connection;
     }
 
 
@@ -87,12 +87,12 @@ class DibiOdbcDriver extends DibiDriver
     {
         $this->affectedRows = FALSE;
 
-        $conn = $this->getResource();
-        $res = @odbc_exec($conn, $sql);
+        $connection = $this->getConnection();
+        $res = @odbc_exec($connection, $sql);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = odbc_num_rows($conn);
+        $this->affectedRows = odbc_num_rows($connection);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
         if (is_resource($res))
@@ -116,34 +116,34 @@ class DibiOdbcDriver extends DibiDriver
 
     public function begin()
     {
-        return odbc_autocommit($this->getResource(), FALSE);
+        return odbc_autocommit($this->getConnection(), FALSE);
     }
 
 
     public function commit()
     {
-        $conn = $this->getResource();
-        $ok = odbc_commit($conn);
-        odbc_autocommit($conn, TRUE);
+        $connection = $this->getConnection();
+        $ok = odbc_commit($connection);
+        odbc_autocommit($connection, TRUE);
         return $ok;
     }
 
 
     public function rollback()
     {
-        $conn = $this->getResource();
-        $ok = odbc_rollback($conn);
-        odbc_autocommit($conn, TRUE);
+        $connection = $this->getConnection();
+        $ok = odbc_rollback($connection);
+        odbc_autocommit($connection, TRUE);
         return $ok;
     }
 
 
     public function errorInfo()
     {
-        $conn = $this->getResource();
+        $connection = $this->getConnection();
         return array(
-            'message'  => odbc_errormsg($conn),
-            'code'     => odbc_error($conn),
+            'message'  => odbc_errormsg($connection),
+            'code'     => odbc_error($connection),
         );
     }
 

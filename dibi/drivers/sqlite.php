@@ -62,16 +62,16 @@ class DibiSqliteDriver extends DibiDriver
 
         $errorMsg = '';
         if (empty($config['persistent']))
-            $conn = @sqlite_open($config['database'], $config['mode'], $errorMsg);
+            $connection = @sqlite_open($config['database'], $config['mode'], $errorMsg);
         else
-            $conn = @sqlite_popen($config['database'], $config['mode'], $errorMsg);
+            $connection = @sqlite_popen($config['database'], $config['mode'], $errorMsg);
 
-        if (!$conn)
+        if (!$connection)
             throw new DibiException("Connecting error (driver sqlite)", array(
                 'message' => $errorMsg,
             ));
 
-        return $conn;
+        return $connection;
     }
 
 
@@ -80,15 +80,15 @@ class DibiSqliteDriver extends DibiDriver
     {
         $this->insertId = $this->affectedRows = FALSE;
 
-        $conn = $this->getResource();
-        $res = @sqlite_query($conn, $sql, SQLITE_ASSOC);
+        $connection = $this->getConnection();
+        $res = @sqlite_query($connection, $sql, SQLITE_ASSOC);
 
         if ($res === FALSE) return FALSE;
 
-        $this->affectedRows = sqlite_changes($conn);
+        $this->affectedRows = sqlite_changes($connection);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
-        $this->insertId = sqlite_last_insert_rowid($conn);
+        $this->insertId = sqlite_last_insert_rowid($connection);
         if ($this->insertId < 1) $this->insertId = FALSE;
 
         if (is_resource($res))
@@ -112,25 +112,25 @@ class DibiSqliteDriver extends DibiDriver
 
     public function begin()
     {
-        return sqlite_query($this->getResource(), 'BEGIN');
+        return sqlite_query($this->getConnection(), 'BEGIN');
     }
 
 
     public function commit()
     {
-        return sqlite_query($this->getResource(), 'COMMIT');
+        return sqlite_query($this->getConnection(), 'COMMIT');
     }
 
 
     public function rollback()
     {
-        return sqlite_query($this->getResource(), 'ROLLBACK');
+        return sqlite_query($this->getConnection(), 'ROLLBACK');
     }
 
 
     public function errorInfo()
     {
-        $code = sqlite_last_error($this->getResource());
+        $code = sqlite_last_error($this->getConnection());
         return array(
             'message'  => sqlite_error_string($code),
             'code'     => $code,

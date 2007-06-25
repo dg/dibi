@@ -93,7 +93,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
     /**
      * Fetches the row at current position and moves the internal cursor to the next position
      * internal usage only
-     * @return array|FALSE  array() on success, FALSE if no next record
+     * @return array|FALSE  array on success, FALSE if no next record
      */
     abstract protected function doFetch();
 
@@ -102,23 +102,23 @@ abstract class DibiResult implements IteratorAggregate, Countable
     /**
      * Fetches the row at current position, process optional type conversion
      * and moves the internal cursor to the next position
-     * @return array|FALSE  array() on success, FALSE if no next record
+     * @return array|FALSE  array on success, FALSE if no next record
      */
     final public function fetch()
     {
-        $rec = $this->doFetch();
-        if (!is_array($rec))
+        $row = $this->doFetch();
+        if (!is_array($row))
             return FALSE;
 
         // types-converting?
         if ($t = $this->convert) {  // little speed-up
-            foreach ($rec as $key => $value) {
+            foreach ($row as $key => $value) {
                 if (isset($t[$key]))
-                    $rec[$key] = $this->convert($value, $t[$key]);
+                    $row[$key] = $this->convert($value, $t[$key]);
             }
         }
 
-        return $rec;
+        return $row;
     }
 
 
@@ -129,20 +129,20 @@ abstract class DibiResult implements IteratorAggregate, Countable
      */
     final function fetchSingle()
     {
-        $rec = $this->doFetch();
-        if (!is_array($rec))
+        $row = $this->doFetch();
+        if (!is_array($row))
             return FALSE;
 
         // types-converting?
         if ($t = $this->convert) {  // little speed-up
-            $value = reset($rec);
-            $key = key($rec);
+            $value = reset($row);
+            $key = key($row);
             return isset($t[$key])
                 ? $this->convert($value, $t[$key])
                 : $value;
         }
 
-        return reset($rec);
+        return reset($row);
     }
 
 
@@ -154,25 +154,25 @@ abstract class DibiResult implements IteratorAggregate, Countable
     final function fetchAll()
     {
         @$this->seek(0);
-        $rec = $this->fetch();
-        if (!$rec)
+        $row = $this->fetch();
+        if (!$row)
             return array();  // empty resultset
 
-        $arr = array();
-        if (count($rec) === 1) {
-            $key = key($rec);
+        $data = array();
+        if (count($row) === 1) {
+            $key = key($row);
             do {
-                $arr[] = $rec[$key];
-            } while ($rec = $this->fetch());
+                $data[] = $row[$key];
+            } while ($row = $this->fetch());
 
         } else {
 
             do {
-                $arr[] = $rec;
-            } while ($rec = $this->fetch());
+                $data[] = $row;
+            } while ($row = $this->fetch());
         }
 
-        return $arr;
+        return $data;
     }
 
 
@@ -180,7 +180,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
     /**
      * Fetches all records from table and returns associative tree
      * Associative descriptor:  assoc1,*,assoc2,#,assco3
-     * builds a tree:           $arr[value1][index][value2]['assoc3'][value3] = {record}
+     * builds a tree:           $data[value1][index][value2]['assoc3'][value3] = {record}
      *
      * @param  string  associative descriptor
      * @return array
@@ -188,18 +188,18 @@ abstract class DibiResult implements IteratorAggregate, Countable
     final function fetchAssoc($assoc)
     {
         @$this->seek(0);
-        $rec = $this->fetch();
-        if (!$rec) return array();  // empty resultset
+        $row = $this->fetch();
+        if (!$row) return array();  // empty resultset
 
-        $arr = NULL;
+        $data = NULL;
         $assoc = explode(',', $assoc);
 
         if (count($assoc) === 1) {  // speed-up
             $as = $assoc[0];
             do {
-                $arr[ $rec[$as] ] = $rec;
-            } while ($rec = $this->fetch());
-            return $arr;
+                $data[ $row[$as] ] = $row;
+            } while ($row = $this->fetch());
+            return $data;
         }
 
         $last = count($assoc) - 1;
@@ -207,7 +207,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
         // make associative tree
         do {
-            $x = & $arr;
+            $x = & $data;
 
             // iterative deepening
             foreach ($assoc as $i => $as) {
@@ -216,7 +216,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
                 } elseif ($as === '#') { // "record" node
                     if ($x === NULL) {
-                        $x = $rec;
+                        $x = $row;
                         $x = & $x[ $assoc[$i+1] ];
                         $x = NULL; // prepare child node
                     } else {
@@ -224,16 +224,16 @@ abstract class DibiResult implements IteratorAggregate, Countable
                     }
 
                 } else { // associative-array node
-                    $x = & $x[ $rec[ $as ] ];
+                    $x = & $x[ $row[ $as ] ];
                 }
             }
 
-            if ($x === NULL) $x = $rec; // build leaf
+            if ($x === NULL) $x = $row; // build leaf
 
-        } while ($rec = $this->fetch());
+        } while ($row = $this->fetch());
 
         unset($x);
-        return $arr;
+        return $data;
     }
 
 
@@ -247,38 +247,38 @@ abstract class DibiResult implements IteratorAggregate, Countable
     final function fetchPairs($key=NULL, $value=NULL)
     {
         @$this->seek(0);
-        $rec = $this->fetch();
-        if (!$rec) return array();  // empty resultset
+        $row = $this->fetch();
+        if (!$row) return array();  // empty resultset
 
-        $arr = array();
+        $data = array();
 
         if ($value === NULL) {
             if ($key !== NULL) return FALSE; // error
 
             // autodetect
-            if (count($rec) < 2) return FALSE;
-            $tmp = array_keys($rec);
+            if (count($row) < 2) return FALSE;
+            $tmp = array_keys($row);
             $key = $tmp[0];
             $value = $tmp[1];
 
         } else {
-            if (!array_key_exists($value, $rec)) return FALSE;
+            if (!array_key_exists($value, $row)) return FALSE;
 
             if ($key === NULL) { // autodetect
                 do {
-                    $arr[] = $rec[$value];
-                } while ($rec = $this->fetch());
-                return $arr;
+                    $data[] = $row[$value];
+                } while ($row = $this->fetch());
+                return $data;
             }
 
-            if (!array_key_exists($key, $rec)) return FALSE;
+            if (!array_key_exists($key, $row)) return FALSE;
         }
 
         do {
-            $arr[ $rec[$key] ] = $rec[$value];
-        } while ($rec = $this->fetch());
+            $data[ $row[$key] ] = $row[$value];
+        } while ($row = $this->fetch());
 
-        return $arr;
+        return $data;
     }
 
 
@@ -403,9 +403,9 @@ abstract class DibiResult implements IteratorAggregate, Countable
     /**
      * Access to undeclared property
      */
-    function __get($nm) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$nm"); }
-    function __set($nm, $val) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$nm"); }
-    function __unset($nm) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$nm"); }
+    function __get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
 
 }  // class DibiResult
 
@@ -441,8 +441,8 @@ class DibiResultIterator implements Iterator
         $result,
         $offset,
         $count,
-        $record,
-        $row;
+        $row,
+        $pointer;
 
 
     public function __construct(DibiResult $result, $offset = NULL, $count = NULL)
@@ -457,38 +457,38 @@ class DibiResultIterator implements Iterator
     /** these are the required Iterator functions */
     public function rewind()
     {
-        $this->row = 0;
+        $this->pointer = 0;
         @$this->result->seek($this->offset);
-        $this->record = $this->result->fetch();
+        $this->row = $this->result->fetch();
     }
 
 
 
     public function key()
     {
-        return $this->row;
+        return $this->pointer;
     }
 
 
 
     public function current()
     {
-        return $this->record;
+        return $this->row;
     }
 
 
 
     public function next()
     {
-        $this->record = $this->result->fetch();
-        $this->row++;
+        $this->row = $this->result->fetch();
+        $this->pointer++;
     }
 
 
 
     public function valid()
     {
-        return is_array($this->record) && ($this->row < $this->count);
+        return is_array($this->row) && ($this->pointer < $this->count);
     }
     /** end required Iterator functions */
 

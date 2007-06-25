@@ -33,7 +33,7 @@ abstract class DibiDriver
      * Connection resource
      * @var resource
      */
-    private $res;
+    private $connection;
 
     /**
      * Describes how convert some datatypes to SQL command
@@ -56,7 +56,7 @@ abstract class DibiDriver
     public function __construct($config)
     {
         $this->config = $config;
-        if (empty($config['lazy'])) $this->res = $this->connect();
+        if (empty($config['lazy'])) $this->connection = $this->connect();
     }
 
 
@@ -86,11 +86,11 @@ abstract class DibiDriver
      * Returns the connection resource
      * @return resource
      */
-    public function getResource()
+    public function getConnection()
     {
-        if (!$this->res) $this->res = $this->connect();
+        if (!$this->connection) $this->connection = $this->connect();
 
-        return $this->res;
+        return $this->connection;
     }
 
 
@@ -255,9 +255,9 @@ abstract class DibiDriver
     /**
      * Access to undeclared property
      */
-    function __get($nm) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$nm"); }
-    function __set($nm, $val) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$nm"); }
-    function __unset($nm) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$nm"); }
+    function __get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
 
 
 } // class DibiDriver

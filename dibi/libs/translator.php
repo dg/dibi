@@ -380,8 +380,8 @@ class DibiTranslator
     /**
      * Access to undeclared property
      */
-    function __get($nm) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$nm"); }
-    function __set($nm, $val) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$nm"); }
-    function __unset($nm) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$nm"); }
+    function __get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
 
 } // class DibiParser
