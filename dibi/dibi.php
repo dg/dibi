@@ -94,49 +94,49 @@ class dibi
      * Connection registry storage for DibiDriver objects
      * @var DibiDriver[]
      */
-    static private $registry = array();
+    private static $registry = array();
 
     /**
      * Current connection
      * @var DibiDriver
      */
-    static private $connection;
+    private static $connection;
 
     /**
      * Last SQL command @see dibi::query()
      * @var string
      */
-    static public $sql;
+    public static $sql;
 
     /**
      * File for logging SQL queries
      * @var string|NULL
      */
-    static public $logFile;
+    public static $logFile;
 
     /**
      * Mode parameter used by fopen()
      * @var string
      */
-    static public $logMode = 'a';
+    public static $logMode = 'a';
 
     /**
      * To log all queries or error queries (debug mode)
      * @var bool
      */
-    static public $logAll = FALSE;
+    public static $logAll = FALSE;
 
     /**
      * dibi::query() error mode
      * @var bool
      */
-    static public $throwExceptions = FALSE;
+    public static $throwExceptions = FALSE;
 
     /**
      * Substitutions for identifiers
      * @var array
      */
-    static private $substs = array();
+    private static $substs = array();
 
 
 
@@ -155,7 +155,7 @@ class dibi
      * @return DibiDriver
      * @throws DibiException
      */
-    static public function connect($config, $name=0)
+    public static function connect($config, $name=0)
     {
         // DSN string
         if (is_string($config))
@@ -190,7 +190,7 @@ class dibi
      *
      * @return bool
      */
-    static public function isConnected()
+    public static function isConnected()
     {
         return (bool) self::$connection;
     }
@@ -203,7 +203,7 @@ class dibi
      * @return object   DibiDriver object.
      * @throws DibiException
      */
-    static public function getConnection($name=NULL)
+    public static function getConnection($name=NULL)
     {
         if ($name === NULL) {
             if (!self::$connection)
@@ -227,7 +227,7 @@ class dibi
      * @return void
      * @throws DibiException
      */
-    static public function activate($name)
+    public static function activate($name)
     {
         self::$connection = self::getConnection($name);
     }
@@ -241,7 +241,7 @@ class dibi
      * @return int|DibiResult
      * @throws DibiException
      */
-    static public function query($args)
+    public static function query($args)
     {
         // receive arguments
         if (!is_array($args))
@@ -258,7 +258,7 @@ class dibi
      * @param  array|mixed  one or more arguments
      * @return bool
      */
-    static public function test($args)
+    public static function test($args)
     {
         // receive arguments
         if (!is_array($args))
@@ -287,7 +287,7 @@ class dibi
      *
      * @return int|bool  int on success or FALSE on failure
      */
-    static public function insertId()
+    public static function insertId()
     {
         return self::getConnection()->insertId();
     }
@@ -300,7 +300,7 @@ class dibi
      *
      * @return int  number of rows or FALSE on error
      */
-    static public function affectedRows()
+    public static function affectedRows()
     {
         return self::getConnection()->affectedRows();
     }
@@ -313,14 +313,14 @@ class dibi
      * @param string        SQL statement.
      * @return object|bool  Result set object or TRUE on success, FALSE on failure
      */
-    static public function nativeQuery($sql)
+    public static function nativeQuery($sql)
     {
         return self::getConnection()->nativeQuery($sql);
     }
 
 
 
-    static private function dumpHighlight($matches)
+    private static function dumpHighlight($matches)
     {
         if (!empty($matches[1])) // comment
             return '<em style="color:gray">'.$matches[1].'</em>';
@@ -344,7 +344,7 @@ class dibi
      * @param bool   return or print?
      * @return void
      */
-    static public function dump($sql, $return=FALSE) {
+    public static function dump($sql, $return=FALSE) {
         static $keywords2 = 'ALL|DISTINCT|AS|ON|INTO|AND|OR|AS';
         static $keywords1 = 'SELECT|UPDATE|INSERT|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';
 
@@ -376,7 +376,7 @@ class dibi
      * @param object   DibiResult
      * @return void
      */
-    static public function dumpResult(DibiResult $res)
+    public static function dumpResult(DibiResult $res)
     {
         echo '<table class="dump"><tr>';
         echo '<th>#row</th>';
@@ -403,7 +403,7 @@ class dibi
      * @param string to
      * @return void
      */
-    static public function addSubst($expr, $subst)
+    public static function addSubst($expr, $subst)
     {
         self::$substs[':'.$expr.':'] = $subst;
     }
@@ -414,7 +414,7 @@ class dibi
      * @param string from
      * @return void
      */
-    static public function removeSubst($expr)
+    public static function removeSubst($expr)
     {
         unset(self::$substs[':'.$expr.':']);
     }
@@ -425,7 +425,7 @@ class dibi
      * @param string
      * @return string
      */
-    static public function substitute($s)
+    public static function substitute($s)
     {
         if (strpos($s, ':') === FALSE) return $s;
         return strtr($s, self::$substs);
@@ -436,7 +436,7 @@ class dibi
      * Error logging
      * EXPERIMENTAL
      */
-    static public function log($message)
+    public static function log($message)
     {
         if (self::$logFile == NULL || self::$logMode == NULL) return;
 

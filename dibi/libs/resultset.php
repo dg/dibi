@@ -54,7 +54,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
     protected $meta;
 
 
-    static private $types = array(
+    private static $types = array(
         dibi::FIELD_TEXT =>    'string',
         dibi::FIELD_BINARY =>  'string',
         dibi::FIELD_BOOL =>    'bool',
@@ -400,12 +400,14 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
 
 
-    /**
+    /**#@+
      * Access to undeclared property
+     * @throws Exception
      */
     function __get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
     function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
     function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    /**#@-*/
 
 }  // class DibiResult
 
