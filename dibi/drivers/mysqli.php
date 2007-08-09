@@ -149,7 +149,7 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
-    public function escape($value, $appendQuotes=TRUE)
+    public function escape($value, $appendQuotes = TRUE)
     {
         $connection = $this->getConnection();
         return $appendQuotes

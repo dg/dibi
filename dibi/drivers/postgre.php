@@ -135,7 +135,7 @@ class DibiPostgreDriver extends DibiDriver
     }
 
 
-    public function escape($value, $appendQuotes=TRUE)
+    public function escape($value, $appendQuotes = TRUE)
     {
         return $appendQuotes
                ? "'" . pg_escape_string($value) . "'"

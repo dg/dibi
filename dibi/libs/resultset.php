@@ -244,7 +244,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
      * @param  string  value
      * @return array
      */
-    final function fetchPairs($key=NULL, $value=NULL)
+    final function fetchPairs($key = NULL, $value = NULL)
     {
         @$this->seek(0);
         $row = $this->fetch();
@@ -294,7 +294,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
 
 
-    public function setType($field, $type = NULL)
+    final public function setType($field, $type = NULL)
     {
         if ($field === TRUE)
             $this->detectTypes();
@@ -309,14 +309,14 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
 
     /** is this needed? */
-    public function getType($field)
+    final public function getType($field)
     {
         return isset($this->convert[$field]) ? $this->convert[$field] : NULL;
     }
 
 
 
-    public function convert($value, $type)
+    final public function convert($value, $type)
     {
         if ($value === NULL || $value === FALSE)
             return $value;
@@ -341,7 +341,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
      * Gets an array of field names
      * @return array
      */
-    public function getFields()
+    final public function getFields()
     {
         // lazy init
         if ($this->meta === NULL) $this->buildMeta();
@@ -355,7 +355,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
      * @param  string  column name
      * @return array
      */
-    public function getMetaData($field)
+    final public function getMetaData($field)
     {
         // lazy init
         if ($this->meta === NULL) $this->buildMeta();
@@ -368,7 +368,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
      * Acquires ....
      * @return void
      */
-    protected function detectTypes()
+    final protected function detectTypes()
     {
         if ($this->meta === NULL) $this->buildMeta();
     }
@@ -383,7 +383,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
 
     /** these are the required IteratorAggregate functions */
-    public function getIterator($offset = NULL, $count = NULL)
+    final public function getIterator($offset = NULL, $count = NULL)
     {
         return new DibiResultIterator($this, $offset, $count);
     }
@@ -392,7 +392,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
 
     /** these are the required Countable functions */
-    public function count()
+    final public function count()
     {
         return $this->rowCount();
     }
@@ -404,9 +404,9 @@ abstract class DibiResult implements IteratorAggregate, Countable
      * Access to undeclared property
      * @throws Exception
      */
-    function __get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    final function __get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    final function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    final function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
     /**#@-*/
 
 }  // class DibiResult
@@ -437,7 +437,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
  * }
  * </code>
  */
-class DibiResultIterator implements Iterator
+final class DibiResultIterator implements Iterator
 {
     private
         $result,

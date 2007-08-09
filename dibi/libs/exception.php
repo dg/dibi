@@ -28,7 +28,7 @@ class DibiException extends Exception
         $dbError;
 
 
-    public function __construct($message, $dbError=NULL, $sql=NULL)
+    public function __construct($message, $dbError = NULL, $sql = NULL)
     {
         $this->dbError = $dbError;
         $this->sql = $sql;
@@ -37,13 +37,13 @@ class DibiException extends Exception
     }
 
 
-    public function getSql()
+    final public function getSql()
     {
         return $this->sql;
     }
 
 
-    public function getDbError()
+    final public function getDbError()
     {
         return $this->dbError;
     }

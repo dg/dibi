@@ -149,7 +149,7 @@ class DibiOdbcDriver extends DibiDriver
 
 
 
-    public function escape($value, $appendQuotes=TRUE)
+    public function escape($value, $appendQuotes = TRUE)
     {
         $value = str_replace("'", "''", $value);
         return $appendQuotes

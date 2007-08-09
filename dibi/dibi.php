@@ -130,7 +130,7 @@ class dibi
      * dibi::query() error mode
      * @var bool
      */
-    public static $throwExceptions = FALSE;
+    public static $throwExceptions = TRUE;
 
     /**
      * Substitutions for identifiers
@@ -155,7 +155,7 @@ class dibi
      * @return DibiDriver
      * @throws DibiException
      */
-    public static function connect($config, $name=0)
+    public static function connect($config, $name = 0)
     {
         // DSN string
         if (is_string($config))
@@ -203,7 +203,7 @@ class dibi
      * @return object   DibiDriver object.
      * @throws DibiException
      */
-    public static function getConnection($name=NULL)
+    public static function getConnection($name = NULL)
     {
         if ($name === NULL) {
             if (!self::$connection)
@@ -320,6 +320,36 @@ class dibi
 
 
 
+    /**
+     * Begins a transaction - Monostate for DibiDriver::begin()
+     */
+    public static function begin()
+    {
+        return self::getConnection()->begin();
+    }
+
+
+
+    /**
+     * Commits statements in a transaction - Monostate for DibiDriver::commit()
+     */
+    public static function commit()
+    {
+        return self::getConnection()->commit();
+    }
+
+
+
+    /**
+     * Rollback changes in a transaction - Monostate for DibiDriver::rollback()
+     */
+    public static function rollback()
+    {
+        return self::getConnection()->rollback();
+    }
+
+
+
     private static function dumpHighlight($matches)
     {
         if (!empty($matches[1])) // comment
@@ -344,7 +374,7 @@ class dibi
      * @param bool   return or print?
      * @return void
      */
-    public static function dump($sql, $return=FALSE) {
+    public static function dump($sql, $return = FALSE) {
         static $keywords2 = 'ALL|DISTINCT|AS|ON|INTO|AND|OR|AS';
         static $keywords1 = 'SELECT|UPDATE|INSERT|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';
 

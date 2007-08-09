@@ -75,7 +75,7 @@ abstract class DibiDriver
      * @see DibiDriver::__construct
      * @return array
      */
-    public function getConfig()
+    final public function getConfig()
     {
         return $this->config;
     }
@@ -86,7 +86,7 @@ abstract class DibiDriver
      * Returns the connection resource
      * @return resource
      */
-    public function getConnection()
+    final public function getConnection()
     {
         if (!$this->connection) $this->connection = $this->connect();
 
@@ -102,7 +102,7 @@ abstract class DibiDriver
      * @return int|DibiResult
      * @throws DibiException
      */
-    public function query($args)
+    final public function query($args)
     {
         // receive arguments
         if (!is_array($args))
@@ -219,7 +219,7 @@ abstract class DibiDriver
      * @param bool       quote string?
      * @return string    escaped and optionally quoted string
      */
-    abstract public function escape($value, $appendQuotes=TRUE);
+    abstract public function escape($value, $appendQuotes = TRUE);
 
 
 
@@ -256,9 +256,9 @@ abstract class DibiDriver
      * Access to undeclared property
      * @throws Exception
      */
-    function __get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    final function __get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    final function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    final function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
     /**#@-*/
 
 

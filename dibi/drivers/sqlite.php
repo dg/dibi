@@ -138,7 +138,7 @@ class DibiSqliteDriver extends DibiDriver
     }
 
 
-    public function escape($value, $appendQuotes=TRUE)
+    public function escape($value, $appendQuotes = TRUE)
     {
         return $appendQuotes
                ? "'" . sqlite_escape_string($value) . "'"
