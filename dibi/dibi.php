@@ -45,7 +45,7 @@ require_once dirname(__FILE__).'/libs/exception.php';
 /**
  * Interface for user variable, used for generating SQL
  */
-interface IDibiVariable
+interface DibiVariableInterface
 {
     /**
      * Format for SQL

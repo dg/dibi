@@ -10,7 +10,7 @@ if (function_exists('date_default_timezone_set'))
 /**
  * Pseudotype for UNIX timestamp representation
  */
-class TDateTime implements IDibiVariable
+class MyDateTime implements DibiVariableInterface
 {
     /**
      * Unix timestamp
@@ -72,6 +72,6 @@ dibi::test("
 INSERT INTO [mytable]", array(
     'A' => 12,
     'B' => NULL,
-    'C' => new TDateTime(31542),  // using out class
+    'C' => new MyDateTime(31542),  // using out class
     'D' => 'any string',
 ));

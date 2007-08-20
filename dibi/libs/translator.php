@@ -188,7 +188,7 @@ final class DibiTranslator
         if ($modifier) {
             if ($value === NULL) return 'NULL';
 
-            if ($value instanceof IDibiVariable)
+            if ($value instanceof DibiVariableInterface)
                 return $value->toSql($this->driver, $modifier);
 
             if (!is_scalar($value)) {  // array is already processed
@@ -278,7 +278,7 @@ final class DibiTranslator
         if ($value === NULL)
             return 'NULL';
 
-        if ($value instanceof IDibiVariable)
+        if ($value instanceof DibiVariableInterface)
             return $value->toSql($this->driver);
 
         $this->hasError = TRUE;
@@ -381,9 +381,9 @@ final class DibiTranslator
      * Access to undeclared property
      * @throws Exception
      */
-    final function __get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    final function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    final function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    private function __get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    private function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    private function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
     /**#@-*/
 
 } // class DibiParser
