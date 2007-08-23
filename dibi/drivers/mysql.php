@@ -107,7 +107,6 @@ class DibiMySqlDriver extends DibiDriver
 
 
 
-
     public function nativeQuery($sql)
     {
         $this->insertId = $this->affectedRows = FALSE;
@@ -129,10 +128,12 @@ class DibiMySqlDriver extends DibiDriver
     }
 
 
+
     public function affectedRows()
     {
         return $this->affectedRows;
     }
+
 
 
     public function insertId()
@@ -141,10 +142,12 @@ class DibiMySqlDriver extends DibiDriver
     }
 
 
+
     public function begin()
     {
         return mysql_query('BEGIN', $this->getConnection());
     }
+
 
 
     public function commit()
@@ -153,10 +156,12 @@ class DibiMySqlDriver extends DibiDriver
     }
 
 
+
     public function rollback()
     {
         return mysql_query('ROLLBACK', $this->getConnection());
     }
+
 
 
     public function errorInfo()
@@ -169,6 +174,7 @@ class DibiMySqlDriver extends DibiDriver
     }
 
 
+
     public function escape($value, $appendQuotes = TRUE)
     {
         $connection = $this->getConnection();
@@ -178,16 +184,19 @@ class DibiMySqlDriver extends DibiDriver
     }
 
 
+
     public function delimite($value)
     {
         return '`' . str_replace('.', '`.`', $value) . '`';
     }
 
 
+
     public function getMetaData()
     {
         trigger_error('Meta is not implemented yet.', E_USER_WARNING);
     }
+
 
 
     /**
@@ -224,10 +233,12 @@ class DibiMySqlResult extends DibiResult
     }
 
 
+
     public function rowCount()
     {
         return mysql_num_rows($this->resource);
     }
+
 
 
     protected function doFetch()
@@ -236,16 +247,19 @@ class DibiMySqlResult extends DibiResult
     }
 
 
+
     public function seek($row)
     {
         return mysql_data_seek($this->resource, $row);
     }
 
 
+
     protected function free()
     {
         mysql_free_result($this->resource);
     }
+
 
 
     /** this is experimental */

@@ -102,10 +102,12 @@ class DibiOdbcDriver extends DibiDriver
     }
 
 
+
     public function affectedRows()
     {
         return $this->affectedRows;
     }
+
 
 
     public function insertId()
@@ -114,10 +116,12 @@ class DibiOdbcDriver extends DibiDriver
     }
 
 
+
     public function begin()
     {
         return odbc_autocommit($this->getConnection(), FALSE);
     }
+
 
 
     public function commit()
@@ -129,6 +133,7 @@ class DibiOdbcDriver extends DibiDriver
     }
 
 
+
     public function rollback()
     {
         $connection = $this->getConnection();
@@ -136,6 +141,7 @@ class DibiOdbcDriver extends DibiDriver
         odbc_autocommit($connection, TRUE);
         return $ok;
     }
+
 
 
     public function errorInfo()
@@ -158,16 +164,19 @@ class DibiOdbcDriver extends DibiDriver
     }
 
 
+
     public function delimite($value)
     {
         return '[' . str_replace('.', '].[', $value) . ']';
     }
 
 
+
     public function getMetaData()
     {
         trigger_error('Meta is not implemented yet.', E_USER_WARNING);
     }
+
 
 
     /**
@@ -203,11 +212,13 @@ class DibiOdbcResult extends DibiResult
     }
 
 
+
     public function rowCount()
     {
         // will return -1 with many drivers :-(
         return odbc_num_rows($this->resource);
     }
+
 
 
     protected function doFetch()
@@ -216,16 +227,19 @@ class DibiOdbcResult extends DibiResult
     }
 
 
+
     public function seek($row)
     {
         $this->row = $row;
     }
 
 
+
     protected function free()
     {
         odbc_free_result($this->resource);
     }
+
 
 
     /** this is experimental */

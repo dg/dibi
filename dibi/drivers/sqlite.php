@@ -98,10 +98,12 @@ class DibiSqliteDriver extends DibiDriver
     }
 
 
+
     public function affectedRows()
     {
         return $this->affectedRows;
     }
+
 
 
     public function insertId()
@@ -110,10 +112,12 @@ class DibiSqliteDriver extends DibiDriver
     }
 
 
+
     public function begin()
     {
         return sqlite_query($this->getConnection(), 'BEGIN');
     }
+
 
 
     public function commit()
@@ -122,10 +126,12 @@ class DibiSqliteDriver extends DibiDriver
     }
 
 
+
     public function rollback()
     {
         return sqlite_query($this->getConnection(), 'ROLLBACK');
     }
+
 
 
     public function errorInfo()
@@ -138,12 +144,14 @@ class DibiSqliteDriver extends DibiDriver
     }
 
 
+
     public function escape($value, $appendQuotes = TRUE)
     {
         return $appendQuotes
                ? "'" . sqlite_escape_string($value) . "'"
                : sqlite_escape_string($value);
     }
+
 
 
     public function delimite($value)
@@ -190,10 +198,12 @@ class DibiSqliteResult extends DibiResult
     }
 
 
+
     public function rowCount()
     {
         return sqlite_num_rows($this->resource);
     }
+
 
 
     protected function doFetch()
@@ -202,15 +212,18 @@ class DibiSqliteResult extends DibiResult
     }
 
 
+
     public function seek($row)
     {
         return sqlite_seek($this->resource, $row);
     }
 
 
+
     protected function free()
     {
     }
+
 
 
     /** this is experimental */

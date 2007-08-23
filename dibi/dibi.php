@@ -196,6 +196,7 @@ class dibi
     }
 
 
+
     /**
      * Retrieve active connection
      *
@@ -439,6 +440,7 @@ class dibi
     }
 
 
+
     /**
      * Remove substitution pair
      * @param string from
@@ -448,6 +450,7 @@ class dibi
     {
         unset(self::$substs[':'.$expr.':']);
     }
+
 
 
     /**
@@ -460,6 +463,7 @@ class dibi
         if (strpos($s, ':') === FALSE) return $s;
         return strtr($s, self::$substs);
     }
+
 
 
     /**

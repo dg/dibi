@@ -137,7 +137,6 @@ final class DibiTranslator
 
 
 
-
     private function formatValue($value, $modifier)
     {
         // array processing (with or without modifier)
@@ -284,7 +283,6 @@ final class DibiTranslator
         $this->hasError = TRUE;
         return '**Unexpected ' . gettype($value) . '**';
     }
-
 
 
 

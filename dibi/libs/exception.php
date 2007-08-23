@@ -49,6 +49,7 @@ class DibiException extends Exception
     }
 
 
+
     public function __toString()
     {
         $s = parent::__toString();

@@ -96,10 +96,12 @@ class DibiPostgreDriver extends DibiDriver
     }
 
 
+
     public function affectedRows()
     {
         return $this->affectedRows;
     }
+
 
 
     public function insertId()
@@ -108,10 +110,12 @@ class DibiPostgreDriver extends DibiDriver
     }
 
 
+
     public function begin()
     {
         return pg_query($this->getConnection(), 'BEGIN');
     }
+
 
 
     public function commit()
@@ -120,10 +124,12 @@ class DibiPostgreDriver extends DibiDriver
     }
 
 
+
     public function rollback()
     {
         return pg_query($this->getConnection(), 'ROLLBACK');
     }
+
 
 
     public function errorInfo()
@@ -135,12 +141,14 @@ class DibiPostgreDriver extends DibiDriver
     }
 
 
+
     public function escape($value, $appendQuotes = TRUE)
     {
         return $appendQuotes
                ? "'" . pg_escape_string($value) . "'"
                : pg_escape_string($value);
     }
+
 
 
     public function delimite($value)
@@ -191,10 +199,12 @@ class DibiPostgreResult extends DibiResult
     }
 
 
+
     public function rowCount()
     {
         return pg_num_rows($this->resource);
     }
+
 
 
     protected function doFetch()
@@ -203,16 +213,19 @@ class DibiPostgreResult extends DibiResult
     }
 
 
+
     public function seek($row)
     {
         return pg_result_seek($this->resource, $row);
     }
 
 
+
     protected function free()
     {
         pg_free_result($this->resource);
     }
+
 
 
     /** this is experimental */

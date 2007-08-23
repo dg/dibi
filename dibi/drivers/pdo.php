@@ -77,10 +77,12 @@ class DibiPdoDriver extends DibiDriver
     }
 
 
+
     public function affectedRows()
     {
         return $this->affectedRows;
     }
+
 
 
     public function insertId()
@@ -89,10 +91,12 @@ class DibiPdoDriver extends DibiDriver
     }
 
 
+
     public function begin()
     {
         return $this->getConnection()->beginTransaction();
     }
+
 
 
     public function commit()
@@ -101,10 +105,12 @@ class DibiPdoDriver extends DibiDriver
     }
 
 
+
     public function rollback()
     {
         return $this->getConnection()->rollBack();
     }
+
 
 
     public function errorInfo()
@@ -118,6 +124,7 @@ class DibiPdoDriver extends DibiDriver
     }
 
 
+
     public function escape($value, $appendQuotes = TRUE)
     {
         if (!$appendQuotes) {
@@ -126,6 +133,7 @@ class DibiPdoDriver extends DibiDriver
         }
         return $this->getConnection()->quote($value);
     }
+
 
 
     public function delimite($value)
@@ -175,10 +183,12 @@ class DibiPdoResult extends DibiResult
     }
 
 
+
     public function rowCount()
     {
         return $this->resource->rowCount();
     }
+
 
 
     protected function doFetch()
@@ -187,15 +197,18 @@ class DibiPdoResult extends DibiResult
     }
 
 
+
     public function seek($row)
     {
         $this->row = $row;
     }
 
 
+
     protected function free()
     {
     }
+
 
 
     /** this is experimental */

@@ -74,7 +74,6 @@ class DibiMSSqlDriver extends DibiDriver
 
 
 
-
     public function nativeQuery($sql)
     {
         $this->affectedRows = FALSE;
@@ -93,10 +92,12 @@ class DibiMSSqlDriver extends DibiDriver
     }
 
 
+
     public function affectedRows()
     {
         return $this->affectedRows;
     }
+
 
 
     public function insertId()
@@ -105,10 +106,12 @@ class DibiMSSqlDriver extends DibiDriver
     }
 
 
+
     public function begin()
     {
         return mssql_query('BEGIN TRANSACTION', $this->getConnection());
     }
+
 
 
     public function commit()
@@ -117,10 +120,12 @@ class DibiMSSqlDriver extends DibiDriver
     }
 
 
+
     public function rollback()
     {
         return mssql_query('ROLLBACK', $this->getConnection());
     }
+
 
 
     public function errorInfo()
@@ -132,6 +137,7 @@ class DibiMSSqlDriver extends DibiDriver
     }
 
 
+
     public function escape($value, $appendQuotes = TRUE)
     {
         $value = str_replace("'", "''", $value);
@@ -141,16 +147,19 @@ class DibiMSSqlDriver extends DibiDriver
     }
 
 
+
     public function delimite($value)
     {
         return '[' . str_replace('.', '].[', $value) . ']';
     }
 
 
+
     public function getMetaData()
     {
         trigger_error('Meta is not implemented yet.', E_USER_WARNING);
     }
+
 
 
     /**
@@ -187,10 +196,12 @@ class DibiMSSqlResult extends DibiResult
     }
 
 
+
     public function rowCount()
     {
         return mssql_num_rows($this->resource);
     }
+
 
 
     protected function doFetch()
@@ -199,16 +210,19 @@ class DibiMSSqlResult extends DibiResult
     }
 
 
+
     public function seek($row)
     {
         return mssql_data_seek($this->resource, $row);
     }
 
 
+
     protected function free()
     {
         mssql_free_result($this->resource);
     }
+
 
 
     /** this is experimental */
