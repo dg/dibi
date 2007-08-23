@@ -158,20 +158,23 @@ class dibi
     public static function connect($config, $name = 0)
     {
         // DSN string
-        if (is_string($config))
+        if (is_string($config)) {
             parse_str($config, $config);
+        }
 
         // config['driver'] is required
-        if (empty($config['driver']))
+        if (empty($config['driver'])) {
             throw new DibiException('Driver is not specified.');
+        }
 
         // include dibi driver
         $className = "Dibi$config[driver]Driver";
         if (!class_exists($className)) {
             include_once dirname(__FILE__) . "/drivers/$config[driver].php";
 
-            if (!class_exists($className))
+            if (!class_exists($className)) {
                 throw new DibiException("Unable to create instance of dibi driver class '$className'.");
+            }
         }
 
         // create connection object and store in list
@@ -207,14 +210,16 @@ class dibi
     public static function getConnection($name = NULL)
     {
         if ($name === NULL) {
-            if (!self::$connection)
+            if (!self::$connection) {
                 throw new DibiException('Dibi is not connected to database');
+            }
 
             return self::$connection;
         }
 
-        if (!isset(self::$registry[$name]))
+        if (!isset(self::$registry[$name])) {
             throw new DibiException("There is no connection named '$name'.");
+        }
 
         return self::$registry[$name];
     }
@@ -245,8 +250,7 @@ class dibi
     public static function query($args)
     {
         // receive arguments
-        if (!is_array($args))
-            $args = func_get_args();
+        if (!is_array($args)) $args = func_get_args();
 
         return self::getConnection()->query($args);
     }
@@ -262,8 +266,7 @@ class dibi
     public static function test($args)
     {
         // receive arguments
-        if (!is_array($args))
-            $args = func_get_args();
+        if (!is_array($args)) $args = func_get_args();
 
         // and generate SQL
         $trans = new DibiTranslator(self::getConnection());

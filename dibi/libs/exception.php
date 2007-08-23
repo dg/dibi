@@ -37,10 +37,12 @@ class DibiException extends Exception
     }
 
 
+
     final public function getSql()
     {
         return $this->sql;
     }
+
 
 
     final public function getDbError()
@@ -56,13 +58,16 @@ class DibiException extends Exception
 
         if ($this->dbError) {
             $s .= "\n\nDatabase error: ";
-            if (isset($this->dbError['code']))
+            if (isset($this->dbError['code'])) {
                 $s .= "[" . $this->dbError['code'] . "] ";
+            }
 
             $s .= $this->dbError['message'];
         }
 
-        if ($this->sql) $s .= "\nSQL: " . $this->sql;
+        if ($this->sql) {
+            $s .= "\nSQL: " . $this->sql;
+        }
 
         return $s;
     }

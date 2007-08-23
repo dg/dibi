@@ -42,14 +42,15 @@ class DibiSqliteDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('sqlite'))
+        if (!extension_loaded('sqlite')) {
             throw new DibiException("PHP extension 'sqlite' is not loaded");
+        }
 
-        if (empty($config['database']))
+        if (empty($config['database'])) {
             throw new DibiException("Database must be specified (driver sqlite)");
+        }
 
-        if (!isset($config['mode']))
-            $config['mode'] = 0666;
+        if (!isset($config['mode'])) $config['mode'] = 0666;
 
         parent::__construct($config);
     }
@@ -61,15 +62,17 @@ class DibiSqliteDriver extends DibiDriver
         $config = $this->config;
 
         $errorMsg = '';
-        if (empty($config['persistent']))
+        if (empty($config['persistent'])) {
             $connection = @sqlite_open($config['database'], $config['mode'], $errorMsg);
-        else
+        } else {
             $connection = @sqlite_popen($config['database'], $config['mode'], $errorMsg);
+        }
 
-        if (!$connection)
+        if (!$connection) {
             throw new DibiException("Connecting error (driver sqlite)", array(
                 'message' => $errorMsg,
             ));
+        }
 
         return $connection;
     }
@@ -91,8 +94,9 @@ class DibiSqliteDriver extends DibiDriver
         $this->insertId = sqlite_last_insert_rowid($connection);
         if ($this->insertId < 1) $this->insertId = FALSE;
 
-        if (is_resource($res))
+        if (is_resource($res)) {
             return new DibiSqliteResult($res);
+        }
 
         return TRUE;
     }

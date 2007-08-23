@@ -40,8 +40,9 @@ class DibiMSSqlDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('mssql'))
+        if (!extension_loaded('mssql')) {
             throw new DibiException("PHP extension 'mssql' is not loaded");
+        }
 
         if (!isset($config['host'])) $config['host'] = NULL;
         if (!isset($config['username'])) $config['username'] = NULL;
@@ -56,17 +57,18 @@ class DibiMSSqlDriver extends DibiDriver
     {
         $config = $this->config;
 
-        if (empty($config['persistent']))
+        if (empty($config['persistent'])) {
             $connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE);
-        else
+        } else {
             $connection = @mssql_pconnect($config['host'], $config['username'], $config['password']);
+        }
 
-        if (!is_resource($connection))
+        if (!is_resource($connection)) {
             throw new DibiException("Connecting error (driver mssql)'");
+        }
 
-        if (!empty($config['database'])) {
-            if (!@mssql_select_db($config['database'], $connection))
-                throw new DibiException("Connecting error (driver mssql)");
+        if (!empty($config['database']) && !@mssql_select_db($config['database'], $connection)) {
+            throw new DibiException("Connecting error (driver mssql)");
         }
 
         return $connection;
@@ -85,8 +87,9 @@ class DibiMSSqlDriver extends DibiDriver
         $this->affectedRows = mssql_rows_affected($connection);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
-        if (is_resource($res))
+        if (is_resource($res)) {
             return new DibiMSSqlResult($res);
+        }
 
         return TRUE;
     }
@@ -168,10 +171,13 @@ class DibiMSSqlDriver extends DibiDriver
     public function applyLimit(&$sql, $limit, $offset = 0)
     {
         // offset suppot is missing...
-        if ($limit >= 0)
+        if ($limit >= 0) {
            $sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
+        }
 
-        if ($offset) throw new DibiException('Offset is not implemented in driver odbc');
+        if ($offset) {
+            throw new DibiException('Offset is not implemented in driver odbc');
+        }
     }
 
 

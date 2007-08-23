@@ -105,8 +105,7 @@ abstract class DibiDriver
     final public function query($args)
     {
         // receive arguments
-        if (!is_array($args))
-            $args = func_get_args();
+        if (!is_array($args)) $args = func_get_args();
 
         // and generate SQL
         $trans = new DibiTranslator($this);
@@ -121,7 +120,10 @@ abstract class DibiDriver
         if ($res === FALSE) { // query error
             if (dibi::$logFile) { // log to file
                 $info = $this->errorInfo();
-                if ($info['code']) $info['message'] = "[$info[code]] $info[message]";
+                if ($info['code']) {
+                    $info['message'] = "[$info[code]] $info[message]";
+                }
+
                 dibi::log(
                     "ERROR: $info[message]"
                     . "\n-- SQL: " . $sql
@@ -135,7 +137,10 @@ abstract class DibiDriver
                 throw new DibiException('Query error (driver ' . $this->config['driver'] . ')', $info, $sql);
             } else {
                 $info = $this->errorInfo();
-                if ($info['code']) $info['message'] = "[$info[code]] $info[message]";
+                if ($info['code']) {
+                    $info['message'] = "[$info[code]] $info[message]";
+                }
+
                 trigger_error("dibi: $info[message]", E_USER_WARNING);
                 return FALSE;
             }

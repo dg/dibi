@@ -41,11 +41,13 @@ class DibiPostgreDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('pgsql'))
+        if (!extension_loaded('pgsql')) {
             throw new DibiException("PHP extension 'pgsql' is not loaded");
+        }
 
-        if (empty($config['string']))
+        if (empty($config['string'])) {
             throw new DibiException("Connection string must be specified (driver postgre)");
+        }
 
         if (empty($config['type'])) $config['type'] = NULL;
 
@@ -58,15 +60,17 @@ class DibiPostgreDriver extends DibiDriver
     {
         $config = $this->config;
 
-        if (isset($config['persistent']))
+        if (isset($config['persistent'])) {
             $connection = @pg_connect($config['string'], $config['type']);
-        else
+        } else {
             $connection = @pg_pconnect($config['string'], $config['type']);
+        }
 
-        if (!is_resource($connection))
+        if (!is_resource($connection)) {
             throw new DibiException("Connecting error (driver postgre)", array(
                 'message' => pg_last_error(),
             ));
+        }
 
         if (!empty($config['charset'])) {
             @pg_set_client_encoding($connection, $config['charset']);
@@ -89,8 +93,9 @@ class DibiPostgreDriver extends DibiDriver
         $this->affectedRows = pg_affected_rows($connection);
         if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
-        if (is_resource($res))
+        if (is_resource($res)) {
             return new DibiPostgreResult($res);
+        }
 
         return TRUE;
     }

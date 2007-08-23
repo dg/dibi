@@ -42,8 +42,9 @@ class DibiMySqliDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('mysqli'))
+        if (!extension_loaded('mysqli')) {
             throw new DibiException("PHP extension 'mysqli' is not loaded");
+        }
 
         // default values
         if (empty($config['username'])) $config['username'] = ini_get('mysqli.default_user');
@@ -66,14 +67,16 @@ class DibiMySqliDriver extends DibiDriver
 
         $connection = @mysqli_connect($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
 
-        if (!$connection)
+        if (!$connection) {
             throw new DibiException("Connecting error (driver mysqli)", array(
                 'message' => mysqli_connect_error(),
                 'code'    => mysqli_connect_errno(),
             ));
+        }
 
-        if (!empty($config['charset']))
+        if (!empty($config['charset'])) {
             mysqli_query($connection, "SET NAMES '" . $config['charset'] . "'");
+        }
 
         return $connection;
     }
@@ -94,8 +97,9 @@ class DibiMySqliDriver extends DibiDriver
         $this->insertId = mysqli_insert_id($connection);
         if ($this->insertId < 1) $this->insertId = FALSE;
 
-        if (is_object($res))
+        if (is_object($res)) {
             return new DibiMySqliResult($res);
+        }
 
         return TRUE;
     }
@@ -278,9 +282,9 @@ class DibiMySqliResult extends DibiResult
             $info = (array) mysqli_fetch_field_direct($this->resource, $index);
             $native = $info['native'] = $info['type'];
 
-            if ($info['flags'] & MYSQLI_AUTO_INCREMENT_FLAG)  // or 'primary_key' ?
+            if ($info['flags'] & MYSQLI_AUTO_INCREMENT_FLAG) { // or 'primary_key' ?
                 $info['type'] = dibi::FIELD_COUNTER;
-            else {
+            } else {
                 $info['type'] = isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN;
 //                if ($info['type'] === dibi::FIELD_TEXT && $info['length'] > 255)
 //                    $info['type'] = dibi::FIELD_LONG_TEXT;

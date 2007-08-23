@@ -102,7 +102,9 @@ final class DibiTranslator
             }
 
             // default processing
-            if (!$comment) $sql[] = $this->formatValue($arg, $mod);
+            if (!$comment) {
+                $sql[] = $this->formatValue($arg, $mod);
+            }
             $mod = FALSE;
         } // foreach
 
@@ -116,16 +118,18 @@ final class DibiTranslator
 
         // error handling
         if ($this->hasError) {
-            if (dibi::$logFile)  // log to file
+            if (dibi::$logFile) {  // log to file
                 dibi::log(
                     "ERROR: SQL generate error"
                     . "\n-- SQL: " . $sql
                     . ";\n-- " . date('Y-m-d H:i:s ')
                 );
+            }
 
-            if (dibi::$throwExceptions)
+            if (dibi::$throwExceptions) {
                 throw new DibiException('SQL generate error', NULL, $sql);
-            else {
+
+            } else {
                 trigger_error("dibi: SQL generate error: $sql", E_USER_WARNING);
                 return FALSE;
             }
@@ -164,19 +168,23 @@ final class DibiTranslator
                     $pair = explode('%', $k, 2);
 
                     // generate arrays
-                    if ($kx !== NULL) $kx[] = $this->delimite($pair[0]);
+                    if ($kx !== NULL) {
+                        $kx[] = $this->delimite($pair[0]);
+                    }
                     $vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
                 }
 
-                if ($kx === NULL)
+                if ($kx === NULL) {
                     return '(' . implode(', ', $vx) . ')';
-                else
+                } else {
                     return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
+                }
 
 
             default:
-                foreach ($value as $v)
+                foreach ($value as $v) {
                     $vx[] = $this->formatValue($v, $modifier);
+                }
 
                 return implode(', ', $vx);
             }
@@ -185,10 +193,13 @@ final class DibiTranslator
 
         // with modifier procession
         if ($modifier) {
-            if ($value === NULL) return 'NULL';
+            if ($value === NULL) {
+                return 'NULL';
+            }
 
-            if ($value instanceof DibiVariableInterface)
+            if ($value instanceof DibiVariableInterface) {
                 return $value->toSql($this->driver, $modifier);
+            }
 
             if (!is_scalar($value)) {  // array is already processed
                 $this->hasError = TRUE;
@@ -226,8 +237,9 @@ final class DibiTranslator
                 // speed-up - is regexp required?
                 $toSkip = strcspn($value, '`[\'"%');
 
-                if (strlen($value) === $toSkip) // needn't be translated
+                if (strlen($value) === $toSkip) { // needn't be translated
                     return $value;
+                }
 
                 // note: only this can change $this->modifier
                 return substr($value, 0, $toSkip)

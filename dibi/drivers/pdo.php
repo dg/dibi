@@ -40,11 +40,13 @@ class DibiPdoDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('pdo'))
+        if (!extension_loaded('pdo')) {
             throw new DibiException("PHP extension 'pdo' is not loaded");
+        }
 
-        if (empty($config['dsn']))
+        if (empty($config['dsn'])) {
             throw new DibiException("DSN must be specified (driver odbc)");
+        }
 
         if (empty($config['username'])) $config['username'] = NULL;
         if (empty($config['password'])) $config['password'] = NULL;
@@ -70,8 +72,9 @@ class DibiPdoDriver extends DibiDriver
 
         if ($res === FALSE) return FALSE;
 
-        if ($res instanceof PDOStatement)
+        if ($res instanceof PDOStatement) {
             return new DibiPdoResult($res);
+        }
 
         return TRUE;
     }

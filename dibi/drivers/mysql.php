@@ -41,8 +41,9 @@ class DibiMySqlDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('mysql'))
+        if (!extension_loaded('mysql')) {
             throw new DibiException("PHP extension 'mysql' is not loaded");
+        }
 
         // default values
         if (empty($config['username'])) $config['username'] = ini_get('mysql.default_user');
@@ -62,30 +63,36 @@ class DibiMySqlDriver extends DibiDriver
     {
         $config = $this->config;
 
-        if (isset($config['protocol']) && $config['protocol'] === 'unix')  // host can be socket
+        if (isset($config['protocol']) && $config['protocol'] === 'unix') { // host can be socket
             $host = ':' . $config['host'];
-        else
+        } else {
             $host = $config['host'] . (empty($config['port']) ? '' : ':'.$config['port']);
+        }
 
         // some errors aren't handled. Must use $php_errormsg
-        if (function_exists('ini_set'))
+        if (function_exists('ini_set')) {
             $save = ini_set('track_errors', TRUE);
+        }
+
         $php_errormsg = '';
 
-        if (empty($config['persistent']))
+        if (empty($config['persistent'])) {
             $connection = @mysql_connect($host, $config['username'], $config['password'], TRUE);
-        else
+        } else {
             $connection = @mysql_pconnect($host, $config['username'], $config['password']);
+        }
 
-        if (function_exists('ini_set'))
+        if (function_exists('ini_set')) {
             ini_set('track_errors', $save);
+        }
 
 
-        if (!is_resource($connection))
+        if (!is_resource($connection)) {
             throw new DibiException("Connecting error (driver mysql)'", array(
                 'message' => mysql_error() ? mysql_error() : $php_errormsg,
                 'code'    => mysql_errno(),
             ));
+        }
 
 
         if (!empty($config['charset'])) {
@@ -94,12 +101,11 @@ class DibiMySqlDriver extends DibiDriver
         }
 
 
-        if (!empty($config['database'])) {
-            if (!@mysql_select_db($config['database'], $connection))
-                throw new DibiException("Connecting error (driver mysql)", array(
-                    'message' => mysql_error($connection),
-                    'code'    => mysql_errno($connection),
-                ));
+        if (!empty($config['database']) && !@mysql_select_db($config['database'], $connection)) {
+            throw new DibiException("Connecting error (driver mysql)", array(
+                'message' => mysql_error($connection),
+                'code'    => mysql_errno($connection),
+            ));
         }
 
         return $connection;
@@ -121,8 +127,9 @@ class DibiMySqlDriver extends DibiDriver
         $this->insertId = mysql_insert_id($connection);
         if ($this->insertId < 1) $this->insertId = FALSE;
 
-        if (is_resource($res))
+        if (is_resource($res)) {
             return new DibiMySqlResult($res);
+        }
 
         return TRUE;
     }
@@ -309,9 +316,9 @@ class DibiMySqlResult extends DibiResult
             $info['length'] = mysql_field_len($this->resource, $index);
             $info['table'] = mysql_field_table($this->resource, $index);
 
-            if (in_array('auto_increment', $info['flags']))  // or 'primary_key' ?
+            if (in_array('auto_increment', $info['flags'])) {  // or 'primary_key' ?
                 $info['type'] = dibi::FIELD_COUNTER;
-            else {
+            } else {
                 $info['type'] = isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN;
 
 //                if ($info['type'] === dibi::FIELD_TEXT && $info['length'] > 255)

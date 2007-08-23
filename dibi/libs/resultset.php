@@ -107,14 +107,14 @@ abstract class DibiResult implements IteratorAggregate, Countable
     final public function fetch()
     {
         $row = $this->doFetch();
-        if (!is_array($row))
-            return FALSE;
+        if (!is_array($row)) return FALSE;
 
         // types-converting?
         if ($t = $this->convert) {  // little speed-up
             foreach ($row as $key => $value) {
-                if (isset($t[$key]))
+                if (isset($t[$key])) {
                     $row[$key] = $this->convert($value, $t[$key]);
+                }
             }
         }
 
@@ -130,8 +130,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
     final function fetchSingle()
     {
         $row = $this->doFetch();
-        if (!is_array($row))
-            return FALSE;
+        if (!is_array($row)) return FALSE;
 
         // types-converting?
         if ($t = $this->convert) {  // little speed-up
@@ -155,8 +154,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
     {
         @$this->seek(0);
         $row = $this->fetch();
-        if (!$row)
-            return array();  // empty resultset
+        if (!$row) return array();  // empty resultset
 
         $data = array();
         if (count($row) === 1) {
@@ -296,14 +294,15 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     final public function setType($field, $type = NULL)
     {
-        if ($field === TRUE)
+        if ($field === TRUE) {
             $this->detectTypes();
 
-        elseif (is_array($field))
+        } elseif (is_array($field)) {
             $this->convert = $field;
 
-        else
+        } else {
             $this->convert[$field] = $type;
+        }
     }
 
 
@@ -318,19 +317,22 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     final public function convert($value, $type)
     {
-        if ($value === NULL || $value === FALSE)
+        if ($value === NULL || $value === FALSE) {
             return $value;
+        }
 
         if (isset(self::$types[$type])) {
             settype($value, self::$types[$type]);
             return $value;
         }
 
-        if ($type === dibi::FIELD_DATE)
+        if ($type === dibi::FIELD_DATE) {
             return strtotime($value);   // !!! not good
+        }
 
-        if ($type === dibi::FIELD_DATETIME)
+        if ($type === dibi::FIELD_DATETIME) {
             return strtotime($value);  // !!! not good
+        }
 
         return $value;
     }
@@ -344,7 +346,9 @@ abstract class DibiResult implements IteratorAggregate, Countable
     final public function getFields()
     {
         // lazy init
-        if ($this->meta === NULL) $this->buildMeta();
+        if ($this->meta === NULL) {
+            $this->buildMeta();
+        }
         return array_keys($this->meta);
     }
 
@@ -358,7 +362,9 @@ abstract class DibiResult implements IteratorAggregate, Countable
     final public function getMetaData($field)
     {
         // lazy init
-        if ($this->meta === NULL) $this->buildMeta();
+        if ($this->meta === NULL) {
+            $this->buildMeta();
+        }
         return isset($this->meta[$field]) ? $this->meta[$field] : FALSE;
     }
 
@@ -370,7 +376,9 @@ abstract class DibiResult implements IteratorAggregate, Countable
      */
     final protected function detectTypes()
     {
-        if ($this->meta === NULL) $this->buildMeta();
+        if ($this->meta === NULL) {
+            $this->buildMeta();
+        }
     }
 
 
