@@ -14,7 +14,7 @@
  * @author     David Grudl
  * @copyright  Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
  * @license    New BSD License
- * @version    0.8d (Revision: $WCREV$, Date: $WCDATE$)
+ * @version    0.8e (Revision: $WCREV$, Date: $WCDATE$)
  * @category   Database
  * @package    Dibi
  * @link       http://dibi.texy.info/
@@ -87,7 +87,7 @@ class dibi
         FIELD_COUNTER =    'c', // counter or autoincrement, is integer
 
         // dibi version
-        VERSION =          '0.8d (Revision: $WCREV$, Date: $WCDATE$)';
+        VERSION =          '0.8e (Revision: $WCREV$, Date: $WCDATE$)';
 
 
     /**
@@ -143,7 +143,7 @@ class dibi
     /**
      * Monostate class
      */
-    private function __construct()
+    final private function __construct()
     {}
 
 
@@ -168,18 +168,18 @@ class dibi
         }
 
         // include dibi driver
-        $className = "Dibi$config[driver]Driver";
-        if (!class_exists($className)) {
+        $class = "Dibi$config[driver]Driver";
+        if (!class_exists($class)) {
             include_once dirname(__FILE__) . "/drivers/$config[driver].php";
 
-            if (!class_exists($className)) {
-                throw new DibiException("Unable to create instance of dibi driver class '$className'.");
+            if (!class_exists($class)) {
+                throw new DibiException("Unable to create instance of dibi driver class '$class'.");
             }
         }
 
         // create connection object and store in list
-        /** like $connection = $className::connect($config); */
-        self::$connection = self::$registry[$name] = new $className($config);
+        /** like $connection = $class::connect($config); */
+        self::$connection = self::$registry[$name] = new $class($config);
 
         if (dibi::$logAll) dibi::log("OK: connected to DB '$config[driver]'");
 

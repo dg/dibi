@@ -69,3 +69,13 @@ dibi::test("UPDATE [mytable] SET", $array4, " WHERE [id]=%i", $n);
 
 // array with modifier %a - assoc
 dibi::test("UPDATE [mytable] SET%a", $array4, " WHERE [id]=%i", $n);
+
+
+// long numbers
+dibi::test("SELECT %i", '-123456789123456789123456789');
+
+// long float numbers
+dibi::test("SELECT %f", '-.12345678912345678912345678e10');
+
+// hex numbers
+dibi::test("SELECT %i", '0x11');

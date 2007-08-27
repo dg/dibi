@@ -209,27 +209,43 @@ final class DibiTranslator
             switch ($modifier) {
             case 's':  // string
                 return $this->driver->escape($value);
+
             case 'sn': // string or NULL
                 return $value == '' ? 'NULL' : $this->driver->escape($value);
+
             case 'b':  // boolean
                 return $value
                     ? $this->driver->formats['TRUE']
                     : $this->driver->formats['FALSE'];
+
             case 'i':  // signed int
-            case 'u':  // unsigned int
-                return (string) (int) $value;
+            case 'u':  // unsigned int, ignored
+                // support for numbers - keep them unchanged
+                if (is_string($value) && preg_match('#[+-]?\d+(e\d+)?$#A', $value)) {
+                    return $value;
+                }
+                return (string) (int) ($value + 0);
+
             case 'f':  // float
-                return (string) (float) $value; // something like -9E-005 is accepted by SQL
+                // support for numbers - keep them unchanged
+                if (is_numeric($value) && (!is_string($value) || strpos($value, 'x') === FALSE)) {
+                    return $value; // something like -9E-005 is accepted by SQL, HEX values is not
+                }
+                return (string) ($value + 0);
+
             case 'd':  // date
                 return date($this->driver->formats['date'], is_string($value)
                     ? strtotime($value)
                     : $value);
+
             case 't':  // datetime
                 return date($this->driver->formats['datetime'], is_string($value)
                     ? strtotime($value)
                     : $value);
+
             case 'n':  // identifier name
                 return $this->delimite($value);
+
             case 'sql':// preserve as SQL
             case 'p':  // back compatibility
                 $value = (string) $value;
@@ -265,9 +281,11 @@ final class DibiTranslator
             case 'v':
                 $this->hasError = TRUE;
                 return "**Unexpected ".gettype($value)."**";
+
             case 'if':
                 $this->hasError = TRUE;
                 return "**The %$modifier is not allowed here**";
+
             default:
                 $this->hasError = TRUE;
                 return "**Unknown modifier %$modifier**";
@@ -391,7 +409,7 @@ final class DibiTranslator
      * Access to undeclared property
      * @throws Exception
      */
-    private function __get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
+    private function &__get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
     private function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
     private function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
     /**#@-*/
