@@ -193,7 +193,7 @@ class DibiMySqlDriver extends DibiDriver
 
     public function getMetaData()
     {
-        trigger_error('Meta is not implemented yet.', E_USER_WARNING);
+        throw new DibiException(__METHOD__ . ' is not implemented');
     }
 
 

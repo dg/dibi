@@ -129,8 +129,7 @@ class DibiPdoDriver extends DibiDriver
     public function escape($value, $appendQuotes = TRUE)
     {
         if (!$appendQuotes) {
-            trigger_error('dibi: escaping without qoutes is not supported by PDO', E_USER_WARNING);
-            return NULL;
+            throw new DibiException('Escaping without qoutes is not supported by PDO');
         }
         return $this->getConnection()->quote($value);
     }
@@ -147,7 +146,7 @@ class DibiPdoDriver extends DibiDriver
 
     public function getMetaData()
     {
-        trigger_error('Meta is not implemented yet.', E_USER_WARNING);
+        throw new DibiException(__METHOD__ . ' is not implemented');
     }
 
 
@@ -157,7 +156,7 @@ class DibiPdoDriver extends DibiDriver
      */
     public function applyLimit(&$sql, $limit, $offset = 0)
     {
-        trigger_error('Meta is not implemented.', E_USER_WARNING);
+        throw new DibiException(__METHOD__ . ' is not implemented');
     }
 
 } // class DibiPdoDriver
