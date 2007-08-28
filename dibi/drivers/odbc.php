@@ -91,20 +91,20 @@ class DibiOdbcDriver extends DibiDriver
     public function nativeQuery($sql)
     {
         $this->affectedRows = FALSE;
+        $res = @odbc_exec($this->getConnection(), $sql);
 
-        $connection = $this->getConnection();
-        $res = @odbc_exec($connection, $sql);
+        if ($res === FALSE) {
+            return FALSE;
 
-        if ($res === FALSE) return FALSE;
+        } elseif (is_resource($res)) {
+            $this->affectedRows = odbc_num_rows($res);
+            if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
-        $this->affectedRows = odbc_num_rows($res);
-        if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-
-        if (is_resource($res)) {
             return new DibiOdbcResult($res);
-        }
 
-        return TRUE;
+        } else {
+            return TRUE;
+        }
     }
 
 

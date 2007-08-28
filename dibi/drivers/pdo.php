@@ -22,8 +22,6 @@ if (!class_exists('dibi', FALSE)) die();
  */
 class DibiPdoDriver extends DibiDriver
 {
-    private $affectedRows = FALSE;
-
     public
         $formats = array(
             'TRUE'     => "1",
@@ -65,25 +63,25 @@ class DibiPdoDriver extends DibiDriver
 
     public function nativeQuery($sql)
     {
-        $this->affectedRows = FALSE;
-
         // TODO: or exec() ?
         $res = $this->getConnection()->query($sql);
 
-        if ($res === FALSE) return FALSE;
+        if ($res === FALSE) {
+            return FALSE;
 
-        if ($res instanceof PDOStatement) {
+        } elseif ($res instanceof PDOStatement) {
             return new DibiPdoResult($res);
-        }
 
-        return TRUE;
+        } else {
+            return TRUE;
+        }
     }
 
 
 
     public function affectedRows()
     {
-        return $this->affectedRows;
+        // not implemented
     }
 
 

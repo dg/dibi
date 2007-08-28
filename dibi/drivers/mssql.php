@@ -22,9 +22,6 @@ if (!class_exists('dibi', FALSE)) die();
  */
 class DibiMSSqlDriver extends DibiDriver
 {
-    private
-        $affectedRows = FALSE;
-
     public
         $formats = array(
             'TRUE'     => "1",
@@ -78,27 +75,25 @@ class DibiMSSqlDriver extends DibiDriver
 
     public function nativeQuery($sql)
     {
-        $this->affectedRows = FALSE;
-        $connection = $this->getConnection();
-        $res = @mssql_query($sql, $connection);
+        $res = @mssql_query($sql, $this->getConnection());
 
-        if ($res === FALSE) return FALSE;
+        if ($res === FALSE) {
+            return FALSE;
 
-        $this->affectedRows = mssql_rows_affected($connection);
-        if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-
-        if (is_resource($res)) {
+        } elseif (is_resource($res)) {
             return new DibiMSSqlResult($res);
-        }
 
-        return TRUE;
+        } else {
+            return TRUE;
+        }
     }
 
 
 
     public function affectedRows()
     {
-        return $this->affectedRows;
+        $rows = mssql_rows_affected($this->getConnection());
+        return $rows < 0 ? FALSE : $rows;
     }
 
 

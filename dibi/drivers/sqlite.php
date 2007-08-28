@@ -22,10 +22,6 @@ if (!class_exists('dibi', FALSE)) die();
  */
 class DibiSqliteDriver extends DibiDriver
 {
-    private
-        $insertId = FALSE,
-        $affectedRows = FALSE;
-
     public
         $formats = array(
             'TRUE'     => "1",
@@ -81,38 +77,33 @@ class DibiSqliteDriver extends DibiDriver
 
     public function nativeQuery($sql)
     {
-        $this->insertId = $this->affectedRows = FALSE;
+        $res = @sqlite_query($this->getConnection(), $sql, SQLITE_ASSOC);
 
-        $connection = $this->getConnection();
-        $res = @sqlite_query($connection, $sql, SQLITE_ASSOC);
+        if ($res === FALSE) {
+            return FALSE;
 
-        if ($res === FALSE) return FALSE;
-
-        $this->affectedRows = sqlite_changes($connection);
-        if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-
-        $this->insertId = sqlite_last_insert_rowid($connection);
-        if ($this->insertId < 1) $this->insertId = FALSE;
-
-        if (is_resource($res)) {
+        } elseif (is_resource($res)) {
             return new DibiSqliteResult($res);
-        }
 
-        return TRUE;
+        } else {
+            return TRUE;
+        }
     }
 
 
 
     public function affectedRows()
     {
-        return $this->affectedRows;
+        $rows = sqlite_changes($this->getConnection());
+        return $rows < 0 ? FALSE : $rows;
     }
 
 
 
     public function insertId()
     {
-        return $this->insertId;
+        $id = sqlite_last_insert_rowid($this->getConnection());
+        return $id < 1 ? FALSE : $id;
     }
 
 

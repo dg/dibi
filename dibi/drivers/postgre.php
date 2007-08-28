@@ -23,6 +23,7 @@ if (!class_exists('dibi', FALSE)) die();
 class DibiPostgreDriver extends DibiDriver
 {
     private
+        $insertId = FALSE,
         $affectedRows = FALSE;
 
     public
@@ -83,7 +84,7 @@ class DibiPostgreDriver extends DibiDriver
 
     public function nativeQuery($sql)
     {
-        $this->affectedRows = FALSE;
+        $this->insertId = $this->affectedRows = FALSE;
 
         $res = @pg_query($this->getConnection(), $sql);
 
@@ -91,6 +92,9 @@ class DibiPostgreDriver extends DibiDriver
             return FALSE;
 
         } elseif (is_resource($res)) {
+            $this->insertId = pg_last_oid($res);
+            if ($this->insertId < 0) $this->insertId = FALSE;
+
             $this->affectedRows = pg_affected_rows($res);
             if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
@@ -112,7 +116,7 @@ class DibiPostgreDriver extends DibiDriver
 
     public function insertId()
     {
-        return FALSE;
+        return $this->insertId;
     }
 
 

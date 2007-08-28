@@ -22,10 +22,6 @@ if (!class_exists('dibi', FALSE)) die();
  */
 class DibiMySqliDriver extends DibiDriver
 {
-    private
-        $insertId = FALSE,
-        $affectedRows = FALSE;
-
     public
         $formats = array(
             'TRUE'     => "1",
@@ -85,37 +81,33 @@ class DibiMySqliDriver extends DibiDriver
 
     public function nativeQuery($sql)
     {
-        $this->insertId = $this->affectedRows = FALSE;
-        $connection = $this->getConnection();
-        $res = @mysqli_query($connection, $sql);
+        $res = @mysqli_query($this->getConnection(), $sql);
 
-        if ($res === FALSE) return FALSE;
+        if ($res === FALSE) {
+            return FALSE;
 
-        $this->affectedRows = mysqli_affected_rows($connection);
-        if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-
-        $this->insertId = mysqli_insert_id($connection);
-        if ($this->insertId < 1) $this->insertId = FALSE;
-
-        if (is_object($res)) {
+        } elseif (is_object($res)) {
             return new DibiMySqliResult($res);
-        }
 
-        return TRUE;
+        } else {
+            return TRUE;
+        }
     }
 
 
 
     public function affectedRows()
     {
-        return $this->affectedRows;
+        $rows = mysqli_affected_rows($this->getConnection());
+        return $rows < 0 ? FALSE : $rows;
     }
 
 
 
     public function insertId()
     {
-        return $this->insertId;
+        $id = mysqli_insert_id($this->getConnection());
+        return $id < 1 ? FALSE : $id;
     }
 
 
