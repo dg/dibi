@@ -85,19 +85,20 @@ class DibiPostgreDriver extends DibiDriver
     {
         $this->affectedRows = FALSE;
 
-        $connection = $this->getConnection();
-        $res = @pg_query($connection, $sql);
+        $res = @pg_query($this->getConnection(), $sql);
 
-        if ($res === FALSE) return FALSE;
+        if ($res === FALSE) {
+            return FALSE;
 
-        $this->affectedRows = pg_affected_rows($connection);
-        if ($this->affectedRows < 0) $this->affectedRows = FALSE;
+        } elseif (is_resource($res)) {
+            $this->affectedRows = pg_affected_rows($res);
+            if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
-        if (is_resource($res)) {
             return new DibiPostgreResult($res);
-        }
 
-        return TRUE;
+        } else {
+            return TRUE;
+        }
     }
 
 
