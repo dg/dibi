@@ -289,11 +289,12 @@ class dibi
      * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
      * Monostate for DibiDriver::insertId()
      *
-     * @return int|bool  int on success or FALSE on failure
+     * @param  string     optional sequence name for DibiPostgreDriver
+     * @return int|FALSE  int on success or FALSE on failure
      */
-    public static function insertId()
+    public static function insertId($sequence=NULL)
     {
-        return self::getConnection()->insertId();
+        return self::getConnection()->insertId($sequence);
     }
 
 
@@ -433,6 +434,7 @@ class dibi
 
     /**
      * Create a new substitution pair for indentifiers
+     *
      * @param string from
      * @param string to
      * @return void
@@ -446,6 +448,7 @@ class dibi
 
     /**
      * Remove substitution pair
+     *
      * @param string from
      * @return void
      */
@@ -458,6 +461,7 @@ class dibi
 
     /**
      * Process substitutions in string
+     *
      * @param string
      * @return string
      */

@@ -23,7 +23,6 @@ if (!class_exists('dibi', FALSE)) die();
 class DibiPostgreDriver extends DibiDriver
 {
     private
-        $insertId = FALSE,
         $affectedRows = FALSE;
 
     public
@@ -84,7 +83,7 @@ class DibiPostgreDriver extends DibiDriver
 
     public function nativeQuery($sql)
     {
-        $this->insertId = $this->affectedRows = FALSE;
+        $this->affectedRows = FALSE;
 
         $res = @pg_query($this->getConnection(), $sql);
 
@@ -92,9 +91,6 @@ class DibiPostgreDriver extends DibiDriver
             return FALSE;
 
         } elseif (is_resource($res)) {
-            $this->insertId = pg_last_oid($res);
-            if ($this->insertId < 0) $this->insertId = FALSE;
-
             $this->affectedRows = pg_affected_rows($res);
             if ($this->affectedRows < 0) $this->affectedRows = FALSE;
 
@@ -114,9 +110,22 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
-    public function insertId()
+    public function insertId($sequence = NULL)
     {
-        return $this->insertId;
+        if (empty($sequence)) {
+            // PostgreSQL 8.1 is needed
+            $res = pg_query($this->getConnection(), "SELECT LASTVAL() AS seq");
+        } else {
+            $res = pg_query($this->getConnection(), "SELECT CURRVAL('$sequence') AS seq");
+        }
+
+        if (is_resource($res)) {
+            $row = pg_fetch_assoc($res);
+            pg_free_result($res);
+            return $row['seq'];
+        }
+
+        return FALSE;
     }
 
 
@@ -163,7 +172,8 @@ class DibiPostgreDriver extends DibiDriver
 
     public function delimite($value)
     {
-        return $value;
+        $value = str_replace('"', '""', $value);
+        return '"' . str_replace('.', '"."', $value) . '"';
     }
 
 

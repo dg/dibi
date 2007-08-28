@@ -318,6 +318,7 @@ final class DibiTranslator
 
     /**
      * PREG callback for @see self::formatValue()
+     *
      * @param  array
      * @return string
      */
@@ -395,6 +396,7 @@ final class DibiTranslator
 
     /**
      * Apply substitutions to indentifier and delimites it
+     *
      * @param string indentifier
      * @return string
      */

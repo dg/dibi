@@ -118,7 +118,7 @@ class DibiOdbcDriver extends DibiDriver
 
     public function insertId()
     {
-        return FALSE;
+        throw new DibiException(__METHOD__ . ' is not implemented');
     }
 
 

@@ -41,5 +41,5 @@ FROM [customers]
 WHERE
     %if', isset($name), '[name] LIKE %s', $name, '
         %if', $cond2, 'AND [admin]=1 %end
-    %else LIMIT 10 %end'
+    %else 1 LIMIT 10 %end'
 );

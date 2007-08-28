@@ -50,6 +50,7 @@ abstract class DibiDriver
 
     /**
      * Creates object and (optionally) connects to a database
+     *
      * @param array  connect configuration
      * @throws DibiException
      */
@@ -63,6 +64,7 @@ abstract class DibiDriver
 
     /**
      * Connects to a database
+     *
      * @throws DibiException
      * @return resource
      */
@@ -72,6 +74,7 @@ abstract class DibiDriver
 
     /**
      * Gets the configuration descriptor
+     *
      * @see DibiDriver::__construct
      * @return array
      */
@@ -84,6 +87,7 @@ abstract class DibiDriver
 
     /**
      * Returns the connection resource
+     *
      * @return resource
      */
     final public function getConnection()
@@ -166,6 +170,7 @@ abstract class DibiDriver
 
     /**
      * Executes the SQL query
+     *
      * @param string        SQL statement.
      * @return object|bool  Result set object or TRUE on success, FALSE on failure
      */
@@ -175,6 +180,7 @@ abstract class DibiDriver
 
     /**
      * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
+     *
      * @return int       number of rows or FALSE on error
      */
     abstract public function affectedRows();
@@ -183,7 +189,8 @@ abstract class DibiDriver
 
     /**
      * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
-     * @return int|bool  int on success or FALSE on failure
+     *
+     * @return int|FALSE  int on success or FALSE on failure
      */
     abstract public function insertId();
 
@@ -212,6 +219,7 @@ abstract class DibiDriver
 
     /**
      * Returns last error
+     *
      * @return array with items 'message' and 'code'
      */
     abstract public function errorInfo();
@@ -220,6 +228,7 @@ abstract class DibiDriver
 
     /**
      * Escapes the string
+     *
      * @param string     unescaped string
      * @param bool       quote string?
      * @return string    escaped and optionally quoted string
@@ -230,6 +239,7 @@ abstract class DibiDriver
 
     /**
      * Delimites identifier (table's or column's name, etc.)
+     *
      * @param string     identifier
      * @return string    delimited identifier
      */
@@ -248,6 +258,7 @@ abstract class DibiDriver
 
     /**
      * Experimental - injects LIMIT/OFFSET to the SQL query
+     *
      * @param string &$sql  The SQL query that will be modified.
      * @param int $limit
      * @param int $offset

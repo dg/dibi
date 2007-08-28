@@ -67,6 +67,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Moves cursor position without fetching row
+     *
      * @param  int      the 0-based cursor pos to seek to
      * @return boolean  TRUE on success, FALSE if unable to seek to specified record
      */
@@ -76,6 +77,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Returns the number of rows in a result set
+     *
      * @return int
      */
     abstract public function rowCount();
@@ -84,6 +86,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Frees the resources allocated for this result set
+     *
      * @return void
      */
     abstract protected function free();
@@ -93,6 +96,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
     /**
      * Fetches the row at current position and moves the internal cursor to the next position
      * internal usage only
+     *
      * @return array|FALSE  array on success, FALSE if no next record
      */
     abstract protected function doFetch();
@@ -102,6 +106,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
     /**
      * Fetches the row at current position, process optional type conversion
      * and moves the internal cursor to the next position
+     *
      * @return array|FALSE  array on success, FALSE if no next record
      */
     final public function fetch()
@@ -125,6 +130,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Like fetch(), but returns only first field
+     *
      * @return mixed  value on success, FALSE if no next record
      */
     final function fetchSingle()
@@ -148,6 +154,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Fetches all records from table.
+     *
      * @return array
      */
     final function fetchAll()
@@ -238,6 +245,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Fetches all records from table like $key => $value pairs
+     *
      * @param  string  associative key
      * @param  string  value
      * @return array
@@ -283,6 +291,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Automatically frees the resources allocated for this result set
+     *
      * @return void
      */
     public function __destruct()
@@ -341,6 +350,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Gets an array of field names
+     *
      * @return array
      */
     final public function getFields()
@@ -356,6 +366,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Gets an array of meta informations about column
+     *
      * @param  string  column name
      * @return array
      */
@@ -372,6 +383,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
     /**
      * Acquires ....
+     *
      * @return void
      */
     final protected function detectTypes()
