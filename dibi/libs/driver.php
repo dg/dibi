@@ -73,14 +73,24 @@ abstract class DibiDriver
 
 
     /**
-     * Gets the configuration descriptor
+     * Returns configuration variable. If no $key is passed, returns the entire array.
      *
      * @see DibiDriver::__construct
-     * @return array
+     * @param string
+     * @param mixed  default value to use if key not found
+     * @return mixed
      */
-    final public function getConfig()
+    final public function getConfig($key = NULL, $default = NULL)
     {
-        return $this->config;
+        if ($key === NULL) {
+            return $this->config;
+
+        } elseif (isset($this->config[$key])) {
+            return $this->config[$key];
+
+        } else {
+            return $default;
+        }
     }
 
 
@@ -113,55 +123,18 @@ abstract class DibiDriver
 
         // and generate SQL
         $trans = new DibiTranslator($this);
-        dibi::$sql = $sql = $trans->translate($args);
+        $sql = $trans->translate($args);
+
+        // event handler
+        dibi::invokeEvent('beforeQuery', array($this, $sql));
 
         if ($sql === FALSE) return FALSE;
 
         // execute SQL
-        $timer = -microtime(true);
         $res = $this->nativeQuery($sql);
 
-        if ($res === FALSE) { // query error
-            if (dibi::$logFile) { // log to file
-                $info = $this->errorInfo();
-                if ($info['code']) {
-                    $info['message'] = "[$info[code]] $info[message]";
-                }
-
-                dibi::log(
-                    "ERROR: $info[message]"
-                    . "\n-- SQL: " . $sql
-                    . "\n-- driver: " . $this->config['driver']
-                    . ";\n-- " . date('Y-m-d H:i:s ')
-                );
-            }
-
-            if (dibi::$throwExceptions) {
-                $info = $this->errorInfo();
-                throw new DibiException('Query error (driver ' . $this->config['driver'] . ')', $info, $sql);
-            } else {
-                $info = $this->errorInfo();
-                if ($info['code']) {
-                    $info['message'] = "[$info[code]] $info[message]";
-                }
-
-                trigger_error("dibi: $info[message]", E_USER_WARNING);
-                return FALSE;
-            }
-        }
-
-        if (dibi::$logFile && dibi::$logAll) { // log success
-            $timer += microtime(true);
-            $msg = $res instanceof DibiResult ? 'object('.get_class($res).') rows: '.$res->rowCount() : 'OK';
-
-            dibi::log(
-                "OK: " . $sql
-                . ";\n-- result: $msg"
-                . "\n-- takes: " . sprintf('%0.3f', $timer * 1000) . ' ms'
-                . "\n-- driver: " . $this->config['driver']
-                . "\n-- " . date('Y-m-d H:i:s ')
-            );
-        }
+        // event handler
+        dibi::invokeEvent('afterQuery', array($this, $sql, $res));
 
         return $res;
     }

@@ -138,6 +138,17 @@ class dibi
      */
     private static $substs = array();
 
+    /**
+     * @see addHandler
+     * @var array
+     */
+    private static $handlers = array();
+
+    /**
+     * @var int
+     */
+    private static $timer;
+
 
 
     /**
@@ -474,8 +485,102 @@ class dibi
 
 
     /**
-     * Error logging
-     * EXPERIMENTAL
+     * Add new event handler
+     *
+     * @param string   event name
+     * @param callback
+     * @return void
+     */
+    public static function addHandler($event, $callback)
+    {
+        if (!is_callable($callback)) {
+            throw new DibiException("Invalid callback");
+        }
+
+        self::$handlers[$event][] = $callback;
+    }
+
+
+
+    /**
+     * Invoke registered handlers
+     *
+     * @param string   event name
+     * @param array    arguments passed into handler
+     * @return void
+     */
+    public static function invokeEvent($event, $args)
+    {
+        if (!isset(self::$handlers[$event])) return;
+
+        foreach (self::$handlers[$event] as $handler) {
+            call_user_func_array($handler, $args);
+        }
+    }
+
+
+
+    public static function beforeQuery($driver, $sql)
+    {
+        self::$sql = $sql;
+        self::$timer = -microtime(true);
+    }
+
+
+
+    /**
+     * Error logging - EXPERIMENTAL
+     */
+    public static function afterQuery($driver, $sql, $res)
+    {
+        if ($res === FALSE) { // query error
+            if (self::$logFile) { // log to file
+                $info = $driver->errorInfo();
+                if ($info['code']) {
+                    $info['message'] = "[$info[code]] $info[message]";
+                }
+
+                self::log(
+                    "ERROR: $info[message]"
+                    . "\n-- SQL: " . self::$sql
+                    . "\n-- driver: " . $driver->getConfig('driver')
+                    . ";\n-- " . date('Y-m-d H:i:s ')
+                );
+            }
+
+            if (self::$throwExceptions) {
+                $info = $driver->errorInfo();
+                throw new DibiException('Query error (driver ' . $driver->getConfig('driver') . ')', $info, self::$sql);
+            } else {
+                $info = $driver->errorInfo();
+                if ($info['code']) {
+                    $info['message'] = "[$info[code]] $info[message]";
+                }
+
+                trigger_error("self: $info[message]", E_USER_WARNING);
+                return FALSE;
+            }
+        }
+
+        if (self::$logFile && self::$logAll) { // log success
+            self::$timer += microtime(true);
+            $msg = $res instanceof DibiResult ? 'object('.get_class($res).') rows: '.$res->rowCount() : 'OK';
+
+            self::log(
+                "OK: " . self::$sql
+                . ";\n-- result: $msg"
+                . "\n-- takes: " . sprintf('%0.3f', self::$timer * 1000) . ' ms'
+                . "\n-- driver: " . $driver->getConfig('driver')
+                . "\n-- " . date('Y-m-d H:i:s ')
+            );
+        }
+
+    }
+
+
+
+    /**
+     * Error logging - EXPERIMENTAL
      */
     public static function log($message)
     {
@@ -490,3 +595,9 @@ class dibi
 
 
 } // class dibi
+
+
+
+// this is experimental:
+dibi::addHandler('beforeQuery', array('dibi', 'beforeQuery'));
+dibi::addHandler('afterQuery', array('dibi', 'afterQuery'));
