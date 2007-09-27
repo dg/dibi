@@ -116,8 +116,8 @@ final class DibiTranslator
         // TODO: check !!!
         $sql = preg_replace('#\x00.*?\x00#s', '', $sql);
 
-        // error handling
         if ($this->hasError) {
+            // TODO: do it better, remove dibi::$...
             if (dibi::$logFile) {  // log to file
                 dibi::log(
                     "ERROR: SQL generate error"
@@ -402,7 +402,10 @@ final class DibiTranslator
      */
     private function delimite($value)
     {
-        return $this->driver->delimite( dibi::substitute($value) );
+        if (strpos($value, ':') !== FALSE) {
+            $value = strtr($value, dibi::getSubst());
+        }
+        return $this->driver->delimite($value);
     }
 
 

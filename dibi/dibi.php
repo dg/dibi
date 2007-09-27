@@ -166,7 +166,7 @@ class dibi
      * @return DibiDriver
      * @throws DibiException
      */
-    public static function connect($config, $name = 0)
+    public static function connect($config = 'driver=mysql', $name = 0)
     {
         // DSN string
         if (is_string($config)) {
@@ -192,7 +192,7 @@ class dibi
         /** like $connection = $class::connect($config); */
         self::$connection = self::$registry[$name] = new $class($config);
 
-        if (dibi::$logAll) dibi::log("OK: connected to DB '$config[driver]'");
+        if (self::$logAll) self::log("OK: connected to DB '$config[driver]'");
 
         return self::$connection;
     }
@@ -460,26 +460,28 @@ class dibi
     /**
      * Remove substitution pair
      *
-     * @param string from
+     * @param mixed from or TRUE
      * @return void
      */
     public static function removeSubst($expr)
     {
-        unset(self::$substs[':'.$expr.':']);
+        if ($expr === TRUE) {
+            self::$substs = array();
+        } else {
+            unset(self::$substs[':'.$expr.':']);
+        }
     }
 
 
 
     /**
-     * Process substitutions in string
+     * Returns substitution pairs
      *
-     * @param string
-     * @return string
+     * @return array
      */
-    public static function substitute($s)
+    public static function getSubst()
     {
-        if (strpos($s, ':') === FALSE) return $s;
-        return strtr($s, self::$substs);
+        return self::$substs;
     }
 
 
