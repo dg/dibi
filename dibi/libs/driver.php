@@ -12,10 +12,6 @@
  */
 
 
-// security - include dibi.php, not this file
-if (!class_exists('dibi', FALSE)) die();
-
-
 
 /**
  * dibi Common Driver
@@ -27,7 +23,7 @@ abstract class DibiDriver
      * Current connection configuration
      * @var array
      */
-    protected $config;
+    private $config;
 
     /**
      * Connection resource
@@ -57,7 +53,10 @@ abstract class DibiDriver
     public function __construct($config)
     {
         $this->config = $config;
-        if (empty($config['lazy'])) $this->connection = $this->connect();
+
+        if (empty($config['lazy'])) {
+            $this->connection = $this->connect();
+        }
     }
 
 
@@ -102,7 +101,9 @@ abstract class DibiDriver
      */
     final public function getConnection()
     {
-        if (!$this->connection) $this->connection = $this->connect();
+        if (!$this->connection) {
+            $this->connection = $this->connect();
+        }
 
         return $this->connection;
     }
@@ -110,7 +111,7 @@ abstract class DibiDriver
 
 
     /**
-     * Generates and executes SQL query
+     * Generates (translates) and executes SQL query
      *
      * @param  array|mixed    one or more arguments
      * @return int|DibiResult
@@ -118,25 +119,32 @@ abstract class DibiDriver
      */
     final public function query($args)
     {
-        // receive arguments
         if (!is_array($args)) $args = func_get_args();
 
-        // and generate SQL
         $trans = new DibiTranslator($this);
-        $sql = $trans->translate($args);
+        if ($trans->translate($args)) {
+            return $this->nativeQuery($trans->sql);
+        } else {
+            throw new DibiException('SQL translate error: ' . $trans->sql);
+        }
+    }
 
-        // event handler
-        dibi::invokeEvent('beforeQuery', array($this, $sql));
 
-        if ($sql === FALSE) return FALSE;
 
-        // execute SQL
-        $res = $this->nativeQuery($sql);
+    /**
+     * Generates and prints SQL query
+     *
+     * @param  array|mixed  one or more arguments
+     * @return bool
+     */
+    final public function test($args)
+    {
+        if (!is_array($args)) $args = func_get_args();
 
-        // event handler
-        dibi::invokeEvent('afterQuery', array($this, $sql, $res));
-
-        return $res;
+        $trans = new DibiTranslator($this);
+        $ok = $trans->translate($args);
+        dibi::dump($trans->sql);
+        return $ok;
     }
 
 
@@ -145,9 +153,27 @@ abstract class DibiDriver
      * Executes the SQL query
      *
      * @param string        SQL statement.
-     * @return object|bool  Result set object or TRUE on success, FALSE on failure
+     * @return DibiResult|NULL  Result set object
+     * @throws DibiException
      */
-    abstract public function nativeQuery($sql);
+    public function nativeQuery($sql)
+    {
+        dibi::notify('beforeQuery', $this, $sql);
+        $res = $this->doQuery($sql);
+        dibi::notify('afterQuery', $this, $res);
+        return $res;
+    }
+
+
+
+    /**
+     * Internal: Executes the SQL query
+     *
+     * @param string       SQL statement.
+     * @return DibiResult|NULL  Result set object
+     * @throws DibiDatabaseException
+     */
+    abstract protected function doQuery($sql);
 
 
 
@@ -171,6 +197,7 @@ abstract class DibiDriver
 
     /**
      * Begins a transaction (if supported).
+     * @return void
      */
     abstract public function begin();
 
@@ -178,6 +205,7 @@ abstract class DibiDriver
 
     /**
      * Commits statements in a transaction.
+     * @return void
      */
     abstract public function commit();
 
@@ -185,6 +213,7 @@ abstract class DibiDriver
 
     /**
      * Rollback changes in a transaction.
+     * @return void
      */
     abstract public function rollback();
 

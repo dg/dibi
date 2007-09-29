@@ -12,28 +12,29 @@
  */
 
 
-// security - include dibi.php, not this file
-if (!class_exists('dibi', FALSE)) die();
-
-
 
 /**
- * dibi exception class
- *
+ * dibi common exception
  */
 class DibiException extends Exception
 {
-    private
-        $sql,
-        $dbError;
+}
 
 
-    public function __construct($message, $dbError = NULL, $sql = NULL)
+/**
+ * database server exception
+ */
+class DibiDatabaseException extends DibiException
+{
+    /** @var string */
+    private $sql;
+
+
+    public function __construct($message = NULL, $code = 0, $sql = NULL)
     {
-        $this->dbError = $dbError;
-        $this->sql = $sql;
-
         parent::__construct($message);
+        $this->sql = $sql;
+        dibi::notify('exception', NULL, $this);
     }
 
 
@@ -45,31 +46,13 @@ class DibiException extends Exception
 
 
 
-    final public function getDbError()
-    {
-        return $this->dbError;
-    }
-
-
-
     public function __toString()
     {
         $s = parent::__toString();
-
-        if ($this->dbError) {
-            $s .= "\n\nDatabase error: ";
-            if (isset($this->dbError['code'])) {
-                $s .= "[" . $this->dbError['code'] . "] ";
-            }
-
-            $s .= $this->dbError['message'];
-        }
-
         if ($this->sql) {
             $s .= "\nSQL: " . $this->sql;
         }
-
         return $s;
     }
 
-} // class DibiException
+}

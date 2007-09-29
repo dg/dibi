@@ -12,10 +12,6 @@
  */
 
 
-// security - include dibi.php, not this file
-if (!class_exists('dibi', FALSE)) die();
-
-
 
 /**
  * dibi translator
@@ -23,13 +19,29 @@ if (!class_exists('dibi', FALSE)) die();
  */
 final class DibiTranslator
 {
-    private
-        $driver,
-        $modifier,
-        $hasError,
-        $comment,
-        $ifLevel,
-        $ifLevelStart;
+    /** @var string */
+    public $sql;
+
+    /** @var string NOT USED YET */
+    public $mask;
+
+    /** @var DibiDriver */
+    private $driver;
+
+    /** @var string  last modifier */
+    private $modifier;
+
+    /** @var bool */
+    private $hasError;
+
+    /** @var bool */
+    private $comment;
+
+    /** @var int */
+    private $ifLevel;
+
+    /** @var int */
+    private $ifLevelStart;
 
 
 
@@ -44,8 +56,7 @@ final class DibiTranslator
      * Generates SQL
      *
      * @param  array
-     * @return string|FALSE
-     * @throws DibiException
+     * @return bool
      */
     public function translate($args)
     {
@@ -61,7 +72,7 @@ final class DibiTranslator
         $comment = FALSE;
 
         // iterate
-        $sql = array();
+        $sql = $mask = array();
         $i = 0;
         foreach ($args as $arg)
         {
@@ -84,7 +95,7 @@ final class DibiTranslator
             if (is_string($arg) && (!$mod || $mod === 'sql')) {
                 $mod = FALSE;
                 // will generate new mod
-                $sql[] = $this->formatValue($arg, 'sql');
+                $mask[] = $sql[] = $this->formatValue($arg, 'sql');
                 continue;
             }
 
@@ -96,12 +107,13 @@ final class DibiTranslator
                     $mod = $commandIns ? 'v' : 'a';
                 } else {
                     $mod = $commandIns ? 'l' : 'a';
-                    if ($lastArr === $i - 1) $sql[] = ',';
+                    if ($lastArr === $i - 1) $mask[] = $sql[] = ',';
                 }
                 $lastArr = $i;
             }
 
             // default processing
+            $mask[] = '?';
             if (!$comment) {
                 $sql[] = $this->formatValue($arg, $mod);
             }
@@ -110,33 +122,15 @@ final class DibiTranslator
 
         if ($comment) $sql[] = "\0";
 
-        $sql = implode(' ', $sql);
+        //$this->mask = implode(' ', $mask);
+
+        $this->sql = implode(' ', $sql);
 
         // remove comments
         // TODO: check !!!
-        $sql = preg_replace('#\x00.*?\x00#s', '', $sql);
+        $this->sql = preg_replace('#\x00.*?\x00#s', '', $this->sql);
 
-        if ($this->hasError) {
-            // TODO: do it better, remove dibi::$...
-            if (dibi::$logFile) {  // log to file
-                dibi::log(
-                    "ERROR: SQL generate error"
-                    . "\n-- SQL: " . $sql
-                    . ";\n-- " . date('Y-m-d H:i:s ')
-                );
-            }
-
-            if (dibi::$throwExceptions) {
-                throw new DibiException('SQL generate error', NULL, $sql);
-
-            } else {
-                trigger_error("dibi: SQL generate error: $sql", E_USER_WARNING);
-                return FALSE;
-            }
-        }
-
-        // OK
-        return $sql;
+        return !$this->hasError;
     }
 
 
@@ -203,7 +197,7 @@ final class DibiTranslator
 
             if (!is_scalar($value)) {  // array is already processed
                 $this->hasError = TRUE;
-                return '**Unexpected ' . gettype($value) . '**';
+                return '**Unexpected type ' . gettype($value) . '**';
             }
 
             switch ($modifier) {
@@ -280,7 +274,7 @@ final class DibiTranslator
             case 'a':
             case 'v':
                 $this->hasError = TRUE;
-                return "**Unexpected ".gettype($value)."**";
+                return '**Unexpected type ' . gettype($value) . '**';
 
             case 'if':
                 $this->hasError = TRUE;

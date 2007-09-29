@@ -1,10 +1,13 @@
+<h1>dibi user datatype example</h1>
 <?php
 
 require_once '../dibi/dibi.php';
 
+
 // required since PHP 5.1.0
-if (function_exists('date_default_timezone_set'))
+if (function_exists('date_default_timezone_set')) {
      date_default_timezone_set('Europe/Prague');
+}
 
 
 /**

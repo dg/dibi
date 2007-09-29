@@ -12,23 +12,18 @@
  */
 
 
-// security - include dibi.php, not this file
-if (!class_exists('dibi', FALSE)) die();
-
-
 /**
  * The dibi driver for MySQLi database
  *
  */
 class DibiMySqliDriver extends DibiDriver
 {
-    public
-        $formats = array(
-            'TRUE'     => "1",
-            'FALSE'    => "0",
-            'date'     => "'Y-m-d'",
-            'datetime' => "'Y-m-d H:i:s'",
-        );
+    public $formats = array(
+        'TRUE'     => "1",
+        'FALSE'    => "0",
+        'date'     => "'Y-m-d'",
+        'datetime' => "'Y-m-d H:i:s'",
+    );
 
 
 
@@ -38,10 +33,6 @@ class DibiMySqliDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('mysqli')) {
-            throw new DibiException("PHP extension 'mysqli' is not loaded");
-        }
-
         // default values
         if (empty($config['username'])) $config['username'] = ini_get('mysqli.default_user');
         if (empty($config['password'])) $config['password'] = ini_get('mysqli.default_password');
@@ -59,38 +50,38 @@ class DibiMySqliDriver extends DibiDriver
 
     protected function connect()
     {
-        $config = $this->config;
+        if (!extension_loaded('mysqli')) {
+            throw new DibiException("PHP extension 'mysqli' is not loaded");
+        }
+
+        $config = $this->getConfig();
 
         $connection = @mysqli_connect($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
 
         if (!$connection) {
-            throw new DibiException("Connecting error (driver mysqli)", array(
-                'message' => mysqli_connect_error(),
-                'code'    => mysqli_connect_errno(),
-            ));
+            throw new DibiDatabaseException(mysqli_connect_error(), mysqli_connect_errno());
         }
 
         if (!empty($config['charset'])) {
             mysqli_query($connection, "SET NAMES '" . $config['charset'] . "'");
         }
 
+        dibi::notify('connected', $this);
         return $connection;
     }
 
 
 
-    public function nativeQuery($sql)
+    protected function doQuery($sql)
     {
-        $res = @mysqli_query($this->getConnection(), $sql);
+        $connection = $this->getConnection();
+        $res = @mysqli_query($connection, $sql);
 
         if ($res === FALSE) {
-            return FALSE;
+            throw new DibiDatabaseException(mysqli_error($connection), mysqli_errno($connection), $sql);
 
         } elseif (is_object($res)) {
             return new DibiMySqliResult($res);
-
-        } else {
-            return TRUE;
         }
     }
 
@@ -114,7 +105,11 @@ class DibiMySqliDriver extends DibiDriver
 
     public function begin()
     {
-        return mysqli_autocommit($this->getConnection(), FALSE);
+        $connection = $this->getConnection();
+        if (!mysqli_autocommit($connection, FALSE)) {
+            throw new DibiDatabaseException(mysqli_error($connection), mysqli_errno($connection));
+        }
+        dibi::notify('begin', $this);
     }
 
 
@@ -122,9 +117,11 @@ class DibiMySqliDriver extends DibiDriver
     public function commit()
     {
         $connection = $this->getConnection();
-        $ok = mysqli_commit($connection);
+        if (!mysqli_commit($connection)) {
+            throw new DibiDatabaseException(mysqli_error($connection), mysqli_errno($connection));
+        }
         mysqli_autocommit($connection, TRUE);
-        return $ok;
+        dibi::notify('commit', $this);
     }
 
 
@@ -132,9 +129,11 @@ class DibiMySqliDriver extends DibiDriver
     public function rollback()
     {
         $connection = $this->getConnection();
-        $ok = mysqli_rollback($connection);
+        if (!mysqli_rollback($connection)) {
+            throw new DibiDatabaseException(mysqli_error($connection), mysqli_errno($connection));
+        }
         mysqli_autocommit($connection, TRUE);
-        return $ok;
+        dibi::notify('rollback', $this);
     }
 
 
@@ -199,15 +198,6 @@ class DibiMySqliDriver extends DibiDriver
 
 class DibiMySqliResult extends DibiResult
 {
-    private $resource;
-
-
-    public function __construct($resource)
-    {
-        $this->resource = $resource;
-    }
-
-
 
     public function rowCount()
     {

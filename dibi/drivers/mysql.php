@@ -12,23 +12,18 @@
  */
 
 
-// security - include dibi.php, not this file
-if (!class_exists('dibi', FALSE)) die();
-
-
 /**
  * The dibi driver for MySQL database
  *
  */
 class DibiMySqlDriver extends DibiDriver
 {
-    public
-        $formats = array(
-            'TRUE'     => "1",
-            'FALSE'    => "0",
-            'date'     => "'Y-m-d'",
-            'datetime' => "'Y-m-d H:i:s'",
-        );
+    public $formats = array(
+        'TRUE'     => "1",
+        'FALSE'    => "0",
+        'date'     => "'Y-m-d'",
+        'datetime' => "'Y-m-d H:i:s'",
+    );
 
 
     /**
@@ -37,10 +32,6 @@ class DibiMySqlDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('mysql')) {
-            throw new DibiException("PHP extension 'mysql' is not loaded");
-        }
-
         // default values
         if (empty($config['username'])) $config['username'] = ini_get('mysql.default_user');
         if (empty($config['password'])) $config['password'] = ini_get('mysql.default_password');
@@ -57,7 +48,11 @@ class DibiMySqlDriver extends DibiDriver
 
     protected function connect()
     {
-        $config = $this->config;
+        if (!extension_loaded('mysql')) {
+            throw new DibiException("PHP extension 'mysql' is not loaded");
+        }
+
+        $config = $this->getConfig();
 
         if (isset($config['protocol']) && $config['protocol'] === 'unix') { // host can be socket
             $host = ':' . $config['host'];
@@ -82,45 +77,37 @@ class DibiMySqlDriver extends DibiDriver
             ini_set('track_errors', $save);
         }
 
-
         if (!is_resource($connection)) {
-            throw new DibiException("Connecting error (driver mysql)'", array(
-                'message' => mysql_error() ? mysql_error() : $php_errormsg,
-                'code'    => mysql_errno(),
-            ));
+            $msg = mysql_error();
+            if (!$msg) $msg = $php_errormsg;
+            throw new DibiDatabaseException($msg, mysql_errno());
         }
-
 
         if (!empty($config['charset'])) {
             @mysql_query("SET NAMES '" . $config['charset'] . "'", $connection);
             // don't handle this error...
         }
 
-
         if (!empty($config['database']) && !@mysql_select_db($config['database'], $connection)) {
-            throw new DibiException("Connecting error (driver mysql)", array(
-                'message' => mysql_error($connection),
-                'code'    => mysql_errno($connection),
-            ));
+            throw new DibiDatabaseException(mysql_error($connection), mysql_errno($connection));
         }
 
+        dibi::notify('connected', $this);
         return $connection;
     }
 
 
 
-    public function nativeQuery($sql)
+    protected function doQuery($sql)
     {
-        $res = @mysql_query($sql, $this->getConnection());
+        $connection = $this->getConnection();
+        $res = @mysql_query($sql, $connection);
 
         if ($res === FALSE) {
-            return FALSE;
+            throw new DibiDatabaseException(mysql_error($connection), mysql_errno($connection), $sql);
 
         } elseif (is_resource($res)) {
             return new DibiMySqlResult($res);
-
-        } else {
-            return TRUE;
         }
     }
 
@@ -144,21 +131,24 @@ class DibiMySqlDriver extends DibiDriver
 
     public function begin()
     {
-        return mysql_query('BEGIN', $this->getConnection());
+        $this->doQuery('BEGIN');
+        dibi::notify('begin', $this);
     }
 
 
 
     public function commit()
     {
-        return mysql_query('COMMIT', $this->getConnection());
+        $this->doQuery('COMMIT');
+        dibi::notify('commit', $this);
     }
 
 
 
     public function rollback()
     {
-        return mysql_query('ROLLBACK', $this->getConnection());
+        $this->doQuery('ROLLBACK');
+        dibi::notify('rollback', $this);
     }
 
 
@@ -223,15 +213,6 @@ class DibiMySqlDriver extends DibiDriver
 
 class DibiMySqlResult extends DibiResult
 {
-    private $resource;
-
-
-    public function __construct($resource)
-    {
-        $this->resource = $resource;
-    }
-
-
 
     public function rowCount()
     {

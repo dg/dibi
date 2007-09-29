@@ -14,7 +14,7 @@
  * @author     David Grudl
  * @copyright  Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
  * @license    New BSD License
- * @version    0.8e (Revision: $WCREV$, Date: $WCDATE$)
+ * @version    0.9a (Revision: $WCREV$, Date: $WCDATE$)
  * @category   Database
  * @package    Dibi
  * @link       http://dibi.texy.info/
@@ -28,8 +28,9 @@
  */
 
 
-if (version_compare(PHP_VERSION , '5.0.3', '<'))
+if (version_compare(PHP_VERSION , '5.0.3', '<')) {
     die('dibi needs PHP 5.0.3 or newer');
+}
 
 
 // libraries
@@ -37,6 +38,7 @@ require_once dirname(__FILE__).'/libs/driver.php';
 require_once dirname(__FILE__).'/libs/resultset.php';
 require_once dirname(__FILE__).'/libs/translator.php';
 require_once dirname(__FILE__).'/libs/exception.php';
+require_once dirname(__FILE__).'/libs/logger.php';
 
 
 
@@ -87,7 +89,7 @@ class dibi
         FIELD_COUNTER =    'c', // counter or autoincrement, is integer
 
         // dibi version
-        VERSION =          '0.8e (Revision: $WCREV$, Date: $WCDATE$)';
+        VERSION =          '0.9a (Revision: $WCREV$, Date: $WCDATE$)';
 
 
     /**
@@ -103,36 +105,6 @@ class dibi
     private static $connection;
 
     /**
-     * Last SQL command @see dibi::query()
-     * @var string
-     */
-    public static $sql;
-
-    /**
-     * File for logging SQL queries
-     * @var string|NULL
-     */
-    public static $logFile;
-
-    /**
-     * Mode parameter used by fopen()
-     * @var string
-     */
-    public static $logMode = 'a';
-
-    /**
-     * To log all queries or error queries (debug mode)
-     * @var bool
-     */
-    public static $logAll = FALSE;
-
-    /**
-     * dibi::query() error mode
-     * @var bool
-     */
-    public static $throwExceptions = TRUE;
-
-    /**
      * Substitutions for identifiers
      * @var array
      */
@@ -145,9 +117,36 @@ class dibi
     private static $handlers = array();
 
     /**
+     * Last SQL command @see dibi::query()
+     * @var string
+     */
+    public static $sql;
+
+    /**
+     * Elapsed time for last query
      * @var int
      */
-    private static $timer;
+    public static $elapsedTime;
+
+    /**
+     * Elapsed time for all queries
+     * @var int
+     */
+    public static $totalTime;
+
+    /**
+     * Number or queries
+     * @var int
+     */
+    public static $numOfQueries = 0;
+
+    /**
+     * Start time
+     * @var int
+     */
+    private static $time;
+
+
 
 
 
@@ -173,12 +172,10 @@ class dibi
             parse_str($config, $config);
         }
 
-        // config['driver'] is required
         if (empty($config['driver'])) {
             throw new DibiException('Driver is not specified.');
         }
 
-        // include dibi driver
         $class = "Dibi$config[driver]Driver";
         if (!class_exists($class)) {
             include_once dirname(__FILE__) . "/drivers/$config[driver].php";
@@ -188,13 +185,8 @@ class dibi
             }
         }
 
-        // create connection object and store in list
-        /** like $connection = $class::connect($config); */
-        self::$connection = self::$registry[$name] = new $class($config);
-
-        if (self::$logAll) self::log("OK: connected to DB '$config[driver]'");
-
-        return self::$connection;
+        // create connection object and store in list; like $connection = $class::connect($config);
+        return self::$connection = self::$registry[$name] = new $class($config);
     }
 
 
@@ -260,7 +252,6 @@ class dibi
      */
     public static function query($args)
     {
-        // receive arguments
         if (!is_array($args)) $args = func_get_args();
 
         return self::getConnection()->query($args);
@@ -269,29 +260,29 @@ class dibi
 
 
     /**
-     * Generates and prints SQL query
+     * Executes the SQL query - Monostate for DibiDriver::nativeQuery()
+     *
+     * @param string        SQL statement.
+     * @return object|bool  Result set object or TRUE on success, FALSE on failure
+     */
+    public static function nativeQuery($sql)
+    {
+        return self::getConnection()->nativeQuery($sql);
+    }
+
+
+
+    /**
+     * Generates and prints SQL query - Monostate for DibiDriver::test()
      *
      * @param  array|mixed  one or more arguments
      * @return bool
      */
     public static function test($args)
     {
-        // receive arguments
         if (!is_array($args)) $args = func_get_args();
 
-        // and generate SQL
-        $trans = new DibiTranslator(self::getConnection());
-        try {
-            $sql = $trans->translate($args);
-        } catch (DibiException $e) {
-            return FALSE;
-        }
-
-        if ($sql === FALSE) return FALSE;
-
-        self::dump($sql);
-
-        return TRUE;
+        return self::getConnection()->test($args);
     }
 
 
@@ -324,24 +315,11 @@ class dibi
 
 
     /**
-     * Executes the SQL query - Monostate for DibiDriver::nativeQuery()
-     *
-     * @param string        SQL statement.
-     * @return object|bool  Result set object or TRUE on success, FALSE on failure
-     */
-    public static function nativeQuery($sql)
-    {
-        return self::getConnection()->nativeQuery($sql);
-    }
-
-
-
-    /**
      * Begins a transaction - Monostate for DibiDriver::begin()
      */
     public static function begin()
     {
-        return self::getConnection()->begin();
+        self::getConnection()->begin();
     }
 
 
@@ -351,7 +329,7 @@ class dibi
      */
     public static function commit()
     {
-        return self::getConnection()->commit();
+        self::getConnection()->commit();
     }
 
 
@@ -361,84 +339,7 @@ class dibi
      */
     public static function rollback()
     {
-        return self::getConnection()->rollback();
-    }
-
-
-
-    private static function dumpHighlight($matches)
-    {
-        if (!empty($matches[1])) // comment
-            return '<em style="color:gray">'.$matches[1].'</em>';
-
-        if (!empty($matches[2])) // error
-            return '<strong style="color:red">'.$matches[2].'</strong>';
-
-        if (!empty($matches[3])) // most important keywords
-            return '<strong style="color:blue">'.$matches[3].'</strong>';
-
-        if (!empty($matches[4])) // other keywords
-            return '<strong style="color:green">'.$matches[4].'</strong>';
-    }
-
-
-
-    /**
-     * Prints out a syntax highlighted version of the SQL command
-     *
-     * @param string   SQL command
-     * @param bool   return or print?
-     * @return void
-     */
-    public static function dump($sql, $return = FALSE) {
-        static $keywords2 = 'ALL|DISTINCT|AS|ON|INTO|AND|OR|AS';
-        static $keywords1 = 'SELECT|UPDATE|INSERT|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';
-
-        // insert new lines
-        $sql = preg_replace("#\\b(?:$keywords1)\\b#", "\n\$0", $sql);
-
-        $sql = trim($sql);
-        // reduce spaces
-        $sql = preg_replace('# {2,}#', ' ', $sql);
-
-        $sql = wordwrap($sql, 100);
-        $sql = htmlSpecialChars($sql);
-        $sql = preg_replace("#\n{2,}#", "\n", $sql);
-
-        // syntax highlight
-        $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#", array('dibi', 'dumpHighlight'), $sql);
-        $sql = '<pre class="dump">' . $sql . "</pre>\n";
-
-        // print & return
-        if (!$return) echo $sql;
-        return $sql;
-    }
-
-
-
-    /**
-     * Displays complete result-set as HTML table
-     *
-     * @param object   DibiResult
-     * @return void
-     */
-    public static function dumpResult(DibiResult $res)
-    {
-        echo '<table class="dump"><tr>';
-        echo '<th>#row</th>';
-        foreach ($res->getFields() as $field)
-            echo '<th>' . $field . '</th>';
-        echo '</tr>';
-
-        foreach ($res as $row => $fields) {
-            echo '<tr><th>', $row, '</th>';
-            foreach ($fields as $field) {
-                if (is_object($field)) $field = $field->__toString();
-                echo '<td>', htmlSpecialChars($field), '</td>';
-            }
-            echo '</tr>';
-        }
-        echo '</table>';
+        self::getConnection()->rollback();
     }
 
 
@@ -489,117 +390,123 @@ class dibi
     /**
      * Add new event handler
      *
-     * @param string   event name
      * @param callback
      * @return void
      */
-    public static function addHandler($event, $callback)
+    public static function addHandler($callback)
     {
         if (!is_callable($callback)) {
             throw new DibiException("Invalid callback");
         }
 
-        self::$handlers[$event][] = $callback;
+        self::$handlers[] = $callback;
     }
 
 
 
     /**
-     * Invoke registered handlers
+     * Event notification (events: exception, connected, beforeQuery, afterQuery, begin, commit, rollback)
      *
-     * @param string   event name
-     * @param array    arguments passed into handler
+     * @param string event name
+     * @param DibiDriver
+     * @param mixed
      * @return void
      */
-    public static function invokeEvent($event, $args)
+    public static function notify($event, DibiDriver $driver = NULL, $arg = NULL)
     {
-        if (!isset(self::$handlers[$event])) return;
+        if ($event === 'beforeQuery') {
+            self::$numOfQueries++;
+            self::$elapsedTime = FALSE;
+            self::$time = -microtime(TRUE);
+            self::$sql = $arg;
 
-        foreach (self::$handlers[$event] as $handler) {
-            call_user_func_array($handler, $args);
+        } elseif ($event === 'afterQuery') {
+            self::$elapsedTime = self::$time + microtime(TRUE);
+            self::$totalTime += self::$elapsedTime;
         }
-    }
 
-
-
-    public static function beforeQuery($driver, $sql)
-    {
-        self::$sql = $sql;
-        self::$timer = -microtime(true);
+        foreach (self::$handlers as $handler) {
+            call_user_func($handler, $event, $driver, $arg);
+        }
     }
 
 
 
     /**
-     * Error logging - EXPERIMENTAL
+     * Enable profiler & logger
+     *
+     * @param string  filename
+     * @param bool    log all queries?
+     * @return DibiProfiler
      */
-    public static function afterQuery($driver, $sql, $res)
+    public static function startLogger($file, $logQueries = FALSE)
     {
-        if ($res === FALSE) { // query error
-            if (self::$logFile) { // log to file
-                $info = $driver->errorInfo();
-                if ($info['code']) {
-                    $info['message'] = "[$info[code]] $info[message]";
-                }
-
-                self::log(
-                    "ERROR: $info[message]"
-                    . "\n-- SQL: " . self::$sql
-                    . "\n-- driver: " . $driver->getConfig('driver')
-                    . ";\n-- " . date('Y-m-d H:i:s ')
-                );
-            }
-
-            if (self::$throwExceptions) {
-                $info = $driver->errorInfo();
-                throw new DibiException('Query error (driver ' . $driver->getConfig('driver') . ')', $info, self::$sql);
-            } else {
-                $info = $driver->errorInfo();
-                if ($info['code']) {
-                    $info['message'] = "[$info[code]] $info[message]";
-                }
-
-                trigger_error("self: $info[message]", E_USER_WARNING);
-                return FALSE;
-            }
-        }
-
-        if (self::$logFile && self::$logAll) { // log success
-            self::$timer += microtime(true);
-            $msg = $res instanceof DibiResult ? 'object('.get_class($res).') rows: '.$res->rowCount() : 'OK';
-
-            self::log(
-                "OK: " . self::$sql
-                . ";\n-- result: $msg"
-                . "\n-- takes: " . sprintf('%0.3f', self::$timer * 1000) . ' ms'
-                . "\n-- driver: " . $driver->getConfig('driver')
-                . "\n-- " . date('Y-m-d H:i:s ')
-            );
-        }
-
+        $logger = new DibiLogger($file);
+        $logger->logQueries = $logQueries;
+        self::addHandler(array($logger, 'handler'));
+        return $logger;
     }
 
 
 
     /**
-     * Error logging - EXPERIMENTAL
+     * Prints out a syntax highlighted version of the SQL command or DibiResult
+     *
+     * @param string|DibiResult
+     * @param bool  return or print?
+     * @return string
      */
-    public static function log($message)
+    public static function dump($sql = NULL, $return = FALSE)
     {
-        if (self::$logFile == NULL || self::$logMode == NULL) return;
+        ob_start();
+        if ($sql instanceof DibiResult) {
+            $sql->dump();
 
-        $f = fopen(self::$logFile, self::$logMode);
-        if (!$f) return;
-        flock($f, LOCK_EX);
-        fwrite($f, $message. "\n\n");
-        fclose($f);
+        } else {
+            if ($sql === NULL) $sql = self::$sql;
+
+            static $keywords2 = 'ALL|DISTINCT|AS|ON|INTO|AND|OR|AS';
+            static $keywords1 = 'SELECT|UPDATE|INSERT|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';
+
+            // insert new lines
+            $sql = preg_replace("#\\b(?:$keywords1)\\b#", "\n\$0", $sql);
+
+            $sql = trim($sql);
+            // reduce spaces
+            $sql = preg_replace('# {2,}#', ' ', $sql);
+
+            $sql = wordwrap($sql, 100);
+            $sql = htmlSpecialChars($sql);
+            $sql = preg_replace("#\n{2,}#", "\n", $sql);
+
+            // syntax highlight
+            $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#", array('dibi', 'highlightCallback'), $sql);
+            echo '<pre class="dump">', $sql, "</pre>\n";
+        }
+
+        if ($return) {
+            return ob_get_clean();
+        } else {
+            ob_end_flush();
+        }
+    }
+
+
+
+    private static function highlightCallback($matches)
+    {
+        if (!empty($matches[1])) // comment
+            return '<em style="color:gray">'.$matches[1].'</em>';
+
+        if (!empty($matches[2])) // error
+            return '<strong style="color:red">'.$matches[2].'</strong>';
+
+        if (!empty($matches[3])) // most important keywords
+            return '<strong style="color:blue">'.$matches[3].'</strong>';
+
+        if (!empty($matches[4])) // other keywords
+            return '<strong style="color:green">'.$matches[4].'</strong>';
     }
 
 
 } // class dibi
-
-
-
-// this is experimental:
-dibi::addHandler('beforeQuery', array('dibi', 'beforeQuery'));
-dibi::addHandler('afterQuery', array('dibi', 'afterQuery'));

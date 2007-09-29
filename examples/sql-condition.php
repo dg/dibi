@@ -1,6 +1,7 @@
 <style>
 pre.dibi { padding-bottom: 10px; }
 </style>
+<h1>dibi conditional SQL example</h1>
 <pre>
 <?php
 

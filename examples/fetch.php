@@ -1,3 +1,4 @@
+<h1>dibi fetch example</h1>
 <pre>
 <?php
 

@@ -12,23 +12,18 @@
  */
 
 
-// security - include dibi.php, not this file
-if (!class_exists('dibi', FALSE)) die();
-
-
 /**
  * The dibi driver for SQlite database
  *
  */
 class DibiSqliteDriver extends DibiDriver
 {
-    public
-        $formats = array(
-            'TRUE'     => "1",
-            'FALSE'    => "0",
-            'date'     => "U",
-            'datetime' => "U",
-        );
+    public $formats = array(
+        'TRUE'     => "1",
+        'FALSE'    => "0",
+        'date'     => "U",
+        'datetime' => "U",
+    );
 
 
 
@@ -38,10 +33,6 @@ class DibiSqliteDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('sqlite')) {
-            throw new DibiException("PHP extension 'sqlite' is not loaded");
-        }
-
         if (empty($config['database'])) {
             throw new DibiException("Database must be specified (driver sqlite)");
         }
@@ -55,7 +46,11 @@ class DibiSqliteDriver extends DibiDriver
 
     protected function connect()
     {
-        $config = $this->config;
+        if (!extension_loaded('sqlite')) {
+            throw new DibiException("PHP extension 'sqlite' is not loaded");
+        }
+
+        $config = $this->getConfig();
 
         $errorMsg = '';
         if (empty($config['persistent'])) {
@@ -65,28 +60,26 @@ class DibiSqliteDriver extends DibiDriver
         }
 
         if (!$connection) {
-            throw new DibiException("Connecting error (driver sqlite)", array(
-                'message' => $errorMsg,
-            ));
+            throw new DibiDatabaseException($errorMsg);
         }
 
+        dibi::notify('connected', $this);
         return $connection;
     }
 
 
 
-    public function nativeQuery($sql)
+    protected function doQuery($sql)
     {
-        $res = @sqlite_query($this->getConnection(), $sql, SQLITE_ASSOC);
+        $connection = $this->getConnection();
+        $res = @sqlite_query($connection, $sql, SQLITE_ASSOC);
 
         if ($res === FALSE) {
-            return FALSE;
+            $code = sqlite_last_error($connection);
+            throw new DibiDatabaseException(sqlite_error_string($code), $code, $sql);
 
         } elseif (is_resource($res)) {
             return new DibiSqliteResult($res);
-
-        } else {
-            return TRUE;
         }
     }
 
@@ -110,21 +103,24 @@ class DibiSqliteDriver extends DibiDriver
 
     public function begin()
     {
-        return sqlite_query($this->getConnection(), 'BEGIN');
+        $this->doQuery('BEGIN');
+        dibi::notify('begin', $this);
     }
 
 
 
     public function commit()
     {
-        return sqlite_query($this->getConnection(), 'COMMIT');
+        $this->doQuery('COMMIT');
+        dibi::notify('commit', $this);
     }
 
 
 
     public function rollback()
     {
-        return sqlite_query($this->getConnection(), 'ROLLBACK');
+        $this->doQuery('ROLLBACK');
+        dibi::notify('rollback', $this);
     }
 
 
@@ -184,15 +180,6 @@ class DibiSqliteDriver extends DibiDriver
 
 class DibiSqliteResult extends DibiResult
 {
-    private $resource;
-
-
-    public function __construct($resource)
-    {
-        $this->resource = $resource;
-    }
-
-
 
     public function rowCount()
     {

@@ -12,23 +12,18 @@
  */
 
 
-// security - include dibi.php, not this file
-if (!class_exists('dibi', FALSE)) die();
-
-
 /**
  * The dibi driver for PDO
  *
  */
 class DibiPdoDriver extends DibiDriver
 {
-    public
-        $formats = array(
-            'TRUE'     => "1",
-            'FALSE'    => "0",
-            'date'     => "'Y-m-d'",
-            'datetime' => "'Y-m-d H:i:s'",
-        );
+    public $formats = array(
+        'TRUE'     => "1",
+        'FALSE'    => "0",
+        'date'     => "'Y-m-d'",
+        'datetime' => "'Y-m-d H:i:s'",
+    );
 
 
 
@@ -38,10 +33,6 @@ class DibiPdoDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('pdo')) {
-            throw new DibiException("PHP extension 'pdo' is not loaded");
-        }
-
         if (empty($config['dsn'])) {
             throw new DibiException("DSN must be specified (driver odbc)");
         }
@@ -56,24 +47,25 @@ class DibiPdoDriver extends DibiDriver
 
     protected function connect()
     {
-        return new PDO($this->config['dsn'], $this->config['username'], $this->config['password']);
+        if (!extension_loaded('pdo')) {
+            throw new DibiException("PHP extension 'pdo' is not loaded");
+        }
+
+        $config = $this->getConfig();
+        $connection = new PDO($config['dsn'], $config['username'], $config['password']);
+        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        dibi::notify('connected', $this);
+        return $connection;
     }
 
 
 
-    public function nativeQuery($sql)
+    protected function doQuery($sql)
     {
-        // TODO: or exec() ?
         $res = $this->getConnection()->query($sql);
-
-        if ($res === FALSE) {
-            return FALSE;
-
-        } elseif ($res instanceof PDOStatement) {
+        if ($res instanceof PDOStatement) {
             return new DibiPdoResult($res);
-
-        } else {
-            return TRUE;
         }
     }
 
@@ -95,21 +87,24 @@ class DibiPdoDriver extends DibiDriver
 
     public function begin()
     {
-        return $this->getConnection()->beginTransaction();
+        $this->getConnection()->beginTransaction();
+        dibi::notify('begin', $this);
     }
 
 
 
     public function commit()
     {
-        return $this->getConnection()->commit();
+        $this->getConnection()->commit();
+        dibi::notify('commit', $this);
     }
 
 
 
     public function rollback()
     {
-        return $this->getConnection()->rollBack();
+        $this->getConnection()->rollBack();
+        dibi::notify('rollback', $this);
     }
 
 
@@ -171,17 +166,7 @@ class DibiPdoDriver extends DibiDriver
 
 class DibiPdoResult extends DibiResult
 {
-    /** @var PDOStatement */
-    private $resource;
-
     private $row = 0;
-
-
-    public function __construct($resource)
-    {
-        $this->resource = $resource;
-    }
-
 
 
     public function rowCount()

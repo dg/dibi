@@ -1,9 +1,7 @@
+<h1>dibi dump example</h1>
 <?php
 
 require_once '../dibi/dibi.php';
-
-if (function_exists('date_default_timezone_set'))
-     date_default_timezone_set('Europe/Prague');
 
 
 dibi::connect(array(
@@ -19,17 +17,14 @@ INNER JOIN [orders] USING ([product_id])
 INNER JOIN [customers] USING ([customer_id])
 ');
 
-// get last SQL
-$sql = dibi::$sql;
 
+echo '<h2>dibi::dump()</h2>';
 
-// dump it
-echo '<h1>dibi::dump()</h1>';
-
-dibi::dump($sql);
+// dump last query (dibi::$sql)
+dibi::dump();
 
 
 // dump result table
-echo '<h1>dibi::dumpResult()</h1>';
+echo '<h2>DibiResult::dump()</h2>';
 
-dibi::dumpResult($res);
+$res->dump();

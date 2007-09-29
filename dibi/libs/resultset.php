@@ -12,13 +12,9 @@
  */
 
 
-// security - include dibi.php, not this file
-if (!class_exists('dibi', FALSE)) die();
-
-
 
 // PHP < 5.1 compatibility
-if (!interface_exists('Countable', false)) {
+if (!interface_exists('Countable', FALSE)) {
     interface Countable
     {
         function count();
@@ -54,6 +50,13 @@ abstract class DibiResult implements IteratorAggregate, Countable
     protected $meta;
 
 
+    /**
+     * Resultset resource
+     * @var resource
+     */
+    protected $resource;
+
+
     private static $types = array(
         dibi::FIELD_TEXT =>    'string',
         dibi::FIELD_BINARY =>  'string',
@@ -62,6 +65,25 @@ abstract class DibiResult implements IteratorAggregate, Countable
         dibi::FIELD_FLOAT =>   'float',
         dibi::FIELD_COUNTER => 'int',
     );
+
+
+
+
+    public function __construct($resource)
+    {
+        $this->resource = $resource;
+    }
+
+
+    /**
+     * Returns the resultset resource
+     *
+     * @return resource
+     */
+    final public function getResource()
+    {
+        return $this->resource;
+    }
 
 
 
@@ -399,6 +421,39 @@ abstract class DibiResult implements IteratorAggregate, Countable
      * @return void
      */
     abstract protected function buildMeta();
+
+
+
+    /**
+     * Displays complete result-set as HTML table
+     *
+     * @return void
+     */
+    public function dump()
+    {
+        echo '<table class="dump">';
+        echo '<thead>';
+        echo '<tr>';
+        echo '<th>#row</th>';
+        foreach ($this->getFields() as $field) {
+            echo '<th>' . htmlSpecialChars($field) . '</th>';
+        }
+        echo '</tr>';
+        echo '</thead>';
+        echo '<tbody>';
+
+        foreach ($this as $row => $fields) {
+            echo '<tr><th>', $row, '</th>';
+            foreach ($fields as $field) {
+                //if (is_object($field)) $field = $field->__toString();
+                echo '<td>', htmlSpecialChars($field), '</td>';
+            }
+            echo '</tr>';
+        }
+
+        echo '</tbody>';
+        echo '</table>';
+    }
 
 
 

@@ -12,26 +12,24 @@
  */
 
 
-// security - include dibi.php, not this file
-if (!class_exists('dibi', FALSE)) die();
-
-
 /**
  * The dibi driver interacting with databases via ODBC connections
  *
  */
 class DibiOdbcDriver extends DibiDriver
 {
-    private
-        $affectedRows = FALSE;
+    public $formats = array(
+        'TRUE'     => "-1",
+        'FALSE'    => "0",
+        'date'     => "#m/d/Y#",
+        'datetime' => "#m/d/Y H:i:s#",
+    );
 
-    public
-        $formats = array(
-            'TRUE'     => "-1",
-            'FALSE'    => "0",
-            'date'     => "#m/d/Y#",
-            'datetime' => "#m/d/Y H:i:s#",
-        );
+    /**
+     * Affected rows
+     * @var mixed
+     */
+    private $affectedRows = FALSE;
 
 
 
@@ -41,9 +39,6 @@ class DibiOdbcDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!extension_loaded('odbc'))
-            throw new DibiException("PHP extension 'odbc' is not loaded");
-
         // default values
         if (empty($config['username'])) $config['username'] = ini_get('odbc.default_user');
         if (empty($config['password'])) $config['password'] = ini_get('odbc.default_pw');
@@ -68,7 +63,11 @@ class DibiOdbcDriver extends DibiDriver
 
     protected function connect()
     {
-        $config = $this->config;
+        if (!extension_loaded('odbc')) {
+            throw new DibiException("PHP extension 'odbc' is not loaded");
+        }
+
+        $config = $this->getConfig();
 
         if (empty($config['persistent'])) {
             $connection = @odbc_connect($config['database'], $config['username'], $config['password']);
@@ -77,12 +76,10 @@ class DibiOdbcDriver extends DibiDriver
         }
 
         if (!is_resource($connection)) {
-            throw new DibiException("Connecting error (driver odbc)", array(
-                'message' => odbc_errormsg(),
-                'code'    => odbc_error(),
-            ));
+            throw new DibiDatabaseException(odbc_errormsg(), odbc_error());
         }
 
+        dibi::notify('connected', $this);
         return $connection;
     }
 
@@ -91,19 +88,26 @@ class DibiOdbcDriver extends DibiDriver
     public function nativeQuery($sql)
     {
         $this->affectedRows = FALSE;
-        $res = @odbc_exec($this->getConnection(), $sql);
+        $res = parent::nativeQuery($sql);
+        if ($res instanceof DibiResult) {
+            $this->affectedRows = odbc_num_rows($res->getResource());
+            if ($this->affectedRows < 0) $this->affectedRows = FALSE;
+        }
+        return $res;
+    }
+
+
+
+    protected function doQuery($sql)
+    {
+        $connection = $this->getConnection();
+        $res = @odbc_exec($connection, $sql);
 
         if ($res === FALSE) {
-            return FALSE;
+            throw new DibiDatabaseException(odbc_errormsg($connection), odbc_error($connection), $sql);
 
         } elseif (is_resource($res)) {
-            $this->affectedRows = odbc_num_rows($res);
-            if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-
             return new DibiOdbcResult($res);
-
-        } else {
-            return TRUE;
         }
     }
 
@@ -125,7 +129,11 @@ class DibiOdbcDriver extends DibiDriver
 
     public function begin()
     {
-        return odbc_autocommit($this->getConnection(), FALSE);
+        $connection = $this->getConnection();
+        if (!odbc_autocommit($connection, FALSE)) {
+            throw new DibiDatabaseException(odbc_errormsg($connection), odbc_error($connection));
+        }
+        dibi::notify('begin', $this);
     }
 
 
@@ -133,9 +141,11 @@ class DibiOdbcDriver extends DibiDriver
     public function commit()
     {
         $connection = $this->getConnection();
-        $ok = odbc_commit($connection);
+        if (!odbc_commit($connection)) {
+            throw new DibiDatabaseException(odbc_errormsg($connection), odbc_error($connection));
+        }
         odbc_autocommit($connection, TRUE);
-        return $ok;
+        dibi::notify('commit', $this);
     }
 
 
@@ -143,9 +153,11 @@ class DibiOdbcDriver extends DibiDriver
     public function rollback()
     {
         $connection = $this->getConnection();
-        $ok = odbc_rollback($connection);
+        if (!odbc_rollback($connection)) {
+            throw new DibiDatabaseException(odbc_errormsg($connection), odbc_error($connection));
+        }
         odbc_autocommit($connection, TRUE);
-        return $ok;
+        dibi::notify('rollback', $this);
     }
 
 
@@ -209,14 +221,7 @@ class DibiOdbcDriver extends DibiDriver
 
 class DibiOdbcResult extends DibiResult
 {
-    private $resource;
     private $row = 0;
-
-
-    public function __construct($resource)
-    {
-        $this->resource = $resource;
-    }
 
 
 

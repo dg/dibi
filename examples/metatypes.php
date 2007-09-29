@@ -1,3 +1,4 @@
+<h1>dibi metatypes example</h1>
 <pre>
 <?php
 

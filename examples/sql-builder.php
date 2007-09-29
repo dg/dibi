@@ -1,14 +1,16 @@
 <style>
 pre.dibi { padding-bottom: 10px; }
 </style>
+<h1>dibi SQL builder example</h1>
 <pre>
 <?php
 
 require_once '../dibi/dibi.php';
 
 // required since PHP 5.1.0
-if (function_exists('date_default_timezone_set'))
-     date_default_timezone_set('Europe/Prague'); // or 'GMT'
+if (function_exists('date_default_timezone_set')) {
+     date_default_timezone_set('Europe/Prague');
+}
 
 
 dibi::connect(array(
@@ -79,3 +81,6 @@ dibi::test("SELECT %f", '-.12345678912345678912345678e10');
 
 // hex numbers
 dibi::test("SELECT %i", '0x11');
+
+// invalid input
+dibi::test("SELECT %s", (object) array(123), ', %m', 123);

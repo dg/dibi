@@ -12,35 +12,25 @@
  */
 
 
-// security - include dibi.php, not this file
-if (!class_exists('dibi', FALSE)) die();
-
-
 /**
  * The dibi driver for MS SQL database
  *
  */
-class DibiMSSqlDriver extends DibiDriver
+class DibiMsSqlDriver extends DibiDriver
 {
-    public
-        $formats = array(
-            'TRUE'     => "1",
-            'FALSE'    => "0",
-            'date'     => "'Y-m-d'",
-            'datetime' => "'Y-m-d H:i:s'",
-        );
+    public $formats = array(
+        'TRUE'     => "1",
+        'FALSE'    => "0",
+        'date'     => "'Y-m-d'",
+        'datetime' => "'Y-m-d H:i:s'",
+    );
 
 
     /**
      * @param array  connect configuration
-     * @throws DibiException
      */
     public function __construct($config)
     {
-        if (!extension_loaded('mssql')) {
-            throw new DibiException("PHP extension 'mssql' is not loaded");
-        }
-
         if (!isset($config['host'])) $config['host'] = NULL;
         if (!isset($config['username'])) $config['username'] = NULL;
         if (!isset($config['password'])) $config['password'] = NULL;
@@ -52,7 +42,11 @@ class DibiMSSqlDriver extends DibiDriver
 
     protected function connect()
     {
-        $config = $this->config;
+        if (!extension_loaded('mssql')) {
+            throw new DibiException("PHP extension 'mssql' is not loaded");
+        }
+
+        $config = $this->getConfig();
 
         if (empty($config['persistent'])) {
             $connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE);
@@ -61,30 +55,28 @@ class DibiMSSqlDriver extends DibiDriver
         }
 
         if (!is_resource($connection)) {
-            throw new DibiException("Connecting error (driver mssql)'");
+            throw new DibiDatabaseException("Can't connect to DB");
         }
 
         if (!empty($config['database']) && !@mssql_select_db($config['database'], $connection)) {
-            throw new DibiException("Connecting error (driver mssql)");
+            throw new DibiDatabaseException("Can't select DB '$config[database]'");
         }
 
+        dibi::notify('connected', $this);
         return $connection;
     }
 
 
 
-    public function nativeQuery($sql)
+    protected function doQuery($sql)
     {
         $res = @mssql_query($sql, $this->getConnection());
 
         if ($res === FALSE) {
-            return FALSE;
+            throw new DibiDatabaseException('Query error', 0, $sql);
 
         } elseif (is_resource($res)) {
             return new DibiMSSqlResult($res);
-
-        } else {
-            return TRUE;
         }
     }
 
@@ -107,21 +99,24 @@ class DibiMSSqlDriver extends DibiDriver
 
     public function begin()
     {
-        return mssql_query('BEGIN TRANSACTION', $this->getConnection());
+        $this->doQuery('BEGIN TRANSACTION');
+        dibi::notify('begin', $this);
     }
 
 
 
     public function commit()
     {
-        return mssql_query('COMMIT', $this->getConnection());
+        $this->doQuery('COMMIT');
+        dibi::notify('commit', $this);
     }
 
 
 
     public function rollback()
     {
-        return mssql_query('ROLLBACK', $this->getConnection());
+        $this->doQuery('ROLLBACK');
+        dibi::notify('rollback', $this);
     }
 
 
@@ -171,12 +166,12 @@ class DibiMSSqlDriver extends DibiDriver
         }
 
         if ($offset) {
-            throw new DibiException('Offset is not implemented in driver odbc');
+            throw new DibiException('Offset is not implemented');
         }
     }
 
 
-}  // DibiMSSqlDriver
+}  // DibiMsSqlDriver
 
 
 
@@ -188,15 +183,6 @@ class DibiMSSqlDriver extends DibiDriver
 
 class DibiMSSqlResult extends DibiResult
 {
-    private $resource;
-
-
-    public function __construct($resource)
-    {
-        $this->resource = $resource;
-    }
-
-
 
     public function rowCount()
     {
