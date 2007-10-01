@@ -76,6 +76,7 @@ final class DibiLogger
                 . ";\n-- " . date('Y-m-d H:i:s')
                 . "\n\n"
             );
+            return;
         }
     }
 

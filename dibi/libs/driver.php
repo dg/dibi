@@ -114,7 +114,7 @@ abstract class DibiDriver
      * Generates (translates) and executes SQL query
      *
      * @param  array|mixed    one or more arguments
-     * @return int|DibiResult
+     * @return DibiResult|TRUE
      * @throws DibiException
      */
     final public function query($args)
@@ -153,7 +153,7 @@ abstract class DibiDriver
      * Executes the SQL query
      *
      * @param string        SQL statement.
-     * @return DibiResult|NULL  Result set object
+     * @return DibiResult|TRUE  Result set object
      * @throws DibiException
      */
     public function nativeQuery($sql)
@@ -170,7 +170,7 @@ abstract class DibiDriver
      * Internal: Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult|NULL  Result set object
+     * @return DibiResult|TRUE  Result set object
      * @throws DibiDatabaseException
      */
     abstract protected function doQuery($sql);

@@ -64,16 +64,14 @@ class DibiPdoDriver extends DibiDriver
     protected function doQuery($sql)
     {
         $res = $this->getConnection()->query($sql);
-        if ($res instanceof PDOStatement) {
-            return new DibiPdoResult($res);
-        }
+        return $res instanceof PDOStatement ? new DibiPdoResult($res) : TRUE;
     }
 
 
 
     public function affectedRows()
     {
-        // not implemented
+        throw new DibiException(__METHOD__ . ' is not implemented');
     }
 
 

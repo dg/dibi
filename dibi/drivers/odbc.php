@@ -105,10 +105,9 @@ class DibiOdbcDriver extends DibiDriver
 
         if ($res === FALSE) {
             throw new DibiDatabaseException(odbc_errormsg($connection), odbc_error($connection), $sql);
-
-        } elseif (is_resource($res)) {
-            return new DibiOdbcResult($res);
         }
+
+        return is_resource($res) ? new DibiOdbcResult($res) : TRUE;
     }
 
 

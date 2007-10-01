@@ -247,7 +247,7 @@ class dibi
      * Generates and executes SQL query - Monostate for DibiDriver::query()
      *
      * @param  array|mixed    one or more arguments
-     * @return int|DibiResult
+     * @return DibiResult|TRUE
      * @throws DibiException
      */
     public static function query($args)
@@ -263,7 +263,7 @@ class dibi
      * Executes the SQL query - Monostate for DibiDriver::nativeQuery()
      *
      * @param string        SQL statement.
-     * @return object|bool  Result set object or TRUE on success, FALSE on failure
+     * @return DibiResult|TRUE
      */
     public static function nativeQuery($sql)
     {

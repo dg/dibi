@@ -79,10 +79,9 @@ class DibiMySqliDriver extends DibiDriver
 
         if ($res === FALSE) {
             throw new DibiDatabaseException(mysqli_error($connection), mysqli_errno($connection), $sql);
-
-        } elseif (is_object($res)) {
-            return new DibiMySqliResult($res);
         }
+
+        return is_object($res) ? new DibiMySqliResult($res) : TRUE;
     }
 
 

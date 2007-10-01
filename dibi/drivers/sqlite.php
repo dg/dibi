@@ -77,10 +77,9 @@ class DibiSqliteDriver extends DibiDriver
         if ($res === FALSE) {
             $code = sqlite_last_error($connection);
             throw new DibiDatabaseException(sqlite_error_string($code), $code, $sql);
-
-        } elseif (is_resource($res)) {
-            return new DibiSqliteResult($res);
         }
+
+        return is_resource($res) ? new DibiSqliteResult($res) : TRUE;
     }
 
 

@@ -105,10 +105,9 @@ class DibiMySqlDriver extends DibiDriver
 
         if ($res === FALSE) {
             throw new DibiDatabaseException(mysql_error($connection), mysql_errno($connection), $sql);
-
-        } elseif (is_resource($res)) {
-            return new DibiMySqlResult($res);
         }
+
+        return is_resource($res) ? new DibiMySqlResult($res) : TRUE;
     }
 
 

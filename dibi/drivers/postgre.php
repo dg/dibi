@@ -99,10 +99,9 @@ class DibiPostgreDriver extends DibiDriver
 
         if ($res === FALSE) {
             throw new DibiDatabaseException(pg_last_error($connection), 0, $sql);
-
-        } elseif (is_resource($res)) {
-            return new DibiPostgreResult($res);
         }
+
+        return is_resource($res) ? new DibiPostgreResult($res) : TRUE;
     }
 
 

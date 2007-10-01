@@ -74,10 +74,9 @@ class DibiMsSqlDriver extends DibiDriver
 
         if ($res === FALSE) {
             throw new DibiDatabaseException('Query error', 0, $sql);
-
-        } elseif (is_resource($res)) {
-            return new DibiMSSqlResult($res);
         }
+
+        return is_resource($res) ? new DibiMSSqlResult($res) : TRUE;
     }
 
 
