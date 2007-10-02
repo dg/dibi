@@ -34,7 +34,7 @@ class DibiPdoDriver extends DibiDriver
     public function __construct($config)
     {
         if (empty($config['dsn'])) {
-            throw new DibiException("DSN must be specified (driver odbc)");
+            throw new DibiException("DSN must be specified");
         }
 
         if (empty($config['username'])) $config['username'] = NULL;

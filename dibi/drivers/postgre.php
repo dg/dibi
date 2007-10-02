@@ -40,7 +40,7 @@ class DibiPostgreDriver extends DibiDriver
     public function __construct($config)
     {
         if (empty($config['string'])) {
-            throw new DibiException("Connection string must be specified (driver postgre)");
+            throw new DibiException("Connection string must be specified");
         }
 
         if (empty($config['type'])) $config['type'] = NULL;

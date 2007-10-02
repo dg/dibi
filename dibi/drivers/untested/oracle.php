@@ -6,17 +6,17 @@
  * @author     David Grudl
  * @copyright  Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
  * @license    New BSD License
- * @version    $Revision$ $Date$
+ * @version    $Revision: 65 $ $Date: 2007-10-01 07:34:50 +0200 (po, 01 X 2007) $
  * @category   Database
  * @package    Dibi
  */
 
 
 /**
- * The dibi driver for SQlite database
+ * The dibi driver for Oracle database
  *
  */
-class DibiSqliteDriver extends DibiDriver
+class DibiOracleDriver extends DibiDriver
 {
     public $formats = array(
         'TRUE'     => "1",
@@ -24,6 +24,8 @@ class DibiSqliteDriver extends DibiDriver
         'date'     => "U",
         'datetime' => "U",
     );
+
+    private $autocommit = TRUE;
 
 
 
@@ -33,11 +35,16 @@ class DibiSqliteDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (empty($config['database'])) {
-            throw new DibiException("Database must be specified");
+        if (empty($config['username'])) {
+            throw new DibiException("Username must be specified");
         }
 
-        if (!isset($config['mode'])) $config['mode'] = 0666;
+        if (empty($config['password'])) {
+            throw new DibiException("Password must be specified");
+        }
+
+        if (!isset($config['db'])) $config['db'] = NULL;
+        if (!isset($config['charset'])) $config['charset'] = NULL;
 
         parent::__construct($config);
     }
@@ -46,21 +53,16 @@ class DibiSqliteDriver extends DibiDriver
 
     protected function connect()
     {
-        if (!extension_loaded('sqlite')) {
-            throw new DibiException("PHP extension 'sqlite' is not loaded");
+        if (!extension_loaded('oci8')) {
+            throw new DibiException("PHP extension 'oci8' is not loaded");
         }
 
         $config = $this->getConfig();
-
-        $errorMsg = '';
-        if (empty($config['persistent'])) {
-            $connection = @sqlite_open($config['database'], $config['mode'], $errorMsg);
-        } else {
-            $connection = @sqlite_popen($config['database'], $config['mode'], $errorMsg);
-        }
+        $connection = @oci_new_connect($config['username'], $config['password'], $config['db'], $config['charset']);
 
         if (!$connection) {
-            throw new DibiDatabaseException($errorMsg);
+            $err = oci_error();
+            throw new DibiDatabaseException($err['message'], $err['code']);
         }
 
         dibi::notify('connected', $this);
@@ -72,45 +74,54 @@ class DibiSqliteDriver extends DibiDriver
     protected function doQuery($sql)
     {
         $connection = $this->getConnection();
-        $res = @sqlite_query($connection, $sql, SQLITE_ASSOC);
 
-        if ($res === FALSE) {
-            $code = sqlite_last_error($connection);
-            throw new DibiDatabaseException(sqlite_error_string($code), $code, $sql);
+        $statement = oci_parse($connection, $sql);
+        if ($statement) {
+            $res = oci_execute($statement, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
+            if (!$res) {
+                $err = oci_error($statement);
+                throw new DibiDatabaseException($err['message'], $err['code'], $sql);
+            }
+        } else {
+            $err = oci_error($connection);
+            throw new DibiDatabaseException($err['message'], $err['code'], $sql);
         }
 
-        return is_resource($res) ? new DibiSqliteResult($res) : TRUE;
+        // TODO!
+        return is_resource($res) ? new DibiOracleResult($statement) : TRUE;
     }
 
 
 
     public function affectedRows()
     {
-        $rows = sqlite_changes($this->getConnection());
-        return $rows < 0 ? FALSE : $rows;
+        throw new DibiException(__METHOD__ . ' is not implemented');
     }
 
 
 
     public function insertId()
     {
-        $id = sqlite_last_insert_rowid($this->getConnection());
-        return $id < 1 ? FALSE : $id;
+        throw new DibiException(__METHOD__ . ' is not implemented');
     }
 
 
 
     public function begin()
     {
-        $this->doQuery('BEGIN');
-        dibi::notify('begin', $this);
+        $this->autocommit = FALSE;
     }
 
 
 
     public function commit()
     {
-        $this->doQuery('COMMIT');
+        $connection = $this->getConnection();
+        if (!oci_commit($connection)) {
+            $err = oci_error($connection);
+            throw new DibiDatabaseException($err['message'], $err['code']);
+        }
+        $this->autocommit = TRUE;
         dibi::notify('commit', $this);
     }
 
@@ -118,7 +129,12 @@ class DibiSqliteDriver extends DibiDriver
 
     public function rollback()
     {
-        $this->doQuery('ROLLBACK');
+        $connection = $this->getConnection();
+        if (!oci_rollback($connection)) {
+            $err = oci_error($connection);
+            throw new DibiDatabaseException($err['message'], $err['code']);
+        }
+        $this->autocommit = TRUE;
         dibi::notify('rollback', $this);
     }
 
@@ -126,11 +142,7 @@ class DibiSqliteDriver extends DibiDriver
 
     public function errorInfo()
     {
-        $code = sqlite_last_error($this->getConnection());
-        return array(
-            'message'  => sqlite_error_string($code),
-            'code'     => $code,
-        );
+        return oci_error($this->getConnection());
     }
 
 
@@ -167,7 +179,7 @@ class DibiSqliteDriver extends DibiDriver
         $sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
     }
 
-} // class DibiSqliteDriver
+} // class DibiOracleDriver
 
 
 
@@ -177,32 +189,33 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
-class DibiSqliteResult extends DibiResult
+class DibiOracleResult extends DibiResult
 {
 
     public function rowCount()
     {
-        return sqlite_num_rows($this->resource);
+        return oci_num_rows($this->resource);
     }
 
 
 
     protected function doFetch()
     {
-        return sqlite_fetch_array($this->resource, SQLITE_ASSOC);
+        return oci_fetch_assoc($this->resource);
     }
 
 
 
     public function seek($row)
     {
-        return sqlite_seek($this->resource, $row);
+        //throw new DibiException(__METHOD__ . ' is not implemented');
     }
 
 
 
     protected function free()
     {
+        oci_free_statement($this->resource);
     }
 
 
@@ -210,14 +223,14 @@ class DibiSqliteResult extends DibiResult
     /** this is experimental */
     protected function buildMeta()
     {
-        $count = sqlite_num_fields($this->resource);
+        $count = oci_num_fields($this->resource);
         $this->meta = $this->convert = array();
         for ($index = 0; $index < $count; $index++) {
-            $name = sqlite_field_name($this->resource, $index);
+            $name = oci_field_name($this->resource, $index + 1);
             $this->meta[$name] = array('type' => dibi::FIELD_UNKNOWN);
             $this->convert[$name] = dibi::FIELD_UNKNOWN;
         }
     }
 
 
-} // class DibiSqliteResult
+} // class DibiOracleResult

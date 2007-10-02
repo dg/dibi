@@ -45,15 +45,15 @@ class DibiOdbcDriver extends DibiDriver
         if (empty($config['database'])) $config['database'] = ini_get('odbc.default_db');
 
         if (empty($config['username'])) {
-            throw new DibiException("Username must be specified (driver odbc)");
+            throw new DibiException("Username must be specified");
         }
 
         if (empty($config['password'])) {
-            throw new DibiException("Password must be specified (driver odbc)");
+            throw new DibiException("Password must be specified");
         }
 
         if (empty($config['database'])) {
-            throw new DibiException("Database must be specified (driver odbc)");
+            throw new DibiException("Database must be specified");
         }
 
         parent::__construct($config);

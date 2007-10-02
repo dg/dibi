@@ -1,3 +1,0 @@
-- current PDO & MSSQL drivers are untested alphas!
-- make better examples & documentation
-
