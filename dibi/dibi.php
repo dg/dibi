@@ -17,12 +17,12 @@
  * @version    0.9a (Revision: $WCREV$, Date: $WCDATE$)
  * @category   Database
  * @package    Dibi
- * @link       http://dibi.texy.info/
+ * @link       http://php7.org/dibi/
  */
 
 
 /**
- * This file is part of the "dibi" project (http://dibi.texy.info/)
+ * This file is part of the "dibi" project (http://php7.org/dibi/)
  *
  * @version    $Revision$ $Date$
  */

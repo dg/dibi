@@ -1,12 +1,12 @@
 <?php
 
 /**
- * This file is part of the "dibi" project (http://dibi.texy.info/)
+ * This file is part of the "dibi" project (http://php7.org/dibi/)
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
  * @license    New BSD License
- * @version    $Revision: 65 $ $Date: 2007-10-01 07:34:50 +0200 (po, 01 X 2007) $
+ * @version    $Revision$ $Date$
  * @category   Database
  * @package    Dibi
  */

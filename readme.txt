@@ -21,7 +21,7 @@ Documentation and Examples
 Refer to the 'examples' directory for examples. Dibi documentation is
 available on the homepage:
 
-http://dibi.texy.info/
+http://php7.org/dibi/
 
 
 
