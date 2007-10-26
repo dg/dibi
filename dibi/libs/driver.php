@@ -167,6 +167,28 @@ abstract class DibiDriver
 
 
     /**
+     * Apply configuration alias or default values
+     *
+     * @param array  connect configuration
+     * @param string key
+     * @param string alias key
+     * @return void
+     */
+    protected static function prepare(&$config, $key, $alias=NULL)
+    {
+        if (isset($config[$key])) return;
+
+        if ($alias !== NULL && isset($config[$alias])) {
+            $config[$key] = $config[$alias];
+            unset($config[$alias]);
+        } else {
+            $config[$key] = NULL;
+        }
+    }
+
+
+
+    /**
      * Internal: Executes the SQL query
      *
      * @param string       SQL statement.

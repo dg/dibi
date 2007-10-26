@@ -32,13 +32,16 @@ class DibiMySqlDriver extends DibiDriver
      */
     public function __construct($config)
     {
+        self::prepare($config, 'username', 'user');
+        self::prepare($config, 'password', 'pass');
+
         // default values
-        if (empty($config['username'])) $config['username'] = ini_get('mysql.default_user');
-        if (empty($config['password'])) $config['password'] = ini_get('mysql.default_password');
-        if (empty($config['host'])) {
+        if ($config['username'] === NULL) $config['username'] = ini_get('mysql.default_user');
+        if ($config['password'] === NULL) $config['password'] = ini_get('mysql.default_password');
+        if (!isset($config['host'])) {
             $config['host'] = ini_get('mysql.default_host');
-            if (empty($config['port'])) ini_get('mysql.default_port');
-            if (empty($config['host'])) $config['host'] = 'localhost';
+            if (!isset($config['port'])) ini_get('mysql.default_port');
+            if (!isset($config['host'])) $config['host'] = 'localhost';
         }
 
         parent::__construct($config);
@@ -57,7 +60,7 @@ class DibiMySqlDriver extends DibiDriver
         if (isset($config['protocol']) && $config['protocol'] === 'unix') { // host can be socket
             $host = ':' . $config['host'];
         } else {
-            $host = $config['host'] . (empty($config['port']) ? '' : ':'.$config['port']);
+            $host = $config['host'] . (isset($config['port']) ? ':'.$config['port'] : '');
         }
 
         // some errors aren't handled. Must use $php_errormsg
@@ -83,12 +86,12 @@ class DibiMySqlDriver extends DibiDriver
             throw new DibiDatabaseException($msg, mysql_errno());
         }
 
-        if (!empty($config['charset'])) {
+        if (isset($config['charset'])) {
             @mysql_query("SET NAMES '" . $config['charset'] . "'", $connection);
             // don't handle this error...
         }
 
-        if (!empty($config['database']) && !@mysql_select_db($config['database'], $connection)) {
+        if (isset($config['database']) && !@mysql_select_db($config['database'], $connection)) {
             throw new DibiDatabaseException(mysql_error($connection), mysql_errno($connection));
         }
 

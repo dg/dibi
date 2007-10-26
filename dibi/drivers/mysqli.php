@@ -33,15 +33,18 @@ class DibiMySqliDriver extends DibiDriver
      */
     public function __construct($config)
     {
+        self::prepare($config, 'username', 'user');
+        self::prepare($config, 'password', 'pass');
+        self::prepare($config, 'database');
+
         // default values
-        if (empty($config['username'])) $config['username'] = ini_get('mysqli.default_user');
-        if (empty($config['password'])) $config['password'] = ini_get('mysqli.default_password');
-        if (empty($config['host'])) {
+        if ($config['username'] === NULL) $config['username'] = ini_get('mysqli.default_user');
+        if ($config['password'] === NULL) $config['password'] = ini_get('mysqli.default_password');
+        if (!isset($config['host'])) {
             $config['host'] = ini_get('mysqli.default_host');
-            if (empty($config['port'])) ini_get('mysqli.default_port');
-            if (empty($config['host'])) $config['host'] = 'localhost';
+            if (!isset($config['port'])) ini_get('mysqli.default_port');
+            if (!isset($config['host'])) $config['host'] = 'localhost';
         }
-        if (!isset($config['database'])) $config['database'] = NULL;
 
         parent::__construct($config);
     }
@@ -62,7 +65,7 @@ class DibiMySqliDriver extends DibiDriver
             throw new DibiDatabaseException(mysqli_connect_error(), mysqli_connect_errno());
         }
 
-        if (!empty($config['charset'])) {
+        if (isset($config['charset'])) {
             mysqli_query($connection, "SET NAMES '" . $config['charset'] . "'");
         }
 

@@ -141,6 +141,12 @@ class dibi
     public static $numOfQueries = 0;
 
     /**
+     * Default dibi driver
+     * @var string
+     */
+    public static $defaultDriver = 'mysql';
+
+    /**
      * Start time
      * @var int
      */
@@ -165,15 +171,15 @@ class dibi
      * @return DibiDriver
      * @throws DibiException
      */
-    public static function connect($config = 'driver=mysql', $name = 0)
+    public static function connect($config = array(), $name = 0)
     {
         // DSN string
         if (is_string($config)) {
             parse_str($config, $config);
         }
 
-        if (empty($config['driver'])) {
-            throw new DibiException('Driver is not specified.');
+        if (!isset($config['driver'])) {
+            $config['driver'] = self::$defaultDriver;
         }
 
         $class = "Dibi$config[driver]Driver";

@@ -39,12 +39,8 @@ class DibiPostgreDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (empty($config['string'])) {
-            throw new DibiException("Connection string must be specified");
-        }
-
-        if (empty($config['type'])) $config['type'] = NULL;
-
+        self::prepare($config, 'database', 'string');
+        self::prepare($config, 'type');
         parent::__construct($config);
     }
 
@@ -59,16 +55,16 @@ class DibiPostgreDriver extends DibiDriver
         $config = $this->getConfig();
 
         if (isset($config['persistent'])) {
-            $connection = @pg_connect($config['string'], $config['type']);
+            $connection = @pg_connect($config['database'], $config['type']);
         } else {
-            $connection = @pg_pconnect($config['string'], $config['type']);
+            $connection = @pg_pconnect($config['database'], $config['type']);
         }
 
         if (!is_resource($connection)) {
             throw new DibiDatabaseException(pg_last_error());
         }
 
-        if (!empty($config['charset'])) {
+        if (isset($config['charset'])) {
             @pg_set_client_encoding($connection, $config['charset']);
             // don't handle this error...
         }
@@ -115,7 +111,7 @@ class DibiPostgreDriver extends DibiDriver
 
     public function insertId($sequence = NULL)
     {
-        if (empty($sequence)) {
+        if ($sequence === NULL) {
             // PostgreSQL 8.1 is needed
             $res = $this->doQuery("SELECT LASTVAL() AS seq");
         } else {

@@ -33,12 +33,8 @@ class DibiSqliteDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (empty($config['database'])) {
-            throw new DibiException("Database must be specified");
-        }
-
+        self::prepare($config, 'database', 'file');
         if (!isset($config['mode'])) $config['mode'] = 0666;
-
         parent::__construct($config);
     }
 

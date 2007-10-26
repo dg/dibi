@@ -31,10 +31,9 @@ class DibiMsSqlDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (!isset($config['host'])) $config['host'] = NULL;
-        if (!isset($config['username'])) $config['username'] = NULL;
-        if (!isset($config['password'])) $config['password'] = NULL;
-
+        self::prepare($config, 'username', 'user');
+        self::prepare($config, 'password', 'pass');
+        self::prepare($config, 'host');
         parent::__construct($config);
     }
 
@@ -58,7 +57,7 @@ class DibiMsSqlDriver extends DibiDriver
             throw new DibiDatabaseException("Can't connect to DB");
         }
 
-        if (!empty($config['database']) && !@mssql_select_db($config['database'], $connection)) {
+        if (isset($config['database']) && !@mssql_select_db($config['database'], $connection)) {
             throw new DibiDatabaseException("Can't select DB '$config[database]'");
         }
 

@@ -35,17 +35,10 @@ class DibiOracleDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        if (empty($config['username'])) {
-            throw new DibiException("Username must be specified");
-        }
-
-        if (empty($config['password'])) {
-            throw new DibiException("Password must be specified");
-        }
-
-        if (!isset($config['db'])) $config['db'] = NULL;
-        if (!isset($config['charset'])) $config['charset'] = NULL;
-
+        self::prepare($config, 'username', 'user');
+        self::prepare($config, 'password', 'pass');
+        self::prepare($config, 'database', 'db');
+        self::prepare($config, 'charset');
         parent::__construct($config);
     }
 
@@ -58,7 +51,7 @@ class DibiOracleDriver extends DibiDriver
         }
 
         $config = $this->getConfig();
-        $connection = @oci_new_connect($config['username'], $config['password'], $config['db'], $config['charset']);
+        $connection = @oci_new_connect($config['username'], $config['password'], $config['database'], $config['charset']);
 
         if (!$connection) {
             $err = oci_error();

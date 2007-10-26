@@ -38,4 +38,4 @@ whitespaces are removed.
 
 -----
 For more information, visit the author's weblog (in czech language):
-http://www.dgx.cz/trine/
+http://latrine.dgx.cz/
