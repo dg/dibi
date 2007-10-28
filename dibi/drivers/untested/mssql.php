@@ -19,7 +19,7 @@
 class DibiMsSqlDriver extends DibiDriver
 {
     public $formats = array(
-        'TRUE'     => "1",
+        'TRUE'     => "-1",
         'FALSE'    => "0",
         'date'     => "'Y-m-d'",
         'datetime' => "'Y-m-d H:i:s'",

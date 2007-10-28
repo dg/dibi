@@ -19,8 +19,8 @@
 class DibiPostgreDriver extends DibiDriver
 {
     public $formats = array(
-        'TRUE'     => "1",
-        'FALSE'    => "0",
+        'TRUE'     => "TRUE",
+        'FALSE'    => "FALSE",
         'date'     => "'Y-m-d'",
         'datetime' => "'Y-m-d H:i:s'",
     );
