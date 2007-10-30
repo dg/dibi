@@ -1,20 +1,30 @@
 <?php
 
 /**
- * This file is part of the "dibi" project (http://php7.org/dibi/)
+ * dibi - tiny'n'smart database abstraction layer
+ * ----------------------------------------------
+ *
+ * Copyright (c) 2005, 2007 David Grudl aka -dgx- (http://www.dgx.cz)
+ *
+ * This source file is subject to the "dibi license" that is bundled
+ * with this package in the file license.txt.
+ *
+ * For more information please see http://php7.org/dibi/
  *
  * @author     David Grudl
- * @copyright  Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
- * @license    New BSD License
- * @version    $Revision$ $Date$
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @license    http://php7.org/dibi/license  (dibi license)
  * @category   Database
  * @package    Dibi
+ * @link       http://php7.org/dibi/
  */
 
 
 
 /**
  * dibi basic logger & profiler
+ *
+ * @version $Revision$ $Date$
  */
 final class DibiLogger
 {

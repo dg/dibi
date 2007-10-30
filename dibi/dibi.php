@@ -1,30 +1,23 @@
 <?php
 
 /**
- * dibi - Database Abstraction Layer according to dgx
- * --------------------------------------------------
+ * dibi - tiny'n'smart database abstraction layer
+ * ----------------------------------------------
  *
- * Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
+ * Copyright (c) 2005, 2007 David Grudl aka -dgx- (http://www.dgx.cz)
  *
- * for PHP 5.0.3 and newer
- *
- * This source file is subject to the new BSD license that is bundled
+ * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
+ * For more information please see http://php7.org/dibi/
+ *
  * @author     David Grudl
- * @copyright  Copyright (c) 2005-2007 David Grudl aka -dgx- (http://www.dgx.cz)
- * @license    New BSD License
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @license    http://php7.org/dibi/license  (dibi license)
  * @version    0.9a (Revision: $WCREV$, Date: $WCDATE$)
  * @category   Database
  * @package    Dibi
  * @link       http://php7.org/dibi/
- */
-
-
-/**
- * This file is part of the "dibi" project (http://php7.org/dibi/)
- *
- * @version    $Revision$ $Date$
  */
 
 
@@ -69,6 +62,7 @@ interface DibiVariableInterface
  * This class is static container class for creating DB objects and
  * store connections info.
  *
+ * @version $Revision$ $Date$
  */
 class dibi
 {

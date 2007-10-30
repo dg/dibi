@@ -1,26 +1,61 @@
 ----------------------------------------------------------------------------------
-Tento text je NEOFICIÁLNÍM pøekladem NEW BSD LICENSE. Nevyjadøuje právní podstatu
+Tento text je NEOFICIÁLNÍM pøekladem "dibi license". Nevyjadøuje právní podstatu
 podmínek pro šíøení tohoto softwaru - k tomuto úèelu slouží výhradnì pùvodní
 anglická verze licence.
 ----------------------------------------------------------------------------------
 
 
-Copyright (c) 2005-2007, David Grudl (http://www.dgx.cz)
+The Dibi Licence, Version 1.0
+=============================
+
+Copyright (c) 2005, 2007 David Grudl (http://www.dgx.cz)
 Všechna práva vyhrazena.
 
-Redistribuce a použití zdrojových i binárních forem díla, v pùvodním i upravovaném
-tvaru, jsou povoleny za následujících podmínek:
+Tato licence je právní ujednání mezi vámi a Davidem Grudlem pro potøeby
+použití "dibi" (dále "Software"). By obtaining the Software you agree to comply
+with the terms and conditions of this license.
 
-    * Šíøený zdrojový kód musí obsahovat výše uvedenou informaci o copyrightu,
-      tento seznam podmínek a níže uvedené zøeknutí se odpovìdnosti.
 
-    * Šíøený binární tvar musí nést výše uvedenou informaci o copyrightu,
-      tento seznam podmínek a níže uvedené zøeknutí se odpovìdnosti ve své
-      dokumentaci a/nebo dalších poskytovaných materiálech.
+POVOLENÉ POUŽITÍ
+----------------
 
-    * Ani jméno Davida Grudla, ani jména pøispìvatelù nemohou být použita
-      pøi podpoøe nebo právních aktech souvisejících s produkty odvozenými
-      z tohoto software bez výslovného písemného povolení.
+Mùžete používat, kopírovat, modifikovat a distribuovat Software a jeho
+dokumentaci, v pùvodním i upravovaném tvaru, k jakémukoliv úèelu, a to
+za následujících podmínek:
+
+1. Kopie tohoto licenèního ujednání musí být pøiložena v distribuci.
+
+2. Šíøený zdrojový kód musí obsahovat výše uvedenou informaci o copyrightu
+   ve všech souborech zdrojového kódu.
+
+3. Šíøený binární tvar musí nést výše uvedenou informaci o copyrightu ve své
+   dokumentaci a/nebo dalších materiálech poskytovaných s distribucí.
+
+4. Produkty odvozené od tohoto Software musí ve své dokumentaci a/nebo
+   dalších materiálech poskytovaných s distribucí obsahovat zmínku, že jsou
+   odvozené od "dibi".
+
+5. Název "dibi" nesmí být použit pøi podpoøe nebo právních aktech
+   souvisejících s produkty odvozenými z tohoto Software bez pøedchozího
+   písemného souhlasu Davida Grudla.
+
+6. Produkty odvozené od tohoto Software nesmí být nazvány "dibi",
+   ani se nesmí "dibi" objevovat v jejich názvu bez pøedchozího
+   písemného souhlasu Davida Grudla.
+
+
+INDEMNITY
+---------
+
+You agree to indemnify and hold harmless the authors of the Software and
+any contributors for any direct, indirect, incidental, or consequential
+third-party claims, actions or suits, as well as any related expenses,
+liabilities, damages, settlements or fees arising from your use or misuse
+of the Software, or a violation of any terms of this license.
+
+
+ZÁRUKA SE NEPOSKYTUJE
+---------------------
 
 TENTO SOFTWARE JE POSKYTOVÁN DRŽITELEM LICENCE A JEHO PØISPÌVATELI "JAK STOJÍ A LEŽÍ"
 A JAKÉKOLIV VÝSLOVNÉ NEBO PØEDPOKLÁDANÉ ZÁRUKY VÈETNÌ, ALE NEJEN, PØEDPOKLÁDANÝCH
