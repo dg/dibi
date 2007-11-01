@@ -21,17 +21,25 @@
  */
 
 
+/**
+ * Check PHP configuration
+ */
 if (version_compare(PHP_VERSION , '5.0.3', '<')) {
-    die('dibi needs PHP 5.0.3 or newer');
+    throw new Exception('dibi needs PHP 5.0.3 or newer');
+}
+
+if (preg_match('#on$|true$|yes$|[+-]?0*[1-9]#iA', ini_get('zend.ze1_compatibility_mode'))) {
+    throw new Exception('dibi cannot run with zend.ze1_compatibility_mode enabled');
 }
 
 
+
 // libraries
-require_once dirname(__FILE__).'/libs/driver.php';
-require_once dirname(__FILE__).'/libs/resultset.php';
-require_once dirname(__FILE__).'/libs/translator.php';
-require_once dirname(__FILE__).'/libs/exception.php';
-require_once dirname(__FILE__).'/libs/logger.php';
+require_once __FILE__ . '/../libs/driver.php';
+require_once __FILE__ . '/../libs/resultset.php';
+require_once __FILE__ . '/../libs/translator.php';
+require_once __FILE__ . '/../libs/exception.php';
+require_once __FILE__ . '/../libs/logger.php';
 
 
 
@@ -178,7 +186,7 @@ class dibi
 
         $class = "Dibi$config[driver]Driver";
         if (!class_exists($class)) {
-            include_once dirname(__FILE__) . "/drivers/$config[driver].php";
+            include_once __FILE__ . "/../drivers/$config[driver].php";
 
             if (!class_exists($class)) {
                 throw new DibiException("Unable to create instance of dibi driver class '$class'.");
