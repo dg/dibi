@@ -1,5 +1,5 @@
-The Dibi Licence, Version 1.0
-=============================
+The Dibi License, Version 1
+===========================
 
 Copyright (c) 2005, 2007 David Grudl (http://www.dgx.cz)
 All rights reserved.
