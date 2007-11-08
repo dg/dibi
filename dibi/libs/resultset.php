@@ -211,6 +211,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
      *
      * @param  string  associative descriptor
      * @return array
+     * @throws InvalidArgumentException
      */
     final function fetchAssoc($assoc)
     {
@@ -220,6 +221,13 @@ abstract class DibiResult implements IteratorAggregate, Countable
 
         $data = NULL;
         $assoc = explode(',', $assoc);
+
+        // check fields
+        foreach ($assoc as $as) {
+            if ($as !== '*' && $as !== '#' && !array_key_exists($as, $row)) {
+                throw new InvalidArgumentException("Unknown column '$as' in associative descriptor");
+            }
+        }
 
         if (count($assoc) === 1) {  // speed-up
             $as = $assoc[0];
@@ -271,6 +279,7 @@ abstract class DibiResult implements IteratorAggregate, Countable
      * @param  string  associative key
      * @param  string  value
      * @return array
+     * @throws InvalidArgumentException
      */
     final function fetchPairs($key = NULL, $value = NULL)
     {
@@ -281,25 +290,34 @@ abstract class DibiResult implements IteratorAggregate, Countable
         $data = array();
 
         if ($value === NULL) {
-            if ($key !== NULL) return FALSE; // error
+            if ($key !== NULL) {
+                throw new InvalidArgumentException("Either none or both fields must be specified");
+            }
+
+            if (count($row) < 2) {
+                throw new LoginException("Result must have at least two columns");
+            }
 
             // autodetect
-            if (count($row) < 2) return FALSE;
             $tmp = array_keys($row);
             $key = $tmp[0];
             $value = $tmp[1];
 
         } else {
-            if (!array_key_exists($value, $row)) return FALSE;
+            if (!array_key_exists($value, $row)) {
+                throw new InvalidArgumentException("Unknown value column '$value'");
+            }
 
-            if ($key === NULL) { // autodetect
+            if ($key === NULL) { // indexed-array
                 do {
                     $data[] = $row[$value];
                 } while ($row = $this->fetch());
                 return $data;
             }
 
-            if (!array_key_exists($key, $row)) return FALSE;
+            if (!array_key_exists($key, $row)) {
+                throw new InvalidArgumentException("Unknown key column '$key'");
+            }
         }
 
         do {
