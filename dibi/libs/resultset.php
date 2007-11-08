@@ -35,7 +35,7 @@
  *
  * @version $Revision$ $Date$
  */
-abstract class DibiResult implements IteratorAggregate, Countable
+abstract class DibiResult extends NObject implements IteratorAggregate, Countable
 {
     /**
      * Describes columns types
@@ -491,16 +491,6 @@ abstract class DibiResult implements IteratorAggregate, Countable
     }
     /** end required Countable functions */
 
-
-
-    /**#@+
-     * Access to undeclared property
-     * @throws Exception
-     */
-    private function &__get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    private function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    private function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    /**#@-*/
 
 }  // class DibiResult
 

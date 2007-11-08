@@ -26,7 +26,7 @@
  *
  * @version $Revision$ $Date$
  */
-final class DibiTranslator
+final class DibiTranslator extends NObject
 {
     /** @var string */
     public $sql;
@@ -411,15 +411,5 @@ final class DibiTranslator
         return $this->driver->delimite($value);
     }
 
-
-
-    /**#@+
-     * Access to undeclared property
-     * @throws Exception
-     */
-    private function &__get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    private function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    private function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    /**#@-*/
 
 } // class DibiParser

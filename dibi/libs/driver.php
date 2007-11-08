@@ -26,7 +26,7 @@
  *
  * @version $Revision$ $Date$
  */
-abstract class DibiDriver
+abstract class DibiDriver extends NObject
 {
     /**
      * Current connection configuration
@@ -298,17 +298,6 @@ abstract class DibiDriver
      * @return void
      */
     abstract public function applyLimit(&$sql, $limit, $offset = 0);
-
-
-
-    /**#@+
-     * Access to undeclared property
-     * @throws Exception
-     */
-    private function &__get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    private function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    private function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    /**#@-*/
 
 
 } // class DibiDriver

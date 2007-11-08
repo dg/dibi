@@ -26,7 +26,7 @@
  *
  * @version $Revision$ $Date$
  */
-final class DibiLogger
+final class DibiLogger extends NObject
 {
     /** @var string  Name of the file where SQL errors should be logged */
     private $file;
@@ -101,16 +101,5 @@ final class DibiLogger
         fwrite($handle, $message);
         fclose($handle);
     }
-
-
-
-    /**#@+
-     * Access to undeclared property
-     * @throws Exception
-     */
-    private function &__get($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    private function __set($name, $value) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    private function __unset($name) { throw new Exception("Access to undeclared property: " . get_class($this) . "::$$name"); }
-    /**#@-*/
 
 }
