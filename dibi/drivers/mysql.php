@@ -115,8 +115,8 @@ class DibiMySqlDriver extends DibiDriver
         $connection = $this->getConnection();
         $res = @mysql_query($sql, $connection);
 
-        if ($res === FALSE) {
-            throw new DibiDatabaseException(mysql_error($connection), mysql_errno($connection), $sql);
+        if ($errno = mysql_errno($connection)) {
+            throw new DibiDatabaseException(mysql_error($connection), $errno, $sql);
         }
 
         return is_resource($res) ? new DibiMySqlResult($res) : TRUE;
@@ -194,7 +194,7 @@ class DibiMySqlDriver extends DibiDriver
 
     public function getMetaData()
     {
-        throw new DibiException(__METHOD__ . ' is not implemented');
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 

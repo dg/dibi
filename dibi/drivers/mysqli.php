@@ -89,8 +89,8 @@ class DibiMySqliDriver extends DibiDriver
         $connection = $this->getConnection();
         $res = @mysqli_query($connection, $sql);
 
-        if ($res === FALSE) {
-            throw new DibiDatabaseException(mysqli_error($connection), mysqli_errno($connection), $sql);
+        if ($errno = mysqli_errno($connection)) {
+            throw new DibiDatabaseException(mysqli_error($connection), $errno, $sql);
         }
 
         return is_object($res) ? new DibiMySqliResult($res) : TRUE;
@@ -179,7 +179,7 @@ class DibiMySqliDriver extends DibiDriver
 
     public function getMetaData()
     {
-        throw new DibiException(__METHOD__ . ' is not implemented');
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 

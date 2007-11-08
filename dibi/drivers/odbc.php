@@ -122,7 +122,7 @@ class DibiOdbcDriver extends DibiDriver
 
     public function insertId()
     {
-        throw new DibiException(__METHOD__ . ' is not implemented');
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 
@@ -192,7 +192,7 @@ class DibiOdbcDriver extends DibiDriver
 
     public function getMetaData()
     {
-        throw new DibiException(__METHOD__ . ' is not implemented');
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 
@@ -207,7 +207,7 @@ class DibiOdbcDriver extends DibiDriver
            $sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
         }
 
-        if ($offset) throw new DibiException('Offset is not implemented in driver odbc');
+        if ($offset) throw new InvalidArgumentException('Offset is not implemented in driver odbc');
     }
 
 

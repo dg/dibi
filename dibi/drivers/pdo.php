@@ -76,7 +76,7 @@ class DibiPdoDriver extends DibiDriver
 
     public function affectedRows()
     {
-        throw new DibiException(__METHOD__ . ' is not implemented');
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 
@@ -127,7 +127,7 @@ class DibiPdoDriver extends DibiDriver
     public function escape($value, $appendQuotes = TRUE)
     {
         if (!$appendQuotes) {
-            throw new DibiException('Escaping without qoutes is not supported by PDO');
+            throw new BadMethodCallException('Escaping without qoutes is not supported by PDO');
         }
         return $this->getConnection()->quote($value);
     }
@@ -144,7 +144,7 @@ class DibiPdoDriver extends DibiDriver
 
     public function getMetaData()
     {
-        throw new DibiException(__METHOD__ . ' is not implemented');
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 
@@ -154,7 +154,7 @@ class DibiPdoDriver extends DibiDriver
      */
     public function applyLimit(&$sql, $limit, $offset = 0)
     {
-        throw new DibiException(__METHOD__ . ' is not implemented');
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 } // class DibiPdoDriver

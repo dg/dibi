@@ -21,16 +21,6 @@
 
 
 
-// PHP < 5.1 compatibility
-if (!interface_exists('Countable', FALSE)) {
-    interface Countable
-    {
-        function count();
-    }
-}
-
-
-
 /**
  * dibi result-set abstract class
  *

@@ -10,7 +10,7 @@ Thank you for downloading Dibi!
 Database access functions in PHP are not standardised. This is class library
 to hide the differences between the different databases access.
 
-The files in this archive are released under the NEW BSD license.
+The files in this archive are released under the Dibi license.
 See license.txt in this directory for a copy of the license.
 
 

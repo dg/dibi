@@ -79,9 +79,8 @@ class DibiSqliteDriver extends DibiDriver
         $connection = $this->getConnection();
         $res = @sqlite_query($connection, $sql, SQLITE_ASSOC);
 
-        if ($res === FALSE) {
-            $code = sqlite_last_error($connection);
-            throw new DibiDatabaseException(sqlite_error_string($code), $code, $sql);
+        if ($errno = sqlite_last_error($connection)) {
+            throw new DibiDatabaseException(sqlite_error_string($errno), $errno, $sql);
         }
 
         return is_resource($res) ? new DibiSqliteResult($res) : TRUE;
@@ -158,7 +157,7 @@ class DibiSqliteDriver extends DibiDriver
 
     public function getMetaData()
     {
-        throw new DibiException(__METHOD__ . ' is not implemented');
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 

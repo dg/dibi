@@ -80,8 +80,8 @@ class DibiOracleDriver extends DibiDriver
         $statement = oci_parse($connection, $sql);
         if ($statement) {
             $res = oci_execute($statement, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
-            if (!$res) {
-                $err = oci_error($statement);
+            $err = oci_error($statement);
+            if ($err) {
                 throw new DibiDatabaseException($err['message'], $err['code'], $sql);
             }
         } else {
@@ -97,14 +97,14 @@ class DibiOracleDriver extends DibiDriver
 
     public function affectedRows()
     {
-        throw new DibiException(__METHOD__ . ' is not implemented');
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 
 
     public function insertId()
     {
-        throw new DibiException(__METHOD__ . ' is not implemented');
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 
@@ -167,7 +167,7 @@ class DibiOracleDriver extends DibiDriver
 
     public function getMetaData()
     {
-        throw new DibiException(__METHOD__ . ' is not implemented');
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 
@@ -210,7 +210,7 @@ class DibiOracleResult extends DibiResult
 
     public function seek($row)
     {
-        //throw new DibiException(__METHOD__ . ' is not implemented');
+        //throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 

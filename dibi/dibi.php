@@ -14,7 +14,7 @@
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
  * @license    http://php7.org/dibi/license  (dibi license)
- * @version    0.9a (Revision: $WCREV$, Date: $WCDATE$)
+ * @version    0.9b (Revision: $WCREV$, Date: $WCDATE$)
  * @category   Database
  * @package    Dibi
  * @link       http://php7.org/dibi/
@@ -24,13 +24,10 @@
 /**
  * Check PHP configuration
  */
-if (version_compare(PHP_VERSION , '5.0.3', '<')) {
-    throw new Exception('dibi needs PHP 5.0.3 or newer');
+if (version_compare(PHP_VERSION , '5.1.0', '<')) {
+    throw new Exception('dibi needs PHP 5.1.0 or newer');
 }
 
-if (preg_match('#on$|true$|yes$|[+-]?0*[1-9]#iA', ini_get('zend.ze1_compatibility_mode'))) {
-    throw new Exception('dibi cannot run with zend.ze1_compatibility_mode enabled');
-}
 
 
 
@@ -91,7 +88,7 @@ class dibi
         FIELD_COUNTER =    'c', // counter or autoincrement, is integer
 
         // dibi version
-        VERSION =          '0.9a (Revision: $WCREV$, Date: $WCDATE$)';
+        VERSION =          '0.9b (Revision: $WCREV$, Date: $WCDATE$)';
 
 
     /**
@@ -400,11 +397,12 @@ class dibi
      *
      * @param callback
      * @return void
+     * @throws InvalidArgumentException
      */
     public static function addHandler($callback)
     {
         if (!is_callable($callback)) {
-            throw new DibiException("Invalid callback");
+            throw new InvalidArgumentException("Invalid callback");
         }
 
         self::$handlers[] = $callback;
