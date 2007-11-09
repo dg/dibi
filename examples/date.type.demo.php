@@ -60,12 +60,8 @@ class MyDateTime implements DibiVariableInterface
 
 // CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
-    'driver'   => 'mysql',
-    'host'     => 'localhost',
-    'username' => 'root',
-    'password' => 'xxx',
-    'database' => 'dibi',
-    'charset'  => 'utf8',
+    'driver'   => 'sqlite',
+    'database' => 'sample.sdb',
 ));
 
 

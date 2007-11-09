@@ -33,11 +33,12 @@ if (version_compare(PHP_VERSION , '5.1.0', '<')) {
 
 // libraries
 require_once __FILE__ . '/../libs/NObject.php';
-require_once __FILE__ . '/../libs/driver.php';
-require_once __FILE__ . '/../libs/resultset.php';
-require_once __FILE__ . '/../libs/translator.php';
-require_once __FILE__ . '/../libs/exception.php';
-require_once __FILE__ . '/../libs/logger.php';
+require_once __FILE__ . '/../libs/DibiException.php';
+require_once __FILE__ . '/../libs/DibiDriver.php';
+require_once __FILE__ . '/../libs/DibiResult.php';
+require_once __FILE__ . '/../libs/DibiResultIterator.php';
+require_once __FILE__ . '/../libs/DibiTranslator.php';
+require_once __FILE__ . '/../libs/DibiLogger.php';
 
 
 

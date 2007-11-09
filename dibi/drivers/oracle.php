@@ -27,6 +27,10 @@
  */
 class DibiOracleDriver extends DibiDriver
 {
+    /**
+     * Describes how convert some datatypes to SQL command
+     * @var array
+     */
     public $formats = array(
         'TRUE'     => "1",
         'FALSE'    => "0",
@@ -39,20 +43,28 @@ class DibiOracleDriver extends DibiDriver
 
 
     /**
+     * Creates object and (optionally) connects to a database
+     *
      * @param array  connect configuration
      * @throws DibiException
      */
-    public function __construct($config)
+    public function __construct(array $config)
     {
-        self::prepare($config, 'username', 'user');
-        self::prepare($config, 'password', 'pass');
-        self::prepare($config, 'database', 'db');
-        self::prepare($config, 'charset');
+        self::config($config, 'username', 'user');
+        self::config($config, 'password', 'pass');
+        self::config($config, 'database', 'db');
+        self::config($config, 'charset');
         parent::__construct($config);
     }
 
 
 
+    /**
+     * Connects to a database
+     *
+     * @throws DibiException
+     * @return resource
+     */
     protected function connect()
     {
         if (!extension_loaded('oci8')) {
@@ -73,6 +85,13 @@ class DibiOracleDriver extends DibiDriver
 
 
 
+    /**
+     * Internal: Executes the SQL query
+     *
+     * @param string       SQL statement.
+     * @return DibiResult|TRUE  Result set object
+     * @throws DibiDatabaseException
+     */
     protected function doQuery($sql)
     {
         $connection = $this->getConnection();
@@ -95,6 +114,11 @@ class DibiOracleDriver extends DibiDriver
 
 
 
+    /**
+     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
+     *
+     * @return int       number of rows or FALSE on error
+     */
     public function affectedRows()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
@@ -102,6 +126,11 @@ class DibiOracleDriver extends DibiDriver
 
 
 
+    /**
+     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
+     *
+     * @return int|FALSE  int on success or FALSE on failure
+     */
     public function insertId()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
@@ -109,6 +138,10 @@ class DibiOracleDriver extends DibiDriver
 
 
 
+    /**
+     * Begins a transaction (if supported).
+     * @return void
+     */
     public function begin()
     {
         $this->autocommit = FALSE;
@@ -116,6 +149,10 @@ class DibiOracleDriver extends DibiDriver
 
 
 
+    /**
+     * Commits statements in a transaction.
+     * @return void
+     */
     public function commit()
     {
         $connection = $this->getConnection();
@@ -129,6 +166,10 @@ class DibiOracleDriver extends DibiDriver
 
 
 
+    /**
+     * Rollback changes in a transaction.
+     * @return void
+     */
     public function rollback()
     {
         $connection = $this->getConnection();
@@ -142,6 +183,11 @@ class DibiOracleDriver extends DibiDriver
 
 
 
+    /**
+     * Returns last error
+     *
+     * @return array with items 'message' and 'code'
+     */
     public function errorInfo()
     {
         return oci_error($this->getConnection());
@@ -149,6 +195,13 @@ class DibiOracleDriver extends DibiDriver
 
 
 
+    /**
+     * Escapes the string
+     *
+     * @param string     unescaped string
+     * @param bool       quote string?
+     * @return string    escaped and optionally quoted string
+     */
     public function escape($value, $appendQuotes = TRUE)
     {
         return $appendQuotes
@@ -158,6 +211,12 @@ class DibiOracleDriver extends DibiDriver
 
 
 
+    /**
+     * Delimites identifier (table's or column's name, etc.)
+     *
+     * @param string     identifier
+     * @return string    delimited identifier
+     */
     public function delimite($value)
     {
         return '[' . str_replace('.', '].[', $value) . ']';
@@ -165,6 +224,11 @@ class DibiOracleDriver extends DibiDriver
 
 
 
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiMetaData
+     */
     public function getMetaData()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
@@ -173,7 +237,12 @@ class DibiOracleDriver extends DibiDriver
 
 
     /**
-     * @see DibiDriver::applyLimit()
+     * Injects LIMIT/OFFSET to the SQL query
+     *
+     * @param string &$sql  The SQL query that will be modified.
+     * @param int $limit
+     * @param int $offset
+     * @return void
      */
     public function applyLimit(&$sql, $limit, $offset = 0)
     {
@@ -194,6 +263,11 @@ class DibiOracleDriver extends DibiDriver
 class DibiOracleResult extends DibiResult
 {
 
+    /**
+     * Returns the number of rows in a result set
+     *
+     * @return int
+     */
     public function rowCount()
     {
         return oci_num_rows($this->resource);
@@ -201,6 +275,12 @@ class DibiOracleResult extends DibiResult
 
 
 
+    /**
+     * Fetches the row at current position and moves the internal cursor to the next position
+     * internal usage only
+     *
+     * @return array|FALSE  array on success, FALSE if no next record
+     */
     protected function doFetch()
     {
         return oci_fetch_assoc($this->resource);
@@ -208,6 +288,12 @@ class DibiOracleResult extends DibiResult
 
 
 
+    /**
+     * Moves cursor position without fetching row
+     *
+     * @param  int      the 0-based cursor pos to seek to
+     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     */
     public function seek($row)
     {
         //throw new BadMethodCallException(__METHOD__ . ' is not implemented');
@@ -215,6 +301,11 @@ class DibiOracleResult extends DibiResult
 
 
 
+    /**
+     * Frees the resources allocated for this result set
+     *
+     * @return void
+     */
     protected function free()
     {
         oci_free_statement($this->resource);

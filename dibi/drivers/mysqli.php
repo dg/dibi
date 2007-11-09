@@ -27,6 +27,10 @@
  */
 class DibiMySqliDriver extends DibiDriver
 {
+    /**
+     * Describes how convert some datatypes to SQL command
+     * @var array
+     */
     public $formats = array(
         'TRUE'     => "1",
         'FALSE'    => "0",
@@ -35,16 +39,17 @@ class DibiMySqliDriver extends DibiDriver
     );
 
 
-
     /**
+     * Creates object and (optionally) connects to a database
+     *
      * @param array  connect configuration
      * @throws DibiException
      */
-    public function __construct($config)
+    public function __construct(array $config)
     {
-        self::prepare($config, 'username', 'user');
-        self::prepare($config, 'password', 'pass');
-        self::prepare($config, 'database');
+        self::config($config, 'username', 'user');
+        self::config($config, 'password', 'pass');
+        self::config($config, 'database');
 
         // default values
         if ($config['username'] === NULL) $config['username'] = ini_get('mysqli.default_user');
@@ -60,6 +65,12 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
+    /**
+     * Connects to a database
+     *
+     * @throws DibiException
+     * @return resource
+     */
     protected function connect()
     {
         if (!extension_loaded('mysqli')) {
@@ -84,6 +95,13 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
+    /**
+     * Internal: Executes the SQL query
+     *
+     * @param string       SQL statement.
+     * @return DibiResult|TRUE  Result set object
+     * @throws DibiDatabaseException
+     */
     protected function doQuery($sql)
     {
         $connection = $this->getConnection();
@@ -98,6 +116,11 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
+    /**
+     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
+     *
+     * @return int       number of rows or FALSE on error
+     */
     public function affectedRows()
     {
         $rows = mysqli_affected_rows($this->getConnection());
@@ -106,6 +129,11 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
+    /**
+     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
+     *
+     * @return int|FALSE  int on success or FALSE on failure
+     */
     public function insertId()
     {
         $id = mysqli_insert_id($this->getConnection());
@@ -114,6 +142,10 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
+    /**
+     * Begins a transaction (if supported).
+     * @return void
+     */
     public function begin()
     {
         $connection = $this->getConnection();
@@ -125,6 +157,10 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
+    /**
+     * Commits statements in a transaction.
+     * @return void
+     */
     public function commit()
     {
         $connection = $this->getConnection();
@@ -137,6 +173,10 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
+    /**
+     * Rollback changes in a transaction.
+     * @return void
+     */
     public function rollback()
     {
         $connection = $this->getConnection();
@@ -149,6 +189,11 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
+    /**
+     * Returns last error
+     *
+     * @return array with items 'message' and 'code'
+     */
     public function errorInfo()
     {
         $connection = $this->getConnection();
@@ -160,6 +205,13 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
+    /**
+     * Escapes the string
+     *
+     * @param string     unescaped string
+     * @param bool       quote string?
+     * @return string    escaped and optionally quoted string
+     */
     public function escape($value, $appendQuotes = TRUE)
     {
         $connection = $this->getConnection();
@@ -170,6 +222,12 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
+    /**
+     * Delimites identifier (table's or column's name, etc.)
+     *
+     * @param string     identifier
+     * @return string    delimited identifier
+     */
     public function delimite($value)
     {
         return '`' . str_replace('.', '`.`', $value) . '`';
@@ -177,6 +235,11 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiMetaData
+     */
     public function getMetaData()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
@@ -185,7 +248,12 @@ class DibiMySqliDriver extends DibiDriver
 
 
     /**
-     * @see DibiDriver::applyLimit()
+     * Injects LIMIT/OFFSET to the SQL query
+     *
+     * @param string &$sql  The SQL query that will be modified.
+     * @param int $limit
+     * @param int $offset
+     * @return void
      */
     public function applyLimit(&$sql, $limit, $offset = 0)
     {
@@ -210,6 +278,11 @@ class DibiMySqliDriver extends DibiDriver
 class DibiMySqliResult extends DibiResult
 {
 
+    /**
+     * Returns the number of rows in a result set
+     *
+     * @return int
+     */
     public function rowCount()
     {
         return mysqli_num_rows($this->resource);
@@ -217,6 +290,12 @@ class DibiMySqliResult extends DibiResult
 
 
 
+    /**
+     * Fetches the row at current position and moves the internal cursor to the next position
+     * internal usage only
+     *
+     * @return array|FALSE  array on success, FALSE if no next record
+     */
     protected function doFetch()
     {
         return mysqli_fetch_assoc($this->resource);
@@ -224,6 +303,12 @@ class DibiMySqliResult extends DibiResult
 
 
 
+    /**
+     * Moves cursor position without fetching row
+     *
+     * @param  int      the 0-based cursor pos to seek to
+     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     */
     public function seek($row)
     {
         return mysqli_data_seek($this->resource, $row);
@@ -231,6 +316,11 @@ class DibiMySqliResult extends DibiResult
 
 
 
+    /**
+     * Frees the resources allocated for this result set
+     *
+     * @return void
+     */
     protected function free()
     {
         mysqli_free_result($this->resource);

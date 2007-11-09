@@ -59,7 +59,7 @@ abstract class DibiDriver extends NObject
      * @param array  connect configuration
      * @throws DibiException
      */
-    public function __construct($config)
+    public function __construct(array $config)
     {
         $this->config = $config;
 
@@ -183,7 +183,7 @@ abstract class DibiDriver extends NObject
      * @param string alias key
      * @return void
      */
-    protected static function prepare(&$config, $key, $alias=NULL)
+    protected static function config(&$config, $key, $alias=NULL)
     {
         if (isset($config[$key])) return;
 
@@ -290,7 +290,7 @@ abstract class DibiDriver extends NObject
 
 
     /**
-     * Experimental - injects LIMIT/OFFSET to the SQL query
+     * Injects LIMIT/OFFSET to the SQL query
      *
      * @param string &$sql  The SQL query that will be modified.
      * @param int $limit

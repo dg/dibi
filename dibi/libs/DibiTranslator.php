@@ -22,7 +22,7 @@
 
 
 /**
- * dibi translator
+ * dibi SQL translator
  *
  * @version $Revision$ $Date$
  */
@@ -54,7 +54,7 @@ final class DibiTranslator extends NObject
 
 
 
-    public function __construct($driver)
+    public function __construct(DibiDriver $driver)
     {
         $this->driver = $driver;
     }
@@ -67,7 +67,7 @@ final class DibiTranslator extends NObject
      * @param  array
      * @return bool
      */
-    public function translate($args)
+    public function translate(array $args)
     {
         $this->hasError = FALSE;
         $commandIns = NULL;
@@ -144,6 +144,12 @@ final class DibiTranslator extends NObject
 
 
 
+    /**
+     * Apply modifier to single value
+     * @param  mixed
+     * @param  string
+     * @return string
+     */
     private function formatValue($value, $modifier)
     {
         // array processing (with or without modifier)
@@ -412,4 +418,4 @@ final class DibiTranslator extends NObject
     }
 
 
-} // class DibiParser
+} // class DibiTranslator

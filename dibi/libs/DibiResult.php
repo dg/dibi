@@ -26,10 +26,14 @@
  *
  * <code>
  * $result = dibi::query('SELECT * FROM [table]');
+ *
+ * $row   = $result->fetch();
  * $value = $result->fetchSingle();
- * $all = $result->fetchAll();
+ * $table = $result->fetchAll();
+ * $pairs = $result->fetchPairs();
  * $assoc = $result->fetchAssoc('id');
  * $assoc = $result->fetchAssoc('active', 'id');
+ *
  * unset($result);
  * </code>
  *
@@ -443,7 +447,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
 
 
     /**
-     * Displays complete result-set as HTML table
+     * Displays complete result-set as HTML table for debug purposes
      *
      * @return void
      */
@@ -475,108 +479,27 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
 
 
 
-    /** these are the required IteratorAggregate functions */
-    final public function getIterator($offset = NULL, $count = NULL)
+    /**
+     * Required by the IteratorAggregate interface
+     * @param int  offset
+     * @param int  limit
+     * @return ArrayIterator
+     */
+    final public function getIterator($offset = NULL, $limit = NULL)
     {
-        return new DibiResultIterator($this, $offset, $count);
+        return new DibiResultIterator($this, $offset, $limit);
     }
-    /** end required IteratorAggregate functions */
 
 
 
-    /** these are the required Countable functions */
+    /**
+     * Required by the Countable interface
+     * @return int
+     */
     final public function count()
     {
         return $this->rowCount();
     }
-    /** end required Countable functions */
 
 
 }  // class DibiResult
-
-
-
-
-
-
-
-
-/**
- * Basic Result set iterator.
- *
- * This can be returned by DibiResult::getIterator() method or directly using foreach:
- * <code>
- * $result = dibi::query('SELECT * FROM table');
- * foreach ($result as $fields) {
- *    print_r($fields);
- * }
- * unset($result);
- * </code>
- *
- * Optionally you can specify offset and limit:
- * <code>
- * foreach ($result->getIterator(2, 3) as $fields) {
- *     print_r($fields);
- * }
- * </code>
- */
-final class DibiResultIterator implements Iterator
-{
-    private
-        $result,
-        $offset,
-        $count,
-        $row,
-        $pointer;
-
-
-    public function __construct(DibiResult $result, $offset = NULL, $count = NULL)
-    {
-        $this->result = $result;
-        $this->offset = (int) $offset;
-        $this->count = $count === NULL ? 2147483647 /*PHP_INT_MAX till 5.0.5 */ : (int) $count;
-    }
-
-
-
-    /** these are the required Iterator functions */
-    public function rewind()
-    {
-        $this->pointer = 0;
-        @$this->result->seek($this->offset);
-        $this->row = $this->result->fetch();
-    }
-
-
-
-    public function key()
-    {
-        return $this->pointer;
-    }
-
-
-
-    public function current()
-    {
-        return $this->row;
-    }
-
-
-
-    public function next()
-    {
-        $this->row = $this->result->fetch();
-        $this->pointer++;
-    }
-
-
-
-    public function valid()
-    {
-        return is_array($this->row) && ($this->pointer < $this->count);
-    }
-    /** end required Iterator functions */
-
-
-
-} // class DibiResultIterator

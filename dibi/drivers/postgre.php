@@ -27,6 +27,10 @@
  */
 class DibiPostgreDriver extends DibiDriver
 {
+    /**
+     * Describes how convert some datatypes to SQL command
+     * @var array
+     */
     public $formats = array(
         'TRUE'     => "TRUE",
         'FALSE'    => "FALSE",
@@ -43,18 +47,26 @@ class DibiPostgreDriver extends DibiDriver
 
 
     /**
+     * Creates object and (optionally) connects to a database
+     *
      * @param array  connect configuration
      * @throws DibiException
      */
-    public function __construct($config)
+    public function __construct(array $config)
     {
-        self::prepare($config, 'database', 'string');
-        self::prepare($config, 'type');
+        self::config($config, 'database', 'string');
+        self::config($config, 'type');
         parent::__construct($config);
     }
 
 
 
+    /**
+     * Connects to a database
+     *
+     * @throws DibiException
+     * @return resource
+     */
     protected function connect()
     {
         if (!extension_loaded('pgsql')) {
@@ -63,14 +75,25 @@ class DibiPostgreDriver extends DibiDriver
 
         $config = $this->getConfig();
 
+        // some errors aren't handled. Must use $php_errormsg
+        if (function_exists('ini_set')) {
+            $save = ini_set('track_errors', TRUE);
+        }
+
+        $php_errormsg = '';
+
         if (isset($config['persistent'])) {
             $connection = @pg_connect($config['database'], $config['type']);
         } else {
             $connection = @pg_pconnect($config['database'], $config['type']);
         }
 
+        if (function_exists('ini_set')) {
+            ini_set('track_errors', $save);
+        }
+
         if (!is_resource($connection)) {
-            throw new DibiDatabaseException(pg_last_error());
+            throw new DibiDatabaseException($php_errormsg);
         }
 
         if (isset($config['charset'])) {
@@ -84,6 +107,13 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
+    /**
+     * Executes the SQL query
+     *
+     * @param string        SQL statement.
+     * @return DibiResult|TRUE  Result set object
+     * @throws DibiException
+     */
     public function nativeQuery($sql)
     {
         $this->affectedRows = FALSE;
@@ -97,6 +127,13 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
+    /**
+     * Internal: Executes the SQL query
+     *
+     * @param string       SQL statement.
+     * @return DibiResult|TRUE  Result set object
+     * @throws DibiDatabaseException
+     */
     protected function doQuery($sql)
     {
         $connection = $this->getConnection();
@@ -111,6 +148,11 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
+    /**
+     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
+     *
+     * @return int       number of rows or FALSE on error
+     */
     public function affectedRows()
     {
         return $this->affectedRows;
@@ -118,6 +160,11 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
+    /**
+     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
+     *
+     * @return int|FALSE  int on success or FALSE on failure
+     */
     public function insertId($sequence = NULL)
     {
         if ($sequence === NULL) {
@@ -138,6 +185,10 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
+    /**
+     * Begins a transaction (if supported).
+     * @return void
+     */
     public function begin()
     {
         $this->doQuery('BEGIN');
@@ -146,6 +197,10 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
+    /**
+     * Commits statements in a transaction.
+     * @return void
+     */
     public function commit()
     {
         $this->doQuery('COMMIT');
@@ -154,6 +209,10 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
+    /**
+     * Rollback changes in a transaction.
+     * @return void
+     */
     public function rollback()
     {
         $this->doQuery('ROLLBACK');
@@ -162,6 +221,11 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
+    /**
+     * Returns last error
+     *
+     * @return array with items 'message' and 'code'
+     */
     public function errorInfo()
     {
         return array(
@@ -172,6 +236,13 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
+    /**
+     * Escapes the string
+     *
+     * @param string     unescaped string
+     * @param bool       quote string?
+     * @return string    escaped and optionally quoted string
+     */
     public function escape($value, $appendQuotes = TRUE)
     {
         return $appendQuotes
@@ -181,6 +252,12 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
+    /**
+     * Delimites identifier (table's or column's name, etc.)
+     *
+     * @param string     identifier
+     * @return string    delimited identifier
+     */
     public function delimite($value)
     {
         $value = str_replace('"', '""', $value);
@@ -189,6 +266,11 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiMetaData
+     */
     public function getMetaData()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
@@ -197,7 +279,12 @@ class DibiPostgreDriver extends DibiDriver
 
 
     /**
-     * @see DibiDriver::applyLimit()
+     * Injects LIMIT/OFFSET to the SQL query
+     *
+     * @param string &$sql  The SQL query that will be modified.
+     * @param int $limit
+     * @param int $offset
+     * @return void
      */
     public function applyLimit(&$sql, $limit, $offset = 0)
     {
@@ -222,6 +309,11 @@ class DibiPostgreDriver extends DibiDriver
 class DibiPostgreResult extends DibiResult
 {
 
+    /**
+     * Returns the number of rows in a result set
+     *
+     * @return int
+     */
     public function rowCount()
     {
         return pg_num_rows($this->resource);
@@ -229,6 +321,12 @@ class DibiPostgreResult extends DibiResult
 
 
 
+    /**
+     * Fetches the row at current position and moves the internal cursor to the next position
+     * internal usage only
+     *
+     * @return array|FALSE  array on success, FALSE if no next record
+     */
     protected function doFetch()
     {
         return pg_fetch_array($this->resource, NULL, PGSQL_ASSOC);
@@ -236,6 +334,12 @@ class DibiPostgreResult extends DibiResult
 
 
 
+    /**
+     * Moves cursor position without fetching row
+     *
+     * @param  int      the 0-based cursor pos to seek to
+     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     */
     public function seek($row)
     {
         return pg_result_seek($this->resource, $row);
@@ -243,6 +347,11 @@ class DibiPostgreResult extends DibiResult
 
 
 
+    /**
+     * Frees the resources allocated for this result set
+     *
+     * @return void
+     */
     protected function free()
     {
         pg_free_result($this->resource);

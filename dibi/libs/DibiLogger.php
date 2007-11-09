@@ -22,7 +22,7 @@
 
 
 /**
- * dibi basic logger & profiler
+ * dibi basic logger & profiler (experimental)
  *
  * @version $Revision$ $Date$
  */

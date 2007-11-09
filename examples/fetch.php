@@ -58,6 +58,11 @@ foreach ($res as $row => $fields) {
 echo '<hr>';
 
 
+// fetch row by row with defined offset
+foreach ($res->getIterator(2) as $row => $fields) {
+    print_r($fields);
+}
+
 // fetch row by row with defined offset and limit
 foreach ($res->getIterator(2, 1) as $row => $fields) {
     print_r($fields);
@@ -72,5 +77,13 @@ INNER JOIN [customers] USING ([customer_id])
 ');
 
 $assoc = $res->fetchAssoc('customers.name,products.title'); // key
+print_r($assoc);
+echo '<hr>';
+
+$assoc = $res->fetchAssoc('customers.name,*,products.title'); // key
+print_r($assoc);
+echo '<hr>';
+
+$assoc = $res->fetchAssoc('customers.name,#,products.title'); // key
 print_r($assoc);
 echo '<hr>';

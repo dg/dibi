@@ -27,6 +27,10 @@
  */
 class DibiSqliteDriver extends DibiDriver
 {
+    /**
+     * Describes how convert some datatypes to SQL command
+     * @var array
+     */
     public $formats = array(
         'TRUE'     => "1",
         'FALSE'    => "0",
@@ -35,20 +39,27 @@ class DibiSqliteDriver extends DibiDriver
     );
 
 
-
     /**
+     * Creates object and (optionally) connects to a database
+     *
      * @param array  connect configuration
      * @throws DibiException
      */
     public function __construct($config)
     {
-        self::prepare($config, 'database', 'file');
+        self::config($config, 'database', 'file');
         if (!isset($config['mode'])) $config['mode'] = 0666;
         parent::__construct($config);
     }
 
 
 
+    /**
+     * Connects to a database
+     *
+     * @throws DibiException
+     * @return resource
+     */
     protected function connect()
     {
         if (!extension_loaded('sqlite')) {
@@ -74,6 +85,13 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
+    /**
+     * Internal: Executes the SQL query
+     *
+     * @param string       SQL statement.
+     * @return DibiResult|TRUE  Result set object
+     * @throws DibiDatabaseException
+     */
     protected function doQuery($sql)
     {
         $connection = $this->getConnection();
@@ -88,6 +106,11 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
+    /**
+     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
+     *
+     * @return int       number of rows or FALSE on error
+     */
     public function affectedRows()
     {
         $rows = sqlite_changes($this->getConnection());
@@ -96,6 +119,11 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
+    /**
+     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
+     *
+     * @return int|FALSE  int on success or FALSE on failure
+     */
     public function insertId()
     {
         $id = sqlite_last_insert_rowid($this->getConnection());
@@ -104,6 +132,10 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
+    /**
+     * Begins a transaction (if supported).
+     * @return void
+     */
     public function begin()
     {
         $this->doQuery('BEGIN');
@@ -112,6 +144,10 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
+    /**
+     * Commits statements in a transaction.
+     * @return void
+     */
     public function commit()
     {
         $this->doQuery('COMMIT');
@@ -120,6 +156,10 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
+    /**
+     * Rollback changes in a transaction.
+     * @return void
+     */
     public function rollback()
     {
         $this->doQuery('ROLLBACK');
@@ -128,6 +168,11 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
+    /**
+     * Returns last error
+     *
+     * @return array with items 'message' and 'code'
+     */
     public function errorInfo()
     {
         $code = sqlite_last_error($this->getConnection());
@@ -139,6 +184,13 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
+    /**
+     * Escapes the string
+     *
+     * @param string     unescaped string
+     * @param bool       quote string?
+     * @return string    escaped and optionally quoted string
+     */
     public function escape($value, $appendQuotes = TRUE)
     {
         return $appendQuotes
@@ -148,6 +200,12 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
+    /**
+     * Delimites identifier (table's or column's name, etc.)
+     *
+     * @param string     identifier
+     * @return string    delimited identifier
+     */
     public function delimite($value)
     {
         return '[' . str_replace('.', '].[', $value) . ']';
@@ -155,6 +213,11 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiMetaData
+     */
     public function getMetaData()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
@@ -163,7 +226,12 @@ class DibiSqliteDriver extends DibiDriver
 
 
     /**
-     * @see DibiDriver::applyLimit()
+     * Injects LIMIT/OFFSET to the SQL query
+     *
+     * @param string &$sql  The SQL query that will be modified.
+     * @param int $limit
+     * @param int $offset
+     * @return void
      */
     public function applyLimit(&$sql, $limit, $offset = 0)
     {
@@ -184,6 +252,11 @@ class DibiSqliteDriver extends DibiDriver
 class DibiSqliteResult extends DibiResult
 {
 
+    /**
+     * Returns the number of rows in a result set
+     *
+     * @return int
+     */
     public function rowCount()
     {
         return sqlite_num_rows($this->resource);
@@ -191,6 +264,12 @@ class DibiSqliteResult extends DibiResult
 
 
 
+    /**
+     * Fetches the row at current position and moves the internal cursor to the next position
+     * internal usage only
+     *
+     * @return array|FALSE  array on success, FALSE if no next record
+     */
     protected function doFetch()
     {
         return sqlite_fetch_array($this->resource, SQLITE_ASSOC);
@@ -198,6 +277,12 @@ class DibiSqliteResult extends DibiResult
 
 
 
+    /**
+     * Moves cursor position without fetching row
+     *
+     * @param  int      the 0-based cursor pos to seek to
+     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     */
     public function seek($row)
     {
         return sqlite_seek($this->resource, $row);
@@ -205,6 +290,11 @@ class DibiSqliteResult extends DibiResult
 
 
 
+    /**
+     * Frees the resources allocated for this result set
+     *
+     * @return void
+     */
     protected function free()
     {
     }

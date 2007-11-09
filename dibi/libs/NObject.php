@@ -22,6 +22,12 @@
 
 
 /**
+ * compatiblity
+ */
+if (!class_exists('NObject', FALSE)) {
+
+
+/**
  * NObject is the ultimate ancestor of all instantiable classes.
  *
  * It defines some handful methods and enhances object core of PHP:
@@ -226,4 +232,7 @@ abstract class NObject
  */
 class NPropertyException extends Exception
 {
+}
+
+
 }
