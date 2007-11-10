@@ -25,7 +25,7 @@
  *
  * @version $Revision$ $Date$
  */
-class DibiOdbcDriver extends DibiDriver
+final class DibiOdbcDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -74,7 +74,7 @@ class DibiOdbcDriver extends DibiDriver
      * @throws DibiException
      * @return resource
      */
-    protected function connect()
+    protected function doConnect()
     {
         if (!extension_loaded('odbc')) {
             throw new DibiException("PHP extension 'odbc' is not loaded");
@@ -92,28 +92,19 @@ class DibiOdbcDriver extends DibiDriver
             throw new DibiDatabaseException(odbc_errormsg(), odbc_error());
         }
 
-        dibi::notify('connected', $this);
         return $connection;
     }
 
 
 
     /**
-     * Executes the SQL query
+     * Disconnects from a database
      *
-     * @param string        SQL statement.
-     * @return DibiResult|TRUE  Result set object
-     * @throws DibiException
+     * @return void
      */
-    public function nativeQuery($sql)
+    protected function doDisconnect()
     {
-        $this->affectedRows = FALSE;
-        $res = parent::nativeQuery($sql);
-        if ($res instanceof DibiResult) {
-            $this->affectedRows = odbc_num_rows($res->getResource());
-            if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-        }
-        return $res;
+        odbc_close($this->getConnection());
     }
 
 
@@ -122,11 +113,12 @@ class DibiOdbcDriver extends DibiDriver
      * Internal: Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult|TRUE  Result set object
+     * @return DibiResult  Result set object
      * @throws DibiDatabaseException
      */
     protected function doQuery($sql)
     {
+        $this->affectedRows = FALSE;
         $connection = $this->getConnection();
         $res = @odbc_exec($connection, $sql);
 
@@ -134,7 +126,11 @@ class DibiOdbcDriver extends DibiDriver
             throw new DibiDatabaseException(odbc_errormsg($connection), odbc_error($connection), $sql);
         }
 
-        return is_resource($res) ? new DibiOdbcResult($res) : TRUE;
+        if (is_resource($res)) {
+            $this->affectedRows = odbc_num_rows($res);
+            if ($this->affectedRows < 0) $this->affectedRows = FALSE;
+            return new DibiOdbcResult($res);
+        }
     }
 
 
@@ -295,7 +291,7 @@ class DibiOdbcDriver extends DibiDriver
 
 
 
-class DibiOdbcResult extends DibiResult
+final class DibiOdbcResult extends DibiResult
 {
     private $row = 0;
 

@@ -25,7 +25,7 @@
  *
  * @version $Revision$ $Date$
  */
-class DibiPdoDriver extends DibiDriver
+final class DibiPdoDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -61,7 +61,7 @@ class DibiPdoDriver extends DibiDriver
      * @throws DibiException
      * @return resource
      */
-    protected function connect()
+    protected function doConnect()
     {
         if (!extension_loaded('pdo')) {
             throw new DibiException("PHP extension 'pdo' is not loaded");
@@ -70,9 +70,18 @@ class DibiPdoDriver extends DibiDriver
         $config = $this->getConfig();
         $connection = new PDO($config['dsn'], $config['username'], $config['password']);
         $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        dibi::notify('connected', $this);
         return $connection;
+    }
+
+
+
+    /**
+     * Disconnects from a database
+     *
+     * @return void
+     */
+    protected function doDisconnect()
+    {
     }
 
 
@@ -81,13 +90,13 @@ class DibiPdoDriver extends DibiDriver
      * Internal: Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult|TRUE  Result set object
+     * @return DibiResult  Result set object
      * @throws DibiDatabaseException
      */
     protected function doQuery($sql)
     {
         $res = $this->getConnection()->query($sql);
-        return $res instanceof PDOStatement ? new DibiPdoResult($res) : TRUE;
+        return $res instanceof PDOStatement ? new DibiPdoResult($res) : NULL;
     }
 
 
@@ -235,7 +244,7 @@ class DibiPdoDriver extends DibiDriver
 
 
 
-class DibiPdoResult extends DibiResult
+final class DibiPdoResult extends DibiResult
 {
     private $row = 0;
 

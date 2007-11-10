@@ -1,22 +1,22 @@
 <?php
 
 /**
- * Nette Framework
+ * dibi - tiny'n'smart database abstraction layer
+ * ----------------------------------------------
  *
- * Copyright (c) 2004, 2007 David Grudl aka -dgx- (http://www.dgx.cz)
+ * Copyright (c) 2005, 2007 David Grudl aka -dgx- (http://www.dgx.cz)
  *
- * This source file is subject to the "Nette license" that is bundled
+ * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
- * For more information please see http://php7.org/nette/
+ * For more information please see http://php7.org/dibi/
  *
  * @author     David Grudl
- * @copyright  Copyright (c) 2004, 2007 David Grudl
- * @license    http://php7.org/nette/license  (Nette license)
- * @link       http://php7.org/nette/
- * @version    $Revision$ $Date$
- * @category   Nette
- * @package    Nette-Core
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @license    http://php7.org/dibi/license  (dibi license)
+ * @category   Database
+ * @package    Dibi
+ * @link       http://php7.org/dibi/
  */
 
 
@@ -52,6 +52,11 @@ if (!class_exists('NObject', FALSE)) {
  * $obj = new MyClass;
  * $obj->newMethod($x); // equivalent to MyClass_prototype_newMethod($obj, $x);
  * </code>
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2004, 2007 David Grudl
+ * @license    http://php7.org/nette/license  (Nette license)
+ * @link       http://php7.org/nette/
  */
 abstract class NObject
 {
@@ -102,6 +107,10 @@ abstract class NObject
      */
     protected function __call($name, $args)
     {
+        if ($name === '') {
+            throw new BadMethodCallException("Call to method without name");
+        }
+
         // object prototypes support Class__method()
         // (or use class Class__method { static function ... } with autoloading?)
         $cl = $class = get_class($this);
@@ -122,12 +131,12 @@ abstract class NObject
      *
      * @param string  property name
 	 * @return mixed  property value or the event handler list
-	 * @throws NPropertyException if the property is not defined.
+	 * @throws LogicException if the property is not defined.
 	 */
 	protected function &__get($name)
 	{
         if ($name === '') {
-            throw new NPropertyException('Property name must be a non-empty string');
+            throw new LogicException("Cannot read an property without name");
         }
 
         // property getter support
@@ -141,7 +150,7 @@ abstract class NObject
             return $val;
 
         } else {
-            throw new NPropertyException("Cannot read an undeclared property $class::\$$name");
+            throw new LogicException("Cannot read an undeclared property $class::\$$name");
         }
 	}
 
@@ -153,12 +162,12 @@ abstract class NObject
 	 * @param string  property name
 	 * @param mixed   property value
      * @return void
-     * @throws NPropertyException if the property is not defined or is read-only
+     * @throws LogicException if the property is not defined or is read-only
 	 */
 	protected function __set($name, $value)
 	{
         if ($name === '') {
-            throw new NPropertyException('Property name must be a non-empty string');
+            throw new LogicException('Cannot assign to an property without name');
         }
 
         // property setter support
@@ -169,11 +178,11 @@ abstract class NObject
                 $this->$m($value);
 
             } else {
-                throw new NPropertyException("Cannot assign to a read-only property $class::\$$name");
+                throw new LogicException("Cannot assign to a read-only property $class::\$$name");
             }
 
         } else {
-            throw new NPropertyException("Cannot assign to an undeclared property $class::\$$name");
+            throw new LogicException("Cannot assign to an undeclared property $class::\$$name");
         }
 	}
 
@@ -197,12 +206,12 @@ abstract class NObject
      *
      * @param string  property name
 	 * @return void
-     * @throws NPropertyException
+     * @throws LogicException
      */
     protected function __unset($name)
     {
         $class = get_class($this);
-        throw new NPropertyException("Cannot unset an declared or undeclared property $class::\$$name");
+        throw new LogicException("Cannot unset an property $class::\$$name");
     }
 
 
@@ -225,14 +234,6 @@ abstract class NObject
 
 }
 
-
-
-/**
- * Occurs on unsuccessful attempts to get or set the value of a property
- */
-class NPropertyException extends Exception
-{
-}
 
 
 }

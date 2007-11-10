@@ -25,7 +25,7 @@
  *
  * @version $Revision$ $Date$
  */
-class DibiMySqliDriver extends DibiDriver
+final class DibiMySqliDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -71,7 +71,7 @@ class DibiMySqliDriver extends DibiDriver
      * @throws DibiException
      * @return resource
      */
-    protected function connect()
+    protected function doConnect()
     {
         if (!extension_loaded('mysqli')) {
             throw new DibiException("PHP extension 'mysqli' is not loaded");
@@ -89,8 +89,19 @@ class DibiMySqliDriver extends DibiDriver
             mysqli_query($connection, "SET NAMES '" . $config['charset'] . "'");
         }
 
-        dibi::notify('connected', $this);
         return $connection;
+    }
+
+
+
+    /**
+     * Disconnects from a database
+     *
+     * @return void
+     */
+    protected function doDisconnect()
+    {
+        mysqli_close($this->getConnection());
     }
 
 
@@ -99,7 +110,7 @@ class DibiMySqliDriver extends DibiDriver
      * Internal: Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult|TRUE  Result set object
+     * @return DibiResult  Result set object
      * @throws DibiDatabaseException
      */
     protected function doQuery($sql)
@@ -111,7 +122,7 @@ class DibiMySqliDriver extends DibiDriver
             throw new DibiDatabaseException(mysqli_error($connection), $errno, $sql);
         }
 
-        return is_object($res) ? new DibiMySqliResult($res) : TRUE;
+        return is_object($res) ? new DibiMySqliResult($res) : NULL;
     }
 
 
@@ -275,7 +286,7 @@ class DibiMySqliDriver extends DibiDriver
 
 
 
-class DibiMySqliResult extends DibiResult
+final class DibiMySqliResult extends DibiResult
 {
 
     /**

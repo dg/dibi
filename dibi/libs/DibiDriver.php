@@ -64,8 +64,20 @@ abstract class DibiDriver extends NObject
         $this->config = $config;
 
         if (empty($config['lazy'])) {
-            $this->connection = $this->connect();
+            $this->connect();
         }
+    }
+
+
+
+    /**
+     * Automatically frees the resources allocated for this result set
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        $this->disconnect();
     }
 
 
@@ -73,10 +85,27 @@ abstract class DibiDriver extends NObject
     /**
      * Connects to a database
      *
-     * @throws DibiException
-     * @return resource
+     * @return void
      */
-    abstract protected function connect();
+    final public function connect()
+    {
+        $this->connection = $this->doConnect();
+        dibi::notify('connected');
+    }
+
+
+
+    /**
+     * Disconnects from a database
+     *
+     * @return void
+     */
+    final public function disconnect()
+    {
+        $this->doDisconnect();
+        $this->connection = NULL;
+        dibi::notify('disconnected');
+    }
 
 
 
@@ -110,8 +139,8 @@ abstract class DibiDriver extends NObject
      */
     final public function getConnection()
     {
-        if (!$this->connection) {
-            $this->connection = $this->connect();
+        if ($this->connection === NULL) {
+            $this->connect();
         }
 
         return $this->connection;
@@ -123,7 +152,7 @@ abstract class DibiDriver extends NObject
      * Generates (translates) and executes SQL query
      *
      * @param  array|mixed    one or more arguments
-     * @return DibiResult|TRUE
+     * @return DibiResult     Result set object (if any)
      * @throws DibiException
      */
     final public function query($args)
@@ -161,16 +190,17 @@ abstract class DibiDriver extends NObject
     /**
      * Executes the SQL query
      *
-     * @param string        SQL statement.
-     * @return DibiResult|TRUE  Result set object
+     * @param string          SQL statement.
+     * @return DibiResult     Result set object (if any)
      * @throws DibiException
      */
-    public function nativeQuery($sql)
+    final public function nativeQuery($sql)
     {
         dibi::notify('beforeQuery', $this, $sql);
         $res = $this->doQuery($sql);
         dibi::notify('afterQuery', $this, $res);
-        return $res;
+        // backward compatibility - will be removed!
+        return $res instanceof DibiResult ? $res : TRUE;
     }
 
 
@@ -198,10 +228,30 @@ abstract class DibiDriver extends NObject
 
 
     /**
+     * Internal: Connects to a database
+     *
+     * @throws DibiException
+     * @return resource
+     */
+    abstract protected function doConnect();
+
+
+
+    /**
+     * Internal: Disconnects from a database
+     *
+     * @throws DibiException
+     * @return void
+     */
+    abstract protected function doDisconnect();
+
+
+
+    /**
      * Internal: Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult|TRUE  Result set object
+     * @return DibiResult  Result set object
      * @throws DibiDatabaseException
      */
     abstract protected function doQuery($sql);

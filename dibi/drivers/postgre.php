@@ -25,7 +25,7 @@
  *
  * @version $Revision$ $Date$
  */
-class DibiPostgreDriver extends DibiDriver
+final class DibiPostgreDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -67,7 +67,7 @@ class DibiPostgreDriver extends DibiDriver
      * @throws DibiException
      * @return resource
      */
-    protected function connect()
+    protected function doConnect()
     {
         if (!extension_loaded('pgsql')) {
             throw new DibiException("PHP extension 'pgsql' is not loaded");
@@ -101,28 +101,19 @@ class DibiPostgreDriver extends DibiDriver
             // don't handle this error...
         }
 
-        dibi::notify('connected', $this);
         return $connection;
     }
 
 
 
     /**
-     * Executes the SQL query
+     * Disconnects from a database
      *
-     * @param string        SQL statement.
-     * @return DibiResult|TRUE  Result set object
-     * @throws DibiException
+     * @return void
      */
-    public function nativeQuery($sql)
+    protected function doDisconnect()
     {
-        $this->affectedRows = FALSE;
-        $res = parent::nativeQuery($sql);
-        if ($res instanceof DibiResult) {
-            $this->affectedRows = pg_affected_rows($res->getResource());
-            if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-        }
-        return $res;
+        pg_close($this->getConnection());
     }
 
 
@@ -131,10 +122,11 @@ class DibiPostgreDriver extends DibiDriver
      * Internal: Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult|TRUE  Result set object
+     * @param bool         update affected rows?
+     * @return DibiResult  Result set object
      * @throws DibiDatabaseException
      */
-    protected function doQuery($sql)
+    protected function doQuery($sql, $silent = FALSE)
     {
         $connection = $this->getConnection();
         $res = @pg_query($connection, $sql);
@@ -143,7 +135,13 @@ class DibiPostgreDriver extends DibiDriver
             throw new DibiDatabaseException(pg_last_error($connection), 0, $sql);
         }
 
-        return is_resource($res) ? new DibiPostgreResult($res) : TRUE;
+        if (is_resource($res)) {
+            if (!$silent) {
+                $this->affectedRows = pg_affected_rows($res);
+                if ($this->affectedRows < 0) $this->affectedRows = FALSE;
+            }
+            return new DibiPostgreResult($res);
+        }
     }
 
 
@@ -169,9 +167,9 @@ class DibiPostgreDriver extends DibiDriver
     {
         if ($sequence === NULL) {
             // PostgreSQL 8.1 is needed
-            $res = $this->doQuery("SELECT LASTVAL() AS seq");
+            $res = $this->doQuery("SELECT LASTVAL() AS seq", TRUE);
         } else {
-            $res = $this->doQuery("SELECT CURRVAL('$sequence') AS seq");
+            $res = $this->doQuery("SELECT CURRVAL('$sequence') AS seq", TRUE);
         }
 
         if (is_resource($res)) {
@@ -191,7 +189,7 @@ class DibiPostgreDriver extends DibiDriver
      */
     public function begin()
     {
-        $this->doQuery('BEGIN');
+        $this->doQuery('BEGIN', TRUE);
         dibi::notify('begin', $this);
     }
 
@@ -203,7 +201,7 @@ class DibiPostgreDriver extends DibiDriver
      */
     public function commit()
     {
-        $this->doQuery('COMMIT');
+        $this->doQuery('COMMIT', TRUE);
         dibi::notify('commit', $this);
     }
 
@@ -215,7 +213,7 @@ class DibiPostgreDriver extends DibiDriver
      */
     public function rollback()
     {
-        $this->doQuery('ROLLBACK');
+        $this->doQuery('ROLLBACK', TRUE);
         dibi::notify('rollback', $this);
     }
 
@@ -306,7 +304,7 @@ class DibiPostgreDriver extends DibiDriver
 
 
 
-class DibiPostgreResult extends DibiResult
+final class DibiPostgreResult extends DibiResult
 {
 
     /**

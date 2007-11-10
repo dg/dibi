@@ -25,7 +25,7 @@
  *
  * @version $Revision$ $Date$
  */
-class DibiMsSqlDriver extends DibiDriver
+final class DibiMsSqlDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -61,7 +61,7 @@ class DibiMsSqlDriver extends DibiDriver
      * @throws DibiException
      * @return resource
      */
-    protected function connect()
+    protected function doConnect()
     {
         if (!extension_loaded('mssql')) {
             throw new DibiException("PHP extension 'mssql' is not loaded");
@@ -83,8 +83,19 @@ class DibiMsSqlDriver extends DibiDriver
             throw new DibiDatabaseException("Can't select DB '$config[database]'");
         }
 
-        dibi::notify('connected', $this);
         return $connection;
+    }
+
+
+
+    /**
+     * Disconnects from a database
+     *
+     * @return void
+     */
+    protected function doDisconnect()
+    {
+        mssql_close($this->getConnection());
     }
 
 
@@ -93,7 +104,7 @@ class DibiMsSqlDriver extends DibiDriver
      * Internal: Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult|TRUE  Result set object
+     * @return DibiResult  Result set object
      * @throws DibiDatabaseException
      */
     protected function doQuery($sql)
@@ -104,7 +115,7 @@ class DibiMsSqlDriver extends DibiDriver
             throw new DibiDatabaseException('Query error', 0, $sql);
         }
 
-        return is_resource($res) ? new DibiMSSqlResult($res) : TRUE;
+        return is_resource($res) ? new DibiMSSqlResult($res) : NULL;
     }
 
 
@@ -258,7 +269,7 @@ class DibiMsSqlDriver extends DibiDriver
 
 
 
-class DibiMSSqlResult extends DibiResult
+final class DibiMSSqlResult extends DibiResult
 {
 
     /**

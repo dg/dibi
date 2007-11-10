@@ -1,4 +1,4 @@
-Dibi version 0.9b
+Dibi version 0.9
 
 Revision: $WCREV$
 Date: $WCDATE$

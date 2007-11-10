@@ -25,7 +25,7 @@
  *
  * @version $Revision$ $Date$
  */
-class DibiSqliteDriver extends DibiDriver
+final class DibiSqliteDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -60,7 +60,7 @@ class DibiSqliteDriver extends DibiDriver
      * @throws DibiException
      * @return resource
      */
-    protected function connect()
+    protected function doConnect()
     {
         if (!extension_loaded('sqlite')) {
             throw new DibiException("PHP extension 'sqlite' is not loaded");
@@ -79,8 +79,19 @@ class DibiSqliteDriver extends DibiDriver
             throw new DibiDatabaseException($errorMsg);
         }
 
-        dibi::notify('connected', $this);
         return $connection;
+    }
+
+
+
+    /**
+     * Disconnects from a database
+     *
+     * @return void
+     */
+    protected function doDisconnect()
+    {
+        sqlite_close($this->getConnection());
     }
 
 
@@ -89,19 +100,20 @@ class DibiSqliteDriver extends DibiDriver
      * Internal: Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult|TRUE  Result set object
+     * @return DibiResult  Result set object
      * @throws DibiDatabaseException
      */
     protected function doQuery($sql)
     {
         $connection = $this->getConnection();
-        $res = @sqlite_query($connection, $sql, SQLITE_ASSOC);
+        $errorMsg = NULL;
+        $res = @sqlite_query($connection, $sql, SQLITE_ASSOC, $errorMsg);
 
-        if ($errno = sqlite_last_error($connection)) {
-            throw new DibiDatabaseException(sqlite_error_string($errno), $errno, $sql);
+        if ($errorMsg !== NULL) {
+            throw new DibiDatabaseException($errorMsg, sqlite_last_error($connection), $sql);
         }
 
-        return is_resource($res) ? new DibiSqliteResult($res) : TRUE;
+        return is_resource($res) ? new DibiSqliteResult($res) : NULL;
     }
 
 
@@ -249,7 +261,7 @@ class DibiSqliteDriver extends DibiDriver
 
 
 
-class DibiSqliteResult extends DibiResult
+final class DibiSqliteResult extends DibiResult
 {
 
     /**

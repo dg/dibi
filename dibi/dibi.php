@@ -14,7 +14,7 @@
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
  * @license    http://php7.org/dibi/license  (dibi license)
- * @version    0.9b (Revision: $WCREV$, Date: $WCDATE$)
+ * @version    0.9 (Revision: $WCREV$, Date: $WCDATE$)
  * @category   Database
  * @package    Dibi
  * @link       http://php7.org/dibi/
@@ -90,7 +90,7 @@ class dibi
         FIELD_COUNTER =    'c', // counter or autoincrement, is integer
 
         // dibi version
-        VERSION =          '0.9b (Revision: $WCREV$, Date: $WCDATE$)';
+        VERSION =          '0.9 (Revision: $WCREV$, Date: $WCDATE$)';
 
 
     /**
@@ -199,6 +199,18 @@ class dibi
 
 
     /**
+     * Disconnects from database (doesn't destroy DibiDriver object)
+     *
+     * @return void
+     */
+    public static function disconnect()
+    {
+        self::getConnection()->disconnect();
+    }
+
+
+
+    /**
      * Returns TRUE when connection was established
      *
      * @return bool
@@ -254,7 +266,7 @@ class dibi
      * Generates and executes SQL query - Monostate for DibiDriver::query()
      *
      * @param  array|mixed    one or more arguments
-     * @return DibiResult|TRUE
+     * @return DibiResult     Result set object (if any)
      * @throws DibiException
      */
     public static function query($args)
@@ -269,8 +281,8 @@ class dibi
     /**
      * Executes the SQL query - Monostate for DibiDriver::nativeQuery()
      *
-     * @param string        SQL statement.
-     * @return DibiResult|TRUE
+     * @param string          SQL statement.
+     * @return DibiResult     Result set object (if any)
      */
     public static function nativeQuery($sql)
     {
@@ -347,6 +359,16 @@ class dibi
     public static function rollback()
     {
         self::getConnection()->rollback();
+    }
+
+
+
+    /**
+     * Experimental; will be used in PHP 5.3
+     */
+    public static function __callStatic($name, $args)
+    {
+        return call_user_func_array(array(self::getConnection(), $name), $args);
     }
 
 

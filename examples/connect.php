@@ -30,10 +30,10 @@ try {
 
 
 
-// connects to MySQL / MySQLi
+// connects to MySQLi using array
 try {
     dibi::connect(array(
-        'driver'   => 'mysql',  // or 'mysqli'
+        'driver'   => 'mysqli',
         'host'     => 'localhost',
         'username' => 'root',
         'password' => 'xxx',
@@ -105,6 +105,22 @@ try {
         'password' => 'xxx',
     ));
     echo '<p>Connected to MS SQL</p>';
+
+} catch (DibiException $e) {
+    echo '<pre>', $e, '</pre>';
+}
+
+
+
+// connects to Oracle
+try {
+    dibi::connect(array(
+        'driver'   => 'oracle',
+        'username' => 'root',
+        'password' => 'xxx',
+        'database' => 'db',
+    ));
+    echo '<p>Connected to Oracle</p>';
 
 } catch (DibiException $e) {
     echo '<pre>', $e, '</pre>';

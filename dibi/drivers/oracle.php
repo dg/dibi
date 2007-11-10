@@ -25,7 +25,7 @@
  *
  * @version $Revision$ $Date$
  */
-class DibiOracleDriver extends DibiDriver
+final class DibiOracleDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -65,7 +65,7 @@ class DibiOracleDriver extends DibiDriver
      * @throws DibiException
      * @return resource
      */
-    protected function connect()
+    protected function doConnect()
     {
         if (!extension_loaded('oci8')) {
             throw new DibiException("PHP extension 'oci8' is not loaded");
@@ -79,8 +79,19 @@ class DibiOracleDriver extends DibiDriver
             throw new DibiDatabaseException($err['message'], $err['code']);
         }
 
-        dibi::notify('connected', $this);
         return $connection;
+    }
+
+
+
+    /**
+     * Disconnects from a database
+     *
+     * @return void
+     */
+    protected function doDisconnect()
+    {
+        oci_close($this->getConnection());
     }
 
 
@@ -89,7 +100,7 @@ class DibiOracleDriver extends DibiDriver
      * Internal: Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult|TRUE  Result set object
+     * @return DibiResult  Result set object
      * @throws DibiDatabaseException
      */
     protected function doQuery($sql)
@@ -260,7 +271,7 @@ class DibiOracleDriver extends DibiDriver
 
 
 
-class DibiOracleResult extends DibiResult
+final class DibiOracleResult extends DibiResult
 {
 
     /**

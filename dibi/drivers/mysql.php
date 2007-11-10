@@ -25,7 +25,7 @@
  *
  * @version $Revision$ $Date$
  */
-class DibiMySqlDriver extends DibiDriver
+final class DibiMySqlDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -70,7 +70,7 @@ class DibiMySqlDriver extends DibiDriver
      * @throws DibiException
      * @return resource
      */
-    protected function connect()
+    protected function doConnect()
     {
         if (!extension_loaded('mysql')) {
             throw new DibiException("PHP extension 'mysql' is not loaded");
@@ -116,8 +116,19 @@ class DibiMySqlDriver extends DibiDriver
             throw new DibiDatabaseException(mysql_error($connection), mysql_errno($connection));
         }
 
-        dibi::notify('connected', $this);
         return $connection;
+    }
+
+
+
+    /**
+     * Disconnects from a database
+     *
+     * @return void
+     */
+    protected function doDisconnect()
+    {
+        mysql_close($this->getConnection());
     }
 
 
@@ -126,7 +137,7 @@ class DibiMySqlDriver extends DibiDriver
      * Internal: Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult|TRUE  Result set object
+     * @return DibiResult  Result set object
      * @throws DibiDatabaseException
      */
     protected function doQuery($sql)
@@ -138,7 +149,7 @@ class DibiMySqlDriver extends DibiDriver
             throw new DibiDatabaseException(mysql_error($connection), $errno, $sql);
         }
 
-        return is_resource($res) ? new DibiMySqlResult($res) : TRUE;
+        return is_resource($res) ? new DibiMySqlResult($res) : NULL;
     }
 
 
@@ -291,7 +302,7 @@ class DibiMySqlDriver extends DibiDriver
 
 
 
-class DibiMySqlResult extends DibiResult
+final class DibiMySqlResult extends DibiResult
 {
 
     /**
