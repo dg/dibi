@@ -1,36 +1,42 @@
-<h1>dibi connect example</h1>
+<h1>dibi::connect() example</h1>
 <?php
 
 require_once '../dibi/dibi.php';
 
 
 // connects to SQlite
+echo '<p>Connecting to Sqlite: ';
 try {
     dibi::connect(array(
         'driver'   => 'sqlite',
         'database' => 'sample.sdb',
     ));
-    echo '<p>Connected to Sqlite</p>';
+    echo 'OK';
 
 } catch (DibiException $e) {
-    echo '<pre>', $e, '</pre>';
+    echo get_class($e), ': ', $e->getMessage();
 }
+echo "</p>\n";
+
 
 
 
 // connects to MySQL using DSN
+echo '<p>Connecting to MySQL: ';
 try {
     dibi::connect('driver=mysql&host=localhost&username=root&password=xxx&database=test&charset=utf8');
-    echo '<p>Connected to MySQL</p>';
+    echo 'OK';
 
 } catch (DibiException $e) {
-    echo '<pre>', $e, '</pre>';
+    echo get_class($e), ': ', $e->getMessage();
 }
+echo "</p>\n";
 
 
 
 
 // connects to MySQLi using array
+echo '<p>Connecting to MySQL: ';
 try {
     dibi::connect(array(
         'driver'   => 'mysqli',
@@ -40,16 +46,18 @@ try {
         'database' => 'dibi',
         'charset'  => 'utf8',
     ));
-    echo '<p>Connected to MySQL</p>';
+    echo 'OK';
 
 } catch (DibiException $e) {
-    echo '<pre>', $e, '</pre>';
+    echo get_class($e), ': ', $e->getMessage();
 }
+echo "</p>\n";
 
 
 
 
 // connects to ODBC
+echo '<p>Connecting to ODBC: ';
 try {
     dibi::connect(array(
         'driver'   => 'odbc',
@@ -57,46 +65,52 @@ try {
         'password' => '***',
         'database' => 'Driver={Microsoft Access Driver (*.mdb)};Dbq='.dirname(__FILE__).'/sample.mdb',
     ));
-    echo '<p>Connected to ODBC</p>';
+    echo 'OK';
 
 } catch (DibiException $e) {
-    echo '<pre>', $e, '</pre>';
+    echo get_class($e), ': ', $e->getMessage();
 }
+echo "</p>\n";
 
 
 
 
 // connects to PostgreSql
+echo '<p>Connecting to PostgreSql: ';
 try {
     dibi::connect(array(
         'driver'     => 'postgre',
         'string'     => 'host=localhost port=5432 dbname=mary',
         'persistent' => TRUE,
     ));
-    echo '<p>Connected to PostgreSql</p>';
+    echo 'OK';
 
 } catch (DibiException $e) {
-    echo '<pre>', $e, '</pre>';
+    echo get_class($e), ': ', $e->getMessage();
 }
+echo "</p>\n";
 
 
 
 
 // connects to PDO
+echo '<p>Connecting to Sqlite via PDO: ';
 try {
     dibi::connect(array(
         'driver'  => 'pdo',
         'dsn'     => 'sqlite2::memory:',
     ));
-    echo '<p>Connected to Sqlite via PDO</p>';
+    echo 'OK';
 
 } catch (DibiException $e) {
-    echo '<pre>', $e, '</pre>';
+    echo get_class($e), ': ', $e->getMessage();
 }
+echo "</p>\n";
 
 
 
 // connects to MS SQL
+echo '<p>Connecting to MS SQL: ';
 try {
     dibi::connect(array(
         'driver'   => 'mssql',
@@ -104,15 +118,17 @@ try {
         'username' => 'root',
         'password' => 'xxx',
     ));
-    echo '<p>Connected to MS SQL</p>';
+    echo 'OK';
 
 } catch (DibiException $e) {
-    echo '<pre>', $e, '</pre>';
+    echo get_class($e), ': ', $e->getMessage();
 }
+echo "</p>\n";
 
 
 
 // connects to Oracle
+echo '<p>Connecting to Oracle: ';
 try {
     dibi::connect(array(
         'driver'   => 'oracle',
@@ -120,8 +136,9 @@ try {
         'password' => 'xxx',
         'database' => 'db',
     ));
-    echo '<p>Connected to Oracle</p>';
+    echo 'OK';
 
 } catch (DibiException $e) {
-    echo '<pre>', $e, '</pre>';
+    echo get_class($e), ': ', $e->getMessage();
 }
+echo "</p>\n";

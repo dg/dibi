@@ -23,9 +23,7 @@ try {
     $res = dibi::query('SELECT FROM [customers] WHERE [customer_id] < %i', 38);
 
 } catch (DibiException $e) {
-
-    echo '<h2>Dibi Exception:</h2>';
-    echo '<pre>', $e, '</pre>';
+    echo '<p>', get_class($e), ': ', $e->getMessage(), '</p>';
 }
 
 

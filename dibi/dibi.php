@@ -71,7 +71,7 @@ interface DibiVariableInterface
  *
  * @version $Revision$ $Date$
  */
-class dibi
+class dibi extends NClass
 {
     /**
      * Column type in relation to PHP native type
@@ -155,13 +155,6 @@ class dibi
 
 
 
-
-
-    /**
-     * Monostate class
-     */
-    final private function __construct()
-    {}
 
 
     /**

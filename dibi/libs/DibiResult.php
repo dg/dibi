@@ -453,28 +453,24 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     public function dump()
     {
-        echo '<table class="dump">';
-        echo '<thead>';
-        echo '<tr>';
-        echo '<th>#row</th>';
+        echo "\n<table class=\"dump\">\n<thead>\n\t<tr>\n\t\t<th>#row</th>\n";
+
         foreach ($this->getFields() as $field) {
-            echo '<th>' . htmlSpecialChars($field) . '</th>';
+            echo "\t\t<th>" . htmlSpecialChars($field) . "</th>\n";
         }
-        echo '</tr>';
-        echo '</thead>';
-        echo '<tbody>';
+
+        echo "\t</tr>\n</thead>\n<tbody>\n";
 
         foreach ($this as $row => $fields) {
-            echo '<tr><th>', $row, '</th>';
+            echo "\t<tr>\n\t\t<th>", $row, "</th>\n";
             foreach ($fields as $field) {
                 //if (is_object($field)) $field = $field->__toString();
-                echo '<td>', htmlSpecialChars($field), '</td>';
+                echo "\t\t<td>", htmlSpecialChars($field), "</td>\n";
             }
-            echo '</tr>';
+            echo "\t</tr>\n";
         }
 
-        echo '</tbody>';
-        echo '</table>';
+        echo "</tbody>\n</table>\n";
     }
 
 

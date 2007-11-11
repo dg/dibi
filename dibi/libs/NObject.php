@@ -76,23 +76,11 @@ abstract class NObject
     /**
      * Access to reflection
      *
-     * @return ReflectionClass
+     * @return ReflectionObject
      */
     final public function getReflection()
     {
-        return new ReflectionClass(get_class($this));
-    }
-
-
-
-    /**
-     * Return hash id for given object
-     *
-     * @return string  32 hexa chars
-     */
-    final public function getHashId()
-    {
-        return spl_object_hash($this);
+        return new ReflectionObject($this);
     }
 
 
@@ -217,7 +205,7 @@ abstract class NObject
 
 
     /**
-	 * Is method defined? Case sensitive, filters protected & private, doesn't recognize static methods (works good since 5.0.4)
+	 * Does method exist? Case sensitive, filters protected & private, doesn't recognize static methods (works good since 5.0.4)
      *
 	 * @param string  class name
      * @param string  method name
@@ -234,6 +222,20 @@ abstract class NObject
 
 }
 
+
+
+/**
+ * NClass is the ultimate ancestor of all uninstantiable classes.
+ */
+abstract class NClass
+{
+
+    final public function __construct()
+    {
+        throw new LogicException("Cannot instantiate static class " . get_class($this));
+    }
+
+}
 
 
 }
