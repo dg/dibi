@@ -52,8 +52,8 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
     /**
      * Connects to a database
      *
-     * @throws DibiException
      * @return void
+     * @throws DibiException
      */
     public function connect(array &$config)
     {
@@ -194,6 +194,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
      * @param string     value
      * @param string     type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
      * @return string    formatted value
+     * @throws InvalidArgumentException
      */
     public function format($value, $type)
     {
@@ -202,7 +203,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
         if ($type === dibi::FIELD_BOOL) return $value ? 'TRUE' : 'FALSE';
         if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
         if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
-        throw new DibiException('Invalid formatting type');
+        throw new InvalidArgumentException('Unsupported formatting type');
     }
 
 
@@ -263,7 +264,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
     public function seek($row)
     {
         if (!pg_result_seek($this->resultset, $row)) {
-            throw new DibiDriverException('Unable to seek to row ' . $row);
+            throw new DibiDatabaseException('Unable to seek to row ' . $row);
         }
     }
 

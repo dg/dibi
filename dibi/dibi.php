@@ -132,11 +132,6 @@ class dibi extends NClass
      */
     public static $defaultDriver = 'mysql';
 
-    /**
-     * Start time
-     * @var int
-     */
-    private static $time;
 
 
 
@@ -396,26 +391,15 @@ class dibi extends NClass
     /**
      * Event notification (events: exception, connected, beforeQuery, afterQuery, begin, commit, rollback)
      *
-     * @param string event name
      * @param DibiConnection
+     * @param string event name
      * @param mixed
      * @return void
      */
-    public static function notify($event, DibiConnection $conn = NULL, $arg = NULL)
+    public static function notify(DibiConnection $connection = NULL, $event, $arg = NULL)
     {
-        if ($event === 'beforeQuery') {
-            self::$numOfQueries++;
-            self::$elapsedTime = FALSE;
-            self::$time = -microtime(TRUE);
-            self::$sql = $arg;
-
-        } elseif ($event === 'afterQuery') {
-            self::$elapsedTime = self::$time + microtime(TRUE);
-            self::$totalTime += self::$elapsedTime;
-        }
-
         foreach (self::$handlers as $handler) {
-            call_user_func($handler, $event, $conn, $arg);
+            call_user_func($handler, $connection, $event, $arg);
         }
     }
 

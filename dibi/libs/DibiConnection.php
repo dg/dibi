@@ -106,7 +106,7 @@ class DibiConnection extends NObject
     {
         $this->driver->connect($this->config);
         $this->connected = TRUE;
-        dibi::notify('connected');
+        dibi::notify($this, 'connected');
     }
 
 
@@ -121,7 +121,7 @@ class DibiConnection extends NObject
         if ($this->connected) {
             $this->driver->disconnect();
             $this->connected = FALSE;
-            dibi::notify('disconnected');
+            dibi::notify($this, 'disconnected');
         }
     }
 
@@ -234,12 +234,19 @@ class DibiConnection extends NObject
     {
         if (!$this->connected) $this->connect();
 
-        dibi::notify('beforeQuery', $this, $sql);
+        dibi::$numOfQueries++;
+        dibi::$sql = $sql;
+        dibi::$elapsedTime = FALSE;
+        $time = -microtime(TRUE);
+        dibi::notify($this, 'beforeQuery', $sql);
 
         $res = $this->driver->query($sql);
         $res = $res ? new DibiResult(clone $this->driver) : TRUE; // backward compatibility - will be changed to NULL
 
-        dibi::notify('afterQuery', $this, $res);
+        $time += microtime(TRUE);
+        dibi::$elapsedTime = $time;
+        dibi::$totalTime += $time;
+        dibi::notify($this, 'afterQuery', $res);
 
         return $res;
     }
@@ -280,7 +287,7 @@ class DibiConnection extends NObject
     {
         if (!$this->connected) $this->connect();
         $this->driver->begin();
-        dibi::notify('begin', $this);
+        dibi::notify($this, 'begin');
     }
 
 
@@ -293,7 +300,7 @@ class DibiConnection extends NObject
     {
         if (!$this->connected) $this->connect();
         $this->driver->commit();
-        dibi::notify('commit', $this);
+        dibi::notify($this, 'commit');
     }
 
 
@@ -306,7 +313,7 @@ class DibiConnection extends NObject
     {
         if (!$this->connected) $this->connect();
         $this->driver->rollback();
-        dibi::notify('rollback', $this);
+        dibi::notify($this, 'rollback');
     }
 
 

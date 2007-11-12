@@ -60,8 +60,8 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
     /**
      * Connects to a database
      *
-     * @throws DibiException
      * @return void
+     * @throws DibiException
      */
     public function connect(array &$config)
     {
@@ -195,6 +195,7 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
      * @param string     value
      * @param string     type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
      * @return string    formatted value
+     * @throws InvalidArgumentException
      */
     public function format($value, $type)
     {
@@ -203,7 +204,7 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
         if ($type === dibi::FIELD_BOOL) return $value ? -1 : 0;
         if ($type === dibi::FIELD_DATE) return date("#m/d/Y#", $value);
         if ($type === dibi::FIELD_DATETIME) return date("#m/d/Y H:i:s#", $value);
-        throw new DibiException('Invalid formatting type');
+        throw new InvalidArgumentException('Unsupported formatting type');
     }
 
 

@@ -312,7 +312,7 @@ final class DibiTranslator extends NObject
             return 'NULL';
 
         if ($value instanceof DibiVariableInterface)
-            return $value->toSql($this->driver);
+            return $value->toSql($this->driver, NULL);
 
         $this->hasError = TRUE;
         return '**Unexpected ' . gettype($value) . '**';

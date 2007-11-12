@@ -209,5 +209,5 @@ interface DibiVariableInterface
      * @param  string  optional modifier
      * @return string  SQL code
      */
-    public function toSQL($driver, $modifier = NULL);
+    public function toSql(DibiDriverInterface $driver, $modifier);
 }

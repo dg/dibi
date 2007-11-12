@@ -53,7 +53,7 @@ class DibiDatabaseException extends DibiException
     {
         parent::__construct($message);
         $this->sql = $sql;
-        dibi::notify('exception', NULL, $this);
+        dibi::notify(NULL, 'exception', $this);
     }
 
 

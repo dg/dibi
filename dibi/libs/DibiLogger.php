@@ -53,17 +53,17 @@ final class DibiLogger extends NObject
     /**
      * Event handler (events: exception, connected, beforeQuery, afterQuery, begin, commit, rollback)
      *
+     * @param DibiConnection
      * @param string event name
-     * @param mixed
      * @param mixed
      * @return void
      */
-    public function handler($event, $connection, $arg)
+    public function handler($connection, $event, $arg)
     {
         if ($event === 'afterQuery' && $this->logQueries) {
             $this->write(
                 "OK: " . dibi::$sql
-                . ($arg instanceof DibiResult ? ";\n-- rows: " . $arg->rowCount() : '')
+                . ($arg instanceof DibiResult ? ";\n-- rows: " . count($arg) : '')
                 . "\n-- takes: " . sprintf('%0.3f', dibi::$elapsedTime * 1000) . ' ms'
                 . "\n-- driver: " . $connection->getConfig('driver')
                 . "\n-- " . date('Y-m-d H:i:s')
