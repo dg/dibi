@@ -224,7 +224,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
     public function rowCount()
     {
         if (!$this->buffered) {
-            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
+            throw new DibiDatabaseException('Row count is not available for unbuffered queries');
         }
         return sqlite_num_rows($this->resultset);
     }
@@ -254,11 +254,11 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
     public function seek($row)
     {
         if (!$this->buffered) {
-            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
+            throw new DibiDatabaseException('Cannot seek an unbuffered result set');
         }
-        DibiDatabaseException::catchError();
-        sqlite_seek($this->resultset, $row);
-        DibiDatabaseException::restore();
+        if (!sqlite_seek($this->resultset, $row)) {
+            throw new DibiDatabaseException('Unable to seek to row ' . $row);
+        }
     }
 
 

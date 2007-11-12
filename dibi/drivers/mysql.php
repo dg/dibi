@@ -266,7 +266,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
     public function rowCount()
     {
         if (!$this->buffered) {
-            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
+            throw new DibiDatabaseException('Row count is not available for unbuffered queries');
         }
         return mysql_num_rows($this->resultset);
     }
@@ -296,8 +296,9 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
     public function seek($row)
     {
         if (!$this->buffered) {
-            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
+            throw new DibiDatabaseException('Cannot seek an unbuffered result set');
         }
+
         if (!mysql_data_seek($this->resultset, $row)) {
             throw new DibiDatabaseException('Unable to seek to row ' . $row);
         }

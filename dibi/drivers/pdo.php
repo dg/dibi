@@ -231,6 +231,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function seek($row)
     {
+        $this->row = $row;
     }
 
 

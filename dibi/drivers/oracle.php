@@ -244,7 +244,6 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
      */
     public function fetch()
     {
-        $this->fetched = TRUE;
         return oci_fetch_assoc($this->resultset);
     }
 
@@ -259,7 +258,6 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
      */
     public function seek($row)
     {
-        if ($row === 0 && !$this->fetched) return TRUE;
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 

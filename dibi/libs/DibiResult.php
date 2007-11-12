@@ -52,19 +52,19 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      * Describes columns types
      * @var array
      */
-    protected $convert;
+    private $convert;
 
     /**
      * Describes columns types
      * @var array
      */
-    protected $meta;
+    private $meta;
 
     /**
      * Already fetched? Used for allowance for first seek(0)
      * @var bool
      */
-    protected $fetched = FALSE;
+    private $fetched = FALSE;
 
 
 
@@ -84,6 +84,18 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     {
         $this->driver = $driver;
     }
+
+
+    /**
+     * Automatically frees the resources allocated for this result set
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        @$this->driver->free();
+    }
+
 
 
     /**
@@ -107,11 +119,9 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     final public function seek($row)
     {
-        if ($row === 0 && !$this->fetched) {
-            return TRUE;
+        if ($row !== 0 || $this->fetched) {
+            $this->driver->seek($row);
         }
-
-        $this->driver->seek($row);
     }
 
 
@@ -124,6 +134,18 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     final public function rowCount()
     {
         return $this->driver->rowCount();
+    }
+
+
+
+    /**
+     * Frees the resources allocated for this result set
+     *
+     * @return void
+     */
+    final public function free()
+    {
+        $this->driver->free();
     }
 
 
@@ -334,18 +356,6 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
 
 
-    /**
-     * Automatically frees the resources allocated for this result set
-     *
-     * @return void
-     */
-    public function __destruct()
-    {
-        @$this->driver->free();
-    }
-
-
-
     final public function setType($field, $type = NULL)
     {
         if ($field === TRUE) {
@@ -438,7 +448,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      *
      * @return void
      */
-    public function dump()
+    final public function dump()
     {
         echo "\n<table class=\"dump\">\n<thead>\n\t<tr>\n\t\t<th>#row</th>\n";
 
