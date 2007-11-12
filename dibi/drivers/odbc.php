@@ -135,7 +135,7 @@ class DibiOdbcDriver extends DibiDriver
         if (is_resource($res)) {
             $this->affectedRows = odbc_num_rows($res);
             if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-            return new DibiOdbcResult($res);
+            return new DibiOdbcResult($res, TRUE);
         }
     }
 
@@ -208,22 +208,6 @@ class DibiOdbcDriver extends DibiDriver
         }
         odbc_autocommit($connection, TRUE);
         dibi::notify('rollback', $this);
-    }
-
-
-
-    /**
-     * Returns last error
-     *
-     * @return array with items 'message' and 'code'
-     */
-    public function errorInfo()
-    {
-        $connection = $this->getConnection();
-        return array(
-            'message'  => odbc_errormsg($connection),
-            'code'     => odbc_error($connection),
-        );
     }
 
 
@@ -316,7 +300,7 @@ class DibiOdbcResult extends DibiResult
      *
      * @return int
      */
-    public function rowCount()
+    protected function doRowCount()
     {
         // will return -1 with many drivers :-(
         return odbc_num_rows($this->resource);
@@ -341,9 +325,10 @@ class DibiOdbcResult extends DibiResult
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     * @return void
+     * @throws DibiException
      */
-    public function seek($row)
+    protected function doSeek($row)
     {
         $this->row = $row;
     }
@@ -355,7 +340,7 @@ class DibiOdbcResult extends DibiResult
      *
      * @return void
      */
-    protected function free()
+    protected function doFree()
     {
         odbc_free_result($this->resource);
     }

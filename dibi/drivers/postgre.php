@@ -81,25 +81,16 @@ class DibiPostgreDriver extends DibiDriver
 
         $config = $this->getConfig();
 
-        // some errors aren't handled. Must use $php_errormsg
-        if (function_exists('ini_set')) {
-            $save = ini_set('track_errors', TRUE);
-        }
-
-        $php_errormsg = '';
-
+        DibiDatabaseException::catchError();
         if (isset($config['persistent'])) {
             $connection = @pg_connect($config['database'], PGSQL_CONNECT_FORCE_NEW);
         } else {
             $connection = @pg_pconnect($config['database'], PGSQL_CONNECT_FORCE_NEW);
         }
-
-        if (function_exists('ini_set')) {
-            ini_set('track_errors', $save);
-        }
+        DibiDatabaseException::restore();
 
         if (!is_resource($connection)) {
-            throw new DibiDatabaseException($php_errormsg);
+            throw new DibiDatabaseException('unknown error');
         }
 
         if (isset($config['charset'])) {
@@ -146,7 +137,7 @@ class DibiPostgreDriver extends DibiDriver
                 $this->affectedRows = pg_affected_rows($res);
                 if ($this->affectedRows < 0) $this->affectedRows = FALSE;
             }
-            return new DibiPostgreResult($res);
+            return new DibiPostgreResult($res, TRUE);
         }
     }
 
@@ -221,21 +212,6 @@ class DibiPostgreDriver extends DibiDriver
     {
         $this->doQuery('ROLLBACK', TRUE);
         dibi::notify('rollback', $this);
-    }
-
-
-
-    /**
-     * Returns last error
-     *
-     * @return array with items 'message' and 'code'
-     */
-    public function errorInfo()
-    {
-        return array(
-            'message'  => pg_last_error($this->getConnection()),
-            'code'     => NULL,
-        );
     }
 
 
@@ -326,7 +302,7 @@ class DibiPostgreResult extends DibiResult
      *
      * @return int
      */
-    public function rowCount()
+    protected function doRowCount()
     {
         return pg_num_rows($this->resource);
     }
@@ -350,11 +326,14 @@ class DibiPostgreResult extends DibiResult
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     * @return void
+     * @throws DibiException
      */
-    public function seek($row)
+    protected function doSeek($row)
     {
-        return pg_result_seek($this->resource, $row);
+        if (!pg_result_seek($this->resource, $row)) {
+            throw new DibiDriverException('Unable to seek to row ' . $row);
+        }
     }
 
 
@@ -364,7 +343,7 @@ class DibiPostgreResult extends DibiResult
      *
      * @return void
      */
-    protected function free()
+    protected function doFree()
     {
         pg_free_result($this->resource);
     }

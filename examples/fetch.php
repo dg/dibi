@@ -25,8 +25,6 @@ product_id | title
 
 // fetch a single value
 $res = dibi::query('SELECT [title] FROM [products]');
-if (!$res) die('SQL error');
-
 $value = $res->fetchSingle();
 print_r($value); // Chair
 echo '<hr>';

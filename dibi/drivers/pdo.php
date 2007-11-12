@@ -104,7 +104,7 @@ class DibiPdoDriver extends DibiDriver
     protected function doQuery($sql)
     {
         $res = $this->getConnection()->query($sql);
-        return $res instanceof PDOStatement ? new DibiPdoResult($res) : NULL;
+        return $res instanceof PDOStatement ? new DibiPdoResult($res, TRUE) : NULL;
     }
 
 
@@ -165,23 +165,6 @@ class DibiPdoDriver extends DibiDriver
     {
         $this->getConnection()->rollBack();
         dibi::notify('rollback', $this);
-    }
-
-
-
-    /**
-     * Returns last error
-     *
-     * @return array with items 'message' and 'code'
-     */
-    public function errorInfo()
-    {
-        $error = $this->getConnection()->errorInfo();
-        return array(
-            'message'  => $error[2],
-            'code'     => $error[1],
-            'SQLSTATE '=> $error[0],
-        );
     }
 
 
@@ -270,7 +253,7 @@ class DibiPdoResult extends DibiResult
      *
      * @return int
      */
-    public function rowCount()
+    protected function doRowCount()
     {
         return $this->resource->rowCount();
     }
@@ -294,9 +277,10 @@ class DibiPdoResult extends DibiResult
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     * @return void
+     * @throws DibiException
      */
-    public function seek($row)
+    protected function doSeek($row)
     {
         $this->row = $row;
     }
@@ -308,7 +292,7 @@ class DibiPdoResult extends DibiResult
      *
      * @return void
      */
-    protected function free()
+    protected function doFree()
     {
     }
 

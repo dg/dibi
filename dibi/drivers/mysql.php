@@ -103,27 +103,16 @@ class DibiMySqlDriver extends DibiDriver
             $host = ':' . $config['socket'];
         }
 
-        // some errors aren't handled. Must use $php_errormsg
-        if (function_exists('ini_set')) {
-            $save = ini_set('track_errors', TRUE);
-        }
-
-        $php_errormsg = '';
-
+        DibiDatabaseException::catchError();
         if (empty($config['persistent'])) {
             $connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['options']);
         } else {
             $connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['options']);
         }
-
-        if (function_exists('ini_set')) {
-            ini_set('track_errors', $save);
-        }
+        DibiDatabaseException::restore();
 
         if (!is_resource($connection)) {
-            $msg = mysql_error();
-            if (!$msg) $msg = $php_errormsg;
-            throw new DibiDatabaseException($msg, mysql_errno());
+            throw new DibiDatabaseException(mysql_error(), mysql_errno());
         }
 
         if (isset($config['charset'])) {
@@ -163,17 +152,18 @@ class DibiMySqlDriver extends DibiDriver
     {
         $connection = $this->getConnection();
 
-        if ($this->getConfig('unbuffered')) {
-            $res = @mysql_unbuffered_query($sql, $connection);
-        } else {
+        $buffered = !$this->getConfig('unbuffered');
+        if ($buffered) {
             $res = @mysql_query($sql, $connection);
+        } else {
+            $res = @mysql_unbuffered_query($sql, $connection);
         }
 
         if ($errno = mysql_errno($connection)) {
             throw new DibiDatabaseException(mysql_error($connection), $errno, $sql);
         }
 
-        return is_resource($res) ? new DibiMySqlResult($res) : NULL;
+        return is_resource($res) ? new DibiMySqlResult($res, $buffered) : NULL;
     }
 
 
@@ -236,22 +226,6 @@ class DibiMySqlDriver extends DibiDriver
     {
         $this->doQuery('ROLLBACK');
         dibi::notify('rollback', $this);
-    }
-
-
-
-    /**
-     * Returns last error
-     *
-     * @return array with items 'message' and 'code'
-     */
-    public function errorInfo()
-    {
-        $connection = $this->getConnection();
-        return array(
-            'message'  => mysql_error($connection),
-            'code'     => mysql_errno($connection),
-        );
     }
 
 
@@ -342,7 +316,7 @@ class DibiMySqlResult extends DibiResult
      *
      * @return int
      */
-    public function rowCount()
+    protected function doRowCount()
     {
         return mysql_num_rows($this->resource);
     }
@@ -366,11 +340,14 @@ class DibiMySqlResult extends DibiResult
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     * @return void
+     * @throws DibiException
      */
-    public function seek($row)
+    protected function doSeek($row)
     {
-        return mysql_data_seek($this->resource, $row);
+        if (!mysql_data_seek($this->resource, $row)) {
+            throw new DibiDriverException('Unable to seek to row ' . $row);
+        }
     }
 
 
@@ -380,7 +357,7 @@ class DibiMySqlResult extends DibiResult
      *
      * @return void
      */
-    protected function free()
+    protected function doFree()
     {
         mysql_free_result($this->resource);
     }

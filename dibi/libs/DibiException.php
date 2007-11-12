@@ -45,6 +45,9 @@ class DibiDatabaseException extends DibiException
     /** @var string */
     private $sql;
 
+    /** @var callback */
+    private static $oldHandler;
+
 
     public function __construct($message = NULL, $code = 0, $sql = NULL)
     {
@@ -69,6 +72,33 @@ class DibiDatabaseException extends DibiException
             $s .= "\nSQL: " . $this->sql;
         }
         return $s;
+    }
+
+
+
+    public static function _catchErrorHandler($errno, $errstr)
+    {
+        self::restore();
+        throw new self($errstr, $errno);
+    }
+
+
+
+    public static function catchError()
+    {
+        self::$oldHandler = set_error_handler(array(__CLASS__, '_catchErrorHandler'), E_ALL);
+    }
+
+
+
+    public static function restore()
+    {
+        if (self::$oldHandler) {
+            set_error_handler(self::$oldHandler);
+            self::$oldHandler = NULL;
+        } else {
+            restore_error_handler();
+        }
     }
 
 }

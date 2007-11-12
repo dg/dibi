@@ -303,10 +303,12 @@ abstract class DibiDriver extends NObject
 
     /**
      * Returns last error
-     *
-     * @return array with items 'message' and 'code'
+     * @deprecated
      */
-    abstract public function errorInfo();
+    public function errorInfo()
+    {
+        throw new BadMethodCallException(__METHOD__ . ' has been deprecated');
+    }
 
 
 

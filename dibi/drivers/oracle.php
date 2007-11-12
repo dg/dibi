@@ -126,8 +126,7 @@ class DibiOracleDriver extends DibiDriver
             throw new DibiDatabaseException($err['message'], $err['code'], $sql);
         }
 
-        // TODO!
-        return is_resource($res) ? new DibiOracleResult($statement) : TRUE;
+        return is_resource($res) ? new DibiOracleResult($statement, TRUE) : TRUE;
     }
 
 
@@ -197,18 +196,6 @@ class DibiOracleDriver extends DibiDriver
         }
         $this->autocommit = TRUE;
         dibi::notify('rollback', $this);
-    }
-
-
-
-    /**
-     * Returns last error
-     *
-     * @return array with items 'message' and 'code'
-     */
-    public function errorInfo()
-    {
-        return oci_error($this->getConnection());
     }
 
 
@@ -294,7 +281,7 @@ class DibiOracleResult extends DibiResult
      *
      * @return int
      */
-    public function rowCount()
+    protected function doRowCount()
     {
         return oci_num_rows($this->resource);
     }
@@ -309,6 +296,7 @@ class DibiOracleResult extends DibiResult
      */
     protected function doFetch()
     {
+        $this->fetched = TRUE;
         return oci_fetch_assoc($this->resource);
     }
 
@@ -318,11 +306,13 @@ class DibiOracleResult extends DibiResult
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     * @return void
+     * @throws DibiException
      */
-    public function seek($row)
+    protected function doSeek($row)
     {
-        //throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        if ($row === 0 && !$this->fetched) return TRUE;
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
 
@@ -332,7 +322,7 @@ class DibiOracleResult extends DibiResult
      *
      * @return void
      */
-    protected function free()
+    protected function doFree()
     {
         oci_free_statement($this->resource);
     }

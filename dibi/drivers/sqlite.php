@@ -113,10 +113,11 @@ class DibiSqliteDriver extends DibiDriver
         $connection = $this->getConnection();
         $errorMsg = NULL;
 
-        if ($this->getConfig('unbuffered')) {
-            $res = @sqlite_unbuffered_query($connection, $sql, SQLITE_ASSOC, $errorMsg);
-        } else {
+        $buffered = !$this->getConfig('unbuffered');
+        if ($buffered) {
             $res = @sqlite_query($connection, $sql, SQLITE_ASSOC, $errorMsg);
+        } else {
+            $res = @sqlite_unbuffered_query($connection, $sql, SQLITE_ASSOC, $errorMsg);
         }
 
 
@@ -124,7 +125,7 @@ class DibiSqliteDriver extends DibiDriver
             throw new DibiDatabaseException($errorMsg, sqlite_last_error($connection), $sql);
         }
 
-        return is_resource($res) ? new DibiSqliteResult($res) : NULL;
+        return is_resource($res) ? new DibiSqliteResult($res, $buffered) : NULL;
     }
 
 
@@ -187,22 +188,6 @@ class DibiSqliteDriver extends DibiDriver
     {
         $this->doQuery('ROLLBACK');
         dibi::notify('rollback', $this);
-    }
-
-
-
-    /**
-     * Returns last error
-     *
-     * @return array with items 'message' and 'code'
-     */
-    public function errorInfo()
-    {
-        $code = sqlite_last_error($this->getConnection());
-        return array(
-            'message'  => sqlite_error_string($code),
-            'code'     => $code,
-        );
     }
 
 
@@ -288,7 +273,7 @@ class DibiSqliteResult extends DibiResult
      *
      * @return int
      */
-    public function rowCount()
+    protected function doRowCount()
     {
         return sqlite_num_rows($this->resource);
     }
@@ -312,11 +297,14 @@ class DibiSqliteResult extends DibiResult
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     * @return void
+     * @throws DibiException
      */
-    public function seek($row)
+    protected function doSeek($row)
     {
-        return sqlite_seek($this->resource, $row);
+        DibiDatabaseException::catchError();
+        sqlite_seek($this->resource, $row);
+        DibiDatabaseException::restore();
     }
 
 
@@ -326,7 +314,7 @@ class DibiSqliteResult extends DibiResult
      *
      * @return void
      */
-    protected function free()
+    protected function doFree()
     {
     }
 

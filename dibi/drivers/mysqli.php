@@ -132,13 +132,14 @@ class DibiMySqliDriver extends DibiDriver
     protected function doQuery($sql)
     {
         $connection = $this->getConnection();
-        $res = @mysqli_query($connection, $sql, $this->getConfig('unbuffered') ? MYSQLI_USE_RESULT :  MYSQLI_STORE_RESULT);
+        $buffered = !$this->getConfig('unbuffered');
+        $res = @mysqli_query($connection, $sql, $buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT);
 
         if ($errno = mysqli_errno($connection)) {
             throw new DibiDatabaseException(mysqli_error($connection), $errno, $sql);
         }
 
-        return is_object($res) ? new DibiMySqliResult($res) : NULL;
+        return is_object($res) ? new DibiMySqliResult($res, $buffered) : NULL;
     }
 
 
@@ -212,22 +213,6 @@ class DibiMySqliDriver extends DibiDriver
         }
         mysqli_autocommit($connection, TRUE);
         dibi::notify('rollback', $this);
-    }
-
-
-
-    /**
-     * Returns last error
-     *
-     * @return array with items 'message' and 'code'
-     */
-    public function errorInfo()
-    {
-        $connection = $this->getConnection();
-        return array(
-            'message'  => mysqli_error($connection),
-            'code'     => mysqli_errno($connection),
-        );
     }
 
 
@@ -318,7 +303,7 @@ class DibiMySqliResult extends DibiResult
      *
      * @return int
      */
-    public function rowCount()
+    protected function doRowCount()
     {
         return mysqli_num_rows($this->resource);
     }
@@ -342,11 +327,14 @@ class DibiMySqliResult extends DibiResult
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     * @return void
+     * @throws DibiException
      */
-    public function seek($row)
+    protected function doSeek($row)
     {
-        return mysqli_data_seek($this->resource, $row);
+        if (!mysqli_data_seek($this->resource, $row)) {
+            throw new DibiDriverException('Unable to seek to row ' . $row);
+        }
     }
 
 
@@ -356,7 +344,7 @@ class DibiMySqliResult extends DibiResult
      *
      * @return void
      */
-    protected function free()
+    protected function doFree()
     {
         mysqli_free_result($this->resource);
     }

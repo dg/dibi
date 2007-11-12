@@ -74,7 +74,7 @@ final class DibiResultIterator implements Iterator
     public function rewind()
     {
         $this->pointer = 0;
-        @$this->result->seek($this->offset);
+        $this->result->seek($this->offset);
         $this->row = $this->result->fetch();
     }
 

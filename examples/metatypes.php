@@ -12,8 +12,6 @@ dibi::connect(array(
 
 
 $res = dibi::query('SELECT * FROM [customers]');
-if (!$res) die('SQL error');
-
 
 // auto-convert this field to integer
 $res->setType('customer_id', Dibi::FIELD_INTEGER);

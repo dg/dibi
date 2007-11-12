@@ -123,7 +123,7 @@ class DibiMsSqlDriver extends DibiDriver
             throw new DibiDatabaseException('Query error', 0, $sql);
         }
 
-        return is_resource($res) ? new DibiMSSqlResult($res) : NULL;
+        return is_resource($res) ? new DibiMSSqlResult($res, TRUE) : NULL;
     }
 
 
@@ -185,21 +185,6 @@ class DibiMsSqlDriver extends DibiDriver
     {
         $this->doQuery('ROLLBACK');
         dibi::notify('rollback', $this);
-    }
-
-
-
-    /**
-     * Returns last error
-     *
-     * @return array with items 'message' and 'code'
-     */
-    public function errorInfo()
-    {
-        return array(
-            'message'  => NULL,
-            'code'     => NULL,
-        );
     }
 
 
@@ -293,7 +278,7 @@ class DibiMSSqlResult extends DibiResult
      *
      * @return int
      */
-    public function rowCount()
+    protected function doRowCount()
     {
         return mssql_num_rows($this->resource);
     }
@@ -317,11 +302,14 @@ class DibiMSSqlResult extends DibiResult
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     * @return void
+     * @throws DibiException
      */
-    public function seek($row)
+    protected function doSeek($row)
     {
-        return mssql_data_seek($this->resource, $row);
+        if (!mssql_data_seek($this->resource, $row)) {
+            throw new DibiDriverException('Unable to seek to row ' . $row);
+        }
     }
 
 
@@ -331,7 +319,7 @@ class DibiMSSqlResult extends DibiResult
      *
      * @return void
      */
-    protected function free()
+    protected function doFree()
     {
         mssql_free_result($this->resource);
     }

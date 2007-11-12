@@ -54,12 +54,24 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     protected $meta;
 
-
     /**
      * Resultset resource
      * @var resource
      */
     protected $resource;
+
+    /**
+     * Is buffered (seekable and countable)?
+     * @var bool
+     */
+    protected $buffered;
+
+    /**
+     * Already fetched? Used for allowance for first seek(0)
+     * @var bool
+     */
+    protected $fetched = FALSE;
+
 
 
     private static $types = array(
@@ -74,9 +86,10 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
 
 
 
-    public function __construct($resource)
+    public function __construct($resource, $buffered)
     {
         $this->resource = $resource;
+        $this->buffered = $buffered;
     }
 
 
@@ -96,9 +109,21 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+     * @return void
+     * @throws DibiException
      */
-    abstract public function seek($row);
+    final public function seek($row)
+    {
+        if ($row === 0 && !$this->fetched) {
+            return TRUE;
+        }
+
+        if (!$this->buffered) {
+            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
+        }
+
+        return $this->doSeek($row);
+    }
 
 
 
@@ -107,16 +132,43 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      *
      * @return int
      */
-    abstract public function rowCount();
+    final public function rowCount()
+    {
+        if (!$this->buffered) {
+            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
+        }
+
+        return $this->doRowCount();
+    }
 
 
 
     /**
-     * Frees the resources allocated for this result set
+     * Internal: Moves cursor position without fetching row
+     *
+     * @param  int      the 0-based cursor pos to seek to
+     * @return void
+     * @throws DibiException
+     */
+    abstract protected function doSeek($row);
+
+
+
+    /**
+     * Internal: Returns the number of rows in a result set
+     *
+     * @return int
+     */
+    abstract protected function doRowCount();
+
+
+
+    /**
+     * Internal: Frees the resources allocated for this result set
      *
      * @return void
      */
-    abstract protected function free();
+    abstract protected function doFree();
 
 
 
@@ -140,6 +192,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
     {
         $row = $this->doFetch();
         if (!is_array($row)) return FALSE;
+        $this->fetched = TRUE;
 
         // types-converting?
         if ($t = $this->convert) {  // little speed-up
@@ -164,6 +217,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
     {
         $row = $this->doFetch();
         if (!is_array($row)) return FALSE;
+        $this->fetched = TRUE;
 
         // types-converting?
         if ($t = $this->convert) {  // little speed-up
@@ -186,7 +240,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     final function fetchAll()
     {
-        @$this->seek(0);
+        $this->seek(0);
         $row = $this->fetch();
         if (!$row) return array();  // empty resultset
 
@@ -220,7 +274,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     final function fetchAssoc($assoc)
     {
-        @$this->seek(0);
+        $this->seek(0);
         $row = $this->fetch();
         if (!$row) return array();  // empty resultset
 
@@ -288,7 +342,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     final function fetchPairs($key = NULL, $value = NULL)
     {
-        @$this->seek(0);
+        $this->seek(0);
         $row = $this->fetch();
         if (!$row) return array();  // empty resultset
 
@@ -341,7 +395,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     public function __destruct()
     {
-        @$this->free();
+        @$this->doFree();
     }
 
 
