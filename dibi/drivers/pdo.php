@@ -11,21 +11,28 @@
  *
  * For more information please see http://php7.org/dibi/
  *
- * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  (dibi license)
- * @category   Database
- * @package    Dibi
+ * @license    http://php7.org/dibi/license  dibi license
  * @link       http://php7.org/dibi/
+ * @package    dibi
  */
 
 
 /**
  * The dibi driver for PDO
  *
- * @version $Revision$ $Date$
+ * Connection options:
+ *   - 'dsn' - driver specific DSN
+ *   - 'username' (or 'user')
+ *   - 'password' (or 'pass')
+ *   - 'options' - driver specific options array
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
  */
-final class DibiPdoDriver extends DibiDriver
+class DibiPdoDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -47,9 +54,10 @@ final class DibiPdoDriver extends DibiDriver
      */
     public function __construct(array $config)
     {
-        self::config($config, 'username', 'user');
-        self::config($config, 'password', 'pass');
-        self::config($config, 'dsn');
+        self::alias($config, 'username', 'user');
+        self::alias($config, 'password', 'pass');
+        self::alias($config, 'dsn');
+        self::alias($config, 'options');
         parent::__construct($config);
     }
 
@@ -68,7 +76,7 @@ final class DibiPdoDriver extends DibiDriver
         }
 
         $config = $this->getConfig();
-        $connection = new PDO($config['dsn'], $config['username'], $config['password']);
+        $connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
         $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $connection;
     }
@@ -212,9 +220,9 @@ final class DibiPdoDriver extends DibiDriver
     /**
      * Gets a information of the current database.
      *
-     * @return DibiMetaData
+     * @return DibiReflection
      */
-    public function getMetaData()
+    public function getDibiReflection()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
@@ -244,7 +252,15 @@ final class DibiPdoDriver extends DibiDriver
 
 
 
-final class DibiPdoResult extends DibiResult
+/**
+ * The dibi result-set class for PDOStatement
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
+ */
+class DibiPdoResult extends DibiResult
 {
     private $row = 0;
 

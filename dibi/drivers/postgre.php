@@ -11,21 +11,27 @@
  *
  * For more information please see http://php7.org/dibi/
  *
- * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  (dibi license)
- * @category   Database
- * @package    Dibi
+ * @license    http://php7.org/dibi/license  dibi license
  * @link       http://php7.org/dibi/
+ * @package    dibi
  */
 
 
 /**
- * The dibi driver for PostgreSql database
+ * The dibi driver for PostgreSQL database
  *
- * @version $Revision$ $Date$
+ * Connection options:
+ *   - 'database' (or 'string') - connection string
+ *   - 'persistent' - try to find a persistent link?
+ *   - 'charset' - sets the encoding
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
  */
-final class DibiPostgreDriver extends DibiDriver
+class DibiPostgreDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -54,8 +60,8 @@ final class DibiPostgreDriver extends DibiDriver
      */
     public function __construct(array $config)
     {
-        self::config($config, 'database', 'string');
-        self::config($config, 'type');
+        self::alias($config, 'database', 'string');
+        self::alias($config, 'type');
         parent::__construct($config);
     }
 
@@ -83,9 +89,9 @@ final class DibiPostgreDriver extends DibiDriver
         $php_errormsg = '';
 
         if (isset($config['persistent'])) {
-            $connection = @pg_connect($config['database'], $config['type']);
+            $connection = @pg_connect($config['database'], PGSQL_CONNECT_FORCE_NEW);
         } else {
-            $connection = @pg_pconnect($config['database'], $config['type']);
+            $connection = @pg_pconnect($config['database'], PGSQL_CONNECT_FORCE_NEW);
         }
 
         if (function_exists('ini_set')) {
@@ -267,9 +273,9 @@ final class DibiPostgreDriver extends DibiDriver
     /**
      * Gets a information of the current database.
      *
-     * @return DibiMetaData
+     * @return DibiReflection
      */
-    public function getMetaData()
+    public function getDibiReflection()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
@@ -304,7 +310,15 @@ final class DibiPostgreDriver extends DibiDriver
 
 
 
-final class DibiPostgreResult extends DibiResult
+/**
+ * The dibi result-set class for PostgreSQL database
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
+ */
+class DibiPostgreResult extends DibiResult
 {
 
     /**

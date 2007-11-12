@@ -63,7 +63,7 @@ try {
         'driver'   => 'odbc',
         'username' => 'root',
         'password' => '***',
-        'database' => 'Driver={Microsoft Access Driver (*.mdb)};Dbq='.dirname(__FILE__).'/sample.mdb',
+        'dsn'      => 'Driver={Microsoft Access Driver (*.mdb)};Dbq='.dirname(__FILE__).'/sample.mdb',
     ));
     echo 'OK';
 

@@ -13,11 +13,10 @@
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  (dibi license)
+ * @license    http://php7.org/dibi/license  dibi license
  * @version    0.9 (Revision: $WCREV$, Date: $WCDATE$)
- * @category   Database
- * @package    Dibi
  * @link       http://php7.org/dibi/
+ * @package    dibi
  */
 
 
@@ -46,6 +45,7 @@ require_once __FILE__ . '/../libs/DibiLogger.php';
 
 /**
  * Interface for user variable, used for generating SQL
+ * @package dibi
  */
 interface DibiVariableInterface
 {
@@ -69,7 +69,10 @@ interface DibiVariableInterface
  * This class is static container class for creating DB objects and
  * store connections info.
  *
- * @version $Revision$ $Date$
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
  */
 class dibi extends NClass
 {
@@ -532,4 +535,4 @@ class dibi extends NClass
     }
 
 
-} // class dibi
+}

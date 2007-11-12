@@ -11,12 +11,10 @@
  *
  * For more information please see http://php7.org/dibi/
  *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  (dibi license)
- * @category   Database
- * @package    Dibi
- * @link       http://php7.org/dibi/
+ * @copyright  Copyright (c) 2004, 2007 David Grudl
+ * @license    http://php7.org/nette/license  Nette license
+ * @link       http://php7.org/nette/
+ * @package    Nette
  */
 
 
@@ -55,8 +53,9 @@ if (!class_exists('NObject', FALSE)) {
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2004, 2007 David Grudl
- * @license    http://php7.org/nette/license  (Nette license)
+ * @license    http://php7.org/nette/license  Nette license
  * @link       http://php7.org/nette/
+ * @package    Nette
  */
 abstract class NObject
 {
@@ -226,6 +225,12 @@ abstract class NObject
 
 /**
  * NClass is the ultimate ancestor of all uninstantiable classes.
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2004, 2007 David Grudl
+ * @license    http://php7.org/nette/license  Nette license
+ * @link       http://php7.org/nette/
+ * @package    Nette
  */
 abstract class NClass
 {

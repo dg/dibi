@@ -11,21 +11,34 @@
  *
  * For more information please see http://php7.org/dibi/
  *
- * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  (dibi license)
- * @category   Database
- * @package    Dibi
+ * @license    http://php7.org/dibi/license  dibi license
  * @link       http://php7.org/dibi/
+ * @package    dibi
  */
 
 
 /**
  * The dibi driver for MySQL database
  *
- * @version $Revision$ $Date$
+ * Connection options:
+ *   - 'host' - the MySQL server host name
+ *   - 'port' - the port number to attempt to connect to the MySQL server
+ *   - 'socket' - the socket or named pipe
+ *   - 'username' (or 'user')
+ *   - 'password' (or 'pass')
+ *   - 'persistent' - try to find a persistent link?
+ *   - 'database' - the database name to select
+ *   - 'charset' - sets the encoding
+ *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
+ *   - 'options' - driver specific constants (MYSQL_*)
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
  */
-final class DibiMySqlDriver extends DibiDriver
+class DibiMySqlDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -47,16 +60,22 @@ final class DibiMySqlDriver extends DibiDriver
      */
     public function __construct(array $config)
     {
-        self::config($config, 'username', 'user');
-        self::config($config, 'password', 'pass');
+        self::alias($config, 'username', 'user');
+        self::alias($config, 'password', 'pass');
+        self::alias($config, 'options');
 
         // default values
-        if ($config['username'] === NULL) $config['username'] = ini_get('mysql.default_user');
-        if ($config['password'] === NULL) $config['password'] = ini_get('mysql.default_password');
+        if (!isset($config['username'])) $config['username'] = ini_get('mysql.default_user');
+        if (!isset($config['password'])) $config['password'] = ini_get('mysql.default_password');
         if (!isset($config['host'])) {
-            $config['host'] = ini_get('mysql.default_host');
-            if (!isset($config['port'])) ini_get('mysql.default_port');
-            if (!isset($config['host'])) $config['host'] = 'localhost';
+            $host = ini_get('mysql.default_host');
+            if ($host) {
+                $config['host'] = $host;
+                $config['port'] = ini_get('mysql.default_port');
+            } else {
+                if (!isset($config['socket'])) $config['socket'] = ini_get('mysql.default_socket');
+                $config['host'] = NULL;
+            }
         }
 
         parent::__construct($config);
@@ -78,10 +97,10 @@ final class DibiMySqlDriver extends DibiDriver
 
         $config = $this->getConfig();
 
-        if (isset($config['protocol']) && $config['protocol'] === 'unix') { // host can be socket
-            $host = ':' . $config['host'];
+        if (empty($config['socket'])) {
+            $host = $config['host'] . (empty($config['port']) ? '' : ':' . $config['port']);
         } else {
-            $host = $config['host'] . (isset($config['port']) ? ':'.$config['port'] : '');
+            $host = ':' . $config['socket'];
         }
 
         // some errors aren't handled. Must use $php_errormsg
@@ -92,9 +111,9 @@ final class DibiMySqlDriver extends DibiDriver
         $php_errormsg = '';
 
         if (empty($config['persistent'])) {
-            $connection = @mysql_connect($host, $config['username'], $config['password'], TRUE);
+            $connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['options']);
         } else {
-            $connection = @mysql_pconnect($host, $config['username'], $config['password']);
+            $connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['options']);
         }
 
         if (function_exists('ini_set')) {
@@ -143,7 +162,12 @@ final class DibiMySqlDriver extends DibiDriver
     protected function doQuery($sql)
     {
         $connection = $this->getConnection();
-        $res = @mysql_query($sql, $connection);
+
+        if ($this->getConfig('unbuffered')) {
+            $res = @mysql_unbuffered_query($sql, $connection);
+        } else {
+            $res = @mysql_query($sql, $connection);
+        }
 
         if ($errno = mysql_errno($connection)) {
             throw new DibiDatabaseException(mysql_error($connection), $errno, $sql);
@@ -265,9 +289,9 @@ final class DibiMySqlDriver extends DibiDriver
     /**
      * Gets a information of the current database.
      *
-     * @return DibiMetaData
+     * @return DibiReflection
      */
-    public function getMetaData()
+    public function getDibiReflection()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
@@ -302,7 +326,15 @@ final class DibiMySqlDriver extends DibiDriver
 
 
 
-final class DibiMySqlResult extends DibiResult
+/**
+ * The dibi result-set class for MySQL database
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
+ */
+class DibiMySqlResult extends DibiResult
 {
 
     /**

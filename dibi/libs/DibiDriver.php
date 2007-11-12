@@ -11,12 +11,10 @@
  *
  * For more information please see http://php7.org/dibi/
  *
- * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  (dibi license)
- * @category   Database
- * @package    Dibi
+ * @license    http://php7.org/dibi/license  dibi license
  * @link       http://php7.org/dibi/
+ * @package    dibi
  */
 
 
@@ -24,7 +22,10 @@
 /**
  * dibi Common Driver
  *
- * @version $Revision$ $Date$
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
  */
 abstract class DibiDriver extends NObject
 {
@@ -213,7 +214,7 @@ abstract class DibiDriver extends NObject
      * @param string alias key
      * @return void
      */
-    protected static function config(&$config, $key, $alias=NULL)
+    protected static function alias(&$config, $key, $alias=NULL)
     {
         if (isset($config[$key])) return;
 
@@ -333,9 +334,9 @@ abstract class DibiDriver extends NObject
     /**
      * Gets a information of the current database.
      *
-     * @return DibiMetaData
+     * @return DibiReflection
      */
-    abstract public function getMetaData();
+    abstract public function getDibiReflection();
 
 
 

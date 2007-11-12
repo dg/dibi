@@ -11,21 +11,29 @@
  *
  * For more information please see http://php7.org/dibi/
  *
- * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  (dibi license)
- * @category   Database
- * @package    Dibi
+ * @license    http://php7.org/dibi/license  dibi license
  * @link       http://php7.org/dibi/
+ * @package    dibi
  */
 
 
 /**
  * The dibi driver for MS SQL database
  *
- * @version $Revision$ $Date$
+ * Connection options:
+ *   - 'host' - the MS SQL server host name. It can also include a port number (hostname:port)
+ *   - 'username' (or 'user')
+ *   - 'password' (or 'pass')
+ *   - 'persistent' - try to find a persistent link?
+ *   - 'database' - the database name to select
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
  */
-final class DibiMsSqlDriver extends DibiDriver
+class DibiMsSqlDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -47,9 +55,9 @@ final class DibiMsSqlDriver extends DibiDriver
      */
     public function __construct(array $config)
     {
-        self::config($config, 'username', 'user');
-        self::config($config, 'password', 'pass');
-        self::config($config, 'host');
+        self::alias($config, 'username', 'user');
+        self::alias($config, 'password', 'pass');
+        self::alias($config, 'host');
         parent::__construct($config);
     }
 
@@ -229,9 +237,9 @@ final class DibiMsSqlDriver extends DibiDriver
     /**
      * Gets a information of the current database.
      *
-     * @return DibiMetaData
+     * @return DibiReflection
      */
-    public function getMetaData()
+    public function getDibiReflection()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
@@ -269,7 +277,15 @@ final class DibiMsSqlDriver extends DibiDriver
 
 
 
-final class DibiMSSqlResult extends DibiResult
+/**
+ * The dibi result-set class for MS SQL database
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
+ */
+class DibiMSSqlResult extends DibiResult
 {
 
     /**

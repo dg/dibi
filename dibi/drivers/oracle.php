@@ -11,21 +11,28 @@
  *
  * For more information please see http://php7.org/dibi/
  *
- * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  (dibi license)
- * @category   Database
- * @package    Dibi
+ * @license    http://php7.org/dibi/license  dibi license
  * @link       http://php7.org/dibi/
+ * @package    dibi
  */
 
 
 /**
  * The dibi driver for Oracle database
  *
- * @version $Revision$ $Date$
+ * Connection options:
+ *   - 'database' (or 'db') - the name of the local Oracle instance or the name of the entry in tnsnames.ora
+ *   - 'username' (or 'user')
+ *   - 'password' (or 'pass')
+ *   - 'charset' - sets the encoding
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
  */
-final class DibiOracleDriver extends DibiDriver
+class DibiOracleDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -50,10 +57,10 @@ final class DibiOracleDriver extends DibiDriver
      */
     public function __construct(array $config)
     {
-        self::config($config, 'username', 'user');
-        self::config($config, 'password', 'pass');
-        self::config($config, 'database', 'db');
-        self::config($config, 'charset');
+        self::alias($config, 'username', 'user');
+        self::alias($config, 'password', 'pass');
+        self::alias($config, 'database', 'db');
+        self::alias($config, 'charset');
         parent::__construct($config);
     }
 
@@ -238,9 +245,9 @@ final class DibiOracleDriver extends DibiDriver
     /**
      * Gets a information of the current database.
      *
-     * @return DibiMetaData
+     * @return DibiReflection
      */
-    public function getMetaData()
+    public function getDibiReflection()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
@@ -271,7 +278,15 @@ final class DibiOracleDriver extends DibiDriver
 
 
 
-final class DibiOracleResult extends DibiResult
+/**
+ * The dibi result-set class for Oracle database
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
+ */
+class DibiOracleResult extends DibiResult
 {
 
     /**

@@ -11,21 +11,27 @@
  *
  * For more information please see http://php7.org/dibi/
  *
- * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  (dibi license)
- * @category   Database
- * @package    Dibi
+ * @license    http://php7.org/dibi/license  dibi license
  * @link       http://php7.org/dibi/
+ * @package    dibi
  */
 
 
 /**
- * The dibi driver for SQlite database
+ * The dibi driver for SQLite database
  *
- * @version $Revision$ $Date$
+ * Connection options:
+ *   - 'database' (or 'file') - the filename of the SQLite database
+ *   - 'persistent' - try to find a persistent link?
+ *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
  */
-final class DibiSqliteDriver extends DibiDriver
+class DibiSqliteDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -47,8 +53,7 @@ final class DibiSqliteDriver extends DibiDriver
      */
     public function __construct($config)
     {
-        self::config($config, 'database', 'file');
-        if (!isset($config['mode'])) $config['mode'] = 0666;
+        self::alias($config, 'database', 'file');
         parent::__construct($config);
     }
 
@@ -70,9 +75,9 @@ final class DibiSqliteDriver extends DibiDriver
 
         $errorMsg = '';
         if (empty($config['persistent'])) {
-            $connection = @sqlite_open($config['database'], $config['mode'], $errorMsg);
+            $connection = @sqlite_open($config['database'], 0666, $errorMsg);
         } else {
-            $connection = @sqlite_popen($config['database'], $config['mode'], $errorMsg);
+            $connection = @sqlite_popen($config['database'], 0666, $errorMsg);
         }
 
         if (!$connection) {
@@ -107,7 +112,13 @@ final class DibiSqliteDriver extends DibiDriver
     {
         $connection = $this->getConnection();
         $errorMsg = NULL;
-        $res = @sqlite_query($connection, $sql, SQLITE_ASSOC, $errorMsg);
+
+        if ($this->getConfig('unbuffered')) {
+            $res = @sqlite_unbuffered_query($connection, $sql, SQLITE_ASSOC, $errorMsg);
+        } else {
+            $res = @sqlite_query($connection, $sql, SQLITE_ASSOC, $errorMsg);
+        }
+
 
         if ($errorMsg !== NULL) {
             throw new DibiDatabaseException($errorMsg, sqlite_last_error($connection), $sql);
@@ -228,9 +239,9 @@ final class DibiSqliteDriver extends DibiDriver
     /**
      * Gets a information of the current database.
      *
-     * @return DibiMetaData
+     * @return DibiReflection
      */
-    public function getMetaData()
+    public function getDibiReflection()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
@@ -261,7 +272,15 @@ final class DibiSqliteDriver extends DibiDriver
 
 
 
-final class DibiSqliteResult extends DibiResult
+/**
+ * The dibi result-set class for SQLite database
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
+ */
+class DibiSqliteResult extends DibiResult
 {
 
     /**

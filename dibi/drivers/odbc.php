@@ -11,21 +11,28 @@
  *
  * For more information please see http://php7.org/dibi/
  *
- * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  (dibi license)
- * @category   Database
- * @package    Dibi
+ * @license    http://php7.org/dibi/license  dibi license
  * @link       http://php7.org/dibi/
+ * @package    dibi
  */
 
 
 /**
  * The dibi driver interacting with databases via ODBC connections
  *
- * @version $Revision$ $Date$
+ * Connection options:
+ *   - 'dsn' - driver specific DSN
+ *   - 'username' (or 'user')
+ *   - 'password' (or 'pass')
+ *   - 'persistent' - try to find a persistent link?
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
  */
-final class DibiOdbcDriver extends DibiDriver
+class DibiOdbcDriver extends DibiDriver
 {
     /**
      * Describes how convert some datatypes to SQL command
@@ -54,14 +61,13 @@ final class DibiOdbcDriver extends DibiDriver
      */
     public function __construct(array $config)
     {
-        self::config($config, 'username', 'user');
-        self::config($config, 'password', 'pass');
-        self::config($config, 'database');
+        self::alias($config, 'username', 'user');
+        self::alias($config, 'password', 'pass');
 
         // default values
-        if ($config['username'] === NULL) $config['username'] = ini_get('odbc.default_user');
-        if ($config['password'] === NULL) $config['password'] = ini_get('odbc.default_pw');
-        if ($config['database'] === NULL) $config['database'] = ini_get('odbc.default_db');
+        if (!isset($config['username'])) $config['username'] = ini_get('odbc.default_user');
+        if (!isset($config['password'])) $config['password'] = ini_get('odbc.default_pw');
+        if (!isset($config['dsn'])) $config['dsn'] = ini_get('odbc.default_db');
 
         parent::__construct($config);
     }
@@ -83,9 +89,9 @@ final class DibiOdbcDriver extends DibiDriver
         $config = $this->getConfig();
 
         if (empty($config['persistent'])) {
-            $connection = @odbc_connect($config['database'], $config['username'], $config['password']);
+            $connection = @odbc_connect($config['dsn'], $config['username'], $config['password']);
         } else {
-            $connection = @odbc_pconnect($config['database'], $config['username'], $config['password']);
+            $connection = @odbc_pconnect($config['dsn'], $config['username'], $config['password']);
         }
 
         if (!is_resource($connection)) {
@@ -255,9 +261,9 @@ final class DibiOdbcDriver extends DibiDriver
     /**
      * Gets a information of the current database.
      *
-     * @return DibiMetaData
+     * @return DibiReflection
      */
-    public function getMetaData()
+    public function getDibiReflection()
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
@@ -291,7 +297,15 @@ final class DibiOdbcDriver extends DibiDriver
 
 
 
-final class DibiOdbcResult extends DibiResult
+/**
+ * The dibi result-set class for ODBC database
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @package    dibi
+ * @version    $Revision$ $Date$
+ */
+class DibiOdbcResult extends DibiResult
 {
     private $row = 0;
 
