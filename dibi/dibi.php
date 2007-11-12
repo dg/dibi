@@ -261,6 +261,54 @@ class dibi extends NClass
 
 
     /**
+     * Executes SQL query and fetch result - Monostate for DibiConnection::query() & fetch()
+     *
+     * @param  array|mixed    one or more arguments
+     * @return array
+     * @throws DibiException
+     */
+    public static function fetch($args)
+    {
+        if (!is_array($args)) $args = func_get_args();
+
+        return self::getConnection()->query($args)->fetch();
+    }
+
+
+
+    /**
+     * Executes SQL query and fetch results - Monostate for DibiConnection::query() & fetchAll()
+     *
+     * @param  array|mixed    one or more arguments
+     * @return array
+     * @throws DibiException
+     */
+    public static function fetchAll($args)
+    {
+        if (!is_array($args)) $args = func_get_args();
+
+        return self::getConnection()->query($args)->fetchAll();
+    }
+
+
+
+    /**
+     * Executes SQL query and fetch first column - Monostate for DibiConnection::query() & fetchSingle()
+     *
+     * @param  array|mixed    one or more arguments
+     * @return string
+     * @throws DibiException
+     */
+    public static function fetchSingle($args)
+    {
+        if (!is_array($args)) $args = func_get_args();
+
+        return self::getConnection()->query($args)->fetchSingle();
+    }
+
+
+
+    /**
      * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
      * Monostate for DibiConnection::insertId()
      *

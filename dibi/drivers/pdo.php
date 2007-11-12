@@ -49,12 +49,6 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
     private $resultset;
 
 
-    /**
-     * Cursor
-     * @var int
-     */
-    private $row = 0;
-
 
     /**
      * Connects to a database
@@ -204,7 +198,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function rowCount()
     {
-        return $this->resultset->rowCount();
+        throw new DibiDatabaseException('Row count is not available for unbuffered queries');
     }
 
 
@@ -217,7 +211,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function fetch()
     {
-        return $this->resultset->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT, $this->row++);
+        return $this->resultset->fetch(PDO::FETCH_ASSOC);
     }
 
 
@@ -231,7 +225,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function seek($row)
     {
-        $this->row = $row;
+        throw new DibiDatabaseException('Cannot seek an unbuffered result set');
     }
 
 

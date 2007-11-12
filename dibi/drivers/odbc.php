@@ -250,7 +250,7 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
      */
     public function fetch()
     {
-        return odbc_fetch_array($this->resultset, $this->row++);
+        return odbc_fetch_array($this->resultset, ++$this->row);
     }
 
 

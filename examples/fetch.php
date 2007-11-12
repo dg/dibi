@@ -23,21 +23,26 @@ product_id | title
 */
 
 
+// fetch a single row
+$row = dibi::fetch('SELECT title FROM [products]');
+print_r($row); // Chair
+echo '<hr>';
+
+
 // fetch a single value
-$res = dibi::query('SELECT [title] FROM [products]');
-$value = $res->fetchSingle();
+$value = dibi::fetchSingle('SELECT [title] FROM [products]');
 print_r($value); // Chair
 echo '<hr>';
 
 
 // fetch complete result set
-$res = dibi::query('SELECT * FROM [products]');
-$all = $res->fetchAll();
+$all = dibi::fetchAll('SELECT * FROM [products]');
 print_r($all);
 echo '<hr>';
 
 
 // fetch complete result set like association array
+$res = dibi::query('SELECT * FROM [products]');
 $assoc = $res->fetchAssoc('title'); // key
 print_r($assoc);
 echo '<hr>';
