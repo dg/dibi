@@ -31,62 +31,57 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiSqliteDriver extends DibiDriver
+class DibiSqliteDriver extends NObject implements DibiDriverInterface
 {
+
     /**
-     * Describes how convert some datatypes to SQL command
-     * @var array
+     * Connection resource
+     * @var resource
      */
-    public $formats = array(
-        'TRUE'     => "1",
-        'FALSE'    => "0",
-        'date'     => "U",
-        'datetime' => "U",
-    );
+    private $connection;
 
 
     /**
-     * Creates object and (optionally) connects to a database
-     *
-     * @param array  connect configuration
-     * @throws DibiException
+     * Resultset resource
+     * @var resource
      */
-    public function __construct($config)
-    {
-        self::alias($config, 'database', 'file');
-        parent::__construct($config);
-    }
+    private $resultset;
 
+
+    /**
+     * Is buffered (seekable and countable)?
+     * @var bool
+     */
+    private $buffered;
 
 
     /**
      * Connects to a database
      *
      * @throws DibiException
-     * @return resource
+     * @return void
      */
-    protected function doConnect()
+    public function connect(array &$config)
     {
+        DibiConnection::alias($config, 'database', 'file');
+
         if (!extension_loaded('sqlite')) {
             throw new DibiException("PHP extension 'sqlite' is not loaded");
         }
 
-        $config = $this->getConfig();
-
         $errorMsg = '';
         if (empty($config['persistent'])) {
-            $connection = @sqlite_open($config['database'], 0666, $errorMsg);
+            $this->connection = @sqlite_open($config['database'], 0666, $errorMsg);
         } else {
-            $connection = @sqlite_popen($config['database'], 0666, $errorMsg);
+            $this->connection = @sqlite_popen($config['database'], 0666, $errorMsg);
         }
 
-        if (!$connection) {
+        if (!$this->connection) {
             throw new DibiDatabaseException($errorMsg);
         }
 
-        return $connection;
+        $this->buffered = empty($config['unbuffered']);
     }
-
 
 
     /**
@@ -94,38 +89,35 @@ class DibiSqliteDriver extends DibiDriver
      *
      * @return void
      */
-    protected function doDisconnect()
+    public function disconnect()
     {
-        sqlite_close($this->getConnection());
+        sqlite_close($this->connection);
     }
 
 
 
     /**
-     * Internal: Executes the SQL query
+     * Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult  Result set object
+     * @return bool        have resultset?
      * @throws DibiDatabaseException
      */
-    protected function doQuery($sql)
+    public function query($sql)
     {
-        $connection = $this->getConnection();
         $errorMsg = NULL;
 
-        $buffered = !$this->getConfig('unbuffered');
-        if ($buffered) {
-            $res = @sqlite_query($connection, $sql, SQLITE_ASSOC, $errorMsg);
+        if ($this->buffered) {
+            $this->resultset = @sqlite_query($this->connection, $sql, SQLITE_ASSOC, $errorMsg);
         } else {
-            $res = @sqlite_unbuffered_query($connection, $sql, SQLITE_ASSOC, $errorMsg);
+            $this->resultset = @sqlite_unbuffered_query($this->connection, $sql, SQLITE_ASSOC, $errorMsg);
         }
-
 
         if ($errorMsg !== NULL) {
-            throw new DibiDatabaseException($errorMsg, sqlite_last_error($connection), $sql);
+            throw new DibiDatabaseException($errorMsg, sqlite_last_error($this->connection), $sql);
         }
 
-        return is_resource($res) ? new DibiSqliteResult($res, $buffered) : NULL;
+        return is_resource($this->resultset);
     }
 
 
@@ -137,8 +129,7 @@ class DibiSqliteDriver extends DibiDriver
      */
     public function affectedRows()
     {
-        $rows = sqlite_changes($this->getConnection());
-        return $rows < 0 ? FALSE : $rows;
+        return sqlite_changes($this->connection);
     }
 
 
@@ -148,10 +139,9 @@ class DibiSqliteDriver extends DibiDriver
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
-    public function insertId()
+    public function insertId($sequence)
     {
-        $id = sqlite_last_insert_rowid($this->getConnection());
-        return $id < 1 ? FALSE : $id;
+        return sqlite_last_insert_rowid($this->connection);
     }
 
 
@@ -162,8 +152,7 @@ class DibiSqliteDriver extends DibiDriver
      */
     public function begin()
     {
-        $this->doQuery('BEGIN');
-        dibi::notify('begin', $this);
+        $this->query('BEGIN');
     }
 
 
@@ -174,8 +163,7 @@ class DibiSqliteDriver extends DibiDriver
      */
     public function commit()
     {
-        $this->doQuery('COMMIT');
-        dibi::notify('commit', $this);
+        $this->query('COMMIT');
     }
 
 
@@ -186,49 +174,26 @@ class DibiSqliteDriver extends DibiDriver
      */
     public function rollback()
     {
-        $this->doQuery('ROLLBACK');
-        dibi::notify('rollback', $this);
+        $this->query('ROLLBACK');
     }
 
 
 
     /**
-     * Escapes the string
+     * Format to SQL command
      *
-     * @param string     unescaped string
-     * @param bool       quote string?
-     * @return string    escaped and optionally quoted string
+     * @param string     value
+     * @param string     type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
+     * @return string    formatted value
      */
-    public function escape($value, $appendQuotes = TRUE)
+    public function format($value, $type)
     {
-        return $appendQuotes
-               ? "'" . sqlite_escape_string($value) . "'"
-               : sqlite_escape_string($value);
-    }
-
-
-
-    /**
-     * Delimites identifier (table's or column's name, etc.)
-     *
-     * @param string     identifier
-     * @return string    delimited identifier
-     */
-    public function delimite($value)
-    {
-        return '[' . str_replace('.', '].[', $value) . ']';
-    }
-
-
-
-    /**
-     * Gets a information of the current database.
-     *
-     * @return DibiReflection
-     */
-    public function getDibiReflection()
-    {
-        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        if ($type === dibi::FIELD_TEXT) return "'" . sqlite_escape_string($value) . "'";
+        if ($type === dibi::IDENTIFIER) return '[' . str_replace('.', '].[', $value) . ']';
+        if ($type === dibi::FIELD_BOOL) return $value ? 1 : 0;
+        if ($type === dibi::FIELD_DATE) return date("U", $value);
+        if ($type === dibi::FIELD_DATETIME) return date("U", $value);
+        throw new DibiException('Invalid formatting type');
     }
 
 
@@ -241,41 +206,26 @@ class DibiSqliteDriver extends DibiDriver
      * @param int $offset
      * @return void
      */
-    public function applyLimit(&$sql, $limit, $offset = 0)
+    public function applyLimit(&$sql, $limit, $offset)
     {
         if ($limit < 0 && $offset < 1) return;
         $sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
     }
 
-} // class DibiSqliteDriver
 
 
-
-
-
-
-
-
-
-/**
- * The dibi result-set class for SQLite database
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @package    dibi
- * @version    $Revision$ $Date$
- */
-class DibiSqliteResult extends DibiResult
-{
 
     /**
      * Returns the number of rows in a result set
      *
      * @return int
      */
-    protected function doRowCount()
+    public function rowCount()
     {
-        return sqlite_num_rows($this->resource);
+        if (!$this->buffered) {
+            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
+        }
+        return sqlite_num_rows($this->resultset);
     }
 
 
@@ -286,9 +236,9 @@ class DibiSqliteResult extends DibiResult
      *
      * @return array|FALSE  array on success, FALSE if no next record
      */
-    protected function doFetch()
+    public function fetch()
     {
-        return sqlite_fetch_array($this->resource, SQLITE_ASSOC);
+        return sqlite_fetch_array($this->resultset, SQLITE_ASSOC);
     }
 
 
@@ -300,10 +250,13 @@ class DibiSqliteResult extends DibiResult
      * @return void
      * @throws DibiException
      */
-    protected function doSeek($row)
+    public function seek($row)
     {
+        if (!$this->buffered) {
+            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
+        }
         DibiDatabaseException::catchError();
-        sqlite_seek($this->resource, $row);
+        sqlite_seek($this->resultset, $row);
         DibiDatabaseException::restore();
     }
 
@@ -314,23 +267,55 @@ class DibiSqliteResult extends DibiResult
      *
      * @return void
      */
-    protected function doFree()
+    public function free()
     {
     }
 
 
 
     /** this is experimental */
-    protected function buildMeta()
+    public function buildMeta()
     {
-        $count = sqlite_num_fields($this->resource);
-        $this->meta = $this->convert = array();
+        $count = sqlite_num_fields($this->resultset);
+        $meta = array();
         for ($index = 0; $index < $count; $index++) {
-            $name = sqlite_field_name($this->resource, $index);
-            $this->meta[$name] = array('type' => dibi::FIELD_UNKNOWN);
-            $this->convert[$name] = dibi::FIELD_UNKNOWN;
+            $name = sqlite_field_name($this->resultset, $index);
+            $meta[$name] = array('type' => dibi::FIELD_UNKNOWN);
         }
+        return $meta;
     }
 
 
-} // class DibiSqliteResult
+    /**
+     * Returns the connection resource
+     *
+     * @return mixed
+     */
+    public function getResource()
+    {
+        return $this->connection;
+    }
+
+
+
+    /**
+     * Returns the resultset resource
+     *
+     * @return mixed
+     */
+    public function getResultResource()
+    {
+        return $this->resultset;
+    }
+
+
+
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiReflection
+     */
+    function getDibiReflection()
+    {}
+
+}

@@ -46,10 +46,7 @@ class MyDateTime implements DibiVariableInterface
      */
     public function toSQL($driver, $modifier = NULL)
     {
-        return date(
-            $driver->formats['datetime'],  // format according to driver's spec.
-            $this->time
-        );
+        return $driver->format($this->time, dibi::FIELD_DATETIME);  // format according to driver's spec.
     }
 
 

@@ -67,11 +67,7 @@ class DibiDatabaseException extends DibiException
 
     public function __toString()
     {
-        $s = parent::__toString();
-        if ($this->sql) {
-            $s .= "\nSQL: " . $this->sql;
-        }
-        return $s;
+        return parent::__toString() . ($this->sql ? "\nSQL: " . $this->sql : '');
     }
 
 

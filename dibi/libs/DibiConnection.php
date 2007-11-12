@@ -20,14 +20,14 @@
 
 
 /**
- * dibi Common Driver
+ * dibi connection
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-abstract class DibiDriver extends NObject
+class DibiConnection extends NObject
 {
     /**
      * Current connection configuration
@@ -36,33 +36,47 @@ abstract class DibiDriver extends NObject
     private $config;
 
     /**
-     * Connection resource
-     * @var resource
-     */
-    private $connection;
-
-    /**
-     * Describes how convert some datatypes to SQL command
+     * DibiDriverInterface
      * @var array
      */
-    public $formats = array(
-        'TRUE'     => "1",             // boolean true
-        'FALSE'    => "0",             // boolean false
-        'date'     => "'Y-m-d'",       // format used by date()
-        'datetime' => "'Y-m-d H:i:s'", // format used by date()
-    );
+    private $driver;
+
+    /**
+     * Is connected?
+     * @var bool
+     */
+    private $connected = FALSE;
 
 
 
     /**
      * Creates object and (optionally) connects to a database
      *
-     * @param array  connect configuration
+     * @param  array|string connection parameters
      * @throws DibiException
      */
-    public function __construct(array $config)
+    public function __construct($config)
     {
+        // DSN string
+        if (is_string($config)) {
+            parse_str($config, $config);
+        }
+
+        if (!isset($config['driver'])) {
+            $config['driver'] = dibi::$defaultDriver;
+        }
+
+        $class = "Dibi$config[driver]Driver";
+        if (!class_exists($class)) {
+            include_once __FILE__ . "/../../drivers/$config[driver].php";
+
+            if (!class_exists($class)) {
+                throw new DibiException("Unable to create instance of dibi driver class '$class'.");
+            }
+        }
+
         $this->config = $config;
+        $this->driver = new $class;
 
         if (empty($config['lazy'])) {
             $this->connect();
@@ -88,9 +102,10 @@ abstract class DibiDriver extends NObject
      *
      * @return void
      */
-    final public function connect()
+    final protected function connect()
     {
-        $this->connection = $this->doConnect();
+        $this->driver->connect($this->config);
+        $this->connected = TRUE;
         dibi::notify('connected');
     }
 
@@ -103,9 +118,11 @@ abstract class DibiDriver extends NObject
      */
     final public function disconnect()
     {
-        $this->doDisconnect();
-        $this->connection = NULL;
-        dibi::notify('disconnected');
+        if ($this->connected) {
+            $this->driver->disconnect();
+            $this->connected = FALSE;
+            dibi::notify('disconnected');
+        }
     }
 
 
@@ -113,7 +130,7 @@ abstract class DibiDriver extends NObject
     /**
      * Returns configuration variable. If no $key is passed, returns the entire array.
      *
-     * @see DibiDriver::__construct
+     * @see self::__construct
      * @param string
      * @param mixed  default value to use if key not found
      * @return mixed
@@ -134,17 +151,35 @@ abstract class DibiDriver extends NObject
 
 
     /**
+     * Apply configuration alias or default values
+     *
+     * @param array  connect configuration
+     * @param string key
+     * @param string alias key
+     * @return void
+     */
+    public static function alias(&$config, $key, $alias=NULL)
+    {
+        if (isset($config[$key])) return;
+
+        if ($alias !== NULL && isset($config[$alias])) {
+            $config[$key] = $config[$alias];
+            unset($config[$alias]);
+        } else {
+            $config[$key] = NULL;
+        }
+    }
+
+
+
+    /**
      * Returns the connection resource
      *
      * @return resource
      */
-    final public function getConnection()
+    final public function getResource()
     {
-        if ($this->connection === NULL) {
-            $this->connect();
-        }
-
-        return $this->connection;
+        return $this->driver->getResource();
     }
 
 
@@ -160,7 +195,7 @@ abstract class DibiDriver extends NObject
     {
         if (!is_array($args)) $args = func_get_args();
 
-        $trans = new DibiTranslator($this);
+        $trans = new DibiTranslator($this->driver);
         if ($trans->translate($args)) {
             return $this->nativeQuery($trans->sql);
         } else {
@@ -180,7 +215,7 @@ abstract class DibiDriver extends NObject
     {
         if (!is_array($args)) $args = func_get_args();
 
-        $trans = new DibiTranslator($this);
+        $trans = new DibiTranslator($this->driver);
         $ok = $trans->translate($args);
         dibi::dump($trans->sql);
         return $ok;
@@ -197,65 +232,17 @@ abstract class DibiDriver extends NObject
      */
     final public function nativeQuery($sql)
     {
+        if (!$this->connected) $this->connect();
+
         dibi::notify('beforeQuery', $this, $sql);
-        $res = $this->doQuery($sql);
+
+        $res = $this->driver->query($sql);
+        $res = $res ? new DibiResult(clone $this->driver) : TRUE; // backward compatibility - will be changed to NULL
+
         dibi::notify('afterQuery', $this, $res);
-        // backward compatibility - will be removed!
-        return $res instanceof DibiResult ? $res : TRUE;
+
+        return $res;
     }
-
-
-
-    /**
-     * Apply configuration alias or default values
-     *
-     * @param array  connect configuration
-     * @param string key
-     * @param string alias key
-     * @return void
-     */
-    protected static function alias(&$config, $key, $alias=NULL)
-    {
-        if (isset($config[$key])) return;
-
-        if ($alias !== NULL && isset($config[$alias])) {
-            $config[$key] = $config[$alias];
-            unset($config[$alias]);
-        } else {
-            $config[$key] = NULL;
-        }
-    }
-
-
-
-    /**
-     * Internal: Connects to a database
-     *
-     * @throws DibiException
-     * @return resource
-     */
-    abstract protected function doConnect();
-
-
-
-    /**
-     * Internal: Disconnects from a database
-     *
-     * @throws DibiException
-     * @return void
-     */
-    abstract protected function doDisconnect();
-
-
-
-    /**
-     * Internal: Executes the SQL query
-     *
-     * @param string       SQL statement.
-     * @return DibiResult  Result set object
-     * @throws DibiDatabaseException
-     */
-    abstract protected function doQuery($sql);
 
 
 
@@ -264,7 +251,11 @@ abstract class DibiDriver extends NObject
      *
      * @return int       number of rows or FALSE on error
      */
-    abstract public function affectedRows();
+    public function affectedRows()
+    {
+        $rows = $this->driver->affectedRows();
+        return $rows < 0 ? FALSE : $rows;
+    }
 
 
 
@@ -273,7 +264,11 @@ abstract class DibiDriver extends NObject
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
-    abstract public function insertId();
+    public function insertId($sequence = NULL)
+    {
+        $id = $this->driver->insertId($sequence);
+        return $id < 1 ? FALSE : $id;
+    }
 
 
 
@@ -281,7 +276,12 @@ abstract class DibiDriver extends NObject
      * Begins a transaction (if supported).
      * @return void
      */
-    abstract public function begin();
+    public function begin()
+    {
+        if (!$this->connected) $this->connect();
+        $this->driver->begin();
+        dibi::notify('begin', $this);
+    }
 
 
 
@@ -289,7 +289,12 @@ abstract class DibiDriver extends NObject
      * Commits statements in a transaction.
      * @return void
      */
-    abstract public function commit();
+    public function commit()
+    {
+        if (!$this->connected) $this->connect();
+        $this->driver->commit();
+        dibi::notify('commit', $this);
+    }
 
 
 
@@ -297,7 +302,65 @@ abstract class DibiDriver extends NObject
      * Rollback changes in a transaction.
      * @return void
      */
-    abstract public function rollback();
+    public function rollback()
+    {
+        if (!$this->connected) $this->connect();
+        $this->driver->rollback();
+        dibi::notify('rollback', $this);
+    }
+
+
+
+    /**
+     * Escapes the string
+     *
+     * @param string     unescaped string
+     * @return string    escaped and optionally quoted string
+     */
+    public function escape($value)
+    {
+        return $this->driver->format($value, dibi::FIELD_TEXT);
+    }
+
+
+
+    /**
+     * Delimites identifier (table's or column's name, etc.)
+     *
+     * @param string     identifier
+     * @return string    delimited identifier
+     */
+    public function delimite($value)
+    {
+        return $this->driver->format($value, dibi::IDENTIFIER);
+    }
+
+
+
+    /**
+     * Injects LIMIT/OFFSET to the SQL query
+     *
+     * @param string &$sql  The SQL query that will be modified.
+     * @param int $limit
+     * @param int $offset
+     * @return void
+     */
+    public function applyLimit(&$sql, $limit, $offset)
+    {
+        $this->driver->applyLimit($sql, $limit, $offset);
+    }
+
+
+
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiReflection
+     */
+    public function getDibiReflection()
+    {
+        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+    }
 
 
 
@@ -312,45 +375,4 @@ abstract class DibiDriver extends NObject
 
 
 
-    /**
-     * Escapes the string
-     *
-     * @param string     unescaped string
-     * @param bool       quote string?
-     * @return string    escaped and optionally quoted string
-     */
-    abstract public function escape($value, $appendQuotes = TRUE);
-
-
-
-    /**
-     * Delimites identifier (table's or column's name, etc.)
-     *
-     * @param string     identifier
-     * @return string    delimited identifier
-     */
-    abstract public function delimite($value);
-
-
-
-    /**
-     * Gets a information of the current database.
-     *
-     * @return DibiReflection
-     */
-    abstract public function getDibiReflection();
-
-
-
-    /**
-     * Injects LIMIT/OFFSET to the SQL query
-     *
-     * @param string &$sql  The SQL query that will be modified.
-     * @param int $limit
-     * @param int $offset
-     * @return void
-     */
-    abstract public function applyLimit(&$sql, $limit, $offset = 0);
-
-
-} // class DibiDriver
+}

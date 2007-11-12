@@ -33,33 +33,21 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiMsSqlDriver extends DibiDriver
+class DibiMsSqlDriver extends NObject implements DibiDriverInterface
 {
+
     /**
-     * Describes how convert some datatypes to SQL command
-     * @var array
+     * Connection resource
+     * @var resource
      */
-    public $formats = array(
-        'TRUE'     => "-1",
-        'FALSE'    => "0",
-        'date'     => "'Y-m-d'",
-        'datetime' => "'Y-m-d H:i:s'",
-    );
+    private $connection;
 
 
     /**
-     * Creates object and (optionally) connects to a database
-     *
-     * @param array  connect configuration
-     * @throws DibiException
+     * Resultset resource
+     * @var resource
      */
-    public function __construct(array $config)
-    {
-        self::alias($config, 'username', 'user');
-        self::alias($config, 'password', 'pass');
-        self::alias($config, 'host');
-        parent::__construct($config);
-    }
+    private $resultset;
 
 
 
@@ -67,31 +55,32 @@ class DibiMsSqlDriver extends DibiDriver
      * Connects to a database
      *
      * @throws DibiException
-     * @return resource
+     * @return void
      */
-    protected function doConnect()
+    public function connect(array &$config)
     {
+        DibiConnection::alias($config, 'username', 'user');
+        DibiConnection::alias($config, 'password', 'pass');
+        DibiConnection::alias($config, 'host');
+
         if (!extension_loaded('mssql')) {
             throw new DibiException("PHP extension 'mssql' is not loaded");
         }
 
-        $config = $this->getConfig();
 
         if (empty($config['persistent'])) {
-            $connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE);
+            $this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE);
         } else {
-            $connection = @mssql_pconnect($config['host'], $config['username'], $config['password']);
+            $this->connection = @mssql_pconnect($config['host'], $config['username'], $config['password']);
         }
 
-        if (!is_resource($connection)) {
+        if (!is_resource($this->connection)) {
             throw new DibiDatabaseException("Can't connect to DB");
         }
 
-        if (isset($config['database']) && !@mssql_select_db($config['database'], $connection)) {
+        if (isset($config['database']) && !@mssql_select_db($config['database'], $this->connection)) {
             throw new DibiDatabaseException("Can't select DB '$config[database]'");
         }
-
-        return $connection;
     }
 
 
@@ -101,29 +90,29 @@ class DibiMsSqlDriver extends DibiDriver
      *
      * @return void
      */
-    protected function doDisconnect()
+    public function disconnect()
     {
-        mssql_close($this->getConnection());
+        mssql_close($this->connection);
     }
 
 
 
     /**
-     * Internal: Executes the SQL query
+     * Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult  Result set object
+     * @return bool        have resultset?
      * @throws DibiDatabaseException
      */
-    protected function doQuery($sql)
+    public function query($sql)
     {
-        $res = @mssql_query($sql, $this->getConnection());
+        $this->resultset = @mssql_query($sql, $this->connection);
 
-        if ($res === FALSE) {
+        if ($this->resultset === FALSE) {
             throw new DibiDatabaseException('Query error', 0, $sql);
         }
 
-        return is_resource($res) ? new DibiMSSqlResult($res, TRUE) : NULL;
+        return is_resource($this->resultset);
     }
 
 
@@ -135,8 +124,7 @@ class DibiMsSqlDriver extends DibiDriver
      */
     public function affectedRows()
     {
-        $rows = mssql_rows_affected($this->getConnection());
-        return $rows < 0 ? FALSE : $rows;
+        return mssql_rows_affected($this->connection);
     }
 
 
@@ -146,7 +134,7 @@ class DibiMsSqlDriver extends DibiDriver
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
-    public function insertId()
+    public function insertId($sequence)
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
@@ -159,8 +147,7 @@ class DibiMsSqlDriver extends DibiDriver
      */
     public function begin()
     {
-        $this->doQuery('BEGIN TRANSACTION');
-        dibi::notify('begin', $this);
+        $this->query('BEGIN TRANSACTION');
     }
 
 
@@ -171,8 +158,7 @@ class DibiMsSqlDriver extends DibiDriver
      */
     public function commit()
     {
-        $this->doQuery('COMMIT');
-        dibi::notify('commit', $this);
+        $this->query('COMMIT');
     }
 
 
@@ -183,50 +169,26 @@ class DibiMsSqlDriver extends DibiDriver
      */
     public function rollback()
     {
-        $this->doQuery('ROLLBACK');
-        dibi::notify('rollback', $this);
+        $this->query('ROLLBACK');
     }
 
 
 
     /**
-     * Escapes the string
+     * Format to SQL command
      *
-     * @param string     unescaped string
-     * @param bool       quote string?
-     * @return string    escaped and optionally quoted string
+     * @param string     value
+     * @param string     type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
+     * @return string    formatted value
      */
-    public function escape($value, $appendQuotes = TRUE)
+    public function format($value, $type)
     {
-        $value = str_replace("'", "''", $value);
-        return $appendQuotes
-               ? "'" . $value . "'"
-               : $value;
-    }
-
-
-
-    /**
-     * Delimites identifier (table's or column's name, etc.)
-     *
-     * @param string     identifier
-     * @return string    delimited identifier
-     */
-    public function delimite($value)
-    {
-        return '[' . str_replace('.', '].[', $value) . ']';
-    }
-
-
-
-    /**
-     * Gets a information of the current database.
-     *
-     * @return DibiReflection
-     */
-    public function getDibiReflection()
-    {
-        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        if ($type === dibi::FIELD_TEXT) return "'" . str_replace("'", "''", $value) . "'";
+        if ($type === dibi::IDENTIFIER) return '[' . str_replace('.', '].[', $value) . ']';
+        if ($type === dibi::FIELD_BOOL) return $value ? -1 : 0;
+        if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
+        if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
+        throw new DibiException('Invalid formatting type');
     }
 
 
@@ -239,7 +201,7 @@ class DibiMsSqlDriver extends DibiDriver
      * @param int $offset
      * @return void
      */
-    public function applyLimit(&$sql, $limit, $offset = 0)
+    public function applyLimit(&$sql, $limit, $offset)
     {
         // offset suppot is missing...
         if ($limit >= 0) {
@@ -252,35 +214,16 @@ class DibiMsSqlDriver extends DibiDriver
     }
 
 
-}  // DibiMsSqlDriver
 
-
-
-
-
-
-
-
-
-/**
- * The dibi result-set class for MS SQL database
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @package    dibi
- * @version    $Revision$ $Date$
- */
-class DibiMSSqlResult extends DibiResult
-{
 
     /**
      * Returns the number of rows in a result set
      *
      * @return int
      */
-    protected function doRowCount()
+    public function rowCount()
     {
-        return mssql_num_rows($this->resource);
+        return mssql_num_rows($this->resultset);
     }
 
 
@@ -291,9 +234,9 @@ class DibiMSSqlResult extends DibiResult
      *
      * @return array|FALSE  array on success, FALSE if no next record
      */
-    protected function doFetch()
+    public function fetch()
     {
-        return mssql_fetch_assoc($this->resource);
+        return mssql_fetch_assoc($this->resultset);
     }
 
 
@@ -305,9 +248,9 @@ class DibiMSSqlResult extends DibiResult
      * @return void
      * @throws DibiException
      */
-    protected function doSeek($row)
+    public function seek($row)
     {
-        if (!mssql_data_seek($this->resource, $row)) {
+        if (!mssql_data_seek($this->resultset, $row)) {
             throw new DibiDriverException('Unable to seek to row ' . $row);
         }
     }
@@ -319,15 +262,15 @@ class DibiMSSqlResult extends DibiResult
      *
      * @return void
      */
-    protected function doFree()
+    public function free()
     {
-        mssql_free_result($this->resource);
+        mssql_free_result($this->resultset);
     }
 
 
 
     /** this is experimental */
-    protected function buildMeta()
+    public function buildMeta()
     {
         static $types = array(
             'CHAR'      => dibi::FIELD_TEXT,
@@ -355,21 +298,53 @@ class DibiMSSqlResult extends DibiResult
             // and many others?
         );
 
-        $count = mssql_num_fields($this->resource);
-        $this->meta = $this->convert = array();
+        $count = mssql_num_fields($this->resultset);
+        $meta = array();
         for ($index = 0; $index < $count; $index++) {
 
-            $tmp = mssql_fetch_field($this->resource, $index);
+            $tmp = mssql_fetch_field($this->resultset, $index);
             $type = strtoupper($tmp->type);
             $info['native'] = $tmp->type;
             $info['type'] = isset($types[$type]) ? $types[$type] : dibi::FIELD_UNKNOWN;
             $info['length'] = $tmp->max_length;
             $info['table'] = $tmp->column_source;
 
-            $this->meta[$tmp->name] = $info;
-            $this->convert[$tmp->name] = $info['type'];
+            $meta[$tmp->name] = $info;
         }
+        return $meta;
     }
 
 
-} // class DibiMSSqlResult
+    /**
+     * Returns the connection resource
+     *
+     * @return mixed
+     */
+    public function getResource()
+    {
+        return $this->connection;
+    }
+
+
+
+    /**
+     * Returns the resultset resource
+     *
+     * @return mixed
+     */
+    public function getResultResource()
+    {
+        return $this->resultset;
+    }
+
+
+
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiReflection
+     */
+    function getDibiReflection()
+    {}
+
+}

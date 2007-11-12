@@ -38,31 +38,45 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiMySqlDriver extends DibiDriver
+class DibiMySqlDriver extends NObject implements DibiDriverInterface
 {
+
     /**
-     * Describes how convert some datatypes to SQL command
-     * @var array
+     * Connection resource
+     * @var resource
      */
-    public $formats = array(
-        'TRUE'     => "1",
-        'FALSE'    => "0",
-        'date'     => "'Y-m-d'",
-        'datetime' => "'Y-m-d H:i:s'",
-    );
+    private $connection;
 
 
     /**
-     * Creates object and (optionally) connects to a database
+     * Resultset resource
+     * @var resource
+     */
+    private $resultset;
+
+
+    /**
+     * Is buffered (seekable and countable)?
+     * @var bool
+     */
+    private $buffered;
+
+
+    /**
+     * Connects to a database
      *
-     * @param array  connect configuration
      * @throws DibiException
+     * @return void
      */
-    public function __construct(array $config)
+    public function connect(array &$config)
     {
-        self::alias($config, 'username', 'user');
-        self::alias($config, 'password', 'pass');
-        self::alias($config, 'options');
+        if (!extension_loaded('mysql')) {
+            throw new DibiException("PHP extension 'mysql' is not loaded");
+        }
+
+        DibiConnection::alias($config, 'username', 'user');
+        DibiConnection::alias($config, 'password', 'pass');
+        DibiConnection::alias($config, 'options');
 
         // default values
         if (!isset($config['username'])) $config['username'] = ini_get('mysql.default_user');
@@ -78,24 +92,6 @@ class DibiMySqlDriver extends DibiDriver
             }
         }
 
-        parent::__construct($config);
-    }
-
-
-
-    /**
-     * Connects to a database
-     *
-     * @throws DibiException
-     * @return resource
-     */
-    protected function doConnect()
-    {
-        if (!extension_loaded('mysql')) {
-            throw new DibiException("PHP extension 'mysql' is not loaded");
-        }
-
-        $config = $this->getConfig();
 
         if (empty($config['socket'])) {
             $host = $config['host'] . (empty($config['port']) ? '' : ':' . $config['port']);
@@ -105,26 +101,26 @@ class DibiMySqlDriver extends DibiDriver
 
         DibiDatabaseException::catchError();
         if (empty($config['persistent'])) {
-            $connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['options']);
+            $this->connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['options']);
         } else {
-            $connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['options']);
+            $this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['options']);
         }
         DibiDatabaseException::restore();
 
-        if (!is_resource($connection)) {
+        if (!is_resource($this->connection)) {
             throw new DibiDatabaseException(mysql_error(), mysql_errno());
         }
 
         if (isset($config['charset'])) {
-            @mysql_query("SET NAMES '" . $config['charset'] . "'", $connection);
+            @mysql_query("SET NAMES '" . $config['charset'] . "'", $this->connection);
             // don't handle this error...
         }
 
-        if (isset($config['database']) && !@mysql_select_db($config['database'], $connection)) {
-            throw new DibiDatabaseException(mysql_error($connection), mysql_errno($connection));
+        if (isset($config['database']) && !@mysql_select_db($config['database'], $this->connection)) {
+            throw new DibiDatabaseException(mysql_error($this->connection), mysql_errno($this->connection));
         }
 
-        return $connection;
+        $this->buffered = empty($config['unbuffered']);
     }
 
 
@@ -134,36 +130,33 @@ class DibiMySqlDriver extends DibiDriver
      *
      * @return void
      */
-    protected function doDisconnect()
+    public function disconnect()
     {
-        mysql_close($this->getConnection());
+        mysql_close($this->connection);
     }
 
 
 
     /**
-     * Internal: Executes the SQL query
+     * Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult  Result set object
+     * @return bool        have resultset?
      * @throws DibiDatabaseException
      */
-    protected function doQuery($sql)
+    public function query($sql)
     {
-        $connection = $this->getConnection();
-
-        $buffered = !$this->getConfig('unbuffered');
-        if ($buffered) {
-            $res = @mysql_query($sql, $connection);
+        if ($this->buffered) {
+            $this->resultset = @mysql_query($sql, $this->connection);
         } else {
-            $res = @mysql_unbuffered_query($sql, $connection);
+            $this->resultset = @mysql_unbuffered_query($sql, $this->connection);
         }
 
-        if ($errno = mysql_errno($connection)) {
-            throw new DibiDatabaseException(mysql_error($connection), $errno, $sql);
+        if ($errno = mysql_errno($this->connection)) {
+            throw new DibiDatabaseException(mysql_error($this->connection), $errno, $sql);
         }
 
-        return is_resource($res) ? new DibiMySqlResult($res, $buffered) : NULL;
+        return is_resource($this->resultset);
     }
 
 
@@ -175,8 +168,7 @@ class DibiMySqlDriver extends DibiDriver
      */
     public function affectedRows()
     {
-        $rows = mysql_affected_rows($this->getConnection());
-        return $rows < 0 ? FALSE : $rows;
+        return mysql_affected_rows($this->connection);
     }
 
 
@@ -186,10 +178,9 @@ class DibiMySqlDriver extends DibiDriver
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
-    public function insertId()
+    public function insertId($sequence)
     {
-        $id = mysql_insert_id($this->getConnection());
-        return $id < 1 ? FALSE : $id;
+        return mysql_insert_id($this->connection);
     }
 
 
@@ -200,8 +191,7 @@ class DibiMySqlDriver extends DibiDriver
      */
     public function begin()
     {
-        $this->doQuery('BEGIN');
-        dibi::notify('begin', $this);
+        $this->query('BEGIN');
     }
 
 
@@ -212,8 +202,7 @@ class DibiMySqlDriver extends DibiDriver
      */
     public function commit()
     {
-        $this->doQuery('COMMIT');
-        dibi::notify('commit', $this);
+        $this->query('COMMIT');
     }
 
 
@@ -224,50 +213,26 @@ class DibiMySqlDriver extends DibiDriver
      */
     public function rollback()
     {
-        $this->doQuery('ROLLBACK');
-        dibi::notify('rollback', $this);
+        $this->query('ROLLBACK');
     }
 
 
 
     /**
-     * Escapes the string
+     * Format to SQL command
      *
-     * @param string     unescaped string
-     * @param bool       quote string?
-     * @return string    escaped and optionally quoted string
+     * @param string     value
+     * @param string     type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
+     * @return string    formatted value
      */
-    public function escape($value, $appendQuotes = TRUE)
+    public function format($value, $type)
     {
-        $connection = $this->getConnection();
-        return $appendQuotes
-               ? "'" . mysql_real_escape_string($value, $connection) . "'"
-               : mysql_real_escape_string($value, $connection);
-    }
-
-
-
-    /**
-     * Delimites identifier (table's or column's name, etc.)
-     *
-     * @param string     identifier
-     * @return string    delimited identifier
-     */
-    public function delimite($value)
-    {
-        return '`' . str_replace('.', '`.`', $value) . '`';
-    }
-
-
-
-    /**
-     * Gets a information of the current database.
-     *
-     * @return DibiReflection
-     */
-    public function getDibiReflection()
-    {
-        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        if ($type === dibi::FIELD_TEXT) return "'" . mysql_real_escape_string($value, $this->connection) . "'";
+        if ($type === dibi::IDENTIFIER) return '`' . str_replace('.', '`.`', $value) . '`';
+        if ($type === dibi::FIELD_BOOL) return $value ? 1 : 0;
+        if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
+        if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
+        throw new DibiException('Invalid formatting type');
     }
 
 
@@ -280,7 +245,7 @@ class DibiMySqlDriver extends DibiDriver
      * @param int $offset
      * @return void
      */
-    public function applyLimit(&$sql, $limit, $offset = 0)
+    public function applyLimit(&$sql, $limit, $offset)
     {
         if ($limit < 0 && $offset < 1) return;
 
@@ -290,35 +255,19 @@ class DibiMySqlDriver extends DibiDriver
     }
 
 
-}  // DibiMySqlDriver
 
-
-
-
-
-
-
-
-
-/**
- * The dibi result-set class for MySQL database
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @package    dibi
- * @version    $Revision$ $Date$
- */
-class DibiMySqlResult extends DibiResult
-{
 
     /**
      * Returns the number of rows in a result set
      *
      * @return int
      */
-    protected function doRowCount()
+    public function rowCount()
     {
-        return mysql_num_rows($this->resource);
+        if (!$this->buffered) {
+            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
+        }
+        return mysql_num_rows($this->resultset);
     }
 
 
@@ -329,9 +278,9 @@ class DibiMySqlResult extends DibiResult
      *
      * @return array|FALSE  array on success, FALSE if no next record
      */
-    protected function doFetch()
+    public function fetch()
     {
-        return mysql_fetch_assoc($this->resource);
+        return mysql_fetch_assoc($this->resultset);
     }
 
 
@@ -343,9 +292,12 @@ class DibiMySqlResult extends DibiResult
      * @return void
      * @throws DibiException
      */
-    protected function doSeek($row)
+    public function seek($row)
     {
-        if (!mysql_data_seek($this->resource, $row)) {
+        if (!$this->buffered) {
+            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
+        }
+        if (!mysql_data_seek($this->resultset, $row)) {
             throw new DibiDriverException('Unable to seek to row ' . $row);
         }
     }
@@ -357,15 +309,15 @@ class DibiMySqlResult extends DibiResult
      *
      * @return void
      */
-    protected function doFree()
+    public function free()
     {
-        mysql_free_result($this->resource);
+        mysql_free_result($this->resultset);
     }
 
 
 
     /** this is experimental */
-    protected function buildMeta()
+    public function buildMeta()
     {
         static $types = array(
             'ENUM'      => dibi::FIELD_TEXT, // eventually dibi::FIELD_INTEGER
@@ -402,14 +354,14 @@ class DibiMySqlResult extends DibiResult
             'NUMERIC'   => dibi::FIELD_FLOAT,
         );
 
-        $count = mysql_num_fields($this->resource);
-        $this->meta = $this->convert = array();
+        $count = mysql_num_fields($this->resultset);
+        $meta = array();
         for ($index = 0; $index < $count; $index++) {
 
-            $info['native'] = $native = strtoupper(mysql_field_type($this->resource, $index));
-            $info['flags'] = explode(' ', mysql_field_flags($this->resource, $index));
-            $info['length'] = mysql_field_len($this->resource, $index);
-            $info['table'] = mysql_field_table($this->resource, $index);
+            $info['native'] = $native = strtoupper(mysql_field_type($this->resultset, $index));
+            $info['flags'] = explode(' ', mysql_field_flags($this->resultset, $index));
+            $info['length'] = mysql_field_len($this->resultset, $index);
+            $info['table'] = mysql_field_table($this->resultset, $index);
 
             if (in_array('auto_increment', $info['flags'])) {  // or 'primary_key' ?
                 $info['type'] = dibi::FIELD_COUNTER;
@@ -420,11 +372,43 @@ class DibiMySqlResult extends DibiResult
 //                    $info['type'] = dibi::FIELD_LONG_TEXT;
             }
 
-            $name = mysql_field_name($this->resource, $index);
-            $this->meta[$name] = $info;
-            $this->convert[$name] = $info['type'];
+            $name = mysql_field_name($this->resultset, $index);
+            $meta[$name] = $info;
         }
+        return $meta;
     }
 
 
-} // class DibiMySqlResult
+    /**
+     * Returns the connection resource
+     *
+     * @return mixed
+     */
+    public function getResource()
+    {
+        return $this->connection;
+    }
+
+
+
+    /**
+     * Returns the resultset resource
+     *
+     * @return mixed
+     */
+    public function getResultResource()
+    {
+        return $this->resultset;
+    }
+
+
+
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiReflection
+     */
+    function getDibiReflection()
+    {}
+
+}

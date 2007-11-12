@@ -58,14 +58,14 @@ final class DibiLogger extends NObject
      * @param mixed
      * @return void
      */
-    public function handler($event, $driver, $arg)
+    public function handler($event, $connection, $arg)
     {
         if ($event === 'afterQuery' && $this->logQueries) {
             $this->write(
                 "OK: " . dibi::$sql
                 . ($arg instanceof DibiResult ? ";\n-- rows: " . $arg->rowCount() : '')
                 . "\n-- takes: " . sprintf('%0.3f', dibi::$elapsedTime * 1000) . ' ms'
-                . "\n-- driver: " . $driver->getConfig('driver')
+                . "\n-- driver: " . $connection->getConfig('driver')
                 . "\n-- " . date('Y-m-d H:i:s')
                 . "\n\n"
             );
@@ -83,7 +83,7 @@ final class DibiLogger extends NObject
             $this->write(
                 "ERROR: $message"
                 . "\n-- SQL: " . dibi::$sql
-                . "\n-- driver: " //. $driver->getConfig('driver')
+                . "\n-- driver: " //. $connection->getConfig('driver')
                 . ";\n-- " . date('Y-m-d H:i:s')
                 . "\n\n"
             );

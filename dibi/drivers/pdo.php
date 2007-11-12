@@ -32,55 +32,50 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiPdoDriver extends DibiDriver
+class DibiPdoDriver extends NObject implements DibiDriverInterface
 {
+
     /**
-     * Describes how convert some datatypes to SQL command
-     * @var array
+     * Connection resource
+     * @var resource
      */
-    public $formats = array(
-        'TRUE'     => "1",
-        'FALSE'    => "0",
-        'date'     => "'Y-m-d'",
-        'datetime' => "'Y-m-d H:i:s'",
-    );
+    private $connection;
 
 
     /**
-     * Creates object and (optionally) connects to a database
-     *
-     * @param array  connect configuration
-     * @throws DibiException
+     * Resultset resource
+     * @var resource
      */
-    public function __construct(array $config)
-    {
-        self::alias($config, 'username', 'user');
-        self::alias($config, 'password', 'pass');
-        self::alias($config, 'dsn');
-        self::alias($config, 'options');
-        parent::__construct($config);
-    }
+    private $resultset;
 
+
+    /**
+     * Cursor
+     * @var int
+     */
+    private $row = 0;
 
 
     /**
      * Connects to a database
      *
      * @throws DibiException
-     * @return resource
+     * @return void
      */
-    protected function doConnect()
+    public function connect(array &$config)
     {
+        DibiConnection::alias($config, 'username', 'user');
+        DibiConnection::alias($config, 'password', 'pass');
+        DibiConnection::alias($config, 'dsn');
+        DibiConnection::alias($config, 'options');
+
         if (!extension_loaded('pdo')) {
             throw new DibiException("PHP extension 'pdo' is not loaded");
         }
 
-        $config = $this->getConfig();
-        $connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
-        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $connection;
+        $this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
+        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
-
 
 
     /**
@@ -88,23 +83,24 @@ class DibiPdoDriver extends DibiDriver
      *
      * @return void
      */
-    protected function doDisconnect()
+    public function disconnect()
     {
+        $this->connection = NULL;
     }
 
 
 
     /**
-     * Internal: Executes the SQL query
+     * Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult  Result set object
+     * @return bool        have resultset?
      * @throws DibiDatabaseException
      */
-    protected function doQuery($sql)
+    public function query($sql)
     {
-        $res = $this->getConnection()->query($sql);
-        return $res instanceof PDOStatement ? new DibiPdoResult($res, TRUE) : NULL;
+        $this->resultset = $this->connection->query($sql);
+        return $this->resultset instanceof PDOStatement;
     }
 
 
@@ -126,9 +122,9 @@ class DibiPdoDriver extends DibiDriver
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
-    public function insertId()
+    public function insertId($sequence)
     {
-        return $this->getConnection()->lastInsertId();
+        return $this->connection->lastInsertId();
     }
 
 
@@ -139,8 +135,7 @@ class DibiPdoDriver extends DibiDriver
      */
     public function begin()
     {
-        $this->getConnection()->beginTransaction();
-        dibi::notify('begin', $this);
+        $this->connection->beginTransaction();
     }
 
 
@@ -151,8 +146,7 @@ class DibiPdoDriver extends DibiDriver
      */
     public function commit()
     {
-        $this->getConnection()->commit();
-        dibi::notify('commit', $this);
+        $this->connection->commit();
     }
 
 
@@ -163,51 +157,26 @@ class DibiPdoDriver extends DibiDriver
      */
     public function rollback()
     {
-        $this->getConnection()->rollBack();
-        dibi::notify('rollback', $this);
+        $this->connection->rollBack();
     }
 
 
 
     /**
-     * Escapes the string
+     * Format to SQL command
      *
-     * @param string     unescaped string
-     * @param bool       quote string?
-     * @return string    escaped and optionally quoted string
+     * @param string     value
+     * @param string     type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
+     * @return string    formatted value
      */
-    public function escape($value, $appendQuotes = TRUE)
+    public function format($value, $type)
     {
-        if (!$appendQuotes) {
-            throw new BadMethodCallException('Escaping without qoutes is not supported by PDO');
-        }
-        return $this->getConnection()->quote($value);
-    }
-
-
-
-    /**
-     * Delimites identifier (table's or column's name, etc.)
-     *
-     * @param string     identifier
-     * @return string    delimited identifier
-     */
-    public function delimite($value)
-    {
-        // quoting is not supported by PDO
-        return $value;
-    }
-
-
-
-    /**
-     * Gets a information of the current database.
-     *
-     * @return DibiReflection
-     */
-    public function getDibiReflection()
-    {
-        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        if ($type === dibi::FIELD_TEXT) return $this->connection->quote($value);
+        if ($type === dibi::IDENTIFIER) return $value; // quoting is not supported by PDO
+        if ($type === dibi::FIELD_BOOL) return $value ? 1 : 0;
+        if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
+        if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
+        throw new DibiException('Invalid formatting type');
     }
 
 
@@ -220,32 +189,11 @@ class DibiPdoDriver extends DibiDriver
      * @param int $offset
      * @return void
      */
-    public function applyLimit(&$sql, $limit, $offset = 0)
+    public function applyLimit(&$sql, $limit, $offset)
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
 
-} // class DibiPdoDriver
-
-
-
-
-
-
-
-
-
-/**
- * The dibi result-set class for PDOStatement
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @package    dibi
- * @version    $Revision$ $Date$
- */
-class DibiPdoResult extends DibiResult
-{
-    private $row = 0;
 
 
     /**
@@ -253,9 +201,9 @@ class DibiPdoResult extends DibiResult
      *
      * @return int
      */
-    protected function doRowCount()
+    public function rowCount()
     {
-        return $this->resource->rowCount();
+        return $this->resultset->rowCount();
     }
 
 
@@ -266,9 +214,9 @@ class DibiPdoResult extends DibiResult
      *
      * @return array|FALSE  array on success, FALSE if no next record
      */
-    protected function doFetch()
+    public function fetch()
     {
-        return $this->resource->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT, $this->row++);
+        return $this->resultset->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_NEXT, $this->row++);
     }
 
 
@@ -280,9 +228,8 @@ class DibiPdoResult extends DibiResult
      * @return void
      * @throws DibiException
      */
-    protected function doSeek($row)
+    public function seek($row)
     {
-        $this->row = $row;
     }
 
 
@@ -292,26 +239,59 @@ class DibiPdoResult extends DibiResult
      *
      * @return void
      */
-    protected function doFree()
+    public function free()
     {
+        $this->resultset = NULL;
     }
 
 
 
     /** this is experimental */
-    protected function buildMeta()
+    public function buildMeta()
     {
-        $count = $this->resource->columnCount();
-        $this->meta = $this->convert = array();
+        $count = $this->resultset->columnCount();
+        $meta = array();
         for ($index = 0; $index < $count; $index++) {
-            $meta = $this->resource->getColumnMeta($index);
+            $meta = $this->resultset->getColumnMeta($index);
             // TODO:
             $meta['type'] = dibi::FIELD_UNKNOWN;
             $name = $meta['name'];
-            $this->meta[$name] =  $meta;
-            $this->convert[$name] = $meta['type'];
+            $meta[$name] =  $meta;
         }
+        return $meta;
     }
 
 
-} // class DibiPdoResult
+    /**
+     * Returns the connection resource
+     *
+     * @return mixed
+     */
+    public function getResource()
+    {
+        return $this->connection;
+    }
+
+
+
+    /**
+     * Returns the resultset resource
+     *
+     * @return mixed
+     */
+    public function getResultResource()
+    {
+        return $this->resultset;
+    }
+
+
+
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiReflection
+     */
+    function getDibiReflection()
+    {}
+
+}

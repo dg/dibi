@@ -32,45 +32,28 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiOdbcDriver extends DibiDriver
+class DibiOdbcDriver extends NObject implements DibiDriverInterface
 {
-    /**
-     * Describes how convert some datatypes to SQL command
-     * @var array
-     */
-    public $formats = array(
-        'TRUE'     => "-1",
-        'FALSE'    => "0",
-        'date'     => "#m/d/Y#",
-        'datetime' => "#m/d/Y H:i:s#",
-    );
 
     /**
-     * Affected rows
-     * @var mixed
+     * Connection resource
+     * @var resource
      */
-    private $affectedRows = FALSE;
-
+    private $connection;
 
 
     /**
-     * Creates object and (optionally) connects to a database
-     *
-     * @param array  connect configuration
-     * @throws DibiException
+     * Resultset resource
+     * @var resource
      */
-    public function __construct(array $config)
-    {
-        self::alias($config, 'username', 'user');
-        self::alias($config, 'password', 'pass');
+    private $resultset;
 
-        // default values
-        if (!isset($config['username'])) $config['username'] = ini_get('odbc.default_user');
-        if (!isset($config['password'])) $config['password'] = ini_get('odbc.default_pw');
-        if (!isset($config['dsn'])) $config['dsn'] = ini_get('odbc.default_db');
 
-        parent::__construct($config);
-    }
+    /**
+     * Cursor
+     * @var int
+     */
+    private $row = 0;
 
 
 
@@ -78,27 +61,32 @@ class DibiOdbcDriver extends DibiDriver
      * Connects to a database
      *
      * @throws DibiException
-     * @return resource
+     * @return void
      */
-    protected function doConnect()
+    public function connect(array &$config)
     {
+        DibiConnection::alias($config, 'username', 'user');
+        DibiConnection::alias($config, 'password', 'pass');
+
+        // default values
+        if (!isset($config['username'])) $config['username'] = ini_get('odbc.default_user');
+        if (!isset($config['password'])) $config['password'] = ini_get('odbc.default_pw');
+        if (!isset($config['dsn'])) $config['dsn'] = ini_get('odbc.default_db');
+
         if (!extension_loaded('odbc')) {
             throw new DibiException("PHP extension 'odbc' is not loaded");
         }
 
-        $config = $this->getConfig();
 
         if (empty($config['persistent'])) {
-            $connection = @odbc_connect($config['dsn'], $config['username'], $config['password']);
+            $this->connection = @odbc_connect($config['dsn'], $config['username'], $config['password']);
         } else {
-            $connection = @odbc_pconnect($config['dsn'], $config['username'], $config['password']);
+            $this->connection = @odbc_pconnect($config['dsn'], $config['username'], $config['password']);
         }
 
-        if (!is_resource($connection)) {
+        if (!is_resource($this->connection)) {
             throw new DibiDatabaseException(odbc_errormsg(), odbc_error());
         }
-
-        return $connection;
     }
 
 
@@ -108,35 +96,30 @@ class DibiOdbcDriver extends DibiDriver
      *
      * @return void
      */
-    protected function doDisconnect()
+    public function disconnect()
     {
-        odbc_close($this->getConnection());
+        odbc_close($this->connection);
     }
 
 
 
     /**
-     * Internal: Executes the SQL query
+     * Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult  Result set object
+     * @return bool        have resultset?
      * @throws DibiDatabaseException
      */
-    protected function doQuery($sql)
+    public function query($sql)
     {
         $this->affectedRows = FALSE;
-        $connection = $this->getConnection();
-        $res = @odbc_exec($connection, $sql);
+        $this->resultset = @odbc_exec($this->connection, $sql);
 
-        if ($res === FALSE) {
-            throw new DibiDatabaseException(odbc_errormsg($connection), odbc_error($connection), $sql);
+        if ($this->resultset === FALSE) {
+            throw new DibiDatabaseException(odbc_errormsg($this->connection), odbc_error($this->connection), $sql);
         }
 
-        if (is_resource($res)) {
-            $this->affectedRows = odbc_num_rows($res);
-            if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-            return new DibiOdbcResult($res, TRUE);
-        }
+        return is_resource($this->resultset);
     }
 
 
@@ -148,7 +131,7 @@ class DibiOdbcDriver extends DibiDriver
      */
     public function affectedRows()
     {
-        return $this->affectedRows;
+        return odbc_num_rows($this->resultset);
     }
 
 
@@ -158,7 +141,7 @@ class DibiOdbcDriver extends DibiDriver
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
-    public function insertId()
+    public function insertId($sequence)
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
@@ -171,11 +154,9 @@ class DibiOdbcDriver extends DibiDriver
      */
     public function begin()
     {
-        $connection = $this->getConnection();
-        if (!odbc_autocommit($connection, FALSE)) {
-            throw new DibiDatabaseException(odbc_errormsg($connection), odbc_error($connection));
+        if (!odbc_autocommit($this->connection, FALSE)) {
+            throw new DibiDatabaseException(odbc_errormsg($this->connection), odbc_error($this->connection));
         }
-        dibi::notify('begin', $this);
     }
 
 
@@ -186,12 +167,10 @@ class DibiOdbcDriver extends DibiDriver
      */
     public function commit()
     {
-        $connection = $this->getConnection();
-        if (!odbc_commit($connection)) {
-            throw new DibiDatabaseException(odbc_errormsg($connection), odbc_error($connection));
+        if (!odbc_commit($this->connection)) {
+            throw new DibiDatabaseException(odbc_errormsg($this->connection), odbc_error($this->connection));
         }
-        odbc_autocommit($connection, TRUE);
-        dibi::notify('commit', $this);
+        odbc_autocommit($this->connection, TRUE);
     }
 
 
@@ -202,54 +181,29 @@ class DibiOdbcDriver extends DibiDriver
      */
     public function rollback()
     {
-        $connection = $this->getConnection();
-        if (!odbc_rollback($connection)) {
-            throw new DibiDatabaseException(odbc_errormsg($connection), odbc_error($connection));
+        if (!odbc_rollback($this->connection)) {
+            throw new DibiDatabaseException(odbc_errormsg($this->connection), odbc_error($this->connection));
         }
-        odbc_autocommit($connection, TRUE);
-        dibi::notify('rollback', $this);
+        odbc_autocommit($this->connection, TRUE);
     }
 
 
 
     /**
-     * Escapes the string
+     * Format to SQL command
      *
-     * @param string     unescaped string
-     * @param bool       quote string?
-     * @return string    escaped and optionally quoted string
+     * @param string     value
+     * @param string     type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
+     * @return string    formatted value
      */
-    public function escape($value, $appendQuotes = TRUE)
+    public function format($value, $type)
     {
-        $value = str_replace("'", "''", $value);
-        return $appendQuotes
-               ? "'" . $value . "'"
-               : $value;
-    }
-
-
-
-    /**
-     * Delimites identifier (table's or column's name, etc.)
-     *
-     * @param string     identifier
-     * @return string    delimited identifier
-     */
-    public function delimite($value)
-    {
-        return '[' . str_replace('.', '].[', $value) . ']';
-    }
-
-
-
-    /**
-     * Gets a information of the current database.
-     *
-     * @return DibiReflection
-     */
-    public function getDibiReflection()
-    {
-        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        if ($type === dibi::FIELD_TEXT) return "'" . str_replace("'", "''", $value) . "'";
+        if ($type === dibi::IDENTIFIER) return '[' . str_replace('.', '].[', $value) . ']';
+        if ($type === dibi::FIELD_BOOL) return $value ? -1 : 0;
+        if ($type === dibi::FIELD_DATE) return date("#m/d/Y#", $value);
+        if ($type === dibi::FIELD_DATETIME) return date("#m/d/Y H:i:s#", $value);
+        throw new DibiException('Invalid formatting type');
     }
 
 
@@ -262,7 +216,7 @@ class DibiOdbcDriver extends DibiDriver
      * @param int $offset
      * @return void
      */
-    public function applyLimit(&$sql, $limit, $offset = 0)
+    public function applyLimit(&$sql, $limit, $offset)
     {
         // offset suppot is missing...
         if ($limit >= 0) {
@@ -273,26 +227,6 @@ class DibiOdbcDriver extends DibiDriver
     }
 
 
-} // class DibiOdbcDriver
-
-
-
-
-
-
-
-/**
- * The dibi result-set class for ODBC database
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @package    dibi
- * @version    $Revision$ $Date$
- */
-class DibiOdbcResult extends DibiResult
-{
-    private $row = 0;
-
 
 
     /**
@@ -300,10 +234,10 @@ class DibiOdbcResult extends DibiResult
      *
      * @return int
      */
-    protected function doRowCount()
+    public function rowCount()
     {
         // will return -1 with many drivers :-(
-        return odbc_num_rows($this->resource);
+        return odbc_num_rows($this->resultset);
     }
 
 
@@ -314,9 +248,9 @@ class DibiOdbcResult extends DibiResult
      *
      * @return array|FALSE  array on success, FALSE if no next record
      */
-    protected function doFetch()
+    public function fetch()
     {
-        return odbc_fetch_array($this->resource, $this->row++);
+        return odbc_fetch_array($this->resultset, $this->row++);
     }
 
 
@@ -328,7 +262,7 @@ class DibiOdbcResult extends DibiResult
      * @return void
      * @throws DibiException
      */
-    protected function doSeek($row)
+    public function seek($row)
     {
         $this->row = $row;
     }
@@ -340,19 +274,19 @@ class DibiOdbcResult extends DibiResult
      *
      * @return void
      */
-    protected function doFree()
+    public function free()
     {
-        odbc_free_result($this->resource);
+        odbc_free_result($this->resultset);
     }
 
 
 
     /** this is experimental */
-    protected function buildMeta()
+    public function buildMeta()
     {
         // cache
-        if ($this->meta !== NULL) {
-            return $this->meta;
+        if ($meta !== NULL) {
+            return $meta;
         }
 
         static $types = array(
@@ -381,21 +315,53 @@ class DibiOdbcResult extends DibiResult
             // and many others?
         );
 
-        $count = odbc_num_fields($this->resource);
-        $this->meta = $this->convert = array();
+        $count = odbc_num_fields($this->resultset);
+        $meta = array();
         for ($index = 1; $index <= $count; $index++) {
-            $native = strtoupper(odbc_field_type($this->resource, $index));
-            $name = odbc_field_name($this->resource, $index);
-            $this->meta[$name] = array(
+            $native = strtoupper(odbc_field_type($this->resultset, $index));
+            $name = odbc_field_name($this->resultset, $index);
+            $meta[$name] = array(
                 'type'      => isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN,
                 'native'    => $native,
-                'length'    => odbc_field_len($this->resource, $index),
-                'scale'     => odbc_field_scale($this->resource, $index),
-                'precision' => odbc_field_precision($this->resource, $index),
+                'length'    => odbc_field_len($this->resultset, $index),
+                'scale'     => odbc_field_scale($this->resultset, $index),
+                'precision' => odbc_field_precision($this->resultset, $index),
             );
-            $this->convert[$name] = $this->meta[$name]['type'];
         }
+        return $meta;
     }
 
 
-} // class DibiOdbcResult
+    /**
+     * Returns the connection resource
+     *
+     * @return mixed
+     */
+    public function getResource()
+    {
+        return $this->connection;
+    }
+
+
+
+    /**
+     * Returns the resultset resource
+     *
+     * @return mixed
+     */
+    public function getResultResource()
+    {
+        return $this->resultset;
+    }
+
+
+
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiReflection
+     */
+    function getDibiReflection()
+    {}
+
+}

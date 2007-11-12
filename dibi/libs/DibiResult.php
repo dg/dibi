@@ -40,8 +40,14 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-abstract class DibiResult extends NObject implements IteratorAggregate, Countable
+class DibiResult extends NObject implements IteratorAggregate, Countable
 {
+    /**
+     * DibiDriverInterface
+     * @var array
+     */
+    private $driver;
+
     /**
      * Describes columns types
      * @var array
@@ -53,18 +59,6 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      * @var array
      */
     protected $meta;
-
-    /**
-     * Resultset resource
-     * @var resource
-     */
-    protected $resource;
-
-    /**
-     * Is buffered (seekable and countable)?
-     * @var bool
-     */
-    protected $buffered;
 
     /**
      * Already fetched? Used for allowance for first seek(0)
@@ -86,21 +80,20 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
 
 
 
-    public function __construct($resource, $buffered)
+    public function __construct($driver)
     {
-        $this->resource = $resource;
-        $this->buffered = $buffered;
+        $this->driver = $driver;
     }
 
 
     /**
      * Returns the resultset resource
      *
-     * @return resource
+     * @return mixed
      */
     final public function getResource()
     {
-        return $this->resource;
+        return $this->driver->getResultResource();
     }
 
 
@@ -118,11 +111,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
             return TRUE;
         }
 
-        if (!$this->buffered) {
-            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
-        }
-
-        return $this->doSeek($row);
+        $this->driver->seek($row);
     }
 
 
@@ -134,51 +123,8 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     final public function rowCount()
     {
-        if (!$this->buffered) {
-            throw new BadMethodCallException(__METHOD__ . ' is not allowed for unbuffered queries');
-        }
-
-        return $this->doRowCount();
+        return $this->driver->rowCount();
     }
-
-
-
-    /**
-     * Internal: Moves cursor position without fetching row
-     *
-     * @param  int      the 0-based cursor pos to seek to
-     * @return void
-     * @throws DibiException
-     */
-    abstract protected function doSeek($row);
-
-
-
-    /**
-     * Internal: Returns the number of rows in a result set
-     *
-     * @return int
-     */
-    abstract protected function doRowCount();
-
-
-
-    /**
-     * Internal: Frees the resources allocated for this result set
-     *
-     * @return void
-     */
-    abstract protected function doFree();
-
-
-
-    /**
-     * Fetches the row at current position and moves the internal cursor to the next position
-     * internal usage only
-     *
-     * @return array|FALSE  array on success, FALSE if no next record
-     */
-    abstract protected function doFetch();
 
 
 
@@ -190,7 +136,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     final public function fetch()
     {
-        $row = $this->doFetch();
+        $row = $this->driver->fetch();
         if (!is_array($row)) return FALSE;
         $this->fetched = TRUE;
 
@@ -215,7 +161,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     final function fetchSingle()
     {
-        $row = $this->doFetch();
+        $row = $this->driver->fetch();
         if (!is_array($row)) return FALSE;
         $this->fetched = TRUE;
 
@@ -395,7 +341,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     public function __destruct()
     {
-        @$this->doFree();
+        @$this->driver->free();
     }
 
 
@@ -403,7 +349,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
     final public function setType($field, $type = NULL)
     {
         if ($field === TRUE) {
-            $this->detectTypes();
+            $this->buildMeta();
 
         } elseif (is_array($field)) {
             $this->convert = $field;
@@ -434,12 +380,8 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
             return $value;
         }
 
-        if ($type === dibi::FIELD_DATE) {
+        if ($type === dibi::FIELD_DATE || $type === dibi::FIELD_DATETIME) {
             return strtotime($value);   // !!! not good
-        }
-
-        if ($type === dibi::FIELD_DATETIME) {
-            return strtotime($value);  // !!! not good
         }
 
         return $value;
@@ -454,10 +396,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     final public function getFields()
     {
-        // lazy init
-        if ($this->meta === NULL) {
-            $this->buildMeta();
-        }
+        $this->buildMeta();
         return array_keys($this->meta);
     }
 
@@ -471,10 +410,7 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      */
     final public function getMetaData($field)
     {
-        // lazy init
-        if ($this->meta === NULL) {
-            $this->buildMeta();
-        }
+        $this->buildMeta();
         return isset($this->meta[$field]) ? $this->meta[$field] : FALSE;
     }
 
@@ -485,19 +421,15 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
      *
      * @return void
      */
-    final protected function detectTypes()
+    final protected function buildMeta()
     {
         if ($this->meta === NULL) {
-            $this->buildMeta();
+            $this->meta = $this->driver->buildMeta();
+            foreach ($this->meta as $name => $info) {
+                $this->convert[$name] = $info['type'];
+            }
         }
     }
-
-
-
-    /**
-     * @return void
-     */
-    abstract protected function buildMeta();
 
 
 
@@ -553,4 +485,4 @@ abstract class DibiResult extends NObject implements IteratorAggregate, Countabl
     }
 
 
-}  // class DibiResult
+}

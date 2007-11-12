@@ -32,37 +32,27 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiOracleDriver extends DibiDriver
+class DibiOracleDriver extends NObject implements DibiDriverInterface
 {
-    /**
-     * Describes how convert some datatypes to SQL command
-     * @var array
-     */
-    public $formats = array(
-        'TRUE'     => "1",
-        'FALSE'    => "0",
-        'date'     => "U",
-        'datetime' => "U",
-    );
 
+    /**
+     * Connection resource
+     * @var resource
+     */
+    private $connection;
+
+
+    /**
+     * Resultset resource
+     * @var resource
+     */
+    private $resultset;
+
+
+    /**
+     * @var bool
+     */
     private $autocommit = TRUE;
-
-
-
-    /**
-     * Creates object and (optionally) connects to a database
-     *
-     * @param array  connect configuration
-     * @throws DibiException
-     */
-    public function __construct(array $config)
-    {
-        self::alias($config, 'username', 'user');
-        self::alias($config, 'password', 'pass');
-        self::alias($config, 'database', 'db');
-        self::alias($config, 'charset');
-        parent::__construct($config);
-    }
 
 
 
@@ -70,23 +60,25 @@ class DibiOracleDriver extends DibiDriver
      * Connects to a database
      *
      * @throws DibiException
-     * @return resource
+     * @return void
      */
-    protected function doConnect()
+    public function connect(array &$config)
     {
+        DibiConnection::alias($config, 'username', 'user');
+        DibiConnection::alias($config, 'password', 'pass');
+        DibiConnection::alias($config, 'database', 'db');
+        DibiConnection::alias($config, 'charset');
+
         if (!extension_loaded('oci8')) {
             throw new DibiException("PHP extension 'oci8' is not loaded");
         }
 
-        $config = $this->getConfig();
-        $connection = @oci_new_connect($config['username'], $config['password'], $config['database'], $config['charset']);
+        $this->connection = @oci_new_connect($config['username'], $config['password'], $config['database'], $config['charset']);
 
-        if (!$connection) {
+        if (!$this->connection) {
             $err = oci_error();
             throw new DibiDatabaseException($err['message'], $err['code']);
         }
-
-        return $connection;
     }
 
 
@@ -96,37 +88,36 @@ class DibiOracleDriver extends DibiDriver
      *
      * @return void
      */
-    protected function doDisconnect()
+    public function disconnect()
     {
-        oci_close($this->getConnection());
+        oci_close($this->connection);
     }
 
 
 
     /**
-     * Internal: Executes the SQL query
+     * Executes the SQL query
      *
      * @param string       SQL statement.
-     * @return DibiResult  Result set object
+     * @return bool        have resultset?
      * @throws DibiDatabaseException
      */
-    protected function doQuery($sql)
+    public function query($sql)
     {
-        $connection = $this->getConnection();
 
-        $statement = oci_parse($connection, $sql);
-        if ($statement) {
-            $res = oci_execute($statement, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
-            $err = oci_error($statement);
+        $this->resultset = oci_parse($this->connection, $sql);
+        if ($this->resultset) {
+            oci_execute($this->resultset, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
+            $err = oci_error($this->resultset);
             if ($err) {
                 throw new DibiDatabaseException($err['message'], $err['code'], $sql);
             }
         } else {
-            $err = oci_error($connection);
+            $err = oci_error($this->connection);
             throw new DibiDatabaseException($err['message'], $err['code'], $sql);
         }
 
-        return is_resource($res) ? new DibiOracleResult($statement, TRUE) : TRUE;
+        return is_resource($this->resultset);
     }
 
 
@@ -148,7 +139,7 @@ class DibiOracleDriver extends DibiDriver
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
-    public function insertId()
+    public function insertId($sequence)
     {
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
     }
@@ -172,13 +163,11 @@ class DibiOracleDriver extends DibiDriver
      */
     public function commit()
     {
-        $connection = $this->getConnection();
-        if (!oci_commit($connection)) {
-            $err = oci_error($connection);
+        if (!oci_commit($this->connection)) {
+            $err = oci_error($this->connection);
             throw new DibiDatabaseException($err['message'], $err['code']);
         }
         $this->autocommit = TRUE;
-        dibi::notify('commit', $this);
     }
 
 
@@ -189,54 +178,30 @@ class DibiOracleDriver extends DibiDriver
      */
     public function rollback()
     {
-        $connection = $this->getConnection();
-        if (!oci_rollback($connection)) {
-            $err = oci_error($connection);
+        if (!oci_rollback($this->connection)) {
+            $err = oci_error($this->connection);
             throw new DibiDatabaseException($err['message'], $err['code']);
         }
         $this->autocommit = TRUE;
-        dibi::notify('rollback', $this);
     }
 
 
 
     /**
-     * Escapes the string
+     * Format to SQL command
      *
-     * @param string     unescaped string
-     * @param bool       quote string?
-     * @return string    escaped and optionally quoted string
+     * @param string     value
+     * @param string     type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
+     * @return string    formatted value
      */
-    public function escape($value, $appendQuotes = TRUE)
+    public function format($value, $type)
     {
-        return $appendQuotes
-               ? "'" . sqlite_escape_string($value) . "'"
-               : sqlite_escape_string($value);
-    }
-
-
-
-    /**
-     * Delimites identifier (table's or column's name, etc.)
-     *
-     * @param string     identifier
-     * @return string    delimited identifier
-     */
-    public function delimite($value)
-    {
-        return '[' . str_replace('.', '].[', $value) . ']';
-    }
-
-
-
-    /**
-     * Gets a information of the current database.
-     *
-     * @return DibiReflection
-     */
-    public function getDibiReflection()
-    {
-        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        if ($type === dibi::FIELD_TEXT) return "'" . str_replace("'", "''", $value) . "'"; // TODO: not tested
+        if ($type === dibi::IDENTIFIER) return '[' . str_replace('.', '].[', $value) . ']';  // TODO: not tested
+        if ($type === dibi::FIELD_BOOL) return $value ? 1 : 0;
+        if ($type === dibi::FIELD_DATE) return date("U", $value);
+        if ($type === dibi::FIELD_DATETIME) return date("U", $value);
+        throw new DibiException('Invalid formatting type');
     }
 
 
@@ -249,41 +214,23 @@ class DibiOracleDriver extends DibiDriver
      * @param int $offset
      * @return void
      */
-    public function applyLimit(&$sql, $limit, $offset = 0)
+    public function applyLimit(&$sql, $limit, $offset)
     {
         if ($limit < 0 && $offset < 1) return;
         $sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
     }
 
-} // class DibiOracleDriver
 
 
-
-
-
-
-
-
-
-/**
- * The dibi result-set class for Oracle database
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @package    dibi
- * @version    $Revision$ $Date$
- */
-class DibiOracleResult extends DibiResult
-{
 
     /**
      * Returns the number of rows in a result set
      *
      * @return int
      */
-    protected function doRowCount()
+    public function rowCount()
     {
-        return oci_num_rows($this->resource);
+        return oci_num_rows($this->resultset);
     }
 
 
@@ -294,10 +241,10 @@ class DibiOracleResult extends DibiResult
      *
      * @return array|FALSE  array on success, FALSE if no next record
      */
-    protected function doFetch()
+    public function fetch()
     {
         $this->fetched = TRUE;
-        return oci_fetch_assoc($this->resource);
+        return oci_fetch_assoc($this->resultset);
     }
 
 
@@ -309,7 +256,7 @@ class DibiOracleResult extends DibiResult
      * @return void
      * @throws DibiException
      */
-    protected function doSeek($row)
+    public function seek($row)
     {
         if ($row === 0 && !$this->fetched) return TRUE;
         throw new BadMethodCallException(__METHOD__ . ' is not implemented');
@@ -322,24 +269,56 @@ class DibiOracleResult extends DibiResult
      *
      * @return void
      */
-    protected function doFree()
+    public function free()
     {
-        oci_free_statement($this->resource);
+        oci_free_statement($this->resultset);
     }
 
 
 
     /** this is experimental */
-    protected function buildMeta()
+    public function buildMeta()
     {
-        $count = oci_num_fields($this->resource);
-        $this->meta = $this->convert = array();
+        $count = oci_num_fields($this->resultset);
+        $meta = array();
         for ($index = 0; $index < $count; $index++) {
-            $name = oci_field_name($this->resource, $index + 1);
-            $this->meta[$name] = array('type' => dibi::FIELD_UNKNOWN);
-            $this->convert[$name] = dibi::FIELD_UNKNOWN;
+            $name = oci_field_name($this->resultset, $index + 1);
+            $meta[$name] = array('type' => dibi::FIELD_UNKNOWN);
         }
+        return $meta;
     }
 
 
-} // class DibiOracleResult
+    /**
+     * Returns the connection resource
+     *
+     * @return mixed
+     */
+    public function getResource()
+    {
+        return $this->connection;
+    }
+
+
+
+    /**
+     * Returns the resultset resource
+     *
+     * @return mixed
+     */
+    public function getResultResource()
+    {
+        return $this->resultset;
+    }
+
+
+
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiReflection
+     */
+    function getDibiReflection()
+    {}
+
+}

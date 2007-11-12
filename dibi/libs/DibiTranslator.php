@@ -35,7 +35,7 @@ final class DibiTranslator extends NObject
     /** @var string NOT USED YET */
     public $mask;
 
-    /** @var DibiDriver */
+    /** @var DibiDriverInterface */
     private $driver;
 
     /** @var string  last modifier */
@@ -55,7 +55,7 @@ final class DibiTranslator extends NObject
 
 
 
-    public function __construct(DibiDriver $driver)
+    public function __construct(DibiDriverInterface $driver)
     {
         $this->driver = $driver;
     }
@@ -105,7 +105,7 @@ final class DibiTranslator extends NObject
             if (is_string($arg) && (!$mod || $mod === 'sql')) {
                 $mod = FALSE;
                 // will generate new mod
-                $mask[] = $sql[] = $this->formatValue($arg, 'sql');
+                /*$mask[] =*/ $sql[] = $this->formatValue($arg, 'sql');
                 continue;
             }
 
@@ -117,13 +117,13 @@ final class DibiTranslator extends NObject
                     $mod = $commandIns ? 'v' : 'a';
                 } else {
                     $mod = $commandIns ? 'l' : 'a';
-                    if ($lastArr === $i - 1) $mask[] = $sql[] = ',';
+                    if ($lastArr === $i - 1) /*$mask[] =*/ $sql[] = ',';
                 }
                 $lastArr = $i;
             }
 
             // default processing
-            $mask[] = '?';
+            //$mask[] = '?';
             if (!$comment) {
                 $sql[] = $this->formatValue($arg, $mod);
             }
@@ -132,7 +132,7 @@ final class DibiTranslator extends NObject
 
         if ($comment) $sql[] = "\0";
 
-        //$this->mask = implode(' ', $mask);
+        /*$this->mask = implode(' ', $mask);*/
 
         $this->sql = implode(' ', $sql);
 
@@ -218,15 +218,13 @@ final class DibiTranslator extends NObject
 
             switch ($modifier) {
             case 's':  // string
-                return $this->driver->escape($value);
+                return $this->driver->format($value, dibi::FIELD_TEXT);
 
             case 'sn': // string or NULL
-                return $value == '' ? 'NULL' : $this->driver->escape($value);
+                return $value == '' ? 'NULL' : $this->driver->format($value, dibi::FIELD_TEXT); // notice two equal signs
 
             case 'b':  // boolean
-                return $value
-                    ? $this->driver->formats['TRUE']
-                    : $this->driver->formats['FALSE'];
+                return $this->driver->format($value, dibi::FIELD_BOOL);
 
             case 'i':  // signed int
             case 'u':  // unsigned int, ignored
@@ -244,14 +242,10 @@ final class DibiTranslator extends NObject
                 return (string) ($value + 0);
 
             case 'd':  // date
-                return date($this->driver->formats['date'], is_string($value)
-                    ? strtotime($value)
-                    : $value);
+                return $this->driver->format(is_string($value) ? strtotime($value) : $value, dibi::FIELD_DATE);
 
             case 't':  // datetime
-                return date($this->driver->formats['datetime'], is_string($value)
-                    ? strtotime($value)
-                    : $value);
+                return $this->driver->format(is_string($value) ? strtotime($value) : $value, dibi::FIELD_DATETIME);
 
             case 'n':  // identifier name
                 return $this->delimite($value);
@@ -306,13 +300,13 @@ final class DibiTranslator extends NObject
 
         // without modifier procession
         if (is_string($value))
-            return $this->driver->escape($value);
+            return $this->driver->format($value, dibi::FIELD_TEXT);
 
         if (is_int($value) || is_float($value))
             return (string) $value;  // something like -9E-005 is accepted by SQL
 
         if (is_bool($value))
-            return $value ? $this->driver->formats['TRUE'] : $this->driver->formats['FALSE'];
+            return $this->driver->format($value, dibi::FIELD_BOOL);
 
         if ($value === NULL)
             return 'NULL';
@@ -388,10 +382,10 @@ final class DibiTranslator extends NObject
             return $this->delimite($matches[2]);
 
         if ($matches[3])  // SQL strings: '....'
-            return $this->driver->escape( str_replace("''", "'", $matches[4]));
+            return $this->driver->format( str_replace("''", "'", $matches[4]), dibi::FIELD_TEXT);
 
         if ($matches[5])  // SQL strings: "..."
-            return $this->driver->escape( str_replace('""', '"', $matches[6]));
+            return $this->driver->format( str_replace('""', '"', $matches[6]), dibi::FIELD_TEXT);
 
 
         if ($matches[9]) { // string quote
@@ -415,7 +409,7 @@ final class DibiTranslator extends NObject
         if (strpos($value, ':') !== FALSE) {
             $value = strtr($value, dibi::getSubst());
         }
-        return $this->driver->delimite($value);
+        return $this->driver->format($value, dibi::IDENTIFIER);
     }
 
 

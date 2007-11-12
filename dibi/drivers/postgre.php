@@ -31,39 +31,21 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiPostgreDriver extends DibiDriver
+class DibiPostgreDriver extends NObject implements DibiDriverInterface
 {
-    /**
-     * Describes how convert some datatypes to SQL command
-     * @var array
-     */
-    public $formats = array(
-        'TRUE'     => "TRUE",
-        'FALSE'    => "FALSE",
-        'date'     => "'Y-m-d'",
-        'datetime' => "'Y-m-d H:i:s'",
-    );
 
     /**
-     * Affected rows
-     * @var mixed
+     * Connection resource
+     * @var resource
      */
-    private $affectedRows = FALSE;
-
+    private $connection;
 
 
     /**
-     * Creates object and (optionally) connects to a database
-     *
-     * @param array  connect configuration
-     * @throws DibiException
+     * Resultset resource
+     * @var resource
      */
-    public function __construct(array $config)
-    {
-        self::alias($config, 'database', 'string');
-        self::alias($config, 'type');
-        parent::__construct($config);
-    }
+    private $resultset;
 
 
 
@@ -71,34 +53,34 @@ class DibiPostgreDriver extends DibiDriver
      * Connects to a database
      *
      * @throws DibiException
-     * @return resource
+     * @return void
      */
-    protected function doConnect()
+    public function connect(array &$config)
     {
+        DibiConnection::alias($config, 'database', 'string');
+        DibiConnection::alias($config, 'type');
+
         if (!extension_loaded('pgsql')) {
             throw new DibiException("PHP extension 'pgsql' is not loaded");
         }
 
-        $config = $this->getConfig();
 
         DibiDatabaseException::catchError();
         if (isset($config['persistent'])) {
-            $connection = @pg_connect($config['database'], PGSQL_CONNECT_FORCE_NEW);
+            $this->connection = @pg_connect($config['database'], PGSQL_CONNECT_FORCE_NEW);
         } else {
-            $connection = @pg_pconnect($config['database'], PGSQL_CONNECT_FORCE_NEW);
+            $this->connection = @pg_pconnect($config['database'], PGSQL_CONNECT_FORCE_NEW);
         }
         DibiDatabaseException::restore();
 
-        if (!is_resource($connection)) {
+        if (!is_resource($this->connection)) {
             throw new DibiDatabaseException('unknown error');
         }
 
         if (isset($config['charset'])) {
-            @pg_set_client_encoding($connection, $config['charset']);
+            @pg_set_client_encoding($this->connection, $config['charset']);
             // don't handle this error...
         }
-
-        return $connection;
     }
 
 
@@ -108,37 +90,30 @@ class DibiPostgreDriver extends DibiDriver
      *
      * @return void
      */
-    protected function doDisconnect()
+    public function disconnect()
     {
-        pg_close($this->getConnection());
+        pg_close($this->connection);
     }
 
 
 
     /**
-     * Internal: Executes the SQL query
+     * Executes the SQL query
      *
      * @param string       SQL statement.
      * @param bool         update affected rows?
-     * @return DibiResult  Result set object
+     * @return bool        have resultset?
      * @throws DibiDatabaseException
      */
-    protected function doQuery($sql, $silent = FALSE)
+    public function query($sql)
     {
-        $connection = $this->getConnection();
-        $res = @pg_query($connection, $sql);
+        $this->resultset = @pg_query($this->connection, $sql);
 
-        if ($res === FALSE) {
-            throw new DibiDatabaseException(pg_last_error($connection), 0, $sql);
+        if ($this->resultset === FALSE) {
+            throw new DibiDatabaseException(pg_last_error($this->connection), 0, $sql);
         }
 
-        if (is_resource($res)) {
-            if (!$silent) {
-                $this->affectedRows = pg_affected_rows($res);
-                if ($this->affectedRows < 0) $this->affectedRows = FALSE;
-            }
-            return new DibiPostgreResult($res, TRUE);
-        }
+        return is_resource($this->resultset);
     }
 
 
@@ -150,7 +125,7 @@ class DibiPostgreDriver extends DibiDriver
      */
     public function affectedRows()
     {
-        return $this->affectedRows;
+        return pg_affected_rows($this->resultset);
     }
 
 
@@ -160,13 +135,13 @@ class DibiPostgreDriver extends DibiDriver
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
-    public function insertId($sequence = NULL)
+    public function insertId($sequence)
     {
         if ($sequence === NULL) {
             // PostgreSQL 8.1 is needed
-            $res = $this->doQuery("SELECT LASTVAL() AS seq", TRUE);
+            $res = $this->query("SELECT LASTVAL() AS seq");
         } else {
-            $res = $this->doQuery("SELECT CURRVAL('$sequence') AS seq", TRUE);
+            $res = $this->query("SELECT CURRVAL('$sequence') AS seq");
         }
 
         if (is_resource($res)) {
@@ -186,8 +161,7 @@ class DibiPostgreDriver extends DibiDriver
      */
     public function begin()
     {
-        $this->doQuery('BEGIN', TRUE);
-        dibi::notify('begin', $this);
+        $this->query('BEGIN');
     }
 
 
@@ -198,8 +172,7 @@ class DibiPostgreDriver extends DibiDriver
      */
     public function commit()
     {
-        $this->doQuery('COMMIT', TRUE);
-        dibi::notify('commit', $this);
+        $this->query('COMMIT');
     }
 
 
@@ -210,50 +183,26 @@ class DibiPostgreDriver extends DibiDriver
      */
     public function rollback()
     {
-        $this->doQuery('ROLLBACK', TRUE);
-        dibi::notify('rollback', $this);
+        $this->query('ROLLBACK');
     }
 
 
 
     /**
-     * Escapes the string
+     * Format to SQL command
      *
-     * @param string     unescaped string
-     * @param bool       quote string?
-     * @return string    escaped and optionally quoted string
+     * @param string     value
+     * @param string     type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
+     * @return string    formatted value
      */
-    public function escape($value, $appendQuotes = TRUE)
+    public function format($value, $type)
     {
-        return $appendQuotes
-               ? "'" . pg_escape_string($value) . "'"
-               : pg_escape_string($value);
-    }
-
-
-
-    /**
-     * Delimites identifier (table's or column's name, etc.)
-     *
-     * @param string     identifier
-     * @return string    delimited identifier
-     */
-    public function delimite($value)
-    {
-        $value = str_replace('"', '""', $value);
-        return '"' . str_replace('.', '"."', $value) . '"';
-    }
-
-
-
-    /**
-     * Gets a information of the current database.
-     *
-     * @return DibiReflection
-     */
-    public function getDibiReflection()
-    {
-        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        if ($type === dibi::FIELD_TEXT) return "'" . pg_escape_string($value) . "'";
+        if ($type === dibi::IDENTIFIER) return '"' . str_replace('.', '"."', str_replace('"', '""', $value)) . '"';
+        if ($type === dibi::FIELD_BOOL) return $value ? 'TRUE' : 'FALSE';
+        if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
+        if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
+        throw new DibiException('Invalid formatting type');
     }
 
 
@@ -266,7 +215,7 @@ class DibiPostgreDriver extends DibiDriver
      * @param int $offset
      * @return void
      */
-    public function applyLimit(&$sql, $limit, $offset = 0)
+    public function applyLimit(&$sql, $limit, $offset)
     {
         if ($limit >= 0)
             $sql .= ' LIMIT ' . (int) $limit;
@@ -276,35 +225,17 @@ class DibiPostgreDriver extends DibiDriver
     }
 
 
-} // class DibiPostgreDriver
 
 
-
-
-
-
-
-
-
-/**
- * The dibi result-set class for PostgreSQL database
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @package    dibi
- * @version    $Revision$ $Date$
- */
-class DibiPostgreResult extends DibiResult
-{
 
     /**
      * Returns the number of rows in a result set
      *
      * @return int
      */
-    protected function doRowCount()
+    public function rowCount()
     {
-        return pg_num_rows($this->resource);
+        return pg_num_rows($this->resultset);
     }
 
 
@@ -315,9 +246,9 @@ class DibiPostgreResult extends DibiResult
      *
      * @return array|FALSE  array on success, FALSE if no next record
      */
-    protected function doFetch()
+    public function fetch()
     {
-        return pg_fetch_array($this->resource, NULL, PGSQL_ASSOC);
+        return pg_fetch_array($this->resultset, NULL, PGSQL_ASSOC);
     }
 
 
@@ -329,9 +260,9 @@ class DibiPostgreResult extends DibiResult
      * @return void
      * @throws DibiException
      */
-    protected function doSeek($row)
+    public function seek($row)
     {
-        if (!pg_result_seek($this->resource, $row)) {
+        if (!pg_result_seek($this->resultset, $row)) {
             throw new DibiDriverException('Unable to seek to row ' . $row);
         }
     }
@@ -343,15 +274,15 @@ class DibiPostgreResult extends DibiResult
      *
      * @return void
      */
-    protected function doFree()
+    public function free()
     {
-        pg_free_result($this->resource);
+        pg_free_result($this->resultset);
     }
 
 
 
     /** this is experimental */
-    protected function buildMeta()
+    public function buildMeta()
     {
         static $types = array(
             'bool'      => dibi::FIELD_BOOL,
@@ -370,20 +301,52 @@ class DibiPostgreResult extends DibiResult
             'money'     => dibi::FIELD_FLOAT,
         );
 
-        $count = pg_num_fields($this->resource);
-        $this->meta = $this->convert = array();
+        $count = pg_num_fields($this->resultset);
+        $meta = array();
         for ($index = 0; $index < $count; $index++) {
 
-            $info['native'] = $native = pg_field_type($this->resource, $index);
-            $info['length'] = pg_field_size($this->resource, $index);
-            $info['table'] = pg_field_table($this->resource, $index);
+            $info['native'] = $native = pg_field_type($this->resultset, $index);
+            $info['length'] = pg_field_size($this->resultset, $index);
+            $info['table'] = pg_field_table($this->resultset, $index);
             $info['type'] = isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN;
 
-            $name = pg_field_name($this->resource, $index);
-            $this->meta[$name] = $info;
-            $this->convert[$name] = $info['type'];
+            $name = pg_field_name($this->resultset, $index);
+            $meta[$name] = $info;
         }
+        return $meta;
     }
 
 
-} // class DibiPostgreResult
+    /**
+     * Returns the connection resource
+     *
+     * @return mixed
+     */
+    public function getResource()
+    {
+        return $this->connection;
+    }
+
+
+
+    /**
+     * Returns the resultset resource
+     *
+     * @return mixed
+     */
+    public function getResultResource()
+    {
+        return $this->resultset;
+    }
+
+
+
+    /**
+     * Gets a information of the current database.
+     *
+     * @return DibiReflection
+     */
+    function getDibiReflection()
+    {}
+
+}

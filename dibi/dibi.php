@@ -33,31 +33,12 @@ if (version_compare(PHP_VERSION , '5.1.0', '<')) {
 // libraries
 require_once __FILE__ . '/../libs/NObject.php';
 require_once __FILE__ . '/../libs/DibiException.php';
-require_once __FILE__ . '/../libs/DibiDriver.php';
+require_once __FILE__ . '/../libs/DibiConnection.php';
+require_once __FILE__ . '/../libs/DibiDriverInterface.php';
 require_once __FILE__ . '/../libs/DibiResult.php';
 require_once __FILE__ . '/../libs/DibiResultIterator.php';
 require_once __FILE__ . '/../libs/DibiTranslator.php';
 require_once __FILE__ . '/../libs/DibiLogger.php';
-
-
-
-
-
-/**
- * Interface for user variable, used for generating SQL
- * @package dibi
- */
-interface DibiVariableInterface
-{
-    /**
-     * Format for SQL
-     *
-     * @param  object  destination DibiDriver
-     * @param  string  optional modifier
-     * @return string  SQL code
-     */
-    public function toSQL($driver, $modifier = NULL);
-}
 
 
 
@@ -90,21 +71,22 @@ class dibi extends NClass
         FIELD_UNKNOWN =    '?',
 
         // special
-        FIELD_COUNTER =    'c', // counter or autoincrement, is integer
+        FIELD_COUNTER =    'C', // counter or autoincrement, is integer
+        IDENTIFIER =       'I',
 
         // dibi version
         VERSION =          '0.9 (Revision: $WCREV$, Date: $WCDATE$)';
 
 
     /**
-     * Connection registry storage for DibiDriver objects
-     * @var DibiDriver[]
+     * Connection registry storage for DibiConnection objects
+     * @var DibiConnection[]
      */
     private static $registry = array();
 
     /**
      * Current connection
-     * @var DibiDriver
+     * @var DibiConnection
      */
     private static $connection;
 
@@ -161,41 +143,22 @@ class dibi extends NClass
 
 
     /**
-     * Creates a new DibiDriver object and connects it to specified database
+     * Creates a new DibiConnection object and connects it to specified database
      *
      * @param  array|string connection parameters
      * @param  string       connection name
-     * @return DibiDriver
+     * @return DibiConnection
      * @throws DibiException
      */
     public static function connect($config = array(), $name = 0)
     {
-        // DSN string
-        if (is_string($config)) {
-            parse_str($config, $config);
-        }
-
-        if (!isset($config['driver'])) {
-            $config['driver'] = self::$defaultDriver;
-        }
-
-        $class = "Dibi$config[driver]Driver";
-        if (!class_exists($class)) {
-            include_once __FILE__ . "/../drivers/$config[driver].php";
-
-            if (!class_exists($class)) {
-                throw new DibiException("Unable to create instance of dibi driver class '$class'.");
-            }
-        }
-
-        // create connection object and store in list; like $connection = $class::connect($config);
-        return self::$connection = self::$registry[$name] = new $class($config);
+        return self::$connection = self::$registry[$name] = new DibiConnection($config);
     }
 
 
 
     /**
-     * Disconnects from database (doesn't destroy DibiDriver object)
+     * Disconnects from database (doesn't destroy DibiConnection object)
      *
      * @return void
      */
@@ -222,7 +185,7 @@ class dibi extends NClass
      * Retrieve active connection
      *
      * @param  string   connection registy name
-     * @return object   DibiDriver object.
+     * @return object   DibiConnection object.
      * @throws DibiException
      */
     public static function getConnection($name = NULL)
@@ -259,7 +222,7 @@ class dibi extends NClass
 
 
     /**
-     * Generates and executes SQL query - Monostate for DibiDriver::query()
+     * Generates and executes SQL query - Monostate for DibiConnection::query()
      *
      * @param  array|mixed    one or more arguments
      * @return DibiResult     Result set object (if any)
@@ -275,7 +238,7 @@ class dibi extends NClass
 
 
     /**
-     * Executes the SQL query - Monostate for DibiDriver::nativeQuery()
+     * Executes the SQL query - Monostate for DibiConnection::nativeQuery()
      *
      * @param string          SQL statement.
      * @return DibiResult     Result set object (if any)
@@ -288,7 +251,7 @@ class dibi extends NClass
 
 
     /**
-     * Generates and prints SQL query - Monostate for DibiDriver::test()
+     * Generates and prints SQL query - Monostate for DibiConnection::test()
      *
      * @param  array|mixed  one or more arguments
      * @return bool
@@ -304,7 +267,7 @@ class dibi extends NClass
 
     /**
      * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
-     * Monostate for DibiDriver::insertId()
+     * Monostate for DibiConnection::insertId()
      *
      * @param  string     optional sequence name for DibiPostgreDriver
      * @return int|FALSE  int on success or FALSE on failure
@@ -318,7 +281,7 @@ class dibi extends NClass
 
     /**
      * Gets the number of affected rows
-     * Monostate for DibiDriver::affectedRows()
+     * Monostate for DibiConnection::affectedRows()
      *
      * @return int  number of rows or FALSE on error
      */
@@ -330,7 +293,7 @@ class dibi extends NClass
 
 
     /**
-     * Begins a transaction - Monostate for DibiDriver::begin()
+     * Begins a transaction - Monostate for DibiConnection::begin()
      */
     public static function begin()
     {
@@ -340,7 +303,7 @@ class dibi extends NClass
 
 
     /**
-     * Commits statements in a transaction - Monostate for DibiDriver::commit()
+     * Commits statements in a transaction - Monostate for DibiConnection::commit()
      */
     public static function commit()
     {
@@ -350,7 +313,7 @@ class dibi extends NClass
 
 
     /**
-     * Rollback changes in a transaction - Monostate for DibiDriver::rollback()
+     * Rollback changes in a transaction - Monostate for DibiConnection::rollback()
      */
     public static function rollback()
     {
@@ -434,11 +397,11 @@ class dibi extends NClass
      * Event notification (events: exception, connected, beforeQuery, afterQuery, begin, commit, rollback)
      *
      * @param string event name
-     * @param DibiDriver
+     * @param DibiConnection
      * @param mixed
      * @return void
      */
-    public static function notify($event, DibiDriver $driver = NULL, $arg = NULL)
+    public static function notify($event, DibiConnection $conn = NULL, $arg = NULL)
     {
         if ($event === 'beforeQuery') {
             self::$numOfQueries++;
@@ -452,7 +415,7 @@ class dibi extends NClass
         }
 
         foreach (self::$handlers as $handler) {
-            call_user_func($handler, $event, $driver, $arg);
+            call_user_func($handler, $event, $conn, $arg);
         }
     }
 
