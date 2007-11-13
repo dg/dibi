@@ -147,6 +147,11 @@ class dibi extends NClass
      */
     public static function connect($config = array(), $name = 0)
     {
+        if (is_array($config)) {
+            $config['name'] = $name;
+        } else {
+            $config .= '&name=' . urlencode($name);
+        }
         return self::$connection = self::$registry[$name] = new DibiConnection($config);
     }
 

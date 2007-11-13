@@ -37,14 +37,14 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
 
     /**
      * Connection resource
-     * @var resource
+     * @var PDO
      */
     private $connection;
 
 
     /**
      * Resultset resource
-     * @var resource
+     * @var PDOStatement
      */
     private $resultset;
 
@@ -220,7 +220,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return void
+     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
      * @throws DibiException
      */
     public function seek($row)
@@ -261,7 +261,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
     /**
      * Returns the connection resource
      *
-     * @return mixed
+     * @return PDO
      */
     public function getResource()
     {
@@ -273,7 +273,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
     /**
      * Returns the resultset resource
      *
-     * @return mixed
+     * @return PDOStatement
      */
     public function getResultResource()
     {

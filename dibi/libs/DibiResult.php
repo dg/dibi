@@ -93,7 +93,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     public function __destruct()
     {
-        @$this->driver->free();
+        @$this->free();
     }
 
 
@@ -105,7 +105,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     final public function getResource()
     {
-        return $this->driver->getResultResource();
+        return $this->getDriver()->getResultResource();
     }
 
 
@@ -114,13 +114,13 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return void
+     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
      * @throws DibiException
      */
     final public function seek($row)
     {
         if ($row !== 0 || $this->fetched) {
-            $this->driver->seek($row);
+            return (bool) $this->getDriver()->seek($row);
         }
     }
 
@@ -133,7 +133,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     final public function rowCount()
     {
-        return $this->driver->rowCount();
+        return $this->getDriver()->rowCount();
     }
 
 
@@ -145,7 +145,10 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     final public function free()
     {
-        $this->driver->free();
+        if ($this->driver !== NULL) {
+            $this->driver->free();
+            $this->driver = NULL;
+        }
     }
 
 
@@ -158,7 +161,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     final public function fetch()
     {
-        $row = $this->driver->fetch();
+        $row = $this->getDriver()->fetch();
         if (!is_array($row)) return FALSE;
         $this->fetched = TRUE;
 
@@ -183,7 +186,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     final function fetchSingle()
     {
-        $row = $this->driver->fetch();
+        $row = $this->getDriver()->fetch();
         if (!is_array($row)) return FALSE;
         $this->fetched = TRUE;
 
@@ -434,7 +437,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     final protected function buildMeta()
     {
         if ($this->meta === NULL) {
-            $this->meta = $this->driver->buildMeta();
+            $this->meta = $this->getDriver()->buildMeta();
             foreach ($this->meta as $name => $info) {
                 $this->convert[$name] = $info['type'];
             }
@@ -492,6 +495,23 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     final public function count()
     {
         return $this->rowCount();
+    }
+
+
+
+    /**
+     * Safe access to property $driver
+     *
+     * @return DibiDriverInterface
+     * @throws DibiException
+     */
+    private function getDriver()
+    {
+        if ($this->driver === NULL) {
+            throw new DibiException('Resultset was released from memory');
+        }
+
+        return $this->driver;
     }
 
 

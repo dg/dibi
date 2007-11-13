@@ -45,12 +45,20 @@
  */
 final class DibiResultIterator implements Iterator
 {
-    private
-        $result,
-        $offset,
-        $limit,
-        $row,
-        $pointer;
+    /** @var DibiResult */
+    private $result;
+
+    /** @var int */
+    private $offset;
+
+    /** @var int */
+    private $limit;
+
+    /** @var int */
+    private $row;
+
+    /** @var int */
+    private $pointer;
 
 
     /**

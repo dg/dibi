@@ -259,12 +259,13 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return void
+     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
      * @throws DibiException
      */
     public function seek($row)
     {
         $this->row = $row;
+        return TRUE;
     }
 
 

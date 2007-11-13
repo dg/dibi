@@ -246,14 +246,12 @@ class DibiMsSqlDriver extends NObject implements DibiDriverInterface
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return void
+     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
      * @throws DibiException
      */
     public function seek($row)
     {
-        if (!mssql_data_seek($this->resultset, $row)) {
-            throw new DibiDatabaseException('Unable to seek to row ' . $row);
-        }
+        return mssql_data_seek($this->resultset, $row);
     }
 
 

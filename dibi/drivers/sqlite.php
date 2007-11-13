@@ -248,7 +248,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return void
+     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
      * @throws DibiException
      */
     public function seek($row)
@@ -256,9 +256,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
         if (!$this->buffered) {
             throw new DibiDatabaseException('Cannot seek an unbuffered result set');
         }
-        if (!sqlite_seek($this->resultset, $row)) {
-            throw new DibiDatabaseException('Unable to seek to row ' . $row);
-        }
+        return sqlite_seek($this->resultset, $row);
     }
 
 

@@ -43,14 +43,14 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
 
     /**
      * Connection resource
-     * @var resource
+     * @var mysqli
      */
     private $connection;
 
 
     /**
      * Resultset resource
-     * @var resource
+     * @var mysqli_result
      */
     private $resultset;
 
@@ -275,7 +275,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
      * Moves cursor position without fetching row
      *
      * @param  int      the 0-based cursor pos to seek to
-     * @return void
+     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
      * @throws DibiException
      */
     public function seek($row)
@@ -283,9 +283,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
         if (!$this->buffered) {
             throw new DibiDatabaseException('Cannot seek an unbuffered result set');
         }
-        if (!mysqli_data_seek($this->resultset, $row)) {
-            throw new DibiDatabaseException('Unable to seek to row ' . $row);
-        }
+        return mysqli_data_seek($this->resultset, $row);
     }
 
 
@@ -356,7 +354,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     /**
      * Returns the connection resource
      *
-     * @return mixed
+     * @return mysqli
      */
     public function getResource()
     {
@@ -368,7 +366,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     /**
      * Returns the resultset resource
      *
-     * @return mixed
+     * @return mysqli_result
      */
     public function getResultResource()
     {

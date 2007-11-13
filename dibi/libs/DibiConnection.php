@@ -104,9 +104,11 @@ class DibiConnection extends NObject
      */
     final protected function connect()
     {
-        $this->driver->connect($this->config);
-        $this->connected = TRUE;
-        dibi::notify($this, 'connected');
+        if (!$this->connected) {
+            $this->driver->connect($this->config);
+            $this->connected = TRUE;
+            dibi::notify($this, 'connected');
+        }
     }
 
 
@@ -232,7 +234,7 @@ class DibiConnection extends NObject
      */
     final public function nativeQuery($sql)
     {
-        if (!$this->connected) $this->connect();
+        $this->connect();
 
         dibi::$numOfQueries++;
         dibi::$sql = $sql;
@@ -285,7 +287,7 @@ class DibiConnection extends NObject
      */
     public function begin()
     {
-        if (!$this->connected) $this->connect();
+        $this->connect();
         $this->driver->begin();
         dibi::notify($this, 'begin');
     }
@@ -298,7 +300,7 @@ class DibiConnection extends NObject
      */
     public function commit()
     {
-        if (!$this->connected) $this->connect();
+        $this->connect();
         $this->driver->commit();
         dibi::notify($this, 'commit');
     }
@@ -311,7 +313,7 @@ class DibiConnection extends NObject
      */
     public function rollback()
     {
-        if (!$this->connected) $this->connect();
+        $this->connect();
         $this->driver->rollback();
         dibi::notify($this, 'rollback');
     }

@@ -72,9 +72,12 @@ class DibiDatabaseException extends DibiException
 
 
 
-    public static function _catchErrorHandler($errno, $errstr)
+    public static function _catchErrorHandler($errno, $errstr, $errfile, $errline, $errcontext)
     {
         self::restore();
+        if (ini_get('html_errors')) {
+            $errstr = strip_tags($errstr);
+        }
         throw new self($errstr, $errno);
     }
 
