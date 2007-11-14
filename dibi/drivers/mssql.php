@@ -27,6 +27,7 @@
  *   - 'password' (or 'pass')
  *   - 'persistent' - try to find a persistent link?
  *   - 'database' - the database name to select
+ *   - 'lazy' - if TRUE, connection will be established only when required
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl

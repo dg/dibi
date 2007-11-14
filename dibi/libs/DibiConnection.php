@@ -66,9 +66,10 @@ class DibiConnection extends NObject
             $config['driver'] = dibi::$defaultDriver;
         }
 
-        $class = "Dibi$config[driver]Driver";
+        $driver = preg_replace('#[^a-z0-9_]#', '_', $config['driver']);
+        $class = "Dibi" . $driver . "Driver";
         if (!class_exists($class)) {
-            include_once __FILE__ . "/../../drivers/$config[driver].php";
+            include_once __FILE__ . "/../../drivers/$driver.php";
 
             if (!class_exists($class)) {
                 throw new DibiException("Unable to create instance of dibi driver class '$class'.");
@@ -197,6 +198,7 @@ class DibiConnection extends NObject
     {
         if (!is_array($args)) $args = func_get_args();
 
+        $this->connect();
         $trans = new DibiTranslator($this->driver);
         if ($trans->translate($args)) {
             return $this->nativeQuery($trans->sql);
@@ -242,8 +244,7 @@ class DibiConnection extends NObject
         $time = -microtime(TRUE);
         dibi::notify($this, 'beforeQuery', $sql);
 
-        $res = $this->driver->query($sql);
-        $res = $res ? new DibiResult(clone $this->driver) : TRUE; // backward compatibility - will be changed to NULL
+        $res = $this->driver->query($sql) ? new DibiResult(clone $this->driver) : TRUE; // backward compatibility - will be changed to NULL
 
         $time += microtime(TRUE);
         dibi::$elapsedTime = $time;
@@ -328,6 +329,7 @@ class DibiConnection extends NObject
      */
     public function escape($value)
     {
+        $this->connect(); // MySQL & PDO require connection
         return $this->driver->format($value, dibi::FIELD_TEXT);
     }
 

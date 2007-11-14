@@ -25,6 +25,7 @@
  *   - 'database' (or 'string') - connection string
  *   - 'persistent' - try to find a persistent link?
  *   - 'charset' - sets the encoding
+ *   - 'lazy' - if TRUE, connection will be established only when required
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
@@ -65,13 +66,13 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
         }
 
 
-        DibiDatabaseException::catchError();
+        NException::catchError('DibiDatabaseException');
         if (isset($config['persistent'])) {
             $this->connection = @pg_connect($config['database'], PGSQL_CONNECT_FORCE_NEW);
         } else {
             $this->connection = @pg_pconnect($config['database'], PGSQL_CONNECT_FORCE_NEW);
         }
-        DibiDatabaseException::restore();
+        NException::restore();
 
         if (!is_resource($this->connection)) {
             throw new DibiDatabaseException('unknown error');

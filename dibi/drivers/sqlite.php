@@ -25,6 +25,7 @@
  *   - 'database' (or 'file') - the filename of the SQLite database
  *   - 'persistent' - try to find a persistent link?
  *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
+ *   - 'lazy' - if TRUE, connection will be established only when required
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl

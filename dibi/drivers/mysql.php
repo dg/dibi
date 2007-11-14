@@ -32,6 +32,7 @@
  *   - 'charset' - sets the encoding
  *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
  *   - 'options' - driver specific constants (MYSQL_*)
+ *   - 'lazy' - if TRUE, connection will be established only when required
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
@@ -99,13 +100,13 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
             $host = ':' . $config['socket'];
         }
 
-        DibiDatabaseException::catchError();
+        NException::catchError('DibiDatabaseException');
         if (empty($config['persistent'])) {
             $this->connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['options']);
         } else {
             $this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['options']);
         }
-        DibiDatabaseException::restore();
+        NException::restore();
 
         if (!is_resource($this->connection)) {
             throw new DibiDatabaseException(mysql_error(), mysql_errno());

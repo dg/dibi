@@ -32,6 +32,7 @@
  *   - 'charset' - sets the encoding
  *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
  *   - 'options' - driver specific constants (MYSQLI_*)
+ *   - 'lazy' - if TRUE, connection will be established only when required
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl

@@ -32,6 +32,7 @@ if (version_compare(PHP_VERSION , '5.1.0', '<')) {
 
 // libraries
 require_once __FILE__ . '/../libs/NObject.php';
+require_once __FILE__ . '/../libs/NException.php';
 require_once __FILE__ . '/../libs/DibiException.php';
 require_once __FILE__ . '/../libs/DibiConnection.php';
 require_once __FILE__ . '/../libs/DibiDriverInterface.php';
