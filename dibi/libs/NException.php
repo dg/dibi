@@ -24,7 +24,9 @@
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2004, 2007 David Grudl
- * @package    Nette-Exception
+ * @license    http://php7.org/nette/license  Nette license
+ * @link       http://php7.org/nette/
+ * @package    Nette
  */
 class NException extends Exception
 {

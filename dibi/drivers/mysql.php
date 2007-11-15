@@ -93,20 +93,17 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
             }
         }
 
-
         if (empty($config['socket'])) {
             $host = $config['host'] . (empty($config['port']) ? '' : ':' . $config['port']);
         } else {
             $host = ':' . $config['socket'];
         }
 
-        NException::catchError('DibiDatabaseException');
         if (empty($config['persistent'])) {
             $this->connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['options']);
         } else {
             $this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['options']);
         }
-        NException::restore();
 
         if (!is_resource($this->connection)) {
             throw new DibiDatabaseException(mysql_error(), mysql_errno());

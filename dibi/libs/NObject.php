@@ -20,12 +20,6 @@
 
 
 /**
- * compatiblity
- */
-if (!class_exists('NObject', FALSE)) {
-
-
-/**
  * NObject is the ultimate ancestor of all instantiable classes.
  *
  * It defines some handful methods and enhances object core of PHP:
@@ -239,8 +233,5 @@ abstract class NClass
     {
         throw new LogicException("Cannot instantiate static class " . get_class($this));
     }
-
-}
-
 
 }
