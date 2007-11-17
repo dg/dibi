@@ -66,7 +66,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
         }
 
 
-        NException::catchError('DibiDatabaseException');
+        NException::catchError('DibiDriverException');
         if (isset($config['persistent'])) {
             $this->connection = @pg_connect($config['database'], PGSQL_CONNECT_FORCE_NEW);
         } else {
@@ -75,7 +75,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
         NException::restore();
 
         if (!is_resource($this->connection)) {
-            throw new DibiDatabaseException('unknown error');
+            throw new DibiDriverException('Connecting error');
         }
 
         if (isset($config['charset'])) {
@@ -104,14 +104,14 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
      * @param string       SQL statement.
      * @param bool         update affected rows?
      * @return bool        have resultset?
-     * @throws DibiDatabaseException
+     * @throws DibiDriverException
      */
     public function query($sql)
     {
         $this->resultset = @pg_query($this->connection, $sql);
 
         if ($this->resultset === FALSE) {
-            throw new DibiDatabaseException(pg_last_error($this->connection), 0, $sql);
+            throw new DibiDriverException(pg_last_error($this->connection), 0, $sql);
         }
 
         return is_resource($this->resultset);

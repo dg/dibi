@@ -68,7 +68,16 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
             throw new DibiException("PHP extension 'pdo' is not loaded");
         }
 
-        $this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
+        try {
+            $this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
+        } catch (PDOException $e) {
+           throw $this->convertException($e);
+        }
+
+        if (!$this->connection) {
+            throw new DibiDriverException('Connecting error');
+        }
+
         $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
@@ -90,11 +99,15 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      *
      * @param string       SQL statement.
      * @return bool        have resultset?
-     * @throws DibiDatabaseException
+     * @throws DibiDriverException
      */
     public function query($sql)
     {
-        $this->resultset = $this->connection->query($sql);
+        try {
+            $this->resultset = $this->connection->query($sql);
+        } catch (PDOException $e) {
+           throw $this->convertException($e);
+        }
         return $this->resultset instanceof PDOStatement;
     }
 
@@ -130,7 +143,11 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function begin()
     {
-        $this->connection->beginTransaction();
+        try {
+            $this->connection->beginTransaction();
+        } catch (PDOException $e) {
+           throw $this->convertException($e);
+        }
     }
 
 
@@ -141,7 +158,11 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function commit()
     {
-        $this->connection->commit();
+        try {
+            $this->connection->commit();
+        } catch (PDOException $e) {
+           throw $this->convertException($e);
+        }
     }
 
 
@@ -152,7 +173,11 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function rollback()
     {
-        $this->connection->rollBack();
+        try {
+            $this->connection->rollBack();
+        } catch (PDOException $e) {
+           throw $this->convertException($e);
+        }
     }
 
 
@@ -199,7 +224,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function rowCount()
     {
-        throw new DibiDatabaseException('Row count is not available for unbuffered queries');
+        throw new DibiDriverException('Row count is not available for unbuffered queries');
     }
 
 
@@ -226,7 +251,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function seek($row)
     {
-        throw new DibiDatabaseException('Cannot seek an unbuffered result set');
+        throw new DibiDriverException('Cannot seek an unbuffered result set');
     }
 
 
@@ -290,5 +315,18 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     function getDibiReflection()
     {}
+
+
+
+    /**
+     * Disconnects from a database
+     *
+     * @param  PDOException
+     * @return DibiDriverException
+     */
+    private function convertException($e)
+    {
+        return new DibiDriverException($e->getMessage(), $e->getCode());
+    }
 
 }

@@ -78,7 +78,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
         }
 
         if (!$this->connection) {
-            throw new DibiDatabaseException($errorMsg);
+            throw new DibiDriverException($errorMsg);
         }
 
         $this->buffered = empty($config['unbuffered']);
@@ -102,7 +102,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
      *
      * @param string       SQL statement.
      * @return bool        have resultset?
-     * @throws DibiDatabaseException
+     * @throws DibiDriverException
      */
     public function query($sql)
     {
@@ -115,7 +115,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
         }
 
         if ($errorMsg !== NULL) {
-            throw new DibiDatabaseException($errorMsg, sqlite_last_error($this->connection), $sql);
+            throw new DibiDriverException($errorMsg, sqlite_last_error($this->connection), $sql);
         }
 
         return is_resource($this->resultset);
@@ -225,7 +225,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
     public function rowCount()
     {
         if (!$this->buffered) {
-            throw new DibiDatabaseException('Row count is not available for unbuffered queries');
+            throw new DibiDriverException('Row count is not available for unbuffered queries');
         }
         return sqlite_num_rows($this->resultset);
     }
@@ -255,7 +255,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
     public function seek($row)
     {
         if (!$this->buffered) {
-            throw new DibiDatabaseException('Cannot seek an unbuffered result set');
+            throw new DibiDriverException('Cannot seek an unbuffered result set');
         }
         return sqlite_seek($this->resultset, $row);
     }

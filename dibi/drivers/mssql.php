@@ -76,11 +76,11 @@ class DibiMsSqlDriver extends NObject implements DibiDriverInterface
         }
 
         if (!is_resource($this->connection)) {
-            throw new DibiDatabaseException("Can't connect to DB");
+            throw new DibiDriverException("Can't connect to DB");
         }
 
         if (isset($config['database']) && !@mssql_select_db($config['database'], $this->connection)) {
-            throw new DibiDatabaseException("Can't select DB '$config[database]'");
+            throw new DibiDriverException("Can't select DB '$config[database]'");
         }
     }
 
@@ -103,14 +103,14 @@ class DibiMsSqlDriver extends NObject implements DibiDriverInterface
      *
      * @param string       SQL statement.
      * @return bool        have resultset?
-     * @throws DibiDatabaseException
+     * @throws DibiDriverException
      */
     public function query($sql)
     {
         $this->resultset = @mssql_query($sql, $this->connection);
 
         if ($this->resultset === FALSE) {
-            throw new DibiDatabaseException('Query error', 0, $sql);
+            throw new DibiDriverException('Query error', 0, $sql);
         }
 
         return is_resource($this->resultset);

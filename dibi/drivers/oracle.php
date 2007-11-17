@@ -78,7 +78,7 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
 
         if (!$this->connection) {
             $err = oci_error();
-            throw new DibiDatabaseException($err['message'], $err['code']);
+            throw new DibiDriverException($err['message'], $err['code']);
         }
     }
 
@@ -101,7 +101,7 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
      *
      * @param string       SQL statement.
      * @return bool        have resultset?
-     * @throws DibiDatabaseException
+     * @throws DibiDriverException
      */
     public function query($sql)
     {
@@ -111,11 +111,11 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
             oci_execute($this->resultset, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
             $err = oci_error($this->resultset);
             if ($err) {
-                throw new DibiDatabaseException($err['message'], $err['code'], $sql);
+                throw new DibiDriverException($err['message'], $err['code'], $sql);
             }
         } else {
             $err = oci_error($this->connection);
-            throw new DibiDatabaseException($err['message'], $err['code'], $sql);
+            throw new DibiDriverException($err['message'], $err['code'], $sql);
         }
 
         return is_resource($this->resultset);
@@ -166,7 +166,7 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
     {
         if (!oci_commit($this->connection)) {
             $err = oci_error($this->connection);
-            throw new DibiDatabaseException($err['message'], $err['code']);
+            throw new DibiDriverException($err['message'], $err['code']);
         }
         $this->autocommit = TRUE;
     }
@@ -181,7 +181,7 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
     {
         if (!oci_rollback($this->connection)) {
             $err = oci_error($this->connection);
-            throw new DibiDatabaseException($err['message'], $err['code']);
+            throw new DibiDriverException($err['message'], $err['code']);
         }
         $this->autocommit = TRUE;
     }

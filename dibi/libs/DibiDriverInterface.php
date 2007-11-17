@@ -56,7 +56,7 @@ interface DibiDriverInterface
      *
      * @param string       SQL statement.
      * @return bool        have resultset?
-     * @throws DibiDatabaseException
+     * @throws DibiDriverException
      */
     function query($sql);
 

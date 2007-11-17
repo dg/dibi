@@ -106,7 +106,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
         }
 
         if (!is_resource($this->connection)) {
-            throw new DibiDatabaseException(mysql_error(), mysql_errno());
+            throw new DibiDriverException(mysql_error(), mysql_errno());
         }
 
         if (isset($config['charset'])) {
@@ -115,7 +115,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
         }
 
         if (isset($config['database']) && !@mysql_select_db($config['database'], $this->connection)) {
-            throw new DibiDatabaseException(mysql_error($this->connection), mysql_errno($this->connection));
+            throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection));
         }
 
         $this->buffered = empty($config['unbuffered']);
@@ -140,7 +140,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
      *
      * @param string       SQL statement.
      * @return bool        have resultset?
-     * @throws DibiDatabaseException
+     * @throws DibiDriverException
      */
     public function query($sql)
     {
@@ -151,7 +151,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
         }
 
         if ($errno = mysql_errno($this->connection)) {
-            throw new DibiDatabaseException(mysql_error($this->connection), $errno, $sql);
+            throw new DibiDriverException(mysql_error($this->connection), $errno, $sql);
         }
 
         return is_resource($this->resultset);
@@ -264,7 +264,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
     public function rowCount()
     {
         if (!$this->buffered) {
-            throw new DibiDatabaseException('Row count is not available for unbuffered queries');
+            throw new DibiDriverException('Row count is not available for unbuffered queries');
         }
         return mysql_num_rows($this->resultset);
     }
@@ -294,7 +294,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
     public function seek($row)
     {
         if (!$this->buffered) {
-            throw new DibiDatabaseException('Cannot seek an unbuffered result set');
+            throw new DibiDriverException('Cannot seek an unbuffered result set');
         }
 
         return mysql_data_seek($this->resultset, $row);

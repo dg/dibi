@@ -73,7 +73,7 @@ final class DibiLogger extends NObject
         }
 
         if ($event === 'exception' && $this->logErrors) {
-            // $arg is DibiDatabaseException
+            // $arg is DibiDriverException
             $message = $arg->getMessage();
             $code = $arg->getCode();
             if ($code) {

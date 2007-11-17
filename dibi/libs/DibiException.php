@@ -40,7 +40,7 @@ class DibiException extends Exception
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiDatabaseException extends DibiException
+class DibiDriverException extends DibiException
 {
     /** @var string */
     private $sql;

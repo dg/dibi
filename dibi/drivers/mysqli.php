@@ -95,7 +95,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
         @mysqli_real_connect($this->connection, $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['options']);
 
         if ($errno = mysqli_connect_errno()) {
-            throw new DibiDatabaseException(mysqli_connect_error(), $errno);
+            throw new DibiDriverException(mysqli_connect_error(), $errno);
         }
 
         if (isset($config['charset'])) {
@@ -123,14 +123,14 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
      *
      * @param string       SQL statement.
      * @return bool        have resultset?
-     * @throws DibiDatabaseException
+     * @throws DibiDriverException
      */
     public function query($sql)
     {
         $this->resultset = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT);
 
         if ($errno = mysqli_errno($this->connection)) {
-            throw new DibiDatabaseException(mysqli_error($this->connection), $errno, $sql);
+            throw new DibiDriverException(mysqli_error($this->connection), $errno, $sql);
         }
 
         return is_object($this->resultset);
@@ -169,7 +169,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     public function begin()
     {
         if (!mysqli_autocommit($this->connection, FALSE)) {
-            throw new DibiDatabaseException(mysqli_error($this->connection), mysqli_errno($this->connection));
+            throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection));
         }
     }
 
@@ -182,7 +182,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     public function commit()
     {
         if (!mysqli_commit($this->connection)) {
-            throw new DibiDatabaseException(mysqli_error($this->connection), mysqli_errno($this->connection));
+            throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection));
         }
         mysqli_autocommit($this->connection, TRUE);
     }
@@ -196,7 +196,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     public function rollback()
     {
         if (!mysqli_rollback($this->connection)) {
-            throw new DibiDatabaseException(mysqli_error($this->connection), mysqli_errno($this->connection));
+            throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection));
         }
         mysqli_autocommit($this->connection, TRUE);
     }
@@ -252,7 +252,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     public function rowCount()
     {
         if (!$this->buffered) {
-            throw new DibiDatabaseException('Row count is not available for unbuffered queries');
+            throw new DibiDriverException('Row count is not available for unbuffered queries');
         }
         return mysqli_num_rows($this->resultset);
     }
@@ -282,7 +282,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     public function seek($row)
     {
         if (!$this->buffered) {
-            throw new DibiDatabaseException('Cannot seek an unbuffered result set');
+            throw new DibiDriverException('Cannot seek an unbuffered result set');
         }
         return mysqli_data_seek($this->resultset, $row);
     }
