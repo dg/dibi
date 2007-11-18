@@ -83,10 +83,10 @@ $assoc = $res->fetchAssoc('customers.name,products.title'); // key
 print_r($assoc);
 echo '<hr>';
 
-$assoc = $res->fetchAssoc('customers.name,*,products.title'); // key
+$assoc = $res->fetchAssoc('customers.name,#,products.title'); // key
 print_r($assoc);
 echo '<hr>';
 
-$assoc = $res->fetchAssoc('customers.name,#,products.title'); // key
+$assoc = $res->fetchAssoc('customers.name,=,products.title'); // key
 print_r($assoc);
 echo '<hr>';

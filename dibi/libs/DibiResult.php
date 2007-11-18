@@ -30,7 +30,7 @@
  * $table = $result->fetchAll();
  * $pairs = $result->fetchPairs();
  * $assoc = $result->fetchAssoc('id');
- * $assoc = $result->fetchAssoc('active', 'id');
+ * $assoc = $result->fetchAssoc('active,#,id');
  *
  * unset($result);
  * </code>
@@ -236,7 +236,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
     /**
      * Fetches all records from table and returns associative tree
-     * Associative descriptor:  assoc1,*,assoc2,#,assco3
+     * Associative descriptor:  assoc1,#,assoc2,=,assco3
      * builds a tree:           $data[value1][index][value2]['assoc3'][value3] = {record}
      *
      * @param  string  associative descriptor
@@ -254,7 +254,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
         // check fields
         foreach ($assoc as $as) {
-            if ($as !== '*' && $as !== '#' && !array_key_exists($as, $row)) {
+            if ($as !== '#' && $as !== '=' && !array_key_exists($as, $row)) {
                 throw new InvalidArgumentException("Unknown column '$as' in associative descriptor");
             }
         }
@@ -268,7 +268,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
         }
 
         $last = count($assoc) - 1;
-        if ($assoc[$last] === '#') unset($assoc[$last]);
+        if ($assoc[$last] === '=') unset($assoc[$last]);
 
         // make associative tree
         do {
@@ -276,10 +276,10 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
             // iterative deepening
             foreach ($assoc as $i => $as) {
-                if ($as === '*') { // indexed-array node
+                if ($as === '#') { // indexed-array node
                     $x = & $x[];
 
-                } elseif ($as === '#') { // "record" node
+                } elseif ($as === '=') { // "record" node
                     if ($x === NULL) {
                         $x = $row;
                         $x = & $x[ $assoc[$i+1] ];
