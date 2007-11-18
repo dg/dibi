@@ -198,7 +198,7 @@ abstract class NObject
 
 
     /**
-	 * Does method exist? Case sensitive, filters protected & private, doesn't recognize static methods (works good since 5.0.4)
+	 * Does public method exist? (case sensitive)
      *
 	 * @param string  class name
      * @param string  method name
@@ -208,6 +208,11 @@ abstract class NObject
     {
         static $cache;
         if (!isset($cache[$c])) {
+            // get_class_methods returns private, protected and public methods of NObject (doesn't matter)
+            // only only public methods of descendants (perfect!)
+            // but returns static methods too (nothing doing...)
+            // and is much faster than reflection
+            // (works good since 5.0.4)
             $cache[$c] = array_flip(get_class_methods($c));
         }
         return isset($cache[$c][$m]);

@@ -71,7 +71,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
         try {
             $this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
         } catch (PDOException $e) {
-           throw $this->convertException($e);
+           throw new DibiDriverException($e->getMessage(), $e->getCode());
         }
 
         if (!$this->connection) {
@@ -106,7 +106,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
         try {
             $this->resultset = $this->connection->query($sql);
         } catch (PDOException $e) {
-           throw $this->convertException($e);
+           throw new DibiDriverException($e->getMessage(), $e->getCode(), $sql);
         }
         return $this->resultset instanceof PDOStatement;
     }
@@ -146,7 +146,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
         try {
             $this->connection->beginTransaction();
         } catch (PDOException $e) {
-           throw $this->convertException($e);
+           throw new DibiDriverException($e->getMessage(), $e->getCode());
         }
     }
 
@@ -161,7 +161,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
         try {
             $this->connection->commit();
         } catch (PDOException $e) {
-           throw $this->convertException($e);
+           throw new DibiDriverException($e->getMessage(), $e->getCode());
         }
     }
 
@@ -176,7 +176,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
         try {
             $this->connection->rollBack();
         } catch (PDOException $e) {
-           throw $this->convertException($e);
+           throw new DibiDriverException($e->getMessage(), $e->getCode());
         }
     }
 
@@ -315,18 +315,5 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     function getDibiReflection()
     {}
-
-
-
-    /**
-     * Disconnects from a database
-     *
-     * @param  PDOException
-     * @return DibiDriverException
-     */
-    private function convertException($e)
-    {
-        return new DibiDriverException($e->getMessage(), $e->getCode());
-    }
 
 }

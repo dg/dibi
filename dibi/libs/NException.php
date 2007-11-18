@@ -30,11 +30,57 @@
  */
 class NException extends Exception
 {
+    /** @var Exception */
+    private $cause;
+
     /** @var callback */
     private static $oldHandler;
 
     /** @var string */
     private static $handlerClass;
+
+
+
+
+    /**
+     * Initializes the cause of this throwable to the specified value
+     *
+     * @param  Exception
+     * @return void
+     */
+    public function initCause(Exception $cause)
+    {
+        if ($this->cause === NULL) {
+            $this->cause = $cause;
+        } else {
+            throw new BadMethodCallException('Cause was already assigned');
+        }
+    }
+
+
+
+    /**
+     * Gets the Exception instance that caused the current exception
+     *
+     * @return Exception
+     */
+    public function getCause()
+    {
+        return $this->cause;
+    }
+
+
+
+    /**
+     * Returns string represenation of exception
+     *
+     * @return void
+     */
+    public function __toString()
+    {
+        return parent::__toString() . ($this->cause === NULL ? '' : "\nCaused by " . $this->cause->__toString());
+    }
+
 
 
     /**

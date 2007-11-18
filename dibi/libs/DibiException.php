@@ -27,7 +27,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiException extends Exception
+class DibiException extends NException
 {
 }
 
