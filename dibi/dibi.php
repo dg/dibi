@@ -42,6 +42,7 @@ require_once __FILE__ . '/../libs/DibiResult.php';
 require_once __FILE__ . '/../libs/DibiResultIterator.php';
 require_once __FILE__ . '/../libs/DibiTranslator.php';
 require_once __FILE__ . '/../libs/DibiLogger.php';
+require_once __FILE__ . '/../libs/DibiVariable.php';
 
 
 

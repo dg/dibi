@@ -279,6 +279,7 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
     public function free()
     {
         odbc_free_result($this->resultset);
+        $this->resultset = NULL;
     }
 
 

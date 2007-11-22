@@ -265,6 +265,7 @@ class DibiMsSqlDriver extends NObject implements DibiDriverInterface
     public function free()
     {
         mssql_free_result($this->resultset);
+        $this->resultset = NULL;
     }
 
 

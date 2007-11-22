@@ -310,6 +310,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
     public function free()
     {
         mysql_free_result($this->resultset);
+        $this->resultset = NULL;
     }
 
 

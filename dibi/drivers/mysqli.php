@@ -297,6 +297,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     public function free()
     {
         mysqli_free_result($this->resultset);
+        $this->resultset = NULL;
     }
 
 

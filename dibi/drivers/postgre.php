@@ -140,14 +140,14 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
     {
         if ($sequence === NULL) {
             // PostgreSQL 8.1 is needed
-            $res = $this->query("SELECT LASTVAL() AS seq");
+            $has = $this->query("SELECT LASTVAL() AS seq");
         } else {
-            $res = $this->query("SELECT CURRVAL('$sequence') AS seq");
+            $has = $this->query("SELECT CURRVAL('$sequence') AS seq");
         }
 
-        if (is_resource($res)) {
-            $row = pg_fetch_assoc($res);
-            pg_free_result($res);
+        if ($has) {
+            $row = $this->fetch();
+            $this->free();
             return $row['seq'];
         }
 
@@ -277,6 +277,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
     public function free()
     {
         pg_free_result($this->resultset);
+        $this->resultset = NULL;
     }
 
 

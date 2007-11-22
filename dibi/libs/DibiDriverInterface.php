@@ -191,23 +191,3 @@ interface DibiDriverInterface
     function getDibiReflection();
 
 }
-
-
-
-
-
-/**
- * Interface for user variable, used for generating SQL
- * @package dibi
- */
-interface DibiVariableInterface
-{
-    /**
-     * Format for SQL
-     *
-     * @param  object  destination DibiDriverInterface
-     * @param  string  optional modifier
-     * @return string  SQL code
-     */
-    public function toSql(DibiDriverInterface $driver, $modifier);
-}

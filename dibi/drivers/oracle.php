@@ -272,6 +272,7 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
     public function free()
     {
         oci_free_statement($this->resultset);
+        $this->resultset = NULL;
     }
 
 
