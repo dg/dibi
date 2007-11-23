@@ -116,7 +116,7 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
         $this->resultset = @odbc_exec($this->connection, $sql);
 
         if ($this->resultset === FALSE) {
-            throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
+            $this->throwException($sql);
         }
 
         return is_resource($this->resultset);
@@ -127,7 +127,7 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
     /**
      * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
      *
-     * @return int       number of rows or FALSE on error
+     * @return int|FALSE  number of rows or FALSE on error
      */
     public function affectedRows()
     {
@@ -151,11 +151,12 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
     /**
      * Begins a transaction (if supported).
      * @return void
+     * @throws DibiDriverException
      */
     public function begin()
     {
         if (!odbc_autocommit($this->connection, FALSE)) {
-            throw new DibiDriverException(odbc_errormsg($this->connection)  . ' ' . odbc_error($this->connection));
+            $this->throwException();
         }
     }
 
@@ -164,11 +165,12 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
     /**
      * Commits statements in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function commit()
     {
         if (!odbc_commit($this->connection)) {
-            throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
+            $this->throwException();
         }
         odbc_autocommit($this->connection, TRUE);
     }
@@ -178,11 +180,12 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
     /**
      * Rollback changes in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function rollback()
     {
         if (!odbc_rollback($this->connection)) {
-            throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
+            $this->throwException();
         }
         odbc_autocommit($this->connection, TRUE);
     }
@@ -328,6 +331,19 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
         }
         return $meta;
     }
+
+
+
+    /**
+     * Converts database error to DibiDriverException
+     *
+     * @throws DibiDriverException
+     */
+    protected function throwException($sql=NULL)
+    {
+        throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
+    }
+
 
 
     /**

@@ -65,7 +65,7 @@ interface DibiDriverInterface
     /**
      * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
      *
-     * @return int       number of rows or FALSE on error
+     * @return int|FALSE  number of rows or FALSE on error
      */
     function affectedRows();
 
@@ -83,6 +83,7 @@ interface DibiDriverInterface
     /**
      * Begins a transaction (if supported).
      * @return void
+     * @throws DibiDriverException
      */
     function begin();
 
@@ -91,6 +92,7 @@ interface DibiDriverInterface
     /**
      * Commits statements in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     function commit();
 
@@ -99,6 +101,7 @@ interface DibiDriverInterface
     /**
      * Rollback changes in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     function rollback();
 
@@ -163,6 +166,7 @@ interface DibiDriverInterface
      * @return void
      */
     function free();
+
 
 
     /**

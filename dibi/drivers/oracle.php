@@ -25,7 +25,7 @@
  *   - 'database' (or 'db') - the name of the local Oracle instance or the name of the entry in tnsnames.ora
  *   - 'username' (or 'user')
  *   - 'password' (or 'pass')
- *   - 'charset' - sets the encoding
+ *   - 'charset' - character encoding to set
  *   - 'lazy' - if TRUE, connection will be established only when required
  *
  * @author     David Grudl
@@ -114,8 +114,7 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
                 throw new DibiDriverException($err['message'], $err['code'], $sql);
             }
         } else {
-            $err = oci_error($this->connection);
-            throw new DibiDriverException($err['message'], $err['code'], $sql);
+            $this->throwException($sql);
         }
 
         return is_resource($this->resultset);
@@ -126,7 +125,7 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
     /**
      * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
      *
-     * @return int       number of rows or FALSE on error
+     * @return int|FALSE  number of rows or FALSE on error
      */
     public function affectedRows()
     {
@@ -150,6 +149,7 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
     /**
      * Begins a transaction (if supported).
      * @return void
+     * @throws DibiDriverException
      */
     public function begin()
     {
@@ -161,12 +161,12 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
     /**
      * Commits statements in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function commit()
     {
         if (!oci_commit($this->connection)) {
-            $err = oci_error($this->connection);
-            throw new DibiDriverException($err['message'], $err['code']);
+            $this->throwException();
         }
         $this->autocommit = TRUE;
     }
@@ -176,12 +176,12 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
     /**
      * Rollback changes in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function rollback()
     {
         if (!oci_rollback($this->connection)) {
-            $err = oci_error($this->connection);
-            throw new DibiDriverException($err['message'], $err['code']);
+            $this->throwException();
         }
         $this->autocommit = TRUE;
     }
@@ -288,6 +288,20 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
         }
         return $meta;
     }
+
+
+
+    /**
+     * Converts database error to DibiDriverException
+     *
+     * @throws DibiDriverException
+     */
+    protected function throwException($sql=NULL)
+    {
+        $err = oci_error($this->connection);
+        throw new DibiDriverException($err['message'], $err['code'], $sql);
+    }
+
 
 
     /**

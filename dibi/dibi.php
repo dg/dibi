@@ -318,24 +318,11 @@ class dibi extends NClass
 
 
     /**
-     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
-     * Monostate for DibiConnection::insertId()
-     *
-     * @param  string     optional sequence name for DibiPostgreDriver
-     * @return int|FALSE  int on success or FALSE on failure
-     */
-    public static function insertId($sequence=NULL)
-    {
-        return self::getConnection()->insertId($sequence);
-    }
-
-
-
-    /**
      * Gets the number of affected rows
      * Monostate for DibiConnection::affectedRows()
      *
-     * @return int  number of rows or FALSE on error
+     * @return int  number of rows
+     * @throws DibiException
      */
     public static function affectedRows()
     {
@@ -345,7 +332,24 @@ class dibi extends NClass
 
 
     /**
+     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
+     * Monostate for DibiConnection::insertId()
+     *
+     * @param  string     optional sequence name
+     * @return int
+     * @throws DibiException
+     */
+    public static function insertId($sequence=NULL)
+    {
+        return self::getConnection()->insertId($sequence);
+    }
+
+
+
+    /**
      * Begins a transaction - Monostate for DibiConnection::begin()
+     * @return void
+     * @throws DibiException
      */
     public static function begin()
     {
@@ -356,6 +360,8 @@ class dibi extends NClass
 
     /**
      * Commits statements in a transaction - Monostate for DibiConnection::commit()
+     * @return void
+     * @throws DibiException
      */
     public static function commit()
     {
@@ -366,6 +372,8 @@ class dibi extends NClass
 
     /**
      * Rollback changes in a transaction - Monostate for DibiConnection::rollback()
+     * @return void
+     * @throws DibiException
      */
     public static function rollback()
     {
@@ -380,6 +388,41 @@ class dibi extends NClass
     public static function __callStatic($name, $args)
     {
         return call_user_func_array(array(self::getConnection(), $name), $args);
+    }
+
+
+
+    /**
+     * Pseudotype for timestamp representation
+     *
+     * @param mixed  datetime
+     * @return DibiVariable
+     */
+    public static function datetime($time = NULL)
+    {
+        if ($time === NULL) {
+            $time = time(); // current time
+        } elseif (is_string($time)) {
+            $time = strtotime($time); // try convert to timestamp
+        } else {
+            $time = (int) $time;
+        }
+        return new DibiVariable($time, dibi::FIELD_DATETIME);
+    }
+
+
+
+    /**
+     * Pseudotype for date representation
+     *
+     * @param mixed  date
+     * @return DibiVariable
+     */
+    public static function date($date = NULL)
+    {
+        $var = self::datetime($date);
+        $var->type = dibi::FIELD_DATE;
+        return $var;
     }
 
 

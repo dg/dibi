@@ -29,7 +29,7 @@
  *   - 'password' (or 'pass')
  *   - 'persistent' - try to find a persistent link?
  *   - 'database' - the database name to select
- *   - 'charset' - sets the encoding
+ *   - 'charset' - character encoding to set
  *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
  *   - 'options' - driver specific constants (MYSQLI_*)
  *   - 'lazy' - if TRUE, connection will be established only when required
@@ -130,7 +130,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
         $this->resultset = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT);
 
         if ($errno = mysqli_errno($this->connection)) {
-            throw new DibiDriverException(mysqli_error($this->connection), $errno, $sql);
+            $this->throwException($sql);
         }
 
         return is_object($this->resultset);
@@ -141,7 +141,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     /**
      * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
      *
-     * @return int       number of rows or FALSE on error
+     * @return int|FALSE  number of rows or FALSE on error
      */
     public function affectedRows()
     {
@@ -165,11 +165,12 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     /**
      * Begins a transaction (if supported).
      * @return void
+     * @throws DibiDriverException
      */
     public function begin()
     {
         if (!mysqli_autocommit($this->connection, FALSE)) {
-            throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection));
+            $this->throwException($sql);
         }
     }
 
@@ -178,11 +179,12 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     /**
      * Commits statements in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function commit()
     {
         if (!mysqli_commit($this->connection)) {
-            throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection));
+            $this->throwException($sql);
         }
         mysqli_autocommit($this->connection, TRUE);
     }
@@ -192,11 +194,12 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     /**
      * Rollback changes in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function rollback()
     {
         if (!mysqli_rollback($this->connection)) {
-            throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection));
+            $this->throwException($sql);
         }
         mysqli_autocommit($this->connection, TRUE);
     }
@@ -351,6 +354,19 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
         }
         return $meta;
     }
+
+
+
+    /**
+     * Converts database error to DibiDriverException
+     *
+     * @throws DibiDriverException
+     */
+    protected function throwException($sql=NULL)
+    {
+        throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection), $sql);
+    }
+
 
 
     /**

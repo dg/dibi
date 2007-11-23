@@ -22,9 +22,10 @@
  * The dibi driver for PostgreSQL database
  *
  * Connection options:
- *   - 'database' (or 'string') - connection string
+ *   - 'host','hostaddr','port','dbname','user','password','connect_timeout','options','sslmode','service' - see PostgreSQL API
+ *   - 'string' - or use connection string
  *   - 'persistent' - try to find a persistent link?
- *   - 'charset' - sets the encoding
+ *   - 'charset' - character encoding to set
  *   - 'lazy' - if TRUE, connection will be established only when required
  *
  * @author     David Grudl
@@ -58,21 +59,26 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
      */
     public function connect(array &$config)
     {
-        DibiConnection::alias($config, 'database', 'string');
-        DibiConnection::alias($config, 'type');
-
         if (!extension_loaded('pgsql')) {
             throw new DibiException("PHP extension 'pgsql' is not loaded");
         }
 
-
-        NException::catchError('DibiDriverException');
-        if (isset($config['persistent'])) {
-            $this->connection = @pg_connect($config['database'], PGSQL_CONNECT_FORCE_NEW);
+        if (isset($config['string'])) {
+            $string = $config['string'];
         } else {
-            $this->connection = @pg_pconnect($config['database'], PGSQL_CONNECT_FORCE_NEW);
+            $string = '';
+            foreach (array('host','hostaddr','port','dbname','user','password','connect_timeout','options','sslmode','service') as $key) {
+                if (isset($config[$key])) $string .= $key . '=' . $config[$key] . ' ';
+            }
         }
-        NException::restore();
+
+        DibiDriverException::catchError();
+        if (isset($config['persistent'])) {
+            $this->connection = @pg_connect($string, PGSQL_CONNECT_FORCE_NEW);
+        } else {
+            $this->connection = @pg_pconnect($string, PGSQL_CONNECT_FORCE_NEW);
+        }
+        DibiDriverException::restore();
 
         if (!is_resource($this->connection)) {
             throw new DibiDriverException('Connecting error');
@@ -111,7 +117,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
         $this->resultset = @pg_query($this->connection, $sql);
 
         if ($this->resultset === FALSE) {
-            throw new DibiDriverException(pg_last_error($this->connection), 0, $sql);
+            $this->throwException($sql);
         }
 
         return is_resource($this->resultset);
@@ -122,7 +128,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
     /**
      * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
      *
-     * @return int       number of rows or FALSE on error
+     * @return int|FALSE  number of rows or FALSE on error
      */
     public function affectedRows()
     {
@@ -145,13 +151,11 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
             $has = $this->query("SELECT CURRVAL('$sequence') AS seq");
         }
 
-        if ($has) {
-            $row = $this->fetch();
-            $this->free();
-            return $row['seq'];
-        }
+        if (!$has) return FALSE;
 
-        return FALSE;
+        $row = $this->fetch();
+        $this->free();
+        return isset($row['seq']) ? $row['seq'] : FALSE;
     }
 
 
@@ -159,6 +163,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
     /**
      * Begins a transaction (if supported).
      * @return void
+     * @throws DibiDriverException
      */
     public function begin()
     {
@@ -170,6 +175,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
     /**
      * Commits statements in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function commit()
     {
@@ -181,6 +187,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
     /**
      * Rollback changes in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function rollback()
     {
@@ -316,6 +323,19 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
         }
         return $meta;
     }
+
+
+
+    /**
+     * Converts database error to DibiDriverException
+     *
+     * @throws DibiDriverException
+     */
+    protected function throwException($sql=NULL)
+    {
+        throw new DibiDriverException(pg_last_error($this->connection), 0, $sql);
+    }
+
 
 
     /**

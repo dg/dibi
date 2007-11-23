@@ -29,7 +29,7 @@
  *   - 'password' (or 'pass')
  *   - 'persistent' - try to find a persistent link?
  *   - 'database' - the database name to select
- *   - 'charset' - sets the encoding
+ *   - 'charset' - character encoding to set
  *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
  *   - 'options' - driver specific constants (MYSQL_*)
  *   - 'lazy' - if TRUE, connection will be established only when required
@@ -115,7 +115,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
         }
 
         if (isset($config['database']) && !@mysql_select_db($config['database'], $this->connection)) {
-            throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection));
+            $this->throwException();
         }
 
         $this->buffered = empty($config['unbuffered']);
@@ -150,8 +150,8 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
             $this->resultset = @mysql_unbuffered_query($sql, $this->connection);
         }
 
-        if ($errno = mysql_errno($this->connection)) {
-            throw new DibiDriverException(mysql_error($this->connection), $errno, $sql);
+        if (mysql_errno($this->connection)) {
+            $this->throwException($sql);
         }
 
         return is_resource($this->resultset);
@@ -162,7 +162,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
     /**
      * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
      *
-     * @return int       number of rows or FALSE on error
+     * @return int|FALSE  number of rows or FALSE on error
      */
     public function affectedRows()
     {
@@ -186,6 +186,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
     /**
      * Begins a transaction (if supported).
      * @return void
+     * @throws DibiDriverException
      */
     public function begin()
     {
@@ -197,6 +198,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
     /**
      * Commits statements in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function commit()
     {
@@ -208,6 +210,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
     /**
      * Rollback changes in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function rollback()
     {
@@ -376,6 +379,19 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
         }
         return $meta;
     }
+
+
+
+    /**
+     * Converts database error to DibiDriverException
+     *
+     * @throws DibiDriverException
+     */
+    protected function throwException($sql=NULL)
+    {
+        throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection), $sql);
+    }
+
 
 
     /**

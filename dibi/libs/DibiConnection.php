@@ -47,6 +47,12 @@ class DibiConnection extends NObject
      */
     private $connected = FALSE;
 
+    /**
+     * Is in transaction?
+     * @var bool
+     */
+    private $inTxn = FALSE;
+
 
 
     /**
@@ -122,6 +128,9 @@ class DibiConnection extends NObject
     final public function disconnect()
     {
         if ($this->connected) {
+            if ($this->inTxn) {
+                $this->rollback();
+            }
             $this->driver->disconnect();
             $this->connected = FALSE;
             dibi::notify($this, 'disconnected');
@@ -259,12 +268,14 @@ class DibiConnection extends NObject
     /**
      * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
      *
-     * @return int       number of rows or FALSE on error
+     * @return int  number of rows
+     * @throws DibiException
      */
     public function affectedRows()
     {
         $rows = $this->driver->affectedRows();
-        return $rows < 0 ? FALSE : $rows;
+        if (!is_int($rows) || $rows < 0) throw new DibiException('Cannot retrieve number of affected rows');
+        return $rows;
     }
 
 
@@ -272,12 +283,15 @@ class DibiConnection extends NObject
     /**
      * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
      *
-     * @return int|FALSE  int on success or FALSE on failure
+     * @param  string     optional sequence name
+     * @return int
+     * @throws DibiException
      */
     public function insertId($sequence = NULL)
     {
         $id = $this->driver->insertId($sequence);
-        return $id < 1 ? FALSE : $id;
+        if ($id < 1) throw new DibiException('Cannot retrieve last generated ID');
+        return $id;
     }
 
 
@@ -289,8 +303,14 @@ class DibiConnection extends NObject
     public function begin()
     {
         $this->connect();
+        if ($this->inTxn) {
+    	    throw new DibiException('There is already an active transaction');
+        }
         $this->driver->begin();
+        $this->inTxn = TRUE;
         dibi::notify($this, 'begin');
+
+        return $this;
     }
 
 
@@ -301,8 +321,11 @@ class DibiConnection extends NObject
      */
     public function commit()
     {
-        $this->connect();
+        if (!$this->inTxn) {
+    	    throw new DibiException('There is no active transaction');
+        }
         $this->driver->commit();
+        $this->inTxn = FALSE;
         dibi::notify($this, 'commit');
     }
 
@@ -314,8 +337,11 @@ class DibiConnection extends NObject
      */
     public function rollback()
     {
-        $this->connect();
+        if (!$this->inTxn) {
+    	    throw new DibiException('There is no active transaction');
+        }
         $this->driver->rollback();
+        $this->inTxn = FALSE;
         dibi::notify($this, 'rollback');
     }
 
@@ -376,6 +402,26 @@ class DibiConnection extends NObject
 
 
     /**
+     * Prevents unserialization
+     */
+    public function __wakeup()
+    {
+        throw new DibiException('You cannot serialize or unserialize '.__CLASS__.' instances');
+    }
+
+
+
+    /**
+     * Prevents serialization
+     */
+    public function __sleep()
+    {
+        throw new DibiException('You cannot serialize or unserialize '.__CLASS__.' instances');
+    }
+
+
+
+    /**
      * Returns last error
      * @deprecated
      */
@@ -383,7 +429,5 @@ class DibiConnection extends NObject
     {
         throw new BadMethodCallException(__METHOD__ . ' has been deprecated');
     }
-
-
 
 }

@@ -26,6 +26,8 @@
  *   - 'persistent' - try to find a persistent link?
  *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
  *   - 'lazy' - if TRUE, connection will be established only when required
+ *   - 'format:date' - how to format date in SQL (@see date)
+ *   - 'format:datetime' - how to format datetime in SQL (@see date)
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2007 David Grudl
@@ -55,6 +57,12 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
      */
     private $buffered;
 
+    /**
+     * Date and datetime format
+     * @var string
+     */
+    private $fmtDate, $fmtDateTime;
+
 
     /**
      * Connects to a database
@@ -65,6 +73,8 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
     public function connect(array &$config)
     {
         DibiConnection::alias($config, 'database', 'file');
+        $this->fmtDate = isset($config['format:date']) ? $config['format:date'] : 'U';
+        $this->fmtDateTime = isset($config['format:datetime']) ? $config['format:datetime'] : 'U';
 
         if (!extension_loaded('sqlite')) {
             throw new DibiException("PHP extension 'sqlite' is not loaded");
@@ -108,14 +118,16 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
     {
         $errorMsg = NULL;
 
+        DibiDriverException::catchError();
         if ($this->buffered) {
-            $this->resultset = @sqlite_query($this->connection, $sql, SQLITE_ASSOC, $errorMsg);
+            $this->resultset = sqlite_query($this->connection, $sql, SQLITE_ASSOC);
         } else {
-            $this->resultset = @sqlite_unbuffered_query($this->connection, $sql, SQLITE_ASSOC, $errorMsg);
+            $this->resultset = sqlite_unbuffered_query($this->connection, $sql, SQLITE_ASSOC);
         }
+        DibiDriverException::restore();
 
-        if ($errorMsg !== NULL) {
-            throw new DibiDriverException($errorMsg, sqlite_last_error($this->connection), $sql);
+        if (sqlite_last_error($this->connection)) {
+            $this->throwException();
         }
 
         return is_resource($this->resultset);
@@ -126,7 +138,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
     /**
      * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
      *
-     * @return int       number of rows or FALSE on error
+     * @return int|FALSE  number of rows or FALSE on error
      */
     public function affectedRows()
     {
@@ -150,6 +162,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
     /**
      * Begins a transaction (if supported).
      * @return void
+     * @throws DibiDriverException
      */
     public function begin()
     {
@@ -161,6 +174,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
     /**
      * Commits statements in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function commit()
     {
@@ -172,6 +186,7 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
     /**
      * Rollback changes in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function rollback()
     {
@@ -193,8 +208,8 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
         if ($type === dibi::FIELD_TEXT) return "'" . sqlite_escape_string($value) . "'";
         if ($type === dibi::IDENTIFIER) return '[' . str_replace('.', '].[', $value) . ']';
         if ($type === dibi::FIELD_BOOL) return $value ? 1 : 0;
-        if ($type === dibi::FIELD_DATE) return date("U", $value);
-        if ($type === dibi::FIELD_DATETIME) return date("U", $value);
+        if ($type === dibi::FIELD_DATE) return date($this->fmtDate, $value);
+        if ($type === dibi::FIELD_DATETIME) return date($this->fmtDateTime, $value);
         throw new InvalidArgumentException('Unsupported formatting type');
     }
 
@@ -285,6 +300,20 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
         }
         return $meta;
     }
+
+
+
+    /**
+     * Converts database error to DibiDriverException
+     *
+     * @throws DibiDriverException
+     */
+    protected function throwException($sql=NULL)
+    {
+        $errno = sqlite_last_error($this->connection);
+        throw new DibiDriverException(sqlite_error_string($errno), $errno, $sql);
+    }
+
 
 
     /**

@@ -1,0 +1,7 @@
+- dibi::insertOrUpdate...
+- sjednotit DibiVariable, modifier a type u DibiDriverInterface::format()
+- odstranit podporu pro modifikátory v klièích pole?
+- odstranit podporu pro conditional query?
+- odstranit podporu pro meta types?
+- event, log, profiler
+

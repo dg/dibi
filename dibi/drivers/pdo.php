@@ -77,8 +77,6 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
         if (!$this->connection) {
             throw new DibiDriverException('Connecting error');
         }
-
-        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
 
@@ -103,11 +101,12 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function query($sql)
     {
-        try {
-            $this->resultset = $this->connection->query($sql);
-        } catch (PDOException $e) {
-           throw new DibiDriverException($e->getMessage(), $e->getCode(), $sql);
+        $this->resultset = $this->connection->query($sql);
+
+        if ($this->resultset === FALSE) {
+            $this->throwException($sql);
         }
+
         return $this->resultset instanceof PDOStatement;
     }
 
@@ -116,7 +115,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
     /**
      * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
      *
-     * @return int       number of rows or FALSE on error
+     * @return int|FALSE  number of rows or FALSE on error
      */
     public function affectedRows()
     {
@@ -140,13 +139,12 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
     /**
      * Begins a transaction (if supported).
      * @return void
+     * @throws DibiDriverException
      */
     public function begin()
     {
-        try {
-            $this->connection->beginTransaction();
-        } catch (PDOException $e) {
-           throw new DibiDriverException($e->getMessage(), $e->getCode());
+        if (!$this->connection->beginTransaction()) {
+            $this->throwException();
         }
     }
 
@@ -155,13 +153,12 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
     /**
      * Commits statements in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function commit()
     {
-        try {
-            $this->connection->commit();
-        } catch (PDOException $e) {
-           throw new DibiDriverException($e->getMessage(), $e->getCode());
+        if (!$this->connection->commit()) {
+            $this->throwException();
         }
     }
 
@@ -170,13 +167,12 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
     /**
      * Rollback changes in a transaction.
      * @return void
+     * @throws DibiDriverException
      */
     public function rollback()
     {
-        try {
-            $this->connection->rollBack();
-        } catch (PDOException $e) {
-           throw new DibiDriverException($e->getMessage(), $e->getCode());
+        if (!$this->connection->rollBack()) {
+            $this->throwException();
         }
     }
 
@@ -282,6 +278,20 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
         }
         return $meta;
     }
+
+
+
+    /**
+     * Converts database error to DibiDriverException
+     *
+     * @throws DibiDriverException
+     */
+    protected function throwException($sql=NULL)
+    {
+        $err = $this->connection->errorInfo();
+        throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
+    }
+
 
 
     /**

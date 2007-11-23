@@ -14,7 +14,7 @@ try {
     echo 'OK';
 
 } catch (DibiException $e) {
-    echo get_class($e), ': ', $e->getMessage();
+    echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
 
@@ -28,7 +28,7 @@ try {
     echo 'OK';
 
 } catch (DibiException $e) {
-    echo get_class($e), ': ', $e->getMessage();
+    echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
 
@@ -49,7 +49,7 @@ try {
     echo 'OK';
 
 } catch (DibiException $e) {
-    echo get_class($e), ': ', $e->getMessage();
+    echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
 
@@ -68,7 +68,7 @@ try {
     echo 'OK';
 
 } catch (DibiException $e) {
-    echo get_class($e), ': ', $e->getMessage();
+    echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
 
@@ -86,7 +86,7 @@ try {
     echo 'OK';
 
 } catch (DibiException $e) {
-    echo get_class($e), ': ', $e->getMessage();
+    echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
 
@@ -103,7 +103,7 @@ try {
     echo 'OK';
 
 } catch (DibiException $e) {
-    echo get_class($e), ': ', $e->getMessage();
+    echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
 
@@ -121,7 +121,7 @@ try {
     echo 'OK';
 
 } catch (DibiException $e) {
-    echo get_class($e), ': ', $e->getMessage();
+    echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
 
@@ -139,6 +139,6 @@ try {
     echo 'OK';
 
 } catch (DibiException $e) {
-    echo get_class($e), ': ', $e->getMessage();
+    echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";

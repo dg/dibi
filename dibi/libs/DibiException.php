@@ -46,6 +46,13 @@ class DibiDriverException extends DibiException
     private $sql;
 
 
+    /**
+     * Construct an dibi driver exception
+	 *
+	 * @param string  Message describing the exception
+	 * @param int     Some code
+     * @param string  SQL command
+	 */
     public function __construct($message = NULL, $code = 0, $sql = NULL)
     {
         parent::__construct($message, (int) $code);
@@ -55,6 +62,9 @@ class DibiDriverException extends DibiException
 
 
 
+    /**
+     * @return string  The SQL passed to the constructor
+	 */
     final public function getSql()
     {
         return $this->sql;
@@ -62,9 +72,22 @@ class DibiDriverException extends DibiException
 
 
 
+    /**
+     * @return string  string represenation of exception with SQL command
+     */
     public function __toString()
     {
         return parent::__toString() . ($this->sql ? "\nSQL: " . $this->sql : '');
+    }
+
+
+
+    /**
+     * @see NException::catchError (this is Late static binding fix
+     */
+    public static function catchError($class = __CLASS__)
+    {
+        parent::catchError($class);
     }
 
 }

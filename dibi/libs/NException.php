@@ -74,7 +74,7 @@ class NException extends Exception
     /**
      * Returns string represenation of exception
      *
-     * @return void
+     * @return string
      */
     public function __toString()
     {
