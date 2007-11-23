@@ -419,15 +419,4 @@ class DibiConnection extends NObject
         throw new DibiException('You cannot serialize or unserialize '.__CLASS__.' instances');
     }
 
-
-
-    /**
-     * Returns last error
-     * @deprecated
-     */
-    public function errorInfo()
-    {
-        throw new BadMethodCallException(__METHOD__ . ' has been deprecated');
-    }
-
 }

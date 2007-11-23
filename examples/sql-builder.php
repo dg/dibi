@@ -30,7 +30,7 @@ $array3 = array(
 $array4 = array(
     'a'   => 12,
     'b'   => NULL,
-    'c%t' => time(),  // modifier 'T' means datetime
+    'c'   => dibi::datetime(),
     'd'   => 'any string',
 );
 $array5 = array('RAND()', '[col1] > [col2]');

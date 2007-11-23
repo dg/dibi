@@ -321,18 +321,6 @@ class DibiMsSqlDriver extends NObject implements DibiDriverInterface
 
 
     /**
-     * Converts database error to DibiDriverException
-     *
-     * @throws DibiDriverException
-     */
-    protected function throwException($sql=NULL)
-    {
-        throw new DibiDriverException();
-    }
-
-
-
-    /**
      * Returns the connection resource
      *
      * @return mixed

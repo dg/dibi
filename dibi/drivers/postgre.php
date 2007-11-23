@@ -117,7 +117,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
         $this->resultset = @pg_query($this->connection, $sql);
 
         if ($this->resultset === FALSE) {
-            $this->throwException($sql);
+            throw new DibiDriverException(pg_last_error($this->connection), 0, $sql);
         }
 
         return is_resource($this->resultset);
@@ -322,18 +322,6 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
             $meta[$name] = $info;
         }
         return $meta;
-    }
-
-
-
-    /**
-     * Converts database error to DibiDriverException
-     *
-     * @throws DibiDriverException
-     */
-    protected function throwException($sql=NULL)
-    {
-        throw new DibiDriverException(pg_last_error($this->connection), 0, $sql);
     }
 
 

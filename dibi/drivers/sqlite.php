@@ -120,15 +120,11 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
 
         DibiDriverException::catchError();
         if ($this->buffered) {
-            $this->resultset = sqlite_query($this->connection, $sql, SQLITE_ASSOC);
+            $this->resultset = sqlite_query($this->connection, $sql);
         } else {
-            $this->resultset = sqlite_unbuffered_query($this->connection, $sql, SQLITE_ASSOC);
+            $this->resultset = sqlite_unbuffered_query($this->connection, $sql);
         }
         DibiDriverException::restore();
-
-        if (sqlite_last_error($this->connection)) {
-            $this->throwException();
-        }
 
         return is_resource($this->resultset);
     }
@@ -299,19 +295,6 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
             $meta[$name] = array('type' => dibi::FIELD_UNKNOWN);
         }
         return $meta;
-    }
-
-
-
-    /**
-     * Converts database error to DibiDriverException
-     *
-     * @throws DibiDriverException
-     */
-    protected function throwException($sql=NULL)
-    {
-        $errno = sqlite_last_error($this->connection);
-        throw new DibiDriverException(sqlite_error_string($errno), $errno, $sql);
     }
 
 
