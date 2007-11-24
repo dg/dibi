@@ -362,7 +362,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
      *
      * @throws DibiDriverException
      */
-    protected function throwException($sql=NULL)
+    protected function throwException($sql = NULL)
     {
         throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection), $sql);
     }

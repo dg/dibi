@@ -291,7 +291,7 @@ class DibiConnection extends NObject
     {
         $id = $this->driver->insertId($sequence);
         if ($id < 1) throw new DibiException('Cannot retrieve last generated ID');
-        return $id;
+        return (int) $id;
     }
 
 

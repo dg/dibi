@@ -296,7 +296,7 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
      *
      * @throws DibiDriverException
      */
-    protected function throwException($sql=NULL)
+    protected function throwException($sql = NULL)
     {
         $err = oci_error($this->connection);
         throw new DibiDriverException($err['message'], $err['code'], $sql);

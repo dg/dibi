@@ -50,6 +50,13 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
     private $resultset;
 
 
+    /**
+     * Affected rows
+     * @var int
+     */
+    private $affectedRows = FALSE;
+
+
 
     /**
      * Connects to a database
@@ -101,13 +108,30 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function query($sql)
     {
-        $this->resultset = $this->connection->query($sql);
+        // must detect if SQL returns resultset or num of affected rows
+        $cmd = strtoupper(substr(ltrim($sql), 0, 6));
+        $list = array('UPDATE'=>1, 'DELETE'=>1, 'INSERT'=>1, 'REPLAC'=>1);
 
-        if ($this->resultset === FALSE) {
-            $this->throwException($sql);
+        if (isset($list[$cmd])) {
+            $this->resultset = NULL;
+            $this->affectedRows = $this->connection->exec($sql);
+
+            if ($this->affectedRows === FALSE) {
+                $this->throwException($sql);
+            }
+
+            return FALSE;
+
+        } else {
+            $this->resultset = $this->connection->query($sql);
+            $this->affectedRows = FALSE;
+
+            if ($this->resultset === FALSE) {
+                $this->throwException($sql);
+            }
+
+            return TRUE;
         }
-
-        return $this->resultset instanceof PDOStatement;
     }
 
 
@@ -119,7 +143,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      */
     public function affectedRows()
     {
-        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        return $this->affectedRows;
     }
 
 
@@ -286,7 +310,7 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      *
      * @throws DibiDriverException
      */
-    protected function throwException($sql=NULL)
+    protected function throwException($sql = NULL)
     {
         $err = $this->connection->errorInfo();
         throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);

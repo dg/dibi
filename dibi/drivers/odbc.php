@@ -339,7 +339,7 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
      *
      * @throws DibiDriverException
      */
-    protected function throwException($sql=NULL)
+    protected function throwException($sql = NULL)
     {
         throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
     }
