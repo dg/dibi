@@ -309,8 +309,6 @@ class DibiConnection extends NObject
         $this->driver->begin();
         $this->inTxn = TRUE;
         dibi::notify($this, 'begin');
-
-        return $this;
     }
 
 

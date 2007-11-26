@@ -32,6 +32,8 @@ class DibiException extends NException
 }
 
 
+
+
 /**
  * database server exception
  *

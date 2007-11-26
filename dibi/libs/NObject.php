@@ -34,8 +34,8 @@
  * $val = $obj->Label;     // equivalent to $val = $obj->getLabel();
  * $obj->Label = 'Nette';  // equivalent to $obj->setLabel('Nette');
  * </code>
- * Property names are case-sensitive, and they are written in the PascalCaps,
- * in contrast to camelCaps used by normal members.
+ * Property names are case-sensitive, and they are written in the camelCaps
+ * or PascalCaps.
  *
  * Adding method to class (i.e. to all instances) works similar to JavaScript
  * prototype property. The syntax for adding a new method is:
@@ -123,7 +123,7 @@ abstract class NObject
         // property getter support
         $class = get_class($this);
         $m = 'get' . $name;
-        if (self::isCallable($class, $m)) {
+        if (self::hasAccessor($class, $m)) {
             // ampersands:
             // - using &__get() because declaration should be forward compatible (e.g. with NHtml)
             // - not using &$this->$m because user could bypass property setter by: $x = & $obj->property; $x = 'new value';
@@ -153,9 +153,9 @@ abstract class NObject
 
         // property setter support
         $class = get_class($this);
-        if (self::isCallable($class, 'get' . $name)) {
+        if (self::hasAccessor($class, 'get' . $name)) {
             $m = 'set' . $name;
-            if (self::isCallable($class, $m)) {
+            if (self::hasAccessor($class, $m)) {
                 $this->$m($value);
 
             } else {
@@ -177,7 +177,7 @@ abstract class NObject
 	 */
     protected function __isset($name)
 	{
-    	return $name !== '' && self::isCallable(get_class($this), 'get' . $name);
+    	return $name !== '' && self::hasAccessor(get_class($this), 'get' . $name);
 	}
 
 
@@ -198,45 +198,26 @@ abstract class NObject
 
 
     /**
-	 * Does public method exist? (case sensitive)
+	 * Has property accessor?
      *
 	 * @param string  class name
      * @param string  method name
 	 * @return bool
 	 */
-    private static function isCallable($c, $m)
+    private static function hasAccessor($c, $m)
     {
         static $cache;
         if (!isset($cache[$c])) {
             // get_class_methods returns private, protected and public methods of NObject (doesn't matter)
-            // only only public methods of descendants (perfect!)
+            // and ONLY PUBLIC methods of descendants (perfect!)
             // but returns static methods too (nothing doing...)
             // and is much faster than reflection
             // (works good since 5.0.4)
             $cache[$c] = array_flip(get_class_methods($c));
         }
+        // case-sensitive checking, capitalize the fourth character
+        $m[3] = $m[3] & "\xDF";
         return isset($cache[$c][$m]);
-    }
-
-}
-
-
-
-/**
- * NClass is the ultimate ancestor of all uninstantiable classes.
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2004, 2007 David Grudl
- * @license    http://php7.org/nette/license  Nette license
- * @link       http://php7.org/nette/
- * @package    Nette
- */
-abstract class NClass
-{
-
-    final public function __construct()
-    {
-        throw new LogicException("Cannot instantiate static class " . get_class($this));
     }
 
 }

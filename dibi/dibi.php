@@ -32,6 +32,7 @@ if (version_compare(PHP_VERSION , '5.1.0', '<')) {
 
 // nette libraries
 if (!class_exists('NObject', FALSE)) { require_once __FILE__ . '/../libs/NObject.php'; }
+if (!class_exists('NClass', FALSE)) { require_once __FILE__ . '/../libs/NClass.php'; }
 if (!class_exists('NException', FALSE)) { require_once __FILE__ . '/../libs/NException.php'; }
 
 // dibi libraries
