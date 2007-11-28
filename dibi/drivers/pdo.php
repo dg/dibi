@@ -59,6 +59,18 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
 
 
     /**
+     * @throws DibiException
+     */
+    public function __construct()
+    {
+        if (!extension_loaded('pdo')) {
+            throw new DibiDriverException("PHP extension 'pdo' is not loaded");
+        }
+    }
+
+
+
+    /**
      * Connects to a database
      *
      * @return void
@@ -70,10 +82,6 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
         DibiConnection::alias($config, 'password', 'pass');
         DibiConnection::alias($config, 'dsn');
         DibiConnection::alias($config, 'options');
-
-        if (!extension_loaded('pdo')) {
-            throw new DibiException("PHP extension 'pdo' is not loaded");
-        }
 
         try {
             $this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);

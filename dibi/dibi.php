@@ -539,11 +539,11 @@ class dibi extends NClass
         } else {
             if ($sql === NULL) $sql = self::$sql;
 
-            static $keywords2 = 'ALL|DISTINCT|AS|ON|INTO|AND|OR|AS';
-            static $keywords1 = 'SELECT|UPDATE|INSERT|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';
+            static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|LIKE|TRUE|FALSE';
+            static $keywords1 = 'SELECT|UPDATE|INSERT(?:\s+INTO)|REPLACE(?:\s+INTO)|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';
 
             // insert new lines
-            $sql = preg_replace("#\\b(?:$keywords1)\\b#", "\n\$0", $sql);
+            $sql = preg_replace("#\\b(?:$keywords1)\\b#i", "\n\$0", $sql);
 
             $sql = trim($sql);
             // reduce spaces
@@ -554,7 +554,7 @@ class dibi extends NClass
             $sql = preg_replace("#\n{2,}#", "\n", $sql);
 
             // syntax highlight
-            $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#", array('dibi', 'highlightCallback'), $sql);
+            $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#i", array('dibi', 'highlightCallback'), $sql);
             echo '<pre class="dump">', $sql, "</pre>\n";
         }
 

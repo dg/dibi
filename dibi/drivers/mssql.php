@@ -53,6 +53,18 @@ class DibiMsSqlDriver extends NObject implements DibiDriverInterface
 
 
     /**
+     * @throws DibiException
+     */
+    public function __construct()
+    {
+        if (!extension_loaded('mssql')) {
+            throw new DibiDriverException("PHP extension 'mssql' is not loaded");
+        }
+    }
+
+
+
+    /**
      * Connects to a database
      *
      * @return void
@@ -63,11 +75,6 @@ class DibiMsSqlDriver extends NObject implements DibiDriverInterface
         DibiConnection::alias($config, 'username', 'user');
         DibiConnection::alias($config, 'password', 'pass');
         DibiConnection::alias($config, 'host');
-
-        if (!extension_loaded('mssql')) {
-            throw new DibiException("PHP extension 'mssql' is not loaded");
-        }
-
 
         if (empty($config['persistent'])) {
             $this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE);

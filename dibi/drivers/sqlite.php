@@ -57,11 +57,25 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
      */
     private $buffered;
 
+
     /**
      * Date and datetime format
      * @var string
      */
     private $fmtDate, $fmtDateTime;
+
+
+
+    /**
+     * @throws DibiException
+     */
+    public function __construct()
+    {
+        if (!extension_loaded('sqlite')) {
+            throw new DibiDriverException("PHP extension 'sqlite' is not loaded");
+        }
+    }
+
 
 
     /**
@@ -75,10 +89,6 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
         DibiConnection::alias($config, 'database', 'file');
         $this->fmtDate = isset($config['format:date']) ? $config['format:date'] : 'U';
         $this->fmtDateTime = isset($config['format:datetime']) ? $config['format:datetime'] : 'U';
-
-        if (!extension_loaded('sqlite')) {
-            throw new DibiException("PHP extension 'sqlite' is not loaded");
-        }
 
         $errorMsg = '';
         if (empty($config['persistent'])) {
@@ -116,8 +126,6 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
      */
     public function query($sql)
     {
-        $errorMsg = NULL;
-
         DibiDriverException::catchError();
         if ($this->buffered) {
             $this->resultset = sqlite_query($this->connection, $sql);

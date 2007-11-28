@@ -49,10 +49,10 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     private $driver;
 
     /**
-     * Describes columns types
+     * Translate table
      * @var array
      */
-    private $convert;
+    private $xlat;
 
     /**
      * Describes columns types
@@ -119,9 +119,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     final public function seek($row)
     {
-        if ($row !== 0 || $this->fetched) {
-            return (bool) $this->getDriver()->seek($row);
-        }
+        return ($row !== 0 || $this->fetched) ? (bool) $this->getDriver()->seek($row) : TRUE;
     }
 
 
@@ -166,10 +164,11 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
         $this->fetched = TRUE;
 
         // types-converting?
-        if ($t = $this->convert) {  // little speed-up
+        if ($this->xlat) {
+            $xlat = $this->xlat; // little speed-up
             foreach ($row as $key => $value) {
-                if (isset($t[$key])) {
-                    $row[$key] = $this->convert($value, $t[$key]);
+                if (isset($xlat[$key])) {
+                    $row[$key] = $this->convert($value, $xlat[$key]);
                 }
             }
         }
@@ -191,11 +190,12 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
         $this->fetched = TRUE;
 
         // types-converting?
-        if ($t = $this->convert) {  // little speed-up
+        if ($this->xlat) {
+            $xlat = $this->xlat; // little speed-up
             $value = reset($row);
             $key = key($row);
-            return isset($t[$key])
-                ? $this->convert($value, $t[$key])
+            return isset($xlat[$key])
+                ? $this->convert($value, $xlat[$key])
                 : $value;
         }
 
@@ -365,10 +365,10 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
             $this->buildMeta();
 
         } elseif (is_array($field)) {
-            $this->convert = $field;
+            $this->xlat = $field;
 
         } else {
-            $this->convert[$field] = $type;
+            $this->xlat[$field] = $type;
         }
     }
 
@@ -377,7 +377,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     /** is this needed? */
     final public function getType($field)
     {
-        return isset($this->convert[$field]) ? $this->convert[$field] : NULL;
+        return isset($this->xlat[$field]) ? $this->xlat[$field] : NULL;
     }
 
 
@@ -439,7 +439,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
         if ($this->meta === NULL) {
             $this->meta = $this->getDriver()->buildMeta();
             foreach ($this->meta as $name => $info) {
-                $this->convert[$name] = $info['type'];
+                $this->xlat[$name] = $info['type'];
             }
         }
     }

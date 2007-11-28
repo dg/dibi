@@ -59,6 +59,18 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
 
 
     /**
+     * @throws DibiException
+     */
+    public function __construct()
+    {
+        if (!extension_loaded('odbc')) {
+            throw new DibiDriverException("PHP extension 'odbc' is not loaded");
+        }
+    }
+
+
+
+    /**
      * Connects to a database
      *
      * @return void
@@ -73,11 +85,6 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
         if (!isset($config['username'])) $config['username'] = ini_get('odbc.default_user');
         if (!isset($config['password'])) $config['password'] = ini_get('odbc.default_pw');
         if (!isset($config['dsn'])) $config['dsn'] = ini_get('odbc.default_db');
-
-        if (!extension_loaded('odbc')) {
-            throw new DibiException("PHP extension 'odbc' is not loaded");
-        }
-
 
         if (empty($config['persistent'])) {
             $this->connection = @odbc_connect($config['dsn'], $config['username'], $config['password']);

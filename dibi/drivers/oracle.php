@@ -58,6 +58,18 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
 
 
     /**
+     * @throws DibiException
+     */
+    public function __construct()
+    {
+        if (!extension_loaded('oci8')) {
+            throw new DibiDriverException("PHP extension 'oci8' is not loaded");
+        }
+    }
+
+
+
+    /**
      * Connects to a database
      *
      * @return void
@@ -69,10 +81,6 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
         DibiConnection::alias($config, 'password', 'pass');
         DibiConnection::alias($config, 'database', 'db');
         DibiConnection::alias($config, 'charset');
-
-        if (!extension_loaded('oci8')) {
-            throw new DibiException("PHP extension 'oci8' is not loaded");
-        }
 
         $this->connection = @oci_new_connect($config['username'], $config['password'], $config['database'], $config['charset']);
 

@@ -63,6 +63,19 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
     private $buffered;
 
 
+
+    /**
+     * @throws DibiException
+     */
+    public function __construct()
+    {
+        if (!extension_loaded('mysql')) {
+            throw new DibiDriverException("PHP extension 'mysql' is not loaded");
+        }
+    }
+
+
+
     /**
      * Connects to a database
      *
@@ -71,10 +84,6 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
      */
     public function connect(array &$config)
     {
-        if (!extension_loaded('mysql')) {
-            throw new DibiException("PHP extension 'mysql' is not loaded");
-        }
-
         DibiConnection::alias($config, 'username', 'user');
         DibiConnection::alias($config, 'password', 'pass');
         DibiConnection::alias($config, 'options');
@@ -110,12 +119,17 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
         }
 
         if (isset($config['charset'])) {
-            @mysql_query("SET NAMES '" . $config['charset'] . "'", $this->connection);
-            // don't handle this error...
+            $ok = FALSE;
+            if (function_exists('mysql_set_charset')) {
+                // affects the character set used by mysql_real_escape_string() (was added in MySQL 5.0.7 and PHP 5.2.3)
+                $ok = @mysql_set_charset($config['charset'], $this->connection);
+            }
+            if (!$ok) $ok = @mysql_query("SET NAMES '" . $config['charset'] . "'", $this->connection);
+            if (!$ok) $this->throwException();
         }
 
-        if (isset($config['database']) && !@mysql_select_db($config['database'], $this->connection)) {
-            $this->throwException();
+        if (isset($config['database'])) {
+            @mysql_select_db($config['database'], $this->connection) or $this->throwException();
         }
 
         $this->buffered = empty($config['unbuffered']);

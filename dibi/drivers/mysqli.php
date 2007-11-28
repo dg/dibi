@@ -63,6 +63,19 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     private $buffered;
 
 
+
+    /**
+     * @throws DibiException
+     */
+    public function __construct()
+    {
+        if (!extension_loaded('mysqli')) {
+            throw new DibiDriverException("PHP extension 'mysqli' is not loaded");
+        }
+    }
+
+
+
     /**
      * Connects to a database
      *
@@ -82,14 +95,9 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
         if (!isset($config['socket'])) $config['socket'] = ini_get('mysqli.default_socket');
         if (!isset($config['host'])) {
             $config['host'] = ini_get('mysqli.default_host');
-            if (!isset($config['port'])) ini_get('mysqli.default_port');
+            if (!isset($config['port'])) $config['port'] = ini_get('mysqli.default_port');
             if (!isset($config['host'])) $config['host'] = 'localhost';
         }
-
-        if (!extension_loaded('mysqli')) {
-            throw new DibiException("PHP extension 'mysqli' is not loaded");
-        }
-
 
         $this->connection = mysqli_init();
         @mysqli_real_connect($this->connection, $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['options']);
@@ -99,7 +107,10 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
         }
 
         if (isset($config['charset'])) {
-            mysqli_query($this->connection, "SET NAMES '" . $config['charset'] . "'");
+            // affects the character set used by mysql_real_escape_string() (was added in MySQL 5.0.7 and PHP 5.0.5)
+            $ok = @mysqli_set_charset($this->connection, $config['charset']);
+            if (!$ok) $ok = @mysqli_query($this->connection, "SET NAMES '" . $config['charset'] . "'");
+            if (!$ok) $this->throwException();
         }
 
         $this->buffered = empty($config['unbuffered']);
@@ -129,7 +140,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     {
         $this->resultset = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT);
 
-        if ($errno = mysqli_errno($this->connection)) {
+        if (mysqli_errno($this->connection)) {
             $this->throwException($sql);
         }
 
@@ -170,7 +181,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     public function begin()
     {
         if (!mysqli_autocommit($this->connection, FALSE)) {
-            $this->throwException($sql);
+            $this->throwException();
         }
     }
 
@@ -184,7 +195,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     public function commit()
     {
         if (!mysqli_commit($this->connection)) {
-            $this->throwException($sql);
+            $this->throwException();
         }
         mysqli_autocommit($this->connection, TRUE);
     }
@@ -199,7 +210,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
     public function rollback()
     {
         if (!mysqli_rollback($this->connection)) {
-            $this->throwException($sql);
+            $this->throwException();
         }
         mysqli_autocommit($this->connection, TRUE);
     }

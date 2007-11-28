@@ -52,6 +52,17 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
 
 
     /**
+     * @throws DibiException
+     */
+    public function __construct()
+    {
+        if (!extension_loaded('pgsql')) {
+            throw new DibiDriverException("PHP extension 'pgsql' is not loaded");
+        }
+    }
+
+
+    /**
      * Connects to a database
      *
      * @return void
@@ -59,10 +70,6 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
      */
     public function connect(array &$config)
     {
-        if (!extension_loaded('pgsql')) {
-            throw new DibiException("PHP extension 'pgsql' is not loaded");
-        }
-
         if (isset($config['string'])) {
             $string = $config['string'];
         } else {

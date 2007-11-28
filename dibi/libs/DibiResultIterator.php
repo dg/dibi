@@ -116,6 +116,7 @@ final class DibiResultIterator implements Iterator
 	 */
     public function next()
     {
+        //$this->result->seek($this->offset + $this->pointer + 1);
         $this->row = $this->result->fetch();
         $this->pointer++;
     }
