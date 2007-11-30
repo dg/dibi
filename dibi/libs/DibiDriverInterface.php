@@ -153,9 +153,10 @@ interface DibiDriverInterface
      * Fetches the row at current position and moves the internal cursor to the next position
      * internal usage only
      *
-     * @return array|FALSE  array on success, FALSE if no next record
+     * @param  bool     TRUE for associative array, FALSE for numeric
+     * @return array    array on success, nonarray if no next record
      */
-    function fetch();
+    function fetch($type);
 
 
 
@@ -166,6 +167,16 @@ interface DibiDriverInterface
      * @return void
      */
     function free();
+
+
+
+    /**
+     * Returns metadata for all columns in a result set
+     *
+     * @return array
+     * @throws DibiException
+     */
+    function getColumnsMeta();
 
 
 

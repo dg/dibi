@@ -50,6 +50,13 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
     private $resultset;
 
 
+    /**
+     * Escape method
+     * @var int
+     */
+    private $escMethod;
+
+
 
     /**
      * @throws DibiException
@@ -59,6 +66,8 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
         if (!extension_loaded('pgsql')) {
             throw new DibiDriverException("PHP extension 'pgsql' is not loaded");
         }
+
+        $this->escMethod = version_compare(PHP_VERSION , '5.2.0', '>=') ? 1 : 0;
     }
 
 
@@ -92,9 +101,12 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
         }
 
         if (isset($config['charset'])) {
+            DibiDriverException::catchError();
             @pg_set_client_encoding($this->connection, $config['charset']);
-            // don't handle this error...
+            DibiDriverException::restore();
         }
+
+        if (!empty($config['escapefix'])) $this->escMethod = -1;
     }
 
 
@@ -174,7 +186,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
      */
     public function begin()
     {
-        $this->query('BEGIN');
+        $this->query('START TRANSACTION');
     }
 
 
@@ -213,7 +225,11 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
      */
     public function format($value, $type)
     {
-        if ($type === dibi::FIELD_TEXT) return "'" . pg_escape_string($value) . "'";
+        if ($type === dibi::FIELD_TEXT) {
+            if ($this->escMethod === -1) return "'" . addSlashes($value) . "'";
+            if ($this->escMethod === 1 && $this->connection) return "'" . pg_escape_string($this->connection, $value) . "'";
+            return "'" . pg_escape_string($value) . "'";
+        }
         if ($type === dibi::IDENTIFIER) return '"' . str_replace('.', '"."', str_replace('"', '""', $value)) . '"';
         if ($type === dibi::FIELD_BOOL) return $value ? 'TRUE' : 'FALSE';
         if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
@@ -260,11 +276,12 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
      * Fetches the row at current position and moves the internal cursor to the next position
      * internal usage only
      *
-     * @return array|FALSE  array on success, FALSE if no next record
+     * @param  bool     TRUE for associative array, FALSE for numeric
+     * @return array    array on success, nonarray if no next record
      */
-    public function fetch()
+    public function fetch($type)
     {
-        return pg_fetch_array($this->resultset, NULL, PGSQL_ASSOC);
+        return pg_fetch_array($this->resultset, NULL, $type ? PGSQL_ASSOC : PGSQL_NUM);
     }
 
 
@@ -296,37 +313,25 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
 
 
 
-    /** this is experimental */
-    public function buildMeta()
+    /**
+     * Returns metadata for all columns in a result set
+     *
+     * @return array
+     */
+    public function getColumnsMeta()
     {
-        static $types = array(
-            'bool'      => dibi::FIELD_BOOL,
-            'int2'      => dibi::FIELD_INTEGER,
-            'int4'      => dibi::FIELD_INTEGER,
-            'int8'      => dibi::FIELD_INTEGER,
-            'numeric'   => dibi::FIELD_FLOAT,
-            'float4'    => dibi::FIELD_FLOAT,
-            'float8'    => dibi::FIELD_FLOAT,
-            'timestamp' => dibi::FIELD_DATETIME,
-            'date'      => dibi::FIELD_DATE,
-            'time'      => dibi::FIELD_DATETIME,
-            'varchar'   => dibi::FIELD_TEXT,
-            'bpchar'    => dibi::FIELD_TEXT,
-            'inet'      => dibi::FIELD_TEXT,
-            'money'     => dibi::FIELD_FLOAT,
-        );
-
+        $hasTable = version_compare(PHP_VERSION , '5.2.0', '>=');
         $count = pg_num_fields($this->resultset);
         $meta = array();
-        for ($index = 0; $index < $count; $index++) {
-
-            $info['native'] = $native = pg_field_type($this->resultset, $index);
-            $info['length'] = pg_field_size($this->resultset, $index);
-            $info['table'] = pg_field_table($this->resultset, $index);
-            $info['type'] = isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN;
-
-            $name = pg_field_name($this->resultset, $index);
-            $meta[$name] = $info;
+        for ($i = 0; $i < $count; $i++) {
+            // items 'name' and 'table' are required
+            $meta[] = array(
+                'name'      => pg_field_name($this->resultset, $i),
+                'table'     => $hasTable ? pg_field_table($this->resultset, $i) : NULL,
+                'type'      => pg_field_type($this->resultset, $i),
+                'size'      => pg_field_size($this->resultset, $i),
+                'prtlen'    => pg_field_prtlen($this->resultset, $i),
+            );
         }
         return $meta;
     }

@@ -13,14 +13,7 @@ dibi::connect(array(
 
 $res = dibi::query('SELECT * FROM [customers]');
 
-// auto-convert this field to integer
+// auto-convert this column to integer
 $res->setType('customer_id', Dibi::FIELD_INTEGER);
-$row = $res->fetch();
-var_dump($row);
-
-
-// auto-detect all types
-// WARNING: THIS WILL NOT WORK WITH SQLITE
-$res->setType(TRUE);
 $row = $res->fetch();
 var_dump($row);

@@ -99,6 +99,7 @@ class DibiConnection extends NObject
      */
     public function __destruct()
     {
+        // disconnects and rolls back transaction - do not rely on auto-disconnect and rollback!
         $this->disconnect();
     }
 

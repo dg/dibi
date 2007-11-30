@@ -261,11 +261,12 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
      * Fetches the row at current position and moves the internal cursor to the next position
      * internal usage only
      *
-     * @return array|FALSE  array on success, FALSE if no next record
+     * @param  bool     TRUE for associative array, FALSE for numeric
+     * @return array    array on success, nonarray if no next record
      */
-    public function fetch()
+    public function fetch($type)
     {
-        return $this->resultset->fetch(PDO::FETCH_ASSOC);
+        return $this->resultset->fetch($type ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
     }
 
 
@@ -296,17 +297,23 @@ class DibiPdoDriver extends NObject implements DibiDriverInterface
 
 
 
-    /** this is experimental */
-    public function buildMeta()
+    /**
+     * Returns metadata for all columns in a result set
+     *
+     * @return array
+     * @throws DibiException
+     */
+    public function getColumnsMeta()
     {
         $count = $this->resultset->columnCount();
         $meta = array();
-        for ($index = 0; $index < $count; $index++) {
-            $meta = $this->resultset->getColumnMeta($index);
-            // TODO:
-            $meta['type'] = dibi::FIELD_UNKNOWN;
-            $name = $meta['name'];
-            $meta[$name] =  $meta;
+        for ($i = 0; $i < $count; $i++) {
+            // items 'name' and 'table' are required
+            $info = @$this->resultset->getColumnsMeta($i);
+            if ($info === FALSE) {
+                throw new DibiDriverException('Driver does not support meta data');
+            }
+            $meta[] = $info;
         }
         return $meta;
     }

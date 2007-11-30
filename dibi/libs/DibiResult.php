@@ -55,16 +55,23 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     private $xlat;
 
     /**
-     * Describes columns types
+     * Cache for $driver->getColumnsMeta()
      * @var array
      */
-    private $meta;
+    private $metaCache;
+
 
     /**
      * Already fetched? Used for allowance for first seek(0)
      * @var bool
      */
     private $fetched = FALSE;
+
+    /**
+     * Qualifiy each column name with the table name?
+     * @var array|FALSE
+     */
+    private $withTables = FALSE;
 
 
 
@@ -152,6 +159,52 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
 
     /**
+     * Qualifiy each column name with the table name?
+     *
+     * @param  bool
+     * @return void
+     * @throws DibiException
+     */
+    final public function setWithTables($val)
+    {
+        if ($val) {
+            if ($this->metaCache === NULL) {
+                $this->metaCache = $this->getDriver()->getColumnsMeta();
+            }
+
+            $cols = array();
+            foreach ($this->metaCache as $col) {
+                // intentional ==
+                $name = $col['table'] == '' ? $col['name'] : ($col['table'] . '.' . $col['name']);
+                if (isset($cols[$name])) {
+                    $fix = 1;
+                    while (isset($cols[$name . '#' . $fix])) $fix++;
+                    $name .= '#' . $fix;
+                }
+                $cols[$name] = TRUE;
+            }
+            $this->withTables = array_keys($cols);
+
+        } else {
+            $this->withTables = FALSE;
+        }
+    }
+
+
+
+    /**
+     * Qualifiy each key with the table name?
+     *
+     * @return bool
+     */
+    final public function getWithTables()
+    {
+        return (bool) $this->withTables;
+    }
+
+
+
+    /**
      * Fetches the row at current position, process optional type conversion
      * and moves the internal cursor to the next position
      *
@@ -159,16 +212,23 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     final public function fetch()
     {
-        $row = $this->getDriver()->fetch();
-        if (!is_array($row)) return FALSE;
+        if ($this->withTables === FALSE) {
+            $row = $this->getDriver()->fetch(TRUE);
+            if (!is_array($row)) return FALSE;
+
+        } else {
+            $row = $this->getDriver()->fetch(FALSE);
+            if (!is_array($row)) return FALSE;
+            $row = array_combine($this->withTables, $row);
+        }
+
         $this->fetched = TRUE;
 
         // types-converting?
-        if ($this->xlat) {
-            $xlat = $this->xlat; // little speed-up
-            foreach ($row as $key => $value) {
-                if (isset($xlat[$key])) {
-                    $row[$key] = $this->convert($value, $xlat[$key]);
+        if ($this->xlat !== NULL) {
+            foreach ($this->xlat as $col => $type) {
+                if (isset($row[$col])) {
+                    $row[$col] = $this->convert($row[$col], $type);
                 }
             }
         }
@@ -185,21 +245,18 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     final function fetchSingle()
     {
-        $row = $this->getDriver()->fetch();
+        $row = $this->getDriver()->fetch(TRUE);
         if (!is_array($row)) return FALSE;
         $this->fetched = TRUE;
+        $value = reset($row);
 
         // types-converting?
-        if ($this->xlat) {
-            $xlat = $this->xlat; // little speed-up
-            $value = reset($row);
-            $key = key($row);
-            return isset($xlat[$key])
-                ? $this->convert($value, $xlat[$key])
-                : $value;
+        $key = key($row);
+        if (isset($this->xlat[$key])) {
+            return $this->convert($value, $this->xlat[$key]);
         }
 
-        return reset($row);
+        return $value;
     }
 
 
@@ -252,7 +309,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
         $data = NULL;
         $assoc = explode(',', $assoc);
 
-        // check fields
+        // check columns
         foreach ($assoc as $as) {
             if ($as !== '#' && $as !== '=' && !array_key_exists($as, $row)) {
                 throw new InvalidArgumentException("Unknown column '$as' in associative descriptor");
@@ -321,7 +378,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
         if ($value === NULL) {
             if ($key !== NULL) {
-                throw new InvalidArgumentException("Either none or both fields must be specified");
+                throw new InvalidArgumentException("Either none or both columns must be specified");
             }
 
             if (count($row) < 2) {
@@ -359,25 +416,21 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
 
 
-    final public function setType($field, $type = NULL)
+    final public function setType($col, $type = NULL)
     {
-        if ($field === TRUE) {
-            $this->buildMeta();
-
-        } elseif (is_array($field)) {
-            $this->xlat = $field;
+        if (is_array($col)) {
+            $this->xlat = $col;
 
         } else {
-            $this->xlat[$field] = $type;
+            $this->xlat[$col] = $type;
         }
     }
 
 
 
-    /** is this needed? */
-    final public function getType($field)
+    final public function getType($col)
     {
-        return isset($this->xlat[$field]) ? $this->xlat[$field] : NULL;
+        return isset($this->xlat[$col]) ? $this->xlat[$col] : NULL;
     }
 
 
@@ -403,45 +456,22 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
 
     /**
-     * Gets an array of field names
-     *
-     * @return array
-     */
-    final public function getFields()
-    {
-        $this->buildMeta();
-        return array_keys($this->meta);
-    }
-
-
-
-    /**
      * Gets an array of meta informations about column
      *
-     * @param  string  column name
      * @return array
      */
-    final public function getMetaData($field)
+    final public function getColumnsMeta()
     {
-        $this->buildMeta();
-        return isset($this->meta[$field]) ? $this->meta[$field] : FALSE;
-    }
-
-
-
-    /**
-     * Acquires ....
-     *
-     * @return void
-     */
-    final protected function buildMeta()
-    {
-        if ($this->meta === NULL) {
-            $this->meta = $this->getDriver()->buildMeta();
-            foreach ($this->meta as $name => $info) {
-                $this->xlat[$name] = $info['type'];
-            }
+        if ($this->metaCache === NULL) {
+            $this->metaCache = $this->getDriver()->getColumnsMeta();
         }
+
+        $cols = array();
+        foreach ($this->metaCache as $col) {
+            $name = (!$this->withTables || $col['table'] === NULL) ? $col['name'] : ($col['table'] . '.' . $col['name']);
+            $cols[$name] = $col;
+        }
+        return $cols;
     }
 
 
@@ -453,24 +483,32 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     final public function dump()
     {
-        echo "\n<table class=\"dump\">\n<thead>\n\t<tr>\n\t\t<th>#row</th>\n";
+        $none = TRUE;
+        foreach ($this as $i => $row) {
+            if ($none) {
+                echo "\n<table class=\"dump\">\n<thead>\n\t<tr>\n\t\t<th>#row</th>\n";
 
-        foreach ($this->getFields() as $field) {
-            echo "\t\t<th>" . htmlSpecialChars($field) . "</th>\n";
-        }
+                foreach ($row as $col => $foo) {
+                    echo "\t\t<th>" . htmlSpecialChars($col) . "</th>\n";
+                }
 
-        echo "\t</tr>\n</thead>\n<tbody>\n";
+                echo "\t</tr>\n</thead>\n<tbody>\n";
+                $none = FALSE;
+            }
 
-        foreach ($this as $row => $fields) {
-            echo "\t<tr>\n\t\t<th>", $row, "</th>\n";
-            foreach ($fields as $field) {
-                //if (is_object($field)) $field = $field->__toString();
-                echo "\t\t<td>", htmlSpecialChars($field), "</td>\n";
+            echo "\t<tr>\n\t\t<th>", $i, "</th>\n";
+            foreach ($row as $col) {
+                //if (is_object($col)) $col = $col->__toString();
+                echo "\t\t<td>", htmlSpecialChars($col), "</td>\n";
             }
             echo "\t</tr>\n";
         }
 
-        echo "</tbody>\n</table>\n";
+        if ($none) {
+            echo '<p><em>empty resultset</em></p>';
+        } else {
+            echo "</tbody>\n</table>\n";
+        }
     }
 
 

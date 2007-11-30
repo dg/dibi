@@ -255,11 +255,12 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
      * Fetches the row at current position and moves the internal cursor to the next position
      * internal usage only
      *
-     * @return array|FALSE  array on success, FALSE if no next record
+     * @param  bool     TRUE for associative array, FALSE for numeric
+     * @return array    array on success, nonarray if no next record
      */
-    public function fetch()
+    public function fetch($type)
     {
-        return sqlite_fetch_array($this->resultset, SQLITE_ASSOC);
+        return sqlite_fetch_array($this->resultset, $type ? SQLITE_ASSOC : SQLITE_NUM);
     }
 
 
@@ -293,14 +294,21 @@ class DibiSqliteDriver extends NObject implements DibiDriverInterface
 
 
 
-    /** this is experimental */
-    public function buildMeta()
+    /**
+     * Returns metadata for all columns in a result set
+     *
+     * @return array
+     */
+    public function getColumnsMeta()
     {
         $count = sqlite_num_fields($this->resultset);
         $meta = array();
-        for ($index = 0; $index < $count; $index++) {
-            $name = sqlite_field_name($this->resultset, $index);
-            $meta[$name] = array('type' => dibi::FIELD_UNKNOWN);
+        for ($i = 0; $i < $count; $i++) {
+            // items 'name' and 'table' are required
+            $meta[] = array(
+                'name'  => sqlite_field_name($this->resultset, $i),
+                'table' => NULL,
+            );
         }
         return $meta;
     }

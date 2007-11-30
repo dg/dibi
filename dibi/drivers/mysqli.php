@@ -180,9 +180,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
      */
     public function begin()
     {
-        if (!mysqli_autocommit($this->connection, FALSE)) {
-            $this->throwException();
-        }
+        $this->query('START TRANSACTION');
     }
 
 
@@ -194,10 +192,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
      */
     public function commit()
     {
-        if (!mysqli_commit($this->connection)) {
-            $this->throwException();
-        }
-        mysqli_autocommit($this->connection, TRUE);
+        $this->query('COMMIT');
     }
 
 
@@ -209,10 +204,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
      */
     public function rollback()
     {
-        if (!mysqli_rollback($this->connection)) {
-            $this->throwException();
-        }
-        mysqli_autocommit($this->connection, TRUE);
+        $this->query('ROLLBACK');
     }
 
 
@@ -277,11 +269,12 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
      * Fetches the row at current position and moves the internal cursor to the next position
      * internal usage only
      *
-     * @return array|FALSE  array on success, FALSE if no next record
+     * @param  bool     TRUE for associative array, FALSE for numeric
+     * @return array    array on success, nonarray if no next record
      */
-    public function fetch()
+    public function fetch($type)
     {
-        return mysqli_fetch_assoc($this->resultset);
+        return mysqli_fetch_array($this->resultset, $type ? MYSQLI_ASSOC : MYSQLI_NUM);
     }
 
 
@@ -316,52 +309,19 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
 
 
 
-    /** this is experimental */
-    public function buildMeta()
+    /**
+     * Returns metadata for all columns in a result set
+     *
+     * @return array
+     */
+    public function getColumnsMeta()
     {
-        static $types = array(
-            MYSQLI_TYPE_FLOAT     => dibi::FIELD_FLOAT,
-            MYSQLI_TYPE_DOUBLE    => dibi::FIELD_FLOAT,
-            MYSQLI_TYPE_DECIMAL   => dibi::FIELD_FLOAT,
-    //      MYSQLI_TYPE_NEWDECIMAL=> dibi::FIELD_FLOAT,
-    //      MYSQLI_TYPE_BIT       => dibi::FIELD_INTEGER,
-            MYSQLI_TYPE_TINY      => dibi::FIELD_INTEGER,
-            MYSQLI_TYPE_SHORT     => dibi::FIELD_INTEGER,
-            MYSQLI_TYPE_LONG      => dibi::FIELD_INTEGER,
-            MYSQLI_TYPE_LONGLONG  => dibi::FIELD_INTEGER,
-            MYSQLI_TYPE_INT24     => dibi::FIELD_INTEGER,
-            MYSQLI_TYPE_YEAR      => dibi::FIELD_INTEGER,
-            MYSQLI_TYPE_GEOMETRY  => dibi::FIELD_INTEGER,
-            MYSQLI_TYPE_DATE      => dibi::FIELD_DATE,
-            MYSQLI_TYPE_NEWDATE   => dibi::FIELD_DATE,
-            MYSQLI_TYPE_TIMESTAMP => dibi::FIELD_DATETIME,
-            MYSQLI_TYPE_TIME      => dibi::FIELD_DATETIME,
-            MYSQLI_TYPE_DATETIME  => dibi::FIELD_DATETIME,
-            MYSQLI_TYPE_ENUM      => dibi::FIELD_TEXT,   // eventually dibi::FIELD_INTEGER
-            MYSQLI_TYPE_SET       => dibi::FIELD_TEXT,    // eventually dibi::FIELD_INTEGER
-            MYSQLI_TYPE_STRING    => dibi::FIELD_TEXT,
-            MYSQLI_TYPE_VAR_STRING=> dibi::FIELD_TEXT,
-            MYSQLI_TYPE_TINY_BLOB => dibi::FIELD_BINARY,
-            MYSQLI_TYPE_MEDIUM_BLOB=> dibi::FIELD_BINARY,
-            MYSQLI_TYPE_LONG_BLOB => dibi::FIELD_BINARY,
-            MYSQLI_TYPE_BLOB      => dibi::FIELD_BINARY,
-        );
-
         $count = mysqli_num_fields($this->resultset);
         $meta = array();
-        for ($index = 0; $index < $count; $index++) {
-            $info = (array) mysqli_fetch_field_direct($this->resultset, $index);
-            $native = $info['native'] = $info['type'];
-
-            if ($info['flags'] & MYSQLI_AUTO_INCREMENT_FLAG) { // or 'primary_key' ?
-                $info['type'] = dibi::FIELD_COUNTER;
-            } else {
-                $info['type'] = isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN;
-//                if ($info['type'] === dibi::FIELD_TEXT && $info['length'] > 255)
-//                    $info['type'] = dibi::FIELD_LONG_TEXT;
-            }
-
-            $meta[$info['name']] = $info;
+        for ($i = 0; $i < $count; $i++) {
+            // items 'name' and 'table' are required
+            $info = (array) mysqli_fetch_field_direct($this->resultset, $i);
+            $meta[] = $info;
         }
         return $meta;
     }

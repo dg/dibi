@@ -257,11 +257,21 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
      * Fetches the row at current position and moves the internal cursor to the next position
      * internal usage only
      *
-     * @return array|FALSE  array on success, FALSE if no next record
+     * @param  bool     TRUE for associative array, FALSE for numeric
+     * @return array    array on success, nonarray if no next record
      */
-    public function fetch()
+    public function fetch($type)
     {
-        return odbc_fetch_array($this->resultset, ++$this->row);
+        if ($type) {
+            return odbc_fetch_array($this->resultset, ++$this->row);
+        } else {
+            $set = $this->resultset;
+            if (!odbc_fetch_row($set, ++$this->row)) return FALSE;
+            $count = odbc_num_fields($set);
+            $cols = array();
+            for ($i = 1; $i <= $count; $i++) $cols[] = odbc_result($set, $i);
+            return $cols;
+        }
     }
 
 
@@ -294,46 +304,24 @@ class DibiOdbcDriver extends NObject implements DibiDriverInterface
 
 
 
-    /** this is experimental */
-    public function buildMeta()
+    /**
+     * Returns metadata for all columns in a result set
+     *
+     * @return array
+     */
+    public function getColumnsMeta()
     {
-        static $types = array(
-            'CHAR'      => dibi::FIELD_TEXT,
-            'COUNTER'   => dibi::FIELD_COUNTER,
-            'VARCHAR'   => dibi::FIELD_TEXT,
-            'LONGCHAR'  => dibi::FIELD_TEXT,
-            'INTEGER'   => dibi::FIELD_INTEGER,
-            'DATETIME'  => dibi::FIELD_DATETIME,
-            'CURRENCY'  => dibi::FIELD_FLOAT,
-            'BIT'       => dibi::FIELD_BOOL,
-            'LONGBINARY'=> dibi::FIELD_BINARY,
-            'SMALLINT'  => dibi::FIELD_INTEGER,
-            'BYTE'      => dibi::FIELD_INTEGER,
-            'BIGINT'    => dibi::FIELD_INTEGER,
-            'INT'       => dibi::FIELD_INTEGER,
-            'TINYINT'   => dibi::FIELD_INTEGER,
-            'REAL'      => dibi::FIELD_FLOAT,
-            'DOUBLE'    => dibi::FIELD_FLOAT,
-            'DECIMAL'   => dibi::FIELD_FLOAT,
-            'NUMERIC'   => dibi::FIELD_FLOAT,
-            'MONEY'     => dibi::FIELD_FLOAT,
-            'SMALLMONEY'=> dibi::FIELD_FLOAT,
-            'FLOAT'     => dibi::FIELD_FLOAT,
-            'YESNO'     => dibi::FIELD_BOOL,
-            // and many others?
-        );
-
         $count = odbc_num_fields($this->resultset);
         $meta = array();
-        for ($index = 1; $index <= $count; $index++) {
-            $native = strtoupper(odbc_field_type($this->resultset, $index));
-            $name = odbc_field_name($this->resultset, $index);
-            $meta[$name] = array(
-                'type'      => isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN,
-                'native'    => $native,
-                'length'    => odbc_field_len($this->resultset, $index),
-                'scale'     => odbc_field_scale($this->resultset, $index),
-                'precision' => odbc_field_precision($this->resultset, $index),
+        for ($i = 1; $i <= $count; $i++) {
+            // items 'name' and 'table' are required
+            $meta[] = array(
+                'name'      => odbc_field_name($this->resultset, $i),
+                'table'     => NULL,
+                'type'      => odbc_field_type($this->resultset, $i),
+                'length'    => odbc_field_len($this->resultset, $i),
+                'scale'     => odbc_field_scale($this->resultset, $i),
+                'precision' => odbc_field_precision($this->resultset, $i),
             );
         }
         return $meta;

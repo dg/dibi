@@ -41,7 +41,8 @@ dibi::test("
 UPDATE [colors] SET", array(
     'color' => 'blue',
     'order' => 12,
-), "WHERE [id]=%i", 123);
+), "
+WHERE [id]=%i", 123);
 
 
 // SELECT
@@ -51,10 +52,15 @@ $timestamp = mktime(0, 0, 0, 10, 13, 1997);
 dibi::test('
 SELECT COUNT(*) as [count]
 FROM [comments]
-WHERE [ip] LIKE %s', $ipMask, 'AND [date] > ', dibi::date($timestamp)
+WHERE [ip] LIKE %s', $ipMask, '
+AND [date] > ', dibi::date($timestamp)
 );
 
 
 // IN array
 $array = array(1, 2, 3);
-dibi::test("SELECT * FROM [people] WHERE [id] IN (", $array, ")");
+dibi::test("
+SELECT *
+FROM [people]
+WHERE [id] IN (", $array, ")
+");

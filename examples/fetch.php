@@ -55,26 +55,27 @@ echo '<hr>';
 
 
 // fetch row by row
-foreach ($res as $row => $fields) {
-    print_r($fields);
+foreach ($res as $n => $row) {
+    print_r($row);
 }
 echo '<hr>';
 
 
 // fetch row by row with defined offset
-foreach ($res->getIterator(2) as $row => $fields) {
-    print_r($fields);
+foreach ($res->getIterator(2) as $n => $row) {
+    print_r($row);
 }
 
 // fetch row by row with defined offset and limit
-foreach ($res->getIterator(2, 1) as $row => $fields) {
-    print_r($fields);
+foreach ($res->getIterator(2, 1) as $n => $row) {
+    print_r($row);
 }
 
 
 // more complex association array
 $res = dibi::query('
-SELECT * FROM [products]
+SELECT *
+FROM [products]
 INNER JOIN [orders] USING ([product_id])
 INNER JOIN [customers] USING ([customer_id])
 ');

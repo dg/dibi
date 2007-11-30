@@ -244,11 +244,12 @@ class DibiMsSqlDriver extends NObject implements DibiDriverInterface
      * Fetches the row at current position and moves the internal cursor to the next position
      * internal usage only
      *
-     * @return array|FALSE  array on success, FALSE if no next record
+     * @param  bool     TRUE for associative array, FALSE for numeric
+     * @return array    array on success, nonarray if no next record
      */
-    public function fetch()
+    public function fetch($type)
     {
-        return mssql_fetch_assoc($this->resultset);
+        return mssql_fetch_array($this->resultset, $type ? MSSQL_ASSOC : MSSQL_NUM);
     }
 
 
@@ -280,47 +281,20 @@ class DibiMsSqlDriver extends NObject implements DibiDriverInterface
 
 
 
-    /** this is experimental */
-    public function buildMeta()
+    /**
+     * Returns metadata for all columns in a result set
+     *
+     * @return array
+     */
+    public function getColumnsMeta()
     {
-        static $types = array(
-            'CHAR'      => dibi::FIELD_TEXT,
-            'COUNTER'   => dibi::FIELD_COUNTER,
-            'VARCHAR'   => dibi::FIELD_TEXT,
-            'LONGCHAR'  => dibi::FIELD_TEXT,
-            'INTEGER'   => dibi::FIELD_INTEGER,
-            'DATETIME'  => dibi::FIELD_DATETIME,
-            'CURRENCY'  => dibi::FIELD_FLOAT,
-            'BIT'       => dibi::FIELD_BOOL,
-            'LONGBINARY'=> dibi::FIELD_BINARY,
-            'SMALLINT'  => dibi::FIELD_INTEGER,
-            'BYTE'      => dibi::FIELD_INTEGER,
-            'BIGINT'    => dibi::FIELD_INTEGER,
-            'INT'       => dibi::FIELD_INTEGER,
-            'TINYINT'   => dibi::FIELD_INTEGER,
-            'REAL'      => dibi::FIELD_FLOAT,
-            'DOUBLE'    => dibi::FIELD_FLOAT,
-            'DECIMAL'   => dibi::FIELD_FLOAT,
-            'NUMERIC'   => dibi::FIELD_FLOAT,
-            'MONEY'     => dibi::FIELD_FLOAT,
-            'SMALLMONEY'=> dibi::FIELD_FLOAT,
-            'FLOAT'     => dibi::FIELD_FLOAT,
-            'YESNO'     => dibi::FIELD_BOOL,
-            // and many others?
-        );
-
         $count = mssql_num_fields($this->resultset);
         $meta = array();
-        for ($index = 0; $index < $count; $index++) {
-
-            $tmp = mssql_fetch_field($this->resultset, $index);
-            $type = strtoupper($tmp->type);
-            $info['native'] = $tmp->type;
-            $info['type'] = isset($types[$type]) ? $types[$type] : dibi::FIELD_UNKNOWN;
-            $info['length'] = $tmp->max_length;
-            $info['table'] = $tmp->column_source;
-
-            $meta[$tmp->name] = $info;
+        for ($i = 0; $i < $count; $i++) {
+            // items 'name' and 'table' are required
+            $info = (array) mssql_fetch_field($this->resultset, $i);
+            $info['table'] = $info['column_source'];
+            $meta[] = $info;
         }
         return $meta;
     }

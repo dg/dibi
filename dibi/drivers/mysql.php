@@ -204,7 +204,7 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
      */
     public function begin()
     {
-        $this->query('BEGIN');
+        $this->query('START TRANSACTION');
     }
 
 
@@ -292,11 +292,12 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
      * Fetches the row at current position and moves the internal cursor to the next position
      * internal usage only
      *
-     * @return array|FALSE  array on success, FALSE if no next record
+     * @param  bool     TRUE for associative array, FALSE for numeric
+     * @return array    array on success, nonarray if no next record
      */
-    public function fetch()
+    public function fetch($type)
     {
-        return mysql_fetch_assoc($this->resultset);
+        return mysql_fetch_array($this->resultset, $type ? MYSQL_ASSOC : MYSQL_NUM);
     }
 
 
@@ -332,64 +333,19 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
 
 
 
-    /** this is experimental */
-    public function buildMeta()
+    /**
+     * Returns metadata for all columns in a result set
+     *
+     * @return array
+     */
+    public function getColumnsMeta()
     {
-        static $types = array(
-            'ENUM'      => dibi::FIELD_TEXT, // eventually dibi::FIELD_INTEGER
-            'SET'       => dibi::FIELD_TEXT,  // eventually dibi::FIELD_INTEGER
-            'CHAR'      => dibi::FIELD_TEXT,
-            'VARCHAR'   => dibi::FIELD_TEXT,
-            'STRING'    => dibi::FIELD_TEXT,
-            'TINYTEXT'  => dibi::FIELD_TEXT,
-            'TEXT'      => dibi::FIELD_TEXT,
-            'MEDIUMTEXT'=> dibi::FIELD_TEXT,
-            'LONGTEXT'  => dibi::FIELD_TEXT,
-            'BINARY'    => dibi::FIELD_BINARY,
-            'VARBINARY' => dibi::FIELD_BINARY,
-            'TINYBLOB'  => dibi::FIELD_BINARY,
-            'BLOB'      => dibi::FIELD_BINARY,
-            'MEDIUMBLOB'=> dibi::FIELD_BINARY,
-            'LONGBLOB'  => dibi::FIELD_BINARY,
-            'DATE'      => dibi::FIELD_DATE,
-            'DATETIME'  => dibi::FIELD_DATETIME,
-            'TIMESTAMP' => dibi::FIELD_DATETIME,
-            'TIME'      => dibi::FIELD_DATETIME,
-            'BIT'       => dibi::FIELD_BOOL,
-            'YEAR'      => dibi::FIELD_INTEGER,
-            'TINYINT'   => dibi::FIELD_INTEGER,
-            'SMALLINT'  => dibi::FIELD_INTEGER,
-            'MEDIUMINT' => dibi::FIELD_INTEGER,
-            'INT'       => dibi::FIELD_INTEGER,
-            'INTEGER'   => dibi::FIELD_INTEGER,
-            'BIGINT'    => dibi::FIELD_INTEGER,
-            'FLOAT'     => dibi::FIELD_FLOAT,
-            'DOUBLE'    => dibi::FIELD_FLOAT,
-            'REAL'      => dibi::FIELD_FLOAT,
-            'DECIMAL'   => dibi::FIELD_FLOAT,
-            'NUMERIC'   => dibi::FIELD_FLOAT,
-        );
-
         $count = mysql_num_fields($this->resultset);
         $meta = array();
-        for ($index = 0; $index < $count; $index++) {
-
-            $info['native'] = $native = strtoupper(mysql_field_type($this->resultset, $index));
-            $info['flags'] = explode(' ', mysql_field_flags($this->resultset, $index));
-            $info['length'] = mysql_field_len($this->resultset, $index);
-            $info['table'] = mysql_field_table($this->resultset, $index);
-
-            if (in_array('auto_increment', $info['flags'])) {  // or 'primary_key' ?
-                $info['type'] = dibi::FIELD_COUNTER;
-            } else {
-                $info['type'] = isset($types[$native]) ? $types[$native] : dibi::FIELD_UNKNOWN;
-
-//                if ($info['type'] === dibi::FIELD_TEXT && $info['length'] > 255)
-//                    $info['type'] = dibi::FIELD_LONG_TEXT;
-            }
-
-            $name = mysql_field_name($this->resultset, $index);
-            $meta[$name] = $info;
+        for ($i = 0; $i < $count; $i++) {
+            // items 'name' and 'table' are required
+            $info = (array) mysql_fetch_field($this->resultset, $i);
+            $meta[] = $info;
         }
         return $meta;
     }
