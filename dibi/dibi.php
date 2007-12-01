@@ -543,9 +543,9 @@ class dibi extends NClass
             static $keywords1 = 'SELECT|UPDATE|INSERT(?:\s+INTO)|REPLACE(?:\s+INTO)|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';
 
             // insert new lines
-            $sql = preg_replace("#\\b(?:$keywords1)\\b#i", "\n\$0", $sql);
+            $sql = ' ' . $sql;
+            $sql = preg_replace("#(?<=[\\s,(])($keywords1)(?=[\\s,)])#i", "\n\$1", $sql);
 
-            $sql = trim($sql);
             // reduce spaces
             $sql = preg_replace('# {2,}#', ' ', $sql);
 
@@ -554,7 +554,8 @@ class dibi extends NClass
             $sql = preg_replace("#\n{2,}#", "\n", $sql);
 
             // syntax highlight
-            $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|\\b($keywords1)\\b|\\b($keywords2)\\b#i", array('dibi', 'highlightCallback'), $sql);
+            $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(])($keywords2)(?=[\\s,)])#i", array('dibi', 'highlightCallback'), $sql);
+            $sql = trim($sql);
             echo '<pre class="dump">', $sql, "</pre>\n";
         }
 

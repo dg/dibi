@@ -320,8 +320,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
         $meta = array();
         for ($i = 0; $i < $count; $i++) {
             // items 'name' and 'table' are required
-            $info = (array) mysqli_fetch_field_direct($this->resultset, $i);
-            $meta[] = $info;
+            $meta[] = (array) mysqli_fetch_field_direct($this->resultset, $i);
         }
         return $meta;
     }

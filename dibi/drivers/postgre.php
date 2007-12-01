@@ -52,9 +52,9 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
 
     /**
      * Escape method
-     * @var int
+     * @var bool
      */
-    private $escMethod;
+    private $escMethod = FALSE;
 
 
 
@@ -66,8 +66,6 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
         if (!extension_loaded('pgsql')) {
             throw new DibiDriverException("PHP extension 'pgsql' is not loaded");
         }
-
-        $this->escMethod = version_compare(PHP_VERSION , '5.2.0', '>=') ? 1 : 0;
     }
 
 
@@ -106,7 +104,7 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
             DibiDriverException::restore();
         }
 
-        if (!empty($config['escapefix'])) $this->escMethod = -1;
+        $this->escMethod = version_compare(PHP_VERSION , '5.2.0', '>=');
     }
 
 
@@ -226,11 +224,17 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
     public function format($value, $type)
     {
         if ($type === dibi::FIELD_TEXT) {
-            if ($this->escMethod === -1) return "'" . addSlashes($value) . "'";
-            if ($this->escMethod === 1 && $this->connection) return "'" . pg_escape_string($this->connection, $value) . "'";
+            if ($this->escMethod) return "'" . pg_escape_string($this->connection, $value) . "'";
             return "'" . pg_escape_string($value) . "'";
         }
-        if ($type === dibi::IDENTIFIER) return '"' . str_replace('.', '"."', str_replace('"', '""', $value)) . '"';
+
+        if ($type === dibi::IDENTIFIER) {
+            $a = strrpos($value, '.');
+            if ($a === FALSE) return '"' . str_replace('"', '""', $value) . '"';
+            // table.col delimite as table."col"
+            return substr($value, 0, $a) . '."' . str_replace('"', '""', substr($value, $a + 1)) . '"';
+        }
+
         if ($type === dibi::FIELD_BOOL) return $value ? 'TRUE' : 'FALSE';
         if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
         if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
