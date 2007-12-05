@@ -9,11 +9,11 @@
  * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
- * For more information please see http://php7.org/dibi/
+ * For more information please see http://dibiphp.com/
  *
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  dibi license
- * @link       http://php7.org/dibi/
+ * @license    http://dibiphp.com/license  dibi license
+ * @link       http://dibiphp.com/
  * @package    dibi
  */
 
@@ -32,6 +32,7 @@
  *   - 'charset' - character encoding to set
  *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
  *   - 'options' - driver specific constants (MYSQL_*)
+ *   - 'sqlmode' - see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - 'lazy' - if TRUE, connection will be established only when required
  *
  * @author     David Grudl
@@ -124,12 +125,16 @@ class DibiMySqlDriver extends NObject implements DibiDriverInterface
                 // affects the character set used by mysql_real_escape_string() (was added in MySQL 5.0.7 and PHP 5.2.3)
                 $ok = @mysql_set_charset($config['charset'], $this->connection);
             }
-            if (!$ok) $ok = @mysql_query("SET NAMES '" . $config['charset'] . "'", $this->connection);
+            if (!$ok) $ok = @mysql_query("SET NAMES '$config[charset]'", $this->connection);
             if (!$ok) $this->throwException();
         }
 
         if (isset($config['database'])) {
             @mysql_select_db($config['database'], $this->connection) or $this->throwException();
+        }
+
+        if (isset($config['sqlmode'])) {
+            if (!@mysql_query("SET sql_mode='$config[sqlmode]'", $this->connection)) $this->throwException();
         }
 
         $this->buffered = empty($config['unbuffered']);

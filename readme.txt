@@ -21,7 +21,7 @@ Documentation and Examples
 Refer to the 'examples' directory for examples. Dibi documentation is
 available on the homepage:
 
-http://php7.org/dibi/
+http://dibiphp.com
 
 
 
@@ -38,4 +38,4 @@ whitespaces are removed.
 
 -----
 For more information, visit the author's weblog (in czech language):
-http://latrine.dgx.cz/
+http://latrine.dgx.cz

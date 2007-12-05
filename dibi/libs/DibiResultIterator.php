@@ -9,11 +9,11 @@
  * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
- * For more information please see http://php7.org/dibi/
+ * For more information please see http://dibiphp.com/
  *
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  dibi license
- * @link       http://php7.org/dibi/
+ * @license    http://dibiphp.com/license  dibi license
+ * @link       http://dibiphp.com/
  * @package    dibi
  */
 

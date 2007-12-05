@@ -9,11 +9,11 @@
  * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
- * For more information please see http://php7.org/dibi/
+ * For more information please see http://dibiphp.com/
  *
  * @copyright  Copyright (c) 2005, 2007 David Grudl
- * @license    http://php7.org/dibi/license  dibi license
- * @link       http://php7.org/dibi/
+ * @license    http://dibiphp.com/license  dibi license
+ * @link       http://dibiphp.com/
  * @package    dibi
  */
 
@@ -163,16 +163,16 @@ class DibiPostgreDriver extends NObject implements DibiDriverInterface
     {
         if ($sequence === NULL) {
             // PostgreSQL 8.1 is needed
-            $has = $this->query("SELECT LASTVAL() AS seq");
+            $has = $this->query("SELECT LASTVAL()");
         } else {
-            $has = $this->query("SELECT CURRVAL('$sequence') AS seq");
+            $has = $this->query("SELECT CURRVAL('$sequence')");
         }
 
         if (!$has) return FALSE;
 
-        $row = $this->fetch();
+        $row = $this->fetch(FALSE);
         $this->free();
-        return isset($row['seq']) ? $row['seq'] : FALSE;
+        return is_array($row) ? $row[0] : FALSE;
     }
 
 

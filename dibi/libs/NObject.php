@@ -9,11 +9,11 @@
  * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
- * For more information please see http://php7.org/dibi/
+ * For more information please see http://dibiphp.com/
  *
  * @copyright  Copyright (c) 2004, 2007 David Grudl
- * @license    http://php7.org/nette/license  Nette license
- * @link       http://php7.org/nette/
+ * @license    http://nettephp.com/license  Nette license
+ * @link       http://nettephp.com/
  * @package    Nette
  */
 
@@ -47,8 +47,8 @@
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2004, 2007 David Grudl
- * @license    http://php7.org/nette/license  Nette license
- * @link       http://php7.org/nette/
+ * @license    http://nettephp.com/license  Nette license
+ * @link       http://nettephp.com/
  * @package    Nette
  */
 abstract class NObject
