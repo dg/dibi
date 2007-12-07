@@ -293,8 +293,8 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
     /**
      * Fetches all records from table and returns associative tree
-     * Associative descriptor:  assoc1,#,assoc2,=,assco3
-     * builds a tree:           $data[value1][index][value2]['assoc3'][value3] = {record}
+     * Associative descriptor:  assoc1,#,assoc2,=,assoc3,@
+     * builds a tree:           $data[assoc1][index][assoc2]['assoc3']->value = {record}
      *
      * @param  string  associative descriptor
      * @return array
@@ -311,21 +311,24 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
         // check columns
         foreach ($assoc as $as) {
-            if ($as !== '#' && $as !== '=' && !array_key_exists($as, $row)) {
+            if ($as !== '#' && $as !== '=' && $as !== '@' && !array_key_exists($as, $row)) {
                 throw new InvalidArgumentException("Unknown column '$as' in associative descriptor");
             }
         }
 
-        if (count($assoc) === 1) {  // speed-up
-            $as = $assoc[0];
-            do {
-                $data[ $row[$as] ] = $row;
-            } while ($row = $this->fetch());
-            return $data;
-        }
-
+        // strip leading = and @
+        $assoc[] = '=';  // gap
         $last = count($assoc) - 1;
-        if ($assoc[$last] === '=') unset($assoc[$last]);
+        while ($assoc[$last] === '=' || $assoc[$last] === '@') {
+            $leaf = $assoc[$last];
+            unset($assoc[$last]);
+            $last--;
+
+            if ($last < 0) {
+                $assoc[] = '#';
+                break;
+            }
+        }
 
         // make associative tree
         do {
@@ -345,12 +348,24 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
                         $x = & $x[ $assoc[$i+1] ];
                     }
 
+                } elseif ($as === '@') { // "object" node
+                    if ($x === NULL) {
+                        $x = (object) $row;
+                        $x = & $x->{$assoc[$i+1]};
+                        $x = NULL; // prepare child node
+                    } else {
+                        $x = & $x->{$assoc[$i+1]};
+                    }
+
+
                 } else { // associative-array node
                     $x = & $x[ $row[ $as ] ];
                 }
             }
 
-            if ($x === NULL) $x = $row; // build leaf
+            if ($x === NULL) { // build leaf
+                if ($leaf === '=') $x = $row; else $x = (object) $row;
+            }
 
         } while ($row = $this->fetch());
 
