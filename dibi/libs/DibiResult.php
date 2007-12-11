@@ -530,8 +530,8 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
     /**
      * Required by the IteratorAggregate interface
-     * @param int  offset
-     * @param int  limit
+     * @param  int  offset
+     * @param  int  limit
      * @return ArrayIterator
      */
     final public function getIterator($offset = NULL, $limit = NULL)

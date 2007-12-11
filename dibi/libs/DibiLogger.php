@@ -41,7 +41,7 @@ final class DibiLogger extends NObject
 
 
     /**
-     * @param string  filename
+     * @param  string  filename
      */
     public function __construct($file)
     {
@@ -53,9 +53,9 @@ final class DibiLogger extends NObject
     /**
      * Event handler (events: exception, connected, beforeQuery, afterQuery, begin, commit, rollback)
      *
-     * @param DibiConnection
-     * @param string event name
-     * @param mixed
+     * @param  DibiConnection
+     * @param  string event name
+     * @param  mixed
      * @return void
      */
     public function handler($connection, $event, $arg)

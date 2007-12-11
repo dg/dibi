@@ -32,7 +32,6 @@ if (version_compare(PHP_VERSION , '5.1.0', '<')) {
 
 // nette libraries
 if (!class_exists('NObject', FALSE)) { require_once __FILE__ . '/../libs/NObject.php'; }
-if (!class_exists('NClass', FALSE)) { require_once __FILE__ . '/../libs/NClass.php'; }
 if (!class_exists('NException', FALSE)) { require_once __FILE__ . '/../libs/NException.php'; }
 
 // dibi libraries
@@ -60,7 +59,7 @@ require_once __FILE__ . '/../libs/DibiVariable.php';
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class dibi extends NClass
+class dibi
 {
     /**
      * Column type in relation to PHP native type
@@ -139,6 +138,16 @@ class dibi extends NClass
 
 
 
+
+
+
+    /**
+     * static class
+     */
+    final public function __construct()
+    {
+        throw new LogicException("Cannot instantiate static class " . get_class($this));
+    }
 
 
 
@@ -245,7 +254,7 @@ class dibi extends NClass
     /**
      * Executes the SQL query - Monostate for DibiConnection::nativeQuery()
      *
-     * @param string          SQL statement.
+     * @param  string         SQL statement.
      * @return DibiResult     Result set object (if any)
      */
     public static function nativeQuery($sql)
@@ -396,7 +405,7 @@ class dibi extends NClass
     /**
      * Pseudotype for timestamp representation
      *
-     * @param mixed  datetime
+     * @param  mixed  datetime
      * @return DibiVariable
      */
     public static function datetime($time = NULL)
@@ -416,7 +425,7 @@ class dibi extends NClass
     /**
      * Pseudotype for date representation
      *
-     * @param mixed  date
+     * @param  mixed  date
      * @return DibiVariable
      */
     public static function date($date = NULL)
@@ -431,8 +440,8 @@ class dibi extends NClass
     /**
      * Create a new substitution pair for indentifiers
      *
-     * @param string from
-     * @param string to
+     * @param  string from
+     * @param  string to
      * @return void
      */
     public static function addSubst($expr, $subst)
@@ -445,7 +454,7 @@ class dibi extends NClass
     /**
      * Remove substitution pair
      *
-     * @param mixed from or TRUE
+     * @param  mixed from or TRUE
      * @return void
      */
     public static function removeSubst($expr)
@@ -474,7 +483,7 @@ class dibi extends NClass
     /**
      * Add new event handler
      *
-     * @param callback
+     * @param  callback
      * @return void
      * @throws InvalidArgumentException
      */
@@ -492,9 +501,9 @@ class dibi extends NClass
     /**
      * Event notification (events: exception, connected, beforeQuery, afterQuery, begin, commit, rollback)
      *
-     * @param DibiConnection
-     * @param string event name
-     * @param mixed
+     * @param  DibiConnection
+     * @param  string event name
+     * @param  mixed
      * @return void
      */
     public static function notify(DibiConnection $connection = NULL, $event, $arg = NULL)
@@ -509,8 +518,8 @@ class dibi extends NClass
     /**
      * Enable profiler & logger
      *
-     * @param string  filename
-     * @param bool    log all queries?
+     * @param  string  filename
+     * @param  bool    log all queries?
      * @return DibiProfiler
      */
     public static function startLogger($file, $logQueries = FALSE)
@@ -526,8 +535,8 @@ class dibi extends NClass
     /**
      * Prints out a syntax highlighted version of the SQL command or DibiResult
      *
-     * @param string|DibiResult
-     * @param bool  return or print?
+     * @param  string|DibiResult
+     * @param  bool  return output instead of printing it?
      * @return string
      */
     public static function dump($sql = NULL, $return = FALSE)

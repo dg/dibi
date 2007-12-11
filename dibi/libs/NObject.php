@@ -31,8 +31,8 @@
  * methods as normal object variables. A property is defined by a getter method
  * and optional setter method (no setter method means read-only property).
  * <code>
- * $val = $obj->Label;     // equivalent to $val = $obj->getLabel();
- * $obj->Label = 'Nette';  // equivalent to $obj->setLabel('Nette');
+ * $val = $obj->label;     // equivalent to $val = $obj->getLabel();
+ * $obj->label = 'Nette';  // equivalent to $obj->setLabel('Nette');
  * </code>
  * Property names are case-sensitive, and they are written in the camelCaps
  * or PascalCaps.
@@ -81,8 +81,8 @@ abstract class NObject
     /**
      * Call to undefined method
      *
-     * @param string  method name
-     * @param array   arguments
+     * @param  string  method name
+     * @param  array   arguments
      * @return mixed
      * @throws BadMethodCallException
      */
@@ -110,8 +110,8 @@ abstract class NObject
     /**
 	 * Returns property value. Do not call directly.
      *
-     * @param string  property name
-	 * @return mixed  property value or the event handler list
+     * @param  string  property name
+	 * @return mixed   property value or the event handler list
 	 * @throws LogicException if the property is not defined.
 	 */
 	protected function &__get($name)
@@ -185,7 +185,7 @@ abstract class NObject
     /**
      * Access to undeclared property
      *
-     * @param string  property name
+     * @param  string  property name
 	 * @return void
      * @throws LogicException
      */
@@ -201,7 +201,7 @@ abstract class NObject
 	 * Has property accessor?
      *
 	 * @param string  class name
-     * @param string  method name
+     * @param  string  method name
 	 * @return bool
 	 */
     private static function hasAccessor($c, $m)

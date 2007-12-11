@@ -63,8 +63,8 @@ final class DibiResultIterator implements Iterator
 
     /**
      * Required by the Iterator interface
-     * @param int  offset
-     * @param int  limit
+     * @param  int  offset
+     * @param  int  limit
      */
     public function __construct(DibiResult $result, $offset, $limit)
     {

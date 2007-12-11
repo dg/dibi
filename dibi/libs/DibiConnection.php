@@ -144,8 +144,8 @@ class DibiConnection extends NObject
      * Returns configuration variable. If no $key is passed, returns the entire array.
      *
      * @see self::__construct
-     * @param string
-     * @param mixed  default value to use if key not found
+     * @param  string
+     * @param  mixed  default value to use if key not found
      * @return mixed
      */
     final public function getConfig($key = NULL, $default = NULL)
@@ -166,9 +166,9 @@ class DibiConnection extends NObject
     /**
      * Apply configuration alias or default values
      *
-     * @param array  connect configuration
-     * @param string key
-     * @param string alias key
+     * @param  array  connect configuration
+     * @param  string key
+     * @param  string alias key
      * @return void
      */
     public static function alias(&$config, $key, $alias=NULL)
@@ -240,7 +240,7 @@ class DibiConnection extends NObject
     /**
      * Executes the SQL query
      *
-     * @param string          SQL statement.
+     * @param  string         SQL statement.
      * @return DibiResult     Result set object (if any)
      * @throws DibiException
      */
@@ -349,7 +349,7 @@ class DibiConnection extends NObject
     /**
      * Escapes the string
      *
-     * @param string     unescaped string
+     * @param  string    unescaped string
      * @return string    escaped and optionally quoted string
      */
     public function escape($value)
@@ -363,7 +363,7 @@ class DibiConnection extends NObject
     /**
      * Delimites identifier (table's or column's name, etc.)
      *
-     * @param string     identifier
+     * @param  string    identifier
      * @return string    delimited identifier
      */
     public function delimite($value)
@@ -376,9 +376,9 @@ class DibiConnection extends NObject
     /**
      * Injects LIMIT/OFFSET to the SQL query
      *
-     * @param string &$sql  The SQL query that will be modified.
-     * @param int $limit
-     * @param int $offset
+     * @param  string &$sql  The SQL query that will be modified.
+     * @param  int $limit
+     * @param  int $offset
      * @return void
      */
     public function applyLimit(&$sql, $limit, $offset)

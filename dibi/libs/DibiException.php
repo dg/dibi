@@ -53,7 +53,7 @@ class DibiDriverException extends DibiException
 	 *
 	 * @param string  Message describing the exception
 	 * @param int     Some code
-     * @param string  SQL command
+     * @param  string SQL command
 	 */
     public function __construct($message = NULL, $code = 0, $sql = NULL)
     {

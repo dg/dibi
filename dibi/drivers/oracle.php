@@ -107,7 +107,7 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
     /**
      * Executes the SQL query
      *
-     * @param string       SQL statement.
+     * @param  string      SQL statement.
      * @return bool        have resultset?
      * @throws DibiDriverException
      */
@@ -199,8 +199,8 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
     /**
      * Format to SQL command
      *
-     * @param string     value
-     * @param string     type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
+     * @param  string    value
+     * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
      * @return string    formatted value
      * @throws InvalidArgumentException
      */
@@ -219,9 +219,9 @@ class DibiOracleDriver extends NObject implements DibiDriverInterface
     /**
      * Injects LIMIT/OFFSET to the SQL query
      *
-     * @param string &$sql  The SQL query that will be modified.
-     * @param int $limit
-     * @param int $offset
+     * @param  string &$sql  The SQL query that will be modified.
+     * @param  int $limit
+     * @param  int $offset
      * @return void
      */
     public function applyLimit(&$sql, $limit, $offset)

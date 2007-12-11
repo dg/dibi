@@ -401,7 +401,7 @@ final class DibiTranslator extends NObject
     /**
      * Apply substitutions to indentifier and delimites it
      *
-     * @param string indentifier
+     * @param  string indentifier
      * @return string
      */
     private function delimite($value)
