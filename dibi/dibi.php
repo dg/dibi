@@ -4,7 +4,7 @@
  * dibi - tiny'n'smart database abstraction layer
  * ----------------------------------------------
  *
- * Copyright (c) 2005, 2007 David Grudl aka -dgx- (http://www.dgx.cz)
+ * Copyright (c) 2005, 2008 David Grudl aka -dgx- (http://www.dgx.cz)
  *
  * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
@@ -12,7 +12,7 @@
  * For more information please see http://dibiphp.com/
  *
  * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @license    http://dibiphp.com/license  dibi license
  * @version    0.9 (Revision: $WCREV$, Date: $WCDATE$)
  * @link       http://dibiphp.com/
@@ -31,18 +31,18 @@ if (version_compare(PHP_VERSION , '5.1.0', '<')) {
 
 
 // nette libraries
-if (!class_exists('NObject', FALSE)) { require_once __FILE__ . '/../libs/NObject.php'; }
-if (!class_exists('NException', FALSE)) { require_once __FILE__ . '/../libs/NException.php'; }
+if (!class_exists('NObject', FALSE)) { require_once dirname(__FILE__) . '/libs/NObject.php'; }
+if (!class_exists('NException', FALSE)) { require_once dirname(__FILE__) . '/libs/NException.php'; }
 
 // dibi libraries
-require_once __FILE__ . '/../libs/DibiException.php';
-require_once __FILE__ . '/../libs/DibiConnection.php';
-require_once __FILE__ . '/../libs/DibiDriverInterface.php';
-require_once __FILE__ . '/../libs/DibiResult.php';
-require_once __FILE__ . '/../libs/DibiResultIterator.php';
-require_once __FILE__ . '/../libs/DibiTranslator.php';
-require_once __FILE__ . '/../libs/DibiLogger.php';
-require_once __FILE__ . '/../libs/DibiVariable.php';
+require_once dirname(__FILE__) . '/libs/DibiException.php';
+require_once dirname(__FILE__) . '/libs/DibiConnection.php';
+require_once dirname(__FILE__) . '/libs/DibiDriverInterface.php';
+require_once dirname(__FILE__) . '/libs/DibiResult.php';
+require_once dirname(__FILE__) . '/libs/DibiResultIterator.php';
+require_once dirname(__FILE__) . '/libs/DibiTranslator.php';
+require_once dirname(__FILE__) . '/libs/DibiLogger.php';
+require_once dirname(__FILE__) . '/libs/DibiVariable.php';
 
 
 
@@ -55,7 +55,7 @@ require_once __FILE__ . '/../libs/DibiVariable.php';
  * store connections info.
  *
  * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  * @version    $Revision$ $Date$
  */
@@ -142,7 +142,7 @@ class dibi
 
 
     /**
-     * static class
+     * Static class - cannot be instantiated
      */
     final public function __construct()
     {

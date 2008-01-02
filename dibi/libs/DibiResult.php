@@ -4,14 +4,14 @@
  * dibi - tiny'n'smart database abstraction layer
  * ----------------------------------------------
  *
- * Copyright (c) 2005, 2007 David Grudl aka -dgx- (http://www.dgx.cz)
+ * Copyright (c) 2005, 2008 David Grudl aka -dgx- (http://www.dgx.cz)
  *
  * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
  * For more information please see http://dibiphp.com/
  *
- * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @license    http://dibiphp.com/license  dibi license
  * @link       http://dibiphp.com/
  * @package    dibi
@@ -36,7 +36,7 @@
  * </code>
  *
  * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2007 David Grudl
+ * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  * @version    $Revision$ $Date$
  */
@@ -78,7 +78,6 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     private static $types = array(
         dibi::FIELD_TEXT =>    'string',
         dibi::FIELD_BINARY =>  'string',
-        dibi::FIELD_BOOL =>    'bool',
         dibi::FIELD_INTEGER => 'int',
         dibi::FIELD_FLOAT =>   'float',
         dibi::FIELD_COUNTER => 'int',
@@ -462,7 +461,11 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
         }
 
         if ($type === dibi::FIELD_DATE || $type === dibi::FIELD_DATETIME) {
-            return strtotime($value);   // !!! not good
+            return strtotime($value);
+        }
+
+        if ($type === dibi::FIELD_BOOL) {
+            return ((bool) $value) && $value !== 'f' && $value !== 'F';
         }
 
         return $value;

@@ -1,4 +1,4 @@
-Dibi (c) David Grudl, 2005-2007 (http://www.dgx.cz)
+Dibi (c) David Grudl, 2005-2008 (http://www.dgx.cz)
 
 
 

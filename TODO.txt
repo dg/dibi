@@ -4,4 +4,3 @@
 - odstranit podporu pro conditional query?
 - odstranit podporu pro meta types - odstraneno
 - event, log, profiler
-

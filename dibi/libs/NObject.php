@@ -4,19 +4,20 @@
  * dibi - tiny'n'smart database abstraction layer
  * ----------------------------------------------
  *
- * Copyright (c) 2005, 2007 David Grudl aka -dgx- (http://www.dgx.cz)
+ * Copyright (c) 2005, 2008 David Grudl aka -dgx- (http://www.dgx.cz)
  *
  * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
  * For more information please see http://dibiphp.com/
  *
- * @copyright  Copyright (c) 2004, 2007 David Grudl
+ * @copyright  Copyright (c) 2004, 2008 David Grudl
  * @license    http://nettephp.com/license  Nette license
  * @link       http://nettephp.com/
  * @package    Nette
  */
 
+// namespace Nette;
 
 
 /**
@@ -46,7 +47,7 @@
  * </code>
  *
  * @author     David Grudl
- * @copyright  Copyright (c) 2004, 2007 David Grudl
+ * @copyright  Copyright (c) 2004, 2008 David Grudl
  * @license    http://nettephp.com/license  Nette license
  * @link       http://nettephp.com/
  * @package    Nette
@@ -111,7 +112,7 @@ abstract class NObject
 	 * Returns property value. Do not call directly.
      *
      * @param  string  property name
-	 * @return mixed   property value or the event handler list
+	 * @return mixed   property value
 	 * @throws LogicException if the property is not defined.
 	 */
 	protected function &__get($name)
@@ -200,7 +201,7 @@ abstract class NObject
     /**
 	 * Has property accessor?
      *
-	 * @param string  class name
+	 * @param  string  class name
      * @param  string  method name
 	 * @return bool
 	 */
