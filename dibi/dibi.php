@@ -393,6 +393,19 @@ class dibi
 
 
     /**
+     * Import SQL dump from file - extreme fast!
+     *
+     * @param  filename
+     * @return int  count of sql commands
+     */
+    public static function loadFile($file)
+    {
+        return self::getConnection()->loadFile($file);
+    }
+
+
+
+    /**
      * Experimental; will be used in PHP 5.3
      */
     public static function __callStatic($name, $args)

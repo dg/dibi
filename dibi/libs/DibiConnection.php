@@ -389,6 +389,40 @@ class DibiConnection extends NObject
 
 
     /**
+     * Import SQL dump from file - extreme fast!
+     *
+     * @param  filename
+     * @return int  count of sql commands
+     */
+    public function loadFile($file)
+    {
+        $this->connect();
+
+        @set_time_limit(0);
+
+        $handle = @fopen($file, 'r');
+        if (!$handle) {
+            throw new DibiException("Cannot open file '$file'");
+        }
+
+        $count = 0;
+        $sql = '';
+        while (!feof($handle)) {
+            $s = fgets($handle);
+            $sql .= $s;
+            if (substr(rtrim($s), -1) === ';') {
+                $this->driver->query($sql);
+                $sql = '';
+                $count++;
+            }
+        }
+        fclose($handle);
+        return $count;
+    }
+
+
+
+    /**
      * Gets a information of the current database.
      *
      * @return DibiReflection
@@ -405,7 +439,7 @@ class DibiConnection extends NObject
      */
     public function __wakeup()
     {
-        throw new DibiException('You cannot serialize or unserialize '.__CLASS__.' instances');
+        throw new DibiException('You cannot serialize or unserialize ' . $this->getClass() . ' instances');
     }
 
 
@@ -415,7 +449,7 @@ class DibiConnection extends NObject
      */
     public function __sleep()
     {
-        throw new DibiException('You cannot serialize or unserialize '.__CLASS__.' instances');
+        throw new DibiException('You cannot serialize or unserialize ' . $this->getClass() . ' instances');
     }
 
 }
