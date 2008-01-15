@@ -20,26 +20,10 @@
 
 
 /**
- * Interface for user variable, used for generating SQL
+ * Default implemenation of IDibiVariable
  * @package dibi
  */
-interface DibiVariableInterface
-{
-    /**
-     * Format for SQL
-     *
-     * @param  object  destination DibiDriverInterface
-     * @param  string  optional modifier
-     * @return string  SQL code
-     */
-    public function toSql(DibiDriverInterface $driver, $modifier);
-}
-
-
-
-
-
-class DibiVariable extends NObject implements DibiVariableInterface
+class DibiVariable extends NObject implements IDibiVariable
 {
     /** @var mixed */
     public $value;
@@ -55,7 +39,7 @@ class DibiVariable extends NObject implements DibiVariableInterface
     }
 
 
-    public function toSql(DibiDriverInterface $driver, $modifier)
+    public function toSql(IDibiDriver $driver, $modifier)
     {
         return $driver->format($this->value, $this->type);
     }

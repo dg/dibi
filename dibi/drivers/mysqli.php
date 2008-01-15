@@ -40,7 +40,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiMySqliDriver extends NObject implements DibiDriverInterface
+class DibiMySqliDriver extends NObject implements IDibiDriver
 {
 
     /**
@@ -92,7 +92,7 @@ class DibiMySqliDriver extends NObject implements DibiDriverInterface
 
         // default values
         if (!isset($config['username'])) $config['username'] = ini_get('mysqli.default_user');
-        if (!isset($config['password'])) $config['password'] = ini_get('mysqli.default_password');
+        if (!isset($config['password'])) $config['password'] = ini_get('mysqli.default_pw');
         if (!isset($config['socket'])) $config['socket'] = ini_get('mysqli.default_socket');
         if (!isset($config['host'])) {
             $config['host'] = ini_get('mysqli.default_host');

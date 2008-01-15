@@ -129,7 +129,7 @@ final class DibiResultIterator implements Iterator
 	 */
     public function valid()
     {
-        return is_array($this->row) && ($this->limit < 0 || $this->pointer < $this->limit);
+        return !empty($this->row) && ($this->limit < 0 || $this->pointer < $this->limit);
     }
 
 

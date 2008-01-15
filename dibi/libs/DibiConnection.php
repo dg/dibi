@@ -36,7 +36,7 @@ class DibiConnection extends NObject
     private $config;
 
     /**
-     * DibiDriverInterface
+     * IDibiDriver
      * @var array
      */
     private $driver;
@@ -254,7 +254,7 @@ class DibiConnection extends NObject
         $time = -microtime(TRUE);
         dibi::notify($this, 'beforeQuery', $sql);
 
-        $res = $this->driver->query($sql) ? new DibiResult(clone $this->driver) : TRUE; // backward compatibility - will be changed to NULL
+        $res = $this->driver->query($sql) ? new DibiResult(clone $this->driver, $this->config) : TRUE; // backward compatibility - will be changed to NULL
 
         $time += microtime(TRUE);
         dibi::$elapsedTime = $time;

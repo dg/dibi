@@ -34,7 +34,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiMsSqlDriver extends NObject implements DibiDriverInterface
+class DibiMsSqlDriver extends NObject implements IDibiDriver
 {
 
     /**

@@ -1,4 +1,4 @@
-<h1>DibiVariableInterface example</h1>
+<h1>IDibiVariable example</h1>
 <?php
 
 require_once '../dibi/dibi.php';

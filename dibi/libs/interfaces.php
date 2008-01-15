@@ -20,6 +20,26 @@
 
 
 /**
+ * Interface for user variable, used for generating SQL
+ * @package dibi
+ */
+interface IDibiVariable
+{
+    /**
+     * Format for SQL
+     *
+     * @param  object  destination IDibiDriver
+     * @param  string  optional modifier
+     * @return string  SQL code
+     */
+    public function toSql(IDibiDriver $driver, $modifier);
+}
+
+
+
+
+
+/**
  * dibi driver interface
  *
  * @author     David Grudl
@@ -27,7 +47,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-interface DibiDriverInterface
+interface IDibiDriver
 {
 
     /**

@@ -35,7 +35,7 @@ final class DibiTranslator extends NObject
     /** @var string NOT USED YET */
     public $mask;
 
-    /** @var DibiDriverInterface */
+    /** @var IDibiDriver */
     private $driver;
 
     /** @var string  last modifier */
@@ -55,7 +55,7 @@ final class DibiTranslator extends NObject
 
 
 
-    public function __construct(DibiDriverInterface $driver)
+    public function __construct(IDibiDriver $driver)
     {
         $this->driver = $driver;
     }
@@ -207,7 +207,7 @@ final class DibiTranslator extends NObject
                 return 'NULL';
             }
 
-            if ($value instanceof DibiVariableInterface) {
+            if ($value instanceof IDibiVariable) {
                 return $value->toSql($this->driver, $modifier);
             }
 
@@ -311,7 +311,7 @@ final class DibiTranslator extends NObject
         if ($value === NULL)
             return 'NULL';
 
-        if ($value instanceof DibiVariableInterface)
+        if ($value instanceof IDibiVariable)
             return $value->toSql($this->driver, NULL);
 
         $this->hasError = TRUE;

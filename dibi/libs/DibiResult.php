@@ -26,6 +26,7 @@
  * $result = dibi::query('SELECT * FROM [table]');
  *
  * $row   = $result->fetch();
+ * $obj   = $result->fetch(TRUE);
  * $value = $result->fetchSingle();
  * $table = $result->fetchAll();
  * $pairs = $result->fetchPairs();
@@ -43,7 +44,7 @@
 class DibiResult extends NObject implements IteratorAggregate, Countable
 {
     /**
-     * DibiDriverInterface
+     * IDibiDriver
      * @var array
      */
     private $driver;
@@ -60,7 +61,6 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      */
     private $metaCache;
 
-
     /**
      * Already fetched? Used for allowance for first seek(0)
      * @var bool
@@ -72,6 +72,12 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      * @var array|FALSE
      */
     private $withTables = FALSE;
+
+    /**
+     * Fetch as object?
+     * @var bool
+     */
+    public $asObjects = FALSE;
 
 
 
@@ -85,11 +91,17 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
 
 
-
-    public function __construct($driver)
+    /**
+     * @param  IDibiDriver
+     * @param  array
+     */
+    public function __construct($driver, $config)
     {
         $this->driver = $driver;
+        $this->setWithTables(!empty($config['result:withtables']));
+        $this->asObjects = !empty($config['result:objects']);
     }
+
 
 
     /**
@@ -207,9 +219,10 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
      * Fetches the row at current position, process optional type conversion
      * and moves the internal cursor to the next position
      *
+     * @param  bool  fetch as object? Overrides $this->asObjects
      * @return array|FALSE  array on success, FALSE if no next record
      */
-    final public function fetch()
+    final public function fetch($asObject = NULL)
     {
         if ($this->withTables === FALSE) {
             $row = $this->getDriver()->fetch(TRUE);
@@ -230,6 +243,10 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
                     $row[$col] = $this->convert($row[$col], $type);
                 }
             }
+        }
+
+        if ($asObject || ($asObject === NULL && $this->asObjects)) {
+            $row = (object) $row;
         }
 
         return $row;
@@ -268,7 +285,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     final function fetchAll()
     {
         $this->seek(0);
-        $row = $this->fetch();
+        $row = $this->fetch(FALSE);
         if (!$row) return array();  // empty resultset
 
         $data = array();
@@ -276,10 +293,10 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
             $key = key($row);
             do {
                 $data[] = $row[$key];
-            } while ($row = $this->fetch());
+            } while ($row = $this->fetch(FALSE));
 
         } else {
-
+            if ($this->asObjects) $row = (object) $row;
             do {
                 $data[] = $row;
             } while ($row = $this->fetch());
@@ -302,7 +319,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     final function fetchAssoc($assoc)
     {
         $this->seek(0);
-        $row = $this->fetch();
+        $row = $this->fetch(FALSE);
         if (!$row) return array();  // empty resultset
 
         $data = NULL;
@@ -366,7 +383,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
                 if ($leaf === '=') $x = $row; else $x = (object) $row;
             }
 
-        } while ($row = $this->fetch());
+        } while ($row = $this->fetch(FALSE));
 
         unset($x);
         return $data;
@@ -385,7 +402,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     final function fetchPairs($key = NULL, $value = NULL)
     {
         $this->seek(0);
-        $row = $this->fetch();
+        $row = $this->fetch(FALSE);
         if (!$row) return array();  // empty resultset
 
         $data = array();
@@ -412,7 +429,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
             if ($key === NULL) { // indexed-array
                 do {
                     $data[] = $row[$value];
-                } while ($row = $this->fetch());
+                } while ($row = $this->fetch(FALSE));
                 return $data;
             }
 
@@ -423,7 +440,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
 
         do {
             $data[ $row[$key] ] = $row[$value];
-        } while ($row = $this->fetch());
+        } while ($row = $this->fetch(FALSE));
 
         return $data;
     }
@@ -558,7 +575,7 @@ class DibiResult extends NObject implements IteratorAggregate, Countable
     /**
      * Safe access to property $driver
      *
-     * @return DibiDriverInterface
+     * @return IDibiDriver
      * @throws DibiException
      */
     private function getDriver()

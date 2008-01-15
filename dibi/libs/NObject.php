@@ -25,8 +25,9 @@
  *
  * It defines some handful methods and enhances object core of PHP:
  *   - access to undeclared members throws exceptions
- *   - ability to add new methods to class (extension methods)
  *   - support for conventional properties with getters and setters
+ *   - support for event raising functionality
+ *   - ability to add new methods to class (extension methods)
  *
  * Properties is a syntactic sugar which allows access public getter and setter
  * methods as normal object variables. A property is defined by a getter method
@@ -37,6 +38,15 @@
  * </code>
  * Property names are case-sensitive, and they are written in the camelCaps
  * or PascalCaps.
+ *
+ * Event functionality is provided by declaration using pseudo-keyword 'event'.
+ * Multiple handlers are allowed.
+ * <code>
+ * public $onClick = event;        // declaration in class
+ * $this->onClick[] = 'callback';  // attaching event handler
+ * if (empty($this->onClick)) ...  // are there any handler?
+ * $this->onClick($sender, $arg);  // raises the event with arguments
+ * </code>
  *
  * Adding method to class (i.e. to all instances) works similar to JavaScript
  * prototype property. The syntax for adding a new method is:
@@ -93,9 +103,23 @@ abstract class NObject
             throw new BadMethodCallException("Call to method without name");
         }
 
+        $class = get_class($this);
+
+        // event functionality
+        if (self::hasEvent($class, $name)) {
+            $list = $this->$name;
+            if (is_array($list) || $list instanceof Traversable) {
+                foreach ($list as $handler) {
+                    if ($handler === '') continue;
+                    call_user_func_array($handler, $args);
+                }
+            }
+            return;
+        }
+
         // object prototypes support Class__method()
         // (or use class Class__method { static function ... } with autoloading?)
-        $cl = $class = get_class($this);
+        $cl = $class;
         do {
             if (function_exists($nm = $cl . '_prototype_' . $name)) {
                 array_unshift($args, $this);
@@ -199,7 +223,7 @@ abstract class NObject
 
 
     /**
-	 * Has property accessor?
+	 * Has property an accessor?
      *
 	 * @param  string  class name
      * @param  string  method name
@@ -219,6 +243,28 @@ abstract class NObject
         // case-sensitive checking, capitalize the fourth character
         $m[3] = $m[3] & "\xDF";
         return isset($cache[$c][$m]);
+    }
+
+
+
+    /**
+     * Is property an event?
+     *
+     * @param  string  class name
+     * @param  string  method name
+	 * @return bool
+     */
+    private static function hasEvent($c, $m)
+    {
+        if (strncmp($m, 'on', 2)) return FALSE;
+
+        static $cache;
+        if (!isset($cache[$c])) {
+            // get_class_vars returns ONLY PUBLIC properties
+            // but returns static methods too (nothing doing...)
+            $cache[$c] = get_class_vars($c);
+        }
+        return isset($cache[$c][$m]) && $cache[$c][$m] === '';
     }
 
 }

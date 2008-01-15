@@ -33,7 +33,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiPdoDriver extends NObject implements DibiDriverInterface
+class DibiPdoDriver extends NObject implements IDibiDriver
 {
 
     /**

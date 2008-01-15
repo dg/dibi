@@ -35,14 +35,15 @@ if (!class_exists('NObject', FALSE)) { require_once dirname(__FILE__) . '/libs/N
 if (!class_exists('NException', FALSE)) { require_once dirname(__FILE__) . '/libs/NException.php'; }
 
 // dibi libraries
+require_once dirname(__FILE__) . '/libs/interfaces.php';
 require_once dirname(__FILE__) . '/libs/DibiException.php';
 require_once dirname(__FILE__) . '/libs/DibiConnection.php';
-require_once dirname(__FILE__) . '/libs/DibiDriverInterface.php';
 require_once dirname(__FILE__) . '/libs/DibiResult.php';
 require_once dirname(__FILE__) . '/libs/DibiResultIterator.php';
 require_once dirname(__FILE__) . '/libs/DibiTranslator.php';
 require_once dirname(__FILE__) . '/libs/DibiLogger.php';
 require_once dirname(__FILE__) . '/libs/DibiVariable.php';
+require_once dirname(__FILE__) . '/libs/DibiTable.php';
 
 
 
