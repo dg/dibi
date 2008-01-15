@@ -69,6 +69,7 @@ class DibiPostgreDriver extends NObject implements IDibiDriver
     }
 
 
+
     /**
      * Connects to a database
      *
@@ -259,8 +260,6 @@ class DibiPostgreDriver extends NObject implements IDibiDriver
         if ($offset > 0)
             $sql .= ' OFFSET ' . (int) $offset;
     }
-
-
 
 
 

@@ -5,14 +5,16 @@
 require_once '../dibi/dibi.php';
 
 
-copy('sample.sdb', 'sample_tmp.sdb');
-
 dibi::connect(array(
     'driver'   => 'sqlite',
-    'database' => 'sample_tmp.sdb',
+    'database' => 'sample.sdb',
 ));
 
+dibi::begin();
 
+
+// autodetection: primary keys are customer_id, order_id, ...
+DibiTable::$primaryMask = '%s_id';
 
 
 // table products
@@ -24,8 +26,7 @@ class Products extends DibiTable
 
 }
 
-// autodetection: primary keys are customer_id, order_id, ...
-DibiTable::$primaryMask = '%s_id';
+
 
 
 
@@ -38,7 +39,7 @@ echo "Primary key: $products->primary\n";
 
 // Finds rows by primary key
 foreach ($products->find(1, 3) as $row) {
-    ...
+    print_r($row);
 }
 
 

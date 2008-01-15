@@ -114,6 +114,7 @@ class NException extends Exception
     }
 
 
+
     /**
      * Internal error handler
      */

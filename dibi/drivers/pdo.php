@@ -95,6 +95,7 @@ class DibiPdoDriver extends NObject implements IDibiDriver
     }
 
 
+
     /**
      * Disconnects from a database
      *

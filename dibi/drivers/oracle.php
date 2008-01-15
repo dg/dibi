@@ -232,7 +232,6 @@ class DibiOracleDriver extends NObject implements IDibiDriver
 
 
 
-
     /**
      * Returns the number of rows in a result set
      *

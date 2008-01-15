@@ -105,6 +105,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
     }
 
 
+
     /**
      * Disconnects from a database
      *
@@ -232,7 +233,6 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
         if ($limit < 0 && $offset < 1) return;
         $sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
     }
-
 
 
 

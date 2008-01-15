@@ -125,6 +125,7 @@ class DibiMySqliDriver extends NObject implements IDibiDriver
     }
 
 
+
     /**
      * Disconnects from a database
      *
@@ -253,8 +254,6 @@ class DibiMySqliDriver extends NObject implements IDibiDriver
         $sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
              . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
     }
-
-
 
 
 

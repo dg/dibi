@@ -39,6 +39,7 @@ class DibiVariable extends NObject implements IDibiVariable
     }
 
 
+
     public function toSql(IDibiDriver $driver, $modifier)
     {
         return $driver->format($this->value, $this->type);

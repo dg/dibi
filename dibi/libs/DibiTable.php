@@ -49,6 +49,9 @@ abstract class DibiTable extends NObject
     /** @var string  primary key type */
     protected $primaryModifier = '%i';
 
+    /** @var array */
+    protected $blankRow = array();
+
 
     /**
      * Table constructor
@@ -202,10 +205,10 @@ abstract class DibiTable extends NObject
         if (!is_array($what)) {
             $what = func_get_args();
         }
-        return $this->connection->query(
+        return $this->complete($this->connection->query(
             'SELECT * FROM %n', $this->name,
             'WHERE %n', $this->primary, 'IN (' . $this->primaryModifier, $what, ')'
-        );
+        ));
     }
 
 
@@ -218,15 +221,15 @@ abstract class DibiTable extends NObject
     public function findAll($order = NULL)
     {
         if ($order === NULL) {
-            return $this->connection->query(
+            return $this->complete($this->connection->query(
                 'SELECT * FROM %n', $this->name
-            );
+            ));
         } else {
             $order = func_get_args();
-            return $this->connection->query(
+            return $this->complete($this->connection->query(
                 'SELECT * FROM %n', $this->name,
                 'ORDER BY %n', $order
-            );
+            ));
         }
     }
 
@@ -235,14 +238,42 @@ abstract class DibiTable extends NObject
     /**
      * Fetches single row
      * @param  scalar  primary key value
-     * @return array row
+     * @return array|object row
      */
     public function fetch($what)
     {
-        $this->connection->query(
+        return $this->complete($this->connection->query(
             'SELECT * FROM %n', $this->name,
             'WHERE %n', $this->primary, '=' . $this->primaryModifier, $what
-        )->fetch();
+        ))->fetch();
+    }
+
+
+
+    /**
+     * Returns a blank row (not fetched from database)
+     * @return array|object
+     */
+    public function createBlank()
+    {
+        $row = $this->blankRow;
+        $row[$this->primary] = NULL;
+        if ($this->connection->getConfig('result:objects')) {
+            $row = (object) $row;
+        }
+        return $row;
+    }
+
+
+
+    /**
+     * User DibiResult post-processing
+     * @param  DibiResult
+     * @return DibiResult
+     */
+    protected function complete($res)
+    {
+        return $res;
     }
 
 }
