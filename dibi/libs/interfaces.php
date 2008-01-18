@@ -28,11 +28,11 @@ interface IDibiVariable
     /**
      * Format for SQL
      *
-     * @param  object  destination IDibiDriver
+     * @param  object  DibiTranslator
      * @param  string  optional modifier
      * @return string  SQL code
      */
-    public function toSql(IDibiDriver $driver, $modifier);
+    public function toSql(DibiTranslator $translator, $modifier);
 }
 
 

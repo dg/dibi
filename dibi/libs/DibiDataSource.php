@@ -69,7 +69,7 @@ class DibiDataSource extends NObject implements IDataSource
     {
         return $this->connection->query('
             SELECT %n', ($cols === NULL ? '*' : $cols), '
-            FROM %sql', $this->sql, '
+            FROM', $this->sql, '
             %ofs %lmt', $offset, $limit
         );
     }
@@ -83,8 +83,7 @@ class DibiDataSource extends NObject implements IDataSource
     {
         if ($this->count === NULL) {
             $this->count = $this->connection->query('
-                SELECT COUNT(*)
-                FROM %sql', $this->sql
+                SELECT COUNT(*) FROM', $this->sql
             )->fetchSingle();
         }
         return $this->count;

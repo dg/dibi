@@ -29,20 +29,20 @@ class DibiVariable extends NObject implements IDibiVariable
     public $value;
 
     /** @var string */
-    public $type;
+    public $modifier;
 
 
-    public function __construct($value, $type)
+    public function __construct($value, $modifier)
     {
         $this->value = $value;
-        $this->type = $type;
+        $this->modifier = $modifier;
     }
 
 
 
-    public function toSql(IDibiDriver $driver, $modifier)
+    public function toSql(DibiTranslator $translator, $modifier)
     {
-        return $driver->format($this->value, $this->type);
+        return $translator->formatValue($this->value, $this->modifier);
     }
 
 }

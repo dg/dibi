@@ -32,14 +32,14 @@ final class DibiTranslator extends NObject
     /** @var string */
     public $sql;
 
-    /** @var string NOT USED YET */
-    public $mask;
-
     /** @var IDibiDriver */
     private $driver;
 
-    /** @var string  last modifier */
-    private $modifier;
+    /** @var int */
+    private $cursor;
+
+    /** @var array */
+    private $args;
 
     /** @var bool */
     private $hasError;
@@ -54,16 +54,26 @@ final class DibiTranslator extends NObject
     private $ifLevelStart;
 
     /** @var int */
-    public $limit;
+    private $limit;
 
     /** @var int */
-    public $offset;
+    private $offset;
 
 
 
     public function __construct(IDibiDriver $driver)
     {
         $this->driver = $driver;
+    }
+
+
+
+    /**
+     * return IDibiDriver
+     */
+    public function getDriver()
+    {
+        return $this->driver;
     }
 
 
@@ -81,8 +91,11 @@ final class DibiTranslator extends NObject
         $this->hasError = FALSE;
         $commandIns = NULL;
         $lastArr = NULL;
-        $mod = & $this->modifier; // shortcut
-        $mod = FALSE;
+        // shortcuts
+        $cursor = & $this->cursor;
+        $cursor = 0;
+        $this->args = array_values($args);
+        $args = & $this->args;
 
         // conditional sql
         $this->ifLevel = $this->ifLevelStart = 0;
@@ -90,57 +103,72 @@ final class DibiTranslator extends NObject
         $comment = FALSE;
 
         // iterate
-        $sql = $mask = array();
-        $i = 0;
-        foreach ($args as $arg)
+        $sql = array();
+        while ($cursor < count($args))
         {
-            $i++;
-
-            // %if was opened
-            if ($mod === 'if') {
-                $mod = FALSE;
-                $this->ifLevel++;
-                if (!$comment && !$arg) {
-                    // open comment
-                    $sql[] = "\0";
-                    $this->ifLevelStart = $this->ifLevel;
-                    $comment = TRUE;
-                }
-                continue;
-            }
+            $arg = $args[$cursor];
+            $cursor++;
 
             // simple string means SQL
-            if (is_string($arg) && (!$mod || $mod === 'sql')) {
-                $mod = FALSE;
-                // will generate new mod
-                /*$mask[] =*/ $sql[] = $this->formatValue($arg, 'sql');
+            if (is_string($arg)) {
+                // speed-up - is regexp required?
+                $toSkip = strcspn($arg, '`[\'"%');
+
+                if (strlen($arg) === $toSkip) { // needn't be translated
+                    $sql[] = $arg;
+                } else {
+                    $sql[] = substr($arg, 0, $toSkip)
+/*
+                     . preg_replace_callback('/
+                       (?=`|\[|\'|"|%)                 ## speed-up
+                       (?:
+                          `(.+?)`|                     ## 1) `identifier`
+                          \[(.+?)\]|                   ## 2) [identifier]
+                          (\')((?:\'\'|[^\'])*)\'|     ## 3,4) string
+                          (")((?:""|[^"])*)"|          ## 5,6) "string"
+                          (\'|")                       ## 7) lone-quote
+                          %([a-zA-Z]{1,4})(?![a-zA-Z])|## 8) modifier
+                       )/xs',
+*/                  // note: this can change $this->args & $this->cursor & ...
+                     . preg_replace_callback('/(?=`|\[|\'|"|%)(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|%([a-zA-Z]{1,4})(?![a-zA-Z]))/s',
+                           array($this, 'cb'),
+                           substr($arg, $toSkip)
+                       );
+
+                }
                 continue;
             }
 
-            // associative array without modifier - autoselect between SET or VALUES & LIST
-            if (!$mod && is_array($arg) && is_string(key($arg))) {
-                if ($commandIns === NULL) {
-                    $commandIns = strtoupper(substr(ltrim($args[0]), 0, 6));
-                    $commandIns = $commandIns === 'INSERT' || $commandIns === 'REPLAC';
-                    $mod = $commandIns ? 'v' : 'a';
-                } else {
-                    $mod = $commandIns ? 'l' : 'a';
-                    if ($lastArr === $i - 1) /*$mask[] =*/ $sql[] = ',';
+            if ($comment) continue;
+
+            if (is_array($arg)) {
+                if (is_string(key($arg))) {
+                    // associative array -> autoselect between SET or VALUES & LIST
+                    if ($commandIns === NULL) {
+                        $commandIns = strtoupper(substr(ltrim($args[0]), 0, 6));
+                        $commandIns = $commandIns === 'INSERT' || $commandIns === 'REPLAC';
+                        $sql[] = $this->formatValue($arg, $commandIns ? 'v' : 'a');
+                    } else {
+                        if ($lastArr === $cursor - 1) $sql[] = ',';
+                        $sql[] = $this->formatValue($arg, $commandIns ? 'l' : 'a');
+                    }
+                    $lastArr = $cursor;
+                    continue;
+
+                } elseif ($cursor === 1) {
+                    // implicit array expansion
+                    $cursor = 0;
+                    array_splice($args, 0, 1, $arg);
+                    continue;
                 }
-                $lastArr = $i;
             }
 
             // default processing
-            //$mask[] = '?';
-            if (!$comment) {
-                $sql[] = $this->formatValue($arg, $mod);
-            }
-            $mod = FALSE;
-        } // foreach
+            $sql[] = $this->formatValue($arg, FALSE);
+        } // while
+
 
         if ($comment) $sql[] = "\0";
-
-        /*$this->mask = implode(' ', $mask);*/
 
         $this->sql = implode(' ', $sql);
 
@@ -164,52 +192,53 @@ final class DibiTranslator extends NObject
      * @param  string
      * @return string
      */
-    private function formatValue($value, $modifier)
+    public function formatValue($value, $modifier)
     {
         // array processing (with or without modifier)
         if (is_array($value)) {
 
             $vx = $kx = array();
+            $separator = ', ';
             switch ($modifier) {
-            case 'a': // SET (assoc)
+            case 'and':
+            case 'or':
+                $separator = ' ' . strtoupper($modifier) . ' ';
+                if (!is_string(key($value))) {
+                    foreach ($value as $v) {
+                        $vx[] = $this->formatValue($v, 'sql');
+                    }
+                    return implode($separator, $vx);
+                }
+                // break intentionally omitted
+            case 'a': // SET key=val, key=val, ...
                 foreach ($value as $k => $v) {
-                    // split into identifier & modifier
-                    $pair = explode('%', $k, 2);
-
-                    // generate array
+                    $pair = explode('%', $k, 2); // split into identifier & modifier
                     $vx[] = $this->delimite($pair[0]) . '='
                         . $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
                 }
-                return implode(', ', $vx);
+                return implode($separator, $vx);
 
 
-            case 'l': // LIST
-                $kx = NULL;
-                // break intentionally omitted
-            case 'v': // VALUES
+            case 'l': // LIST val, val, ...
                 foreach ($value as $k => $v) {
-                    // split into identifier & modifier
-                    $pair = explode('%', $k, 2);
-
-                    // generate arrays
-                    if ($kx !== NULL) {
-                        $kx[] = $this->delimite($pair[0]);
-                    }
+                    $pair = explode('%', $k, 2); // split into identifier & modifier
                     $vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
                 }
+                return '(' . implode(', ', $vx) . ')';
 
-                if ($kx === NULL) {
-                    return '(' . implode(', ', $vx) . ')';
-                } else {
-                    return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
+
+            case 'v': // (key, key, ...) VALUES (val, val, ...)
+                foreach ($value as $k => $v) {
+                    $pair = explode('%', $k, 2); // split into identifier & modifier
+                    $kx[] = $this->delimite($pair[0]);
+                    $vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
                 }
-
+                return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
             default:
                 foreach ($value as $v) {
                     $vx[] = $this->formatValue($v, $modifier);
                 }
-
                 return implode(', ', $vx);
             }
         }
@@ -222,7 +251,7 @@ final class DibiTranslator extends NObject
             }
 
             if ($value instanceof IDibiVariable) {
-                return $value->toSql($this->driver, $modifier);
+                return $value->toSql($this, $modifier);
             }
 
             if (!is_scalar($value)) {  // array is already processed
@@ -266,57 +295,28 @@ final class DibiTranslator extends NObject
 
             case 'sql':// preserve as SQL
                 $value = (string) $value;
-
                 // speed-up - is regexp required?
-                $toSkip = strcspn($value, '`[\'"%');
-
+                $toSkip = strcspn($value, '`[\'"');
                 if (strlen($value) === $toSkip) { // needn't be translated
                     return $value;
-                }
-
-                // note: only this can change $this->modifier
-                return substr($value, 0, $toSkip)
-/*
-                     . preg_replace_callback('/
-                       (?=`|\[|\'|"|%)              ## speed-up
-                       (?:
-                          `(.+?)`|                  ## 1) `identifier`
-                          \[(.+?)\]|                ## 2) [identifier]
-                          (\')((?:\'\'|[^\'])*)\'|  ## 3,4) string
-                          (")((?:""|[^"])*)"|       ## 5,6) "string"
-                          %(else|end)|              ## 7) conditional SQL
-                          %([a-zA-Z]{1,3})$|        ## 8) right modifier
-                          (\'|")                    ## 9) lone-quote
-                       )/xs',
-*/
-                     . preg_replace_callback('/(?=`|\[|\'|"|%)(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|%(else|end)|%([a-zA-Z]{1,3})$|(\'|"))/s',
+                } else {
+                    return substr($value, 0, $toSkip)
+                     . preg_replace_callback('/(?=`|\[|\'|")(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"(\'|"))/s',
                            array($this, 'cb'),
                            substr($value, $toSkip)
                        );
-
-            case 'lmt': // apply limit
-                if ($value !== NULL) $this->limit = (int) $value;
-                return '';
-
-            case 'ofs': // apply offset
-                if ($value !== NULL) $this->offset = (int) $value;
-                return '';
+                }
 
             case 'a':
             case 'v':
                 $this->hasError = TRUE;
                 return '**Unexpected type ' . gettype($value) . '**';
 
-            case 'if':
-                $this->hasError = TRUE;
-                return "**The %$modifier is not allowed here**";
-
             default:
                 $this->hasError = TRUE;
-                return "**Unknown modifier %$modifier**";
+                return "**Unknown or invalid modifier %$modifier**";
             }
         }
-
 
 
         // without modifier procession
@@ -333,7 +333,7 @@ final class DibiTranslator extends NObject
             return 'NULL';
 
         if ($value instanceof IDibiVariable)
-            return $value->toSql($this->driver, NULL);
+            return $value->toSql($this, NULL);
 
         $this->hasError = TRUE;
         return '**Unexpected ' . gettype($value) . '**';
@@ -342,8 +342,7 @@ final class DibiTranslator extends NObject
 
 
     /**
-     * PREG callback for @see self::formatValue()
-     *
+     * PREG callback from translate() or formatValue()
      * @param  array
      * @return string
      */
@@ -355,17 +354,40 @@ final class DibiTranslator extends NObject
         //    [4] => string
         //    [5] => "
         //    [6] => string
-        //    [7] => %else | %end
-        //    [8] => right modifier
-        //    [9] => lone-quote
+        //    [7] => lone-quote
+        //    [8] => modifier (when called from self::translate())
 
-        if (!empty($matches[7])) { // %end | %else
-            if (!$this->ifLevel) {
+        if (!empty($matches[8])) { // modifier
+            $mod = $matches[8];
+            $cursor = & $this->cursor;
+
+            if ($cursor >= count($this->args) && $mod !== 'else' && $mod !== 'end') {
                 $this->hasError = TRUE;
-                return "**Unexpected condition $matches[7]**";
+                return "**Extra modifier %$mod**";
             }
 
-            if ($matches[7] === 'end') {
+            if ($mod === 'if') {
+                $this->ifLevel++;
+                if (!$this->comment && !$this->args[$cursor]) {
+                    // open comment
+                    $this->ifLevelStart = $this->ifLevel;
+                    $this->comment = TRUE;
+                }
+                $cursor++;
+                return "\0";
+
+            } elseif ($mod === 'else') {
+                if ($this->ifLevelStart === $this->ifLevel) {
+                    $this->ifLevelStart = 0;
+                    $this->comment = FALSE;
+                    return "\0";
+                } elseif (!$this->comment) {
+                    $this->ifLevelStart = $this->ifLevel;
+                    $this->comment = TRUE;
+                    return "\0";
+                }
+
+            } elseif ($mod === 'end') {
                 $this->ifLevel--;
                 if ($this->ifLevelStart === $this->ifLevel + 1) {
                     // close comment
@@ -374,27 +396,28 @@ final class DibiTranslator extends NObject
                     return "\0";
                 }
                 return '';
-            }
 
-            // else
-            if ($this->ifLevelStart === $this->ifLevel) {
-                $this->ifLevelStart = 0;
-                $this->comment = FALSE;
-                return "\0";
-            } elseif (!$this->comment) {
-                $this->ifLevelStart = $this->ifLevel;
-                $this->comment = TRUE;
-                return "\0";
-            }
-        }
+            } elseif ($mod === 'ex') { // array expansion
+                array_splice($this->args, $cursor, 1, $this->args[$cursor]);
+                return '';
 
-        if (!empty($matches[8])) { // modifier
-            $this->modifier = $matches[8];
-            return '';
+            } elseif ($mod === 'lmt') { // apply limit
+                if ($this->args[$cursor] !== NULL) $this->limit = (int) $this->args[$cursor];
+                $cursor++;
+                return '';
+
+            } elseif ($mod === 'ofs') { // apply offset
+                if ($this->args[$cursor] !== NULL) $this->offset = (int) $this->args[$cursor];
+                $cursor++;
+                return '';
+
+            } else { // default processing
+                $cursor++;
+                return $this->formatValue($this->args[$cursor - 1], $mod);
+            }
         }
 
         if ($this->comment) return '';
-
 
         if ($matches[1])  // SQL identifiers: `ident`
             return $this->delimite($matches[1]);
@@ -408,8 +431,7 @@ final class DibiTranslator extends NObject
         if ($matches[5])  // SQL strings: "..."
             return $this->driver->format( str_replace('""', '"', $matches[6]), dibi::FIELD_TEXT);
 
-
-        if ($matches[9]) { // string quote
+        if ($matches[7]) { // string quote
             $this->hasError = TRUE;
             return '**Alone quote**';
         }

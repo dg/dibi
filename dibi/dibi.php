@@ -78,7 +78,7 @@ class dibi
 
         // special
         FIELD_COUNTER =    'C', // counter or autoincrement, is integer
-        IDENTIFIER =       'I',
+        IDENTIFIER =       'n',
 
         // dibi version
         VERSION =          '0.9 (Revision: $WCREV$, Date: $WCDATE$)';
@@ -246,8 +246,7 @@ class dibi
      */
     public static function query($args)
     {
-        if (!is_array($args)) $args = func_get_args();
-
+        $args = func_get_args();
         return self::getConnection()->query($args);
     }
 
@@ -274,8 +273,7 @@ class dibi
      */
     public static function test($args)
     {
-        if (!is_array($args)) $args = func_get_args();
-
+        $args = func_get_args();
         return self::getConnection()->test($args);
     }
 
@@ -290,8 +288,7 @@ class dibi
      */
     public static function fetch($args)
     {
-        if (!is_array($args)) $args = func_get_args();
-
+        $args = func_get_args();
         return self::getConnection()->query($args)->fetch();
     }
 
@@ -306,8 +303,7 @@ class dibi
      */
     public static function fetchAll($args)
     {
-        if (!is_array($args)) $args = func_get_args();
-
+        $args = func_get_args();
         return self::getConnection()->query($args)->fetchAll();
     }
 
@@ -322,8 +318,7 @@ class dibi
      */
     public static function fetchSingle($args)
     {
-        if (!is_array($args)) $args = func_get_args();
-
+        $args = func_get_args();
         return self::getConnection()->query($args)->fetchSingle();
     }
 
@@ -446,7 +441,7 @@ class dibi
     public static function date($date = NULL)
     {
         $var = self::datetime($date);
-        $var->type = dibi::FIELD_DATE;
+        $var->modifier = dibi::FIELD_DATE;
         return $var;
     }
 
@@ -578,7 +573,7 @@ class dibi
             $sql = preg_replace("#\n{2,}#", "\n", $sql);
 
             // syntax highlight
-            $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(])($keywords2)(?=[\\s,)])#i", array('dibi', 'highlightCallback'), $sql);
+            $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#i", array('dibi', 'highlightCallback'), $sql);
             $sql = trim($sql);
             echo '<pre class="dump">', $sql, "</pre>\n";
         }

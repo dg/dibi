@@ -206,8 +206,7 @@ class DibiConnection extends NObject
      */
     final public function query($args)
     {
-        if (!is_array($args)) $args = func_get_args();
-
+        $args = func_get_args();
         $this->connect();
         $trans = new DibiTranslator($this->driver);
         if ($trans->translate($args)) {
@@ -227,8 +226,7 @@ class DibiConnection extends NObject
      */
     final public function test($args)
     {
-        if (!is_array($args)) $args = func_get_args();
-
+        $args = func_get_args();
         $trans = new DibiTranslator($this->driver);
         $ok = $trans->translate($args);
         dibi::dump($trans->sql);
