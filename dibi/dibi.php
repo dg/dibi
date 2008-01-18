@@ -44,6 +44,7 @@ require_once dirname(__FILE__) . '/libs/DibiTranslator.php';
 require_once dirname(__FILE__) . '/libs/DibiLogger.php';
 require_once dirname(__FILE__) . '/libs/DibiVariable.php';
 require_once dirname(__FILE__) . '/libs/DibiTable.php';
+require_once dirname(__FILE__) . '/libs/DibiDataSource.php';
 
 
 
@@ -396,7 +397,7 @@ class dibi
     /**
      * Import SQL dump from file - extreme fast!
      *
-     * @param  filename
+     * @param  string  filename
      * @return int  count of sql commands
      */
     public static function loadFile($file)

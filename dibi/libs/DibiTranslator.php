@@ -53,6 +53,12 @@ final class DibiTranslator extends NObject
     /** @var int */
     private $ifLevelStart;
 
+    /** @var int */
+    public $limit;
+
+    /** @var int */
+    public $offset;
+
 
 
     public function __construct(IDibiDriver $driver)
@@ -70,6 +76,8 @@ final class DibiTranslator extends NObject
      */
     public function translate(array $args)
     {
+        $this->limit = -1;
+        $this->offset = 0;
         $this->hasError = FALSE;
         $commandIns = NULL;
         $lastArr = NULL;
@@ -140,6 +148,11 @@ final class DibiTranslator extends NObject
         // TODO: check !!!
         $this->sql = preg_replace('#\x00.*?\x00#s', '', $this->sql);
 
+        // apply limit
+        if ($this->limit > -1 || $this->offset > 0) {
+            $this->driver->applyLimit($this->sql, $this->limit, $this->offset);
+        }
+
         return !$this->hasError;
     }
 
@@ -172,6 +185,7 @@ final class DibiTranslator extends NObject
 
             case 'l': // LIST
                 $kx = NULL;
+                // break intentionally omitted
             case 'v': // VALUES
                 foreach ($value as $k => $v) {
                     // split into identifier & modifier
@@ -251,7 +265,6 @@ final class DibiTranslator extends NObject
                 return $this->delimite($value);
 
             case 'sql':// preserve as SQL
-            case 'p':  // back compatibility
                 $value = (string) $value;
 
                 // speed-up - is regexp required?
@@ -280,6 +293,14 @@ final class DibiTranslator extends NObject
                            array($this, 'cb'),
                            substr($value, $toSkip)
                        );
+
+            case 'lmt': // apply limit
+                if ($value !== NULL) $this->limit = (int) $value;
+                return '';
+
+            case 'ofs': // apply offset
+                if ($value !== NULL) $this->offset = (int) $value;
+                return '';
 
             case 'a':
             case 'v':

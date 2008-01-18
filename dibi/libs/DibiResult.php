@@ -41,7 +41,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiResult extends NObject implements IteratorAggregate, Countable
+class DibiResult extends NObject implements IDataSource
 {
     /**
      * IDibiDriver

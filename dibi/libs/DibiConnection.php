@@ -391,7 +391,7 @@ class DibiConnection extends NObject
     /**
      * Import SQL dump from file - extreme fast!
      *
-     * @param  filename
+     * @param  string  filename
      * @return int  count of sql commands
      */
     public function loadFile($file)

@@ -141,14 +141,8 @@ abstract class DibiTable extends NObject
      */
     public function insert($data)
     {
-        if (is_object($data)) {
-            $data = (array) $data;
-        } elseif (!is_array($data)) {
-            throw new DibiException('Dataset must be array or anonymous object');
-        }
-
         $this->connection->query(
-            'INSERT INTO %n', $this->name, '%v', $data
+            'INSERT INTO %n', $this->name, '%v', $this->prepare($data)
         );
         return $this->connection->insertId();
     }
@@ -163,15 +157,9 @@ abstract class DibiTable extends NObject
      */
     public function update($where, $data)
     {
-        if (is_object($data)) {
-            $data = (array) $data;
-        } elseif (!is_array($data)) {
-            throw new DibiException('Dataset must be array or anonymous object');
-        }
-
         $this->connection->query(
             'UPDATE %n', $this->name,
-            'SET %a', $data,
+            'SET %a', $this->prepare($data),
             'WHERE %n', $this->primary, 'IN (' . $this->primaryModifier, $where, ')'
         );
         return $this->connection->affectedRows();
@@ -262,6 +250,24 @@ abstract class DibiTable extends NObject
             $row = (object) $row;
         }
         return $row;
+    }
+
+
+
+    /**
+     * User data pre-processing
+     * @param  array|object
+     * @return array
+     */
+    protected function prepare($data)
+    {
+        if (is_object($data)) {
+            return (array) $data;
+        } elseif (is_array($data)) {
+            return $data;
+        }
+
+        throw new DibiException('Dataset must be array or anonymous object');
     }
 
 
