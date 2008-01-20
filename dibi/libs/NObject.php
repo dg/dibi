@@ -39,12 +39,12 @@
  * Property names are case-sensitive, and they are written in the camelCaps
  * or PascalCaps.
  *
- * Event functionality is provided by declaration using pseudo-keyword 'event'.
+ * Event functionality is provided by declaration of property named 'on{Something}'
  * Multiple handlers are allowed.
  * <code>
- * public $onClick = event;        // declaration in class
+ * public $onClick;                // declaration in class
  * $this->onClick[] = 'callback';  // attaching event handler
- * if (empty($this->onClick)) ...  // are there any handler?
+ * if (!empty($this->onClick)) ... // are there any handlers?
  * $this->onClick($sender, $arg);  // raises the event with arguments
  * </code>
  *
@@ -110,7 +110,6 @@ abstract class NObject
             $list = $this->$name;
             if (is_array($list) || $list instanceof Traversable) {
                 foreach ($list as $handler) {
-                    if ($handler === '') continue;
                     call_user_func_array($handler, $args);
                 }
             }
@@ -256,15 +255,7 @@ abstract class NObject
      */
     private static function hasEvent($c, $m)
     {
-        if (strncmp($m, 'on', 2)) return FALSE;
-
-        static $cache;
-        if (!isset($cache[$c])) {
-            // get_class_vars returns ONLY PUBLIC properties
-            // but returns static methods too (nothing doing...)
-            $cache[$c] = get_class_vars($c);
-        }
-        return isset($cache[$c][$m]) && $cache[$c][$m] === '';
+        return preg_match('#^on[A-Z]#', $m) && property_exists($c, $m);
     }
 
 }

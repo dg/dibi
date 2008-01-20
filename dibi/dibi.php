@@ -573,7 +573,7 @@ class dibi
             $sql = preg_replace("#\n{2,}#", "\n", $sql);
 
             // syntax highlight
-            $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#i", array('dibi', 'highlightCallback'), $sql);
+            $sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is", array('dibi', 'highlightCallback'), $sql);
             $sql = trim($sql);
             echo '<pre class="dump">', $sql, "</pre>\n";
         }
@@ -590,16 +590,16 @@ class dibi
     private static function highlightCallback($matches)
     {
         if (!empty($matches[1])) // comment
-            return '<em style="color:gray">'.$matches[1].'</em>';
+            return '<em style="color:gray">' . $matches[1] . '</em>';
 
         if (!empty($matches[2])) // error
-            return '<strong style="color:red">'.$matches[2].'</strong>';
+            return '<strong style="color:red">' . $matches[2] . '</strong>';
 
         if (!empty($matches[3])) // most important keywords
-            return '<strong style="color:blue">'.$matches[3].'</strong>';
+            return '<strong style="color:blue">' . $matches[3] . '</strong>';
 
         if (!empty($matches[4])) // other keywords
-            return '<strong style="color:green">'.$matches[4].'</strong>';
+            return '<strong style="color:green">' . $matches[4] . '</strong>';
     }
 
 

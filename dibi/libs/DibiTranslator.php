@@ -139,7 +139,10 @@ final class DibiTranslator extends NObject
                 continue;
             }
 
-            if ($comment) continue;
+            if ($comment) {
+                $sql[] = '...';
+                continue;
+            }
 
             if (is_array($arg)) {
                 if (is_string(key($arg))) {
@@ -168,19 +171,16 @@ final class DibiTranslator extends NObject
         } // while
 
 
-        if ($comment) $sql[] = "\0";
+        if ($comment) $sql[] = "*/";
 
-        $this->sql = implode(' ', $sql);
-
-        // remove comments
-        // TODO: check !!!
-        $this->sql = preg_replace('#\x00.*?\x00#s', '', $this->sql);
+        $sql = implode(' ', $sql);
 
         // apply limit
         if ($this->limit > -1 || $this->offset > 0) {
-            $this->driver->applyLimit($this->sql, $this->limit, $this->offset);
+            $this->driver->applyLimit($sql, $this->limit, $this->offset);
         }
 
+        $this->sql = $sql;
         return !$this->hasError;
     }
 
@@ -368,23 +368,24 @@ final class DibiTranslator extends NObject
 
             if ($mod === 'if') {
                 $this->ifLevel++;
-                if (!$this->comment && !$this->args[$cursor]) {
+                $cursor++;
+                if (!$this->comment && !$this->args[$cursor - 1]) {
                     // open comment
                     $this->ifLevelStart = $this->ifLevel;
                     $this->comment = TRUE;
+                    return "/*";
                 }
-                $cursor++;
-                return "\0";
+                return '';
 
             } elseif ($mod === 'else') {
                 if ($this->ifLevelStart === $this->ifLevel) {
                     $this->ifLevelStart = 0;
                     $this->comment = FALSE;
-                    return "\0";
+                    return "*/";
                 } elseif (!$this->comment) {
                     $this->ifLevelStart = $this->ifLevel;
                     $this->comment = TRUE;
-                    return "\0";
+                    return "/*";
                 }
 
             } elseif ($mod === 'end') {
@@ -393,7 +394,7 @@ final class DibiTranslator extends NObject
                     // close comment
                     $this->ifLevelStart = 0;
                     $this->comment = FALSE;
-                    return "\0";
+                    return "*/";
                 }
                 return '';
 
@@ -417,7 +418,7 @@ final class DibiTranslator extends NObject
             }
         }
 
-        if ($this->comment) return '';
+        if ($this->comment) return '...';
 
         if ($matches[1])  // SQL identifiers: `ident`
             return $this->delimite($matches[1]);

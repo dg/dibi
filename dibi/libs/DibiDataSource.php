@@ -68,7 +68,7 @@ class DibiDataSource extends NObject implements IDataSource
     public function getIterator($offset = NULL, $limit = NULL, $cols = NULL)
     {
         return $this->connection->query('
-            SELECT %n', ($cols === NULL ? '*' : $cols), '
+            SELECT *
             FROM', $this->sql, '
             %ofs %lmt', $offset, $limit
         );
