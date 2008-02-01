@@ -54,7 +54,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Table constructor
+     * Table constructor.
      * @param  array
      * @return void
      */
@@ -72,7 +72,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Returns the table name
+     * Returns the table name.
      * @return string
      */
     public function getName()
@@ -83,7 +83,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Returns the primary key name
+     * Returns the primary key name.
      * @return string
      */
     public function getPrimary()
@@ -94,7 +94,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Returns the dibi connection
+     * Returns the dibi connection.
      * @return DibiConnection
      */
     public function getConnection()
@@ -105,7 +105,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Setup object
+     * Setup object.
      * @return void
      */
     protected function setup()
@@ -135,7 +135,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Inserts row into a table
+     * Inserts row into a table.
      * @param  array|object
      * @return int  new primary key
      */
@@ -150,7 +150,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Updates rows in a table
+     * Updates rows in a table.
      * @param  mixed  primary key value(s)
      * @param  array|object
      * @return int    number of updated rows
@@ -168,7 +168,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Deletes rows from a table by primary key
+     * Deletes rows from a table by primary key.
      * @param  mixed  primary key value(s)
      * @return int    number of deleted rows
      */
@@ -184,7 +184,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Finds rows by primary key
+     * Finds rows by primary key.
      * @param  mixed  primary key value(s)
      * @return DibiResult
      */
@@ -202,7 +202,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Selects all rows
+     * Selects all rows.
      * @param  string  column to order by
      * @return DibiResult
      */
@@ -224,7 +224,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Fetches single row
+     * Fetches single row.
      * @param  scalar  primary key value
      * @return array|object row
      */
@@ -239,7 +239,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * Returns a blank row (not fetched from database)
+     * Returns a blank row (not fetched from database).
      * @return array|object
      */
     public function createBlank()
@@ -255,7 +255,7 @@ abstract class DibiTable extends NObject
 
 
     /**
-     * User data pre-processing
+     * User data pre-processing.
      * @param  array|object
      * @return array
      */
@@ -267,13 +267,13 @@ abstract class DibiTable extends NObject
             return $data;
         }
 
-        throw new DibiException('Dataset must be array or anonymous object');
+        throw new InvalidArgumentException('Dataset must be array or anonymous object.');
     }
 
 
 
     /**
-     * User DibiResult post-processing
+     * User DibiResult post-processing.
      * @param  DibiResult
      * @return DibiResult
      */

@@ -20,13 +20,13 @@
 
 
 /**
- * Interface for user variable, used for generating SQL
+ * Interface for user variable, used for generating SQL.
  * @package dibi
  */
 interface IDibiVariable
 {
     /**
-     * Format for SQL
+     * Format for SQL.
      *
      * @param  object  DibiTranslator
      * @param  string  optional modifier
@@ -40,7 +40,7 @@ interface IDibiVariable
 
 
 /**
- * Provides an interface between a dataset and data-aware components
+ * Provides an interface between a dataset and data-aware components.
  * @package dibi
  */
 interface IDataSource extends Countable, IteratorAggregate
@@ -54,7 +54,7 @@ interface IDataSource extends Countable, IteratorAggregate
 
 
 /**
- * dibi driver interface
+ * dibi driver interface.
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
@@ -65,7 +65,7 @@ interface IDibiDriver
 {
 
     /**
-     * Internal: Connects to a database
+     * Internal: Connects to a database.
      *
      * @param  array
      * @return void
@@ -76,7 +76,7 @@ interface IDibiDriver
 
 
     /**
-     * Internal: Disconnects from a database
+     * Internal: Disconnects from a database.
      *
      * @return void
      * @throws DibiException
@@ -86,7 +86,7 @@ interface IDibiDriver
 
 
     /**
-     * Internal: Executes the SQL query
+     * Internal: Executes the SQL query.
      *
      * @param  string      SQL statement.
      * @return bool        have resultset?
@@ -97,7 +97,7 @@ interface IDibiDriver
 
 
     /**
-     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
+     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
      *
      * @return int|FALSE  number of rows or FALSE on error
      */
@@ -106,7 +106,7 @@ interface IDibiDriver
 
 
     /**
-     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
+     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
@@ -142,7 +142,7 @@ interface IDibiDriver
 
 
     /**
-     * Format to SQL command
+     * Format to SQL command.
      *
      * @param  string    value
      * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
@@ -152,7 +152,7 @@ interface IDibiDriver
 
 
     /**
-     * Injects LIMIT/OFFSET to the SQL query
+     * Injects LIMIT/OFFSET to the SQL query.
      *
      * @param  string &$sql  The SQL query that will be modified.
      * @param  int $limit
@@ -164,7 +164,7 @@ interface IDibiDriver
 
 
     /**
-     * Returns the number of rows in a result set
+     * Returns the number of rows in a result set.
      *
      * @return int
      */
@@ -173,7 +173,7 @@ interface IDibiDriver
 
 
     /**
-     * Moves cursor position without fetching row
+     * Moves cursor position without fetching row.
      *
      * @param  int      the 0-based cursor pos to seek to
      * @return boolean  TRUE on success, FALSE if unable to seek to specified record
@@ -184,7 +184,7 @@ interface IDibiDriver
 
 
     /**
-     * Fetches the row at current position and moves the internal cursor to the next position
+     * Fetches the row at current position and moves the internal cursor to the next position.
      * internal usage only
      *
      * @param  bool     TRUE for associative array, FALSE for numeric
@@ -195,7 +195,7 @@ interface IDibiDriver
 
 
     /**
-     * Frees the resources allocated for this result set
+     * Frees the resources allocated for this result set.
      *
      * @param  resource  resultset resource
      * @return void
@@ -205,7 +205,7 @@ interface IDibiDriver
 
 
     /**
-     * Returns metadata for all columns in a result set
+     * Returns metadata for all columns in a result set.
      *
      * @return array
      * @throws DibiException
@@ -215,7 +215,7 @@ interface IDibiDriver
 
 
     /**
-     * Returns the connection resource
+     * Returns the connection resource.
      *
      * @return mixed
      */
@@ -224,7 +224,7 @@ interface IDibiDriver
 
 
     /**
-     * Returns the resultset resource
+     * Returns the resultset resource.
      *
      * @return mixed
      */

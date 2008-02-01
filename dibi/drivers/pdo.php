@@ -19,7 +19,7 @@
 
 
 /**
- * The dibi driver for PDO
+ * The dibi driver for PDO.
  *
  * Connection options:
  *   - 'dsn' - driver specific DSN
@@ -37,21 +37,21 @@ class DibiPdoDriver extends NObject implements IDibiDriver
 {
 
     /**
-     * Connection resource
+     * Connection resource.
      * @var PDO
      */
     private $connection;
 
 
     /**
-     * Resultset resource
+     * Resultset resource.
      * @var PDOStatement
      */
     private $resultset;
 
 
     /**
-     * Affected rows
+     * Affected rows.
      * @var int
      */
     private $affectedRows = FALSE;
@@ -64,14 +64,14 @@ class DibiPdoDriver extends NObject implements IDibiDriver
     public function __construct()
     {
         if (!extension_loaded('pdo')) {
-            throw new DibiDriverException("PHP extension 'pdo' is not loaded");
+            throw new DibiDriverException("PHP extension 'pdo' is not loaded.");
         }
     }
 
 
 
     /**
-     * Connects to a database
+     * Connects to a database.
      *
      * @return void
      * @throws DibiException
@@ -90,14 +90,14 @@ class DibiPdoDriver extends NObject implements IDibiDriver
         }
 
         if (!$this->connection) {
-            throw new DibiDriverException('Connecting error');
+            throw new DibiDriverException('Connecting error.');
         }
     }
 
 
 
     /**
-     * Disconnects from a database
+     * Disconnects from a database.
      *
      * @return void
      */
@@ -109,7 +109,7 @@ class DibiPdoDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Executes the SQL query
+     * Executes the SQL query.
      *
      * @param  string      SQL statement.
      * @return bool        have resultset?
@@ -146,7 +146,7 @@ class DibiPdoDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
+     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
      *
      * @return int|FALSE  number of rows or FALSE on error
      */
@@ -158,7 +158,7 @@ class DibiPdoDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
+     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
@@ -212,7 +212,7 @@ class DibiPdoDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Format to SQL command
+     * Format to SQL command.
      *
      * @param  string    value
      * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
@@ -226,13 +226,13 @@ class DibiPdoDriver extends NObject implements IDibiDriver
         if ($type === dibi::FIELD_BOOL) return $value ? 1 : 0;
         if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
         if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
-        throw new InvalidArgumentException('Unsupported formatting type');
+        throw new InvalidArgumentException('Unsupported formatting type.');
     }
 
 
 
     /**
-     * Injects LIMIT/OFFSET to the SQL query
+     * Injects LIMIT/OFFSET to the SQL query.
      *
      * @param  string &$sql  The SQL query that will be modified.
      * @param  int $limit
@@ -241,25 +241,25 @@ class DibiPdoDriver extends NObject implements IDibiDriver
      */
     public function applyLimit(&$sql, $limit, $offset)
     {
-        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        throw new NotSupportedException('PDO does not support applying limit or offset.');
     }
 
 
 
     /**
-     * Returns the number of rows in a result set
+     * Returns the number of rows in a result set.
      *
      * @return int
      */
     public function rowCount()
     {
-        throw new DibiDriverException('Row count is not available for unbuffered queries');
+        throw new DibiDriverException('Row count is not available for unbuffered queries.');
     }
 
 
 
     /**
-     * Fetches the row at current position and moves the internal cursor to the next position
+     * Fetches the row at current position and moves the internal cursor to the next position.
      * internal usage only
      *
      * @param  bool     TRUE for associative array, FALSE for numeric
@@ -273,7 +273,7 @@ class DibiPdoDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Moves cursor position without fetching row
+     * Moves cursor position without fetching row.
      *
      * @param  int      the 0-based cursor pos to seek to
      * @return boolean  TRUE on success, FALSE if unable to seek to specified record
@@ -281,13 +281,13 @@ class DibiPdoDriver extends NObject implements IDibiDriver
      */
     public function seek($row)
     {
-        throw new DibiDriverException('Cannot seek an unbuffered result set');
+        throw new DibiDriverException('Cannot seek an unbuffered result set.');
     }
 
 
 
     /**
-     * Frees the resources allocated for this result set
+     * Frees the resources allocated for this result set.
      *
      * @return void
      */
@@ -299,7 +299,7 @@ class DibiPdoDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Returns metadata for all columns in a result set
+     * Returns metadata for all columns in a result set.
      *
      * @return array
      * @throws DibiException
@@ -312,7 +312,7 @@ class DibiPdoDriver extends NObject implements IDibiDriver
             // items 'name' and 'table' are required
             $info = @$this->resultset->getColumnsMeta($i);
             if ($info === FALSE) {
-                throw new DibiDriverException('Driver does not support meta data');
+                throw new DibiDriverException('Driver does not support meta data.');
             }
             $meta[] = $info;
         }
@@ -322,7 +322,7 @@ class DibiPdoDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Converts database error to DibiDriverException
+     * Converts database error to DibiDriverException.
      *
      * @throws DibiDriverException
      */
@@ -335,7 +335,7 @@ class DibiPdoDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Returns the connection resource
+     * Returns the connection resource.
      *
      * @return PDO
      */
@@ -347,7 +347,7 @@ class DibiPdoDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Returns the resultset resource
+     * Returns the resultset resource.
      *
      * @return PDOStatement
      */

@@ -20,7 +20,7 @@
 
 
 /**
- * dibi common exception
+ * dibi common exception.
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
@@ -35,7 +35,7 @@ class DibiException extends NException
 
 
 /**
- * database server exception
+ * database server exception.
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
@@ -49,7 +49,7 @@ class DibiDriverException extends DibiException
 
 
     /**
-     * Construct an dibi driver exception
+     * Construct an dibi driver exception.
 	 *
 	 * @param string  Message describing the exception
 	 * @param int     Some code

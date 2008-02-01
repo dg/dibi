@@ -19,7 +19,7 @@
 
 
 /**
- * The dibi driver for SQLite database
+ * The dibi driver for SQLite database.
  *
  * Connection options:
  *   - 'database' (or 'file') - the filename of the SQLite database
@@ -38,14 +38,14 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 {
 
     /**
-     * Connection resource
+     * Connection resource.
      * @var resource
      */
     private $connection;
 
 
     /**
-     * Resultset resource
+     * Resultset resource.
      * @var resource
      */
     private $resultset;
@@ -59,7 +59,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Date and datetime format
+     * Date and datetime format.
      * @var string
      */
     private $fmtDate, $fmtDateTime;
@@ -72,14 +72,14 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
     public function __construct()
     {
         if (!extension_loaded('sqlite')) {
-            throw new DibiDriverException("PHP extension 'sqlite' is not loaded");
+            throw new DibiDriverException("PHP extension 'sqlite' is not loaded.");
         }
     }
 
 
 
     /**
-     * Connects to a database
+     * Connects to a database.
      *
      * @return void
      * @throws DibiException
@@ -107,7 +107,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Disconnects from a database
+     * Disconnects from a database.
      *
      * @return void
      */
@@ -119,7 +119,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Executes the SQL query
+     * Executes the SQL query.
      *
      * @param  string      SQL statement.
      * @return bool        have resultset?
@@ -141,7 +141,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
+     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
      *
      * @return int|FALSE  number of rows or FALSE on error
      */
@@ -153,7 +153,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
+     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
@@ -201,7 +201,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Format to SQL command
+     * Format to SQL command.
      *
      * @param  string    value
      * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
@@ -215,13 +215,13 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
         if ($type === dibi::FIELD_BOOL) return $value ? 1 : 0;
         if ($type === dibi::FIELD_DATE) return date($this->fmtDate, $value);
         if ($type === dibi::FIELD_DATETIME) return date($this->fmtDateTime, $value);
-        throw new InvalidArgumentException('Unsupported formatting type');
+        throw new InvalidArgumentException('Unsupported formatting type.');
     }
 
 
 
     /**
-     * Injects LIMIT/OFFSET to the SQL query
+     * Injects LIMIT/OFFSET to the SQL query.
      *
      * @param  string &$sql  The SQL query that will be modified.
      * @param  int $limit
@@ -237,14 +237,14 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Returns the number of rows in a result set
+     * Returns the number of rows in a result set.
      *
      * @return int
      */
     public function rowCount()
     {
         if (!$this->buffered) {
-            throw new DibiDriverException('Row count is not available for unbuffered queries');
+            throw new DibiDriverException('Row count is not available for unbuffered queries.');
         }
         return sqlite_num_rows($this->resultset);
     }
@@ -252,7 +252,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Fetches the row at current position and moves the internal cursor to the next position
+     * Fetches the row at current position and moves the internal cursor to the next position.
      * internal usage only
      *
      * @param  bool     TRUE for associative array, FALSE for numeric
@@ -266,7 +266,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Moves cursor position without fetching row
+     * Moves cursor position without fetching row.
      *
      * @param  int      the 0-based cursor pos to seek to
      * @return boolean  TRUE on success, FALSE if unable to seek to specified record
@@ -275,7 +275,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
     public function seek($row)
     {
         if (!$this->buffered) {
-            throw new DibiDriverException('Cannot seek an unbuffered result set');
+            throw new DibiDriverException('Cannot seek an unbuffered result set.');
         }
         return sqlite_seek($this->resultset, $row);
     }
@@ -283,7 +283,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Frees the resources allocated for this result set
+     * Frees the resources allocated for this result set.
      *
      * @return void
      */
@@ -295,7 +295,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Returns metadata for all columns in a result set
+     * Returns metadata for all columns in a result set.
      *
      * @return array
      */
@@ -316,7 +316,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Returns the connection resource
+     * Returns the connection resource.
      *
      * @return mixed
      */
@@ -328,7 +328,7 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Returns the resultset resource
+     * Returns the resultset resource.
      *
      * @return mixed
      */

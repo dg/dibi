@@ -21,7 +21,7 @@
 
 
 /**
- * Nette Exception base class
+ * Nette Exception base class.
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2004, 2008 David Grudl
@@ -44,7 +44,7 @@ class NException extends Exception
 
 
     /**
-     * Initializes the cause of this throwable to the specified value
+     * Initializes the cause of this throwable to the specified value.
      *
      * @param  Exception
      * @return void
@@ -54,14 +54,14 @@ class NException extends Exception
         if ($this->cause === NULL) {
             $this->cause = $cause;
         } else {
-            throw new BadMethodCallException('Cause was already assigned');
+            throw new InvalidStateException('Cause was already assigned.');
         }
     }
 
 
 
     /**
-     * Gets the Exception instance that caused the current exception
+     * Gets the Exception instance that caused the current exception.
      *
      * @return Exception
      */
@@ -73,7 +73,7 @@ class NException extends Exception
 
 
     /**
-     * Returns string represenation of exception
+     * Returns string represenation of exception.
      *
      * @return string
      */
@@ -85,7 +85,7 @@ class NException extends Exception
 
 
     /**
-     * Enables converting all PHP errors to exceptions
+     * Enables converting all PHP errors to exceptions.
      *
      * @param  Exception class to be thrown
      * @return void
@@ -99,7 +99,7 @@ class NException extends Exception
 
 
     /**
-     * Disables converting errors to exceptions
+     * Disables converting errors to exceptions.
      *
      * @return void
      */
@@ -116,7 +116,7 @@ class NException extends Exception
 
 
     /**
-     * Internal error handler
+     * Internal error handler.
      */
     public static function _errorHandler($code, $message, $file, $line, $context)
     {

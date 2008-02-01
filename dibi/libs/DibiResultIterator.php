@@ -20,7 +20,7 @@
 
 
 /**
- * External result set iterator
+ * External result set iterator.
  *
  * This can be returned by DibiResult::getIterator() method or using foreach
  * <code>
@@ -62,7 +62,7 @@ final class DibiResultIterator implements Iterator
 
 
     /**
-     * Required by the Iterator interface
+     * Required by the Iterator interface.
      * @param  int  offset
      * @param  int  limit
      */
@@ -76,7 +76,7 @@ final class DibiResultIterator implements Iterator
 
 
     /**
-     * Rewinds the Iterator to the first element
+     * Rewinds the Iterator to the first element.
      * @return void
 	 */
     public function rewind()

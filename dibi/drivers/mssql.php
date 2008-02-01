@@ -19,7 +19,7 @@
 
 
 /**
- * The dibi driver for MS SQL database
+ * The dibi driver for MS SQL database.
  *
  * Connection options:
  *   - 'host' - the MS SQL server host name. It can also include a port number (hostname:port)
@@ -38,14 +38,14 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
 {
 
     /**
-     * Connection resource
+     * Connection resource.
      * @var resource
      */
     private $connection;
 
 
     /**
-     * Resultset resource
+     * Resultset resource.
      * @var resource
      */
     private $resultset;
@@ -58,14 +58,14 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
     public function __construct()
     {
         if (!extension_loaded('mssql')) {
-            throw new DibiDriverException("PHP extension 'mssql' is not loaded");
+            throw new DibiDriverException("PHP extension 'mssql' is not loaded.");
         }
     }
 
 
 
     /**
-     * Connects to a database
+     * Connects to a database.
      *
      * @return void
      * @throws DibiException
@@ -83,18 +83,18 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
         }
 
         if (!is_resource($this->connection)) {
-            throw new DibiDriverException("Can't connect to DB");
+            throw new DibiDriverException("Can't connect to DB.");
         }
 
         if (isset($config['database']) && !@mssql_select_db($config['database'], $this->connection)) {
-            throw new DibiDriverException("Can't select DB '$config[database]'");
+            throw new DibiDriverException("Can't select DB '$config[database]'.");
         }
     }
 
 
 
     /**
-     * Disconnects from a database
+     * Disconnects from a database.
      *
      * @return void
      */
@@ -106,7 +106,7 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Executes the SQL query
+     * Executes the SQL query.
      *
      * @param  string      SQL statement.
      * @return bool        have resultset?
@@ -126,7 +126,7 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
+     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
      *
      * @return int|FALSE  number of rows or FALSE on error
      */
@@ -138,13 +138,13 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
+     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
      *
      * @return int|FALSE  int on success or FALSE on failure
      */
     public function insertId($sequence)
     {
-        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        throw new NotSupportedException('MS SQL does not support autoincrementing.');
     }
 
 
@@ -186,7 +186,7 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Format to SQL command
+     * Format to SQL command.
      *
      * @param  string    value
      * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
@@ -200,13 +200,13 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
         if ($type === dibi::FIELD_BOOL) return $value ? -1 : 0;
         if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
         if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
-        throw new InvalidArgumentException('Unsupported formatting type');
+        throw new InvalidArgumentException('Unsupported formatting type.');
     }
 
 
 
     /**
-     * Injects LIMIT/OFFSET to the SQL query
+     * Injects LIMIT/OFFSET to the SQL query.
      *
      * @param  string &$sql  The SQL query that will be modified.
      * @param  int $limit
@@ -221,14 +221,14 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
         }
 
         if ($offset) {
-            throw new InvalidArgumentException('Offset is not implemented');
+            throw new NotImplementedException('Offset is not implemented.');
         }
     }
 
 
 
     /**
-     * Returns the number of rows in a result set
+     * Returns the number of rows in a result set.
      *
      * @return int
      */
@@ -240,7 +240,7 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Fetches the row at current position and moves the internal cursor to the next position
+     * Fetches the row at current position and moves the internal cursor to the next position.
      * internal usage only
      *
      * @param  bool     TRUE for associative array, FALSE for numeric
@@ -254,7 +254,7 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Moves cursor position without fetching row
+     * Moves cursor position without fetching row.
      *
      * @param  int      the 0-based cursor pos to seek to
      * @return boolean  TRUE on success, FALSE if unable to seek to specified record
@@ -268,7 +268,7 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Frees the resources allocated for this result set
+     * Frees the resources allocated for this result set.
      *
      * @return void
      */
@@ -281,7 +281,7 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Returns metadata for all columns in a result set
+     * Returns metadata for all columns in a result set.
      *
      * @return array
      */
@@ -301,7 +301,7 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Returns the connection resource
+     * Returns the connection resource.
      *
      * @return mixed
      */
@@ -313,7 +313,7 @@ class DibiMsSqlDriver extends NObject implements IDibiDriver
 
 
     /**
-     * Returns the resultset resource
+     * Returns the resultset resource.
      *
      * @return mixed
      */

@@ -20,7 +20,7 @@
 
 
 /**
- * dibi basic logger & profiler (experimental)
+ * dibi basic logger & profiler (experimental).
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
@@ -51,7 +51,7 @@ final class DibiLogger extends NObject
 
 
     /**
-     * Event handler (events: exception, connected, beforeQuery, afterQuery, begin, commit, rollback)
+     * Event handler (events: exception, connected, beforeQuery, afterQuery, begin, commit, rollback).
      *
      * @param  DibiConnection
      * @param  string event name

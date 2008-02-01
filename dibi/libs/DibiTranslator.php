@@ -20,7 +20,7 @@
 
 
 /**
- * dibi SQL translator
+ * dibi SQL translator.
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
@@ -69,7 +69,7 @@ final class DibiTranslator extends NObject
 
 
     /**
-     * return IDibiDriver
+     * return IDibiDriver.
      */
     public function getDriver()
     {
@@ -79,7 +79,7 @@ final class DibiTranslator extends NObject
 
 
     /**
-     * Generates SQL
+     * Generates SQL.
      *
      * @param  array
      * @return bool
@@ -187,7 +187,7 @@ final class DibiTranslator extends NObject
 
 
     /**
-     * Apply modifier to single value
+     * Apply modifier to single value.
      * @param  mixed
      * @param  string
      * @return string
@@ -342,7 +342,7 @@ final class DibiTranslator extends NObject
 
 
     /**
-     * PREG callback from translate() or formatValue()
+     * PREG callback from translate() or formatValue().
      * @param  array
      * @return string
      */
@@ -426,7 +426,7 @@ final class DibiTranslator extends NObject
         if ($matches[2])  // SQL identifiers: [ident]
             return $this->delimite($matches[2]);
 
-        if ($matches[3])  // SQL strings: '....'
+        if ($matches[3])  // SQL strings: '...'
             return $this->driver->format( str_replace("''", "'", $matches[4]), dibi::FIELD_TEXT);
 
         if ($matches[5])  // SQL strings: "..."
@@ -443,7 +443,7 @@ final class DibiTranslator extends NObject
 
 
     /**
-     * Apply substitutions to indentifier and delimites it
+     * Apply substitutions to indentifier and delimites it.
      *
      * @param  string indentifier
      * @return string

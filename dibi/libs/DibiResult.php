@@ -20,7 +20,7 @@
 
 
 /**
- * dibi result-set abstract class
+ * dibi result-set abstract class.
  *
  * <code>
  * $result = dibi::query('SELECT * FROM [table]');
@@ -44,25 +44,25 @@
 class DibiResult extends NObject implements IDataSource
 {
     /**
-     * IDibiDriver
+     * IDibiDriver.
      * @var array
      */
     private $driver;
 
     /**
-     * Translate table
+     * Translate table.
      * @var array
      */
     private $xlat;
 
     /**
-     * Cache for $driver->getColumnsMeta()
+     * Cache for $driver->getColumnsMeta().
      * @var array
      */
     private $metaCache;
 
     /**
-     * Already fetched? Used for allowance for first seek(0)
+     * Already fetched? Used for allowance for first seek(0).
      * @var bool
      */
     private $fetched = FALSE;
@@ -105,7 +105,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Automatically frees the resources allocated for this result set
+     * Automatically frees the resources allocated for this result set.
      *
      * @return void
      */
@@ -117,7 +117,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Returns the resultset resource
+     * Returns the resultset resource.
      *
      * @return mixed
      */
@@ -129,7 +129,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Moves cursor position without fetching row
+     * Moves cursor position without fetching row.
      *
      * @param  int      the 0-based cursor pos to seek to
      * @return boolean  TRUE on success, FALSE if unable to seek to specified record
@@ -143,7 +143,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Returns the number of rows in a result set
+     * Returns the number of rows in a result set.
      *
      * @return int
      */
@@ -155,7 +155,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Frees the resources allocated for this result set
+     * Frees the resources allocated for this result set.
      *
      * @return void
      */
@@ -216,7 +216,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Fetches the row at current position, process optional type conversion
+     * Fetches the row at current position, process optional type conversion.
      * and moves the internal cursor to the next position
      *
      * @param  bool  fetch as object? Overrides $this->asObjects
@@ -255,7 +255,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Like fetch(), but returns only first field
+     * Like fetch(), but returns only first field.
      *
      * @return mixed  value on success, FALSE if no next record
      */
@@ -308,7 +308,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Fetches all records from table and returns associative tree
+     * Fetches all records from table and returns associative tree.
      * Associative descriptor:  assoc1,#,assoc2,=,assoc3,@
      * builds a tree:           $data[assoc1][index][assoc2]['assoc3']->value = {record}
      *
@@ -328,7 +328,7 @@ class DibiResult extends NObject implements IDataSource
         // check columns
         foreach ($assoc as $as) {
             if ($as !== '#' && $as !== '=' && $as !== '@' && !array_key_exists($as, $row)) {
-                throw new InvalidArgumentException("Unknown column '$as' in associative descriptor");
+                throw new InvalidArgumentException("Unknown column '$as' in associative descriptor.");
             }
         }
 
@@ -392,7 +392,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Fetches all records from table like $key => $value pairs
+     * Fetches all records from table like $key => $value pairs.
      *
      * @param  string  associative key
      * @param  string  value
@@ -409,11 +409,11 @@ class DibiResult extends NObject implements IDataSource
 
         if ($value === NULL) {
             if ($key !== NULL) {
-                throw new InvalidArgumentException("Either none or both columns must be specified");
+                throw new InvalidArgumentException("Either none or both columns must be specified.");
             }
 
             if (count($row) < 2) {
-                throw new LoginException("Result must have at least two columns");
+                throw new UnexpectedValueException("Result must have at least two columns.");
             }
 
             // autodetect
@@ -423,7 +423,7 @@ class DibiResult extends NObject implements IDataSource
 
         } else {
             if (!array_key_exists($value, $row)) {
-                throw new InvalidArgumentException("Unknown value column '$value'");
+                throw new InvalidArgumentException("Unknown value column '$value'.");
             }
 
             if ($key === NULL) { // indexed-array
@@ -434,7 +434,7 @@ class DibiResult extends NObject implements IDataSource
             }
 
             if (!array_key_exists($key, $row)) {
-                throw new InvalidArgumentException("Unknown key column '$key'");
+                throw new InvalidArgumentException("Unknown key column '$key'.");
             }
         }
 
@@ -491,7 +491,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Gets an array of meta informations about column
+     * Gets an array of meta informations about column.
      *
      * @return array
      */
@@ -512,7 +512,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Displays complete result-set as HTML table for debug purposes
+     * Displays complete result-set as HTML table for debug purposes.
      *
      * @return void
      */
@@ -549,7 +549,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Required by the IteratorAggregate interface
+     * Required by the IteratorAggregate interface.
      * @param  int  offset
      * @param  int  limit
      * @return ArrayIterator
@@ -562,7 +562,7 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Required by the Countable interface
+     * Required by the Countable interface.
      * @return int
      */
     final public function count()
@@ -573,15 +573,15 @@ class DibiResult extends NObject implements IDataSource
 
 
     /**
-     * Safe access to property $driver
+     * Safe access to property $driver.
      *
      * @return IDibiDriver
-     * @throws DibiException
+     * @throws InvalidStateException
      */
     private function getDriver()
     {
         if ($this->driver === NULL) {
-            throw new DibiException('Resultset was released from memory');
+            throw new InvalidStateException('Resultset was released from memory.');
         }
 
         return $this->driver;

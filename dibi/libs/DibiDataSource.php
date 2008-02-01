@@ -20,7 +20,7 @@
 
 
 /**
- * Default implementation of IDataSource for dibi
+ * Default implementation of IDataSource for dibi.
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl

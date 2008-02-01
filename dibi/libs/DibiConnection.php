@@ -20,7 +20,7 @@
 
 
 /**
- * dibi connection
+ * dibi connection.
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
@@ -30,13 +30,13 @@
 class DibiConnection extends NObject
 {
     /**
-     * Current connection configuration
+     * Current connection configuration.
      * @var array
      */
     private $config;
 
     /**
-     * IDibiDriver
+     * IDibiDriver.
      * @var array
      */
     private $driver;
@@ -56,7 +56,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Creates object and (optionally) connects to a database
+     * Creates object and (optionally) connects to a database.
      *
      * @param  array|string connection parameters
      * @throws DibiException
@@ -93,7 +93,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Automatically frees the resources allocated for this result set
+     * Automatically frees the resources allocated for this result set.
      *
      * @return void
      */
@@ -106,7 +106,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Connects to a database
+     * Connects to a database.
      *
      * @return void
      */
@@ -122,7 +122,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Disconnects from a database
+     * Disconnects from a database.
      *
      * @return void
      */
@@ -164,7 +164,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Apply configuration alias or default values
+     * Apply configuration alias or default values.
      *
      * @param  array  connect configuration
      * @param  string key
@@ -186,7 +186,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Returns the connection resource
+     * Returns the connection resource.
      *
      * @return resource
      */
@@ -198,7 +198,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Generates (translates) and executes SQL query
+     * Generates (translates) and executes SQL query.
      *
      * @param  array|mixed    one or more arguments
      * @return DibiResult     Result set object (if any)
@@ -219,7 +219,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Generates and prints SQL query
+     * Generates and prints SQL query.
      *
      * @param  array|mixed  one or more arguments
      * @return bool
@@ -227,6 +227,7 @@ class DibiConnection extends NObject
     final public function test($args)
     {
         $args = func_get_args();
+        $this->connect();
         $trans = new DibiTranslator($this->driver);
         $ok = $trans->translate($args);
         dibi::dump($trans->sql);
@@ -236,7 +237,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Executes the SQL query
+     * Executes the SQL query.
      *
      * @param  string         SQL statement.
      * @return DibiResult     Result set object (if any)
@@ -265,7 +266,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query
+     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
      *
      * @return int  number of rows
      * @throws DibiException
@@ -273,14 +274,14 @@ class DibiConnection extends NObject
     public function affectedRows()
     {
         $rows = $this->driver->affectedRows();
-        if (!is_int($rows) || $rows < 0) throw new DibiException('Cannot retrieve number of affected rows');
+        if (!is_int($rows) || $rows < 0) throw new DibiException('Cannot retrieve number of affected rows.');
         return $rows;
     }
 
 
 
     /**
-     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query
+     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
      *
      * @param  string     optional sequence name
      * @return int
@@ -289,7 +290,7 @@ class DibiConnection extends NObject
     public function insertId($sequence = NULL)
     {
         $id = $this->driver->insertId($sequence);
-        if ($id < 1) throw new DibiException('Cannot retrieve last generated ID');
+        if ($id < 1) throw new DibiException('Cannot retrieve last generated ID.');
         return (int) $id;
     }
 
@@ -303,7 +304,7 @@ class DibiConnection extends NObject
     {
         $this->connect();
         if ($this->inTxn) {
-    	    throw new DibiException('There is already an active transaction');
+    	    throw new DibiException('There is already an active transaction.');
         }
         $this->driver->begin();
         $this->inTxn = TRUE;
@@ -319,7 +320,7 @@ class DibiConnection extends NObject
     public function commit()
     {
         if (!$this->inTxn) {
-    	    throw new DibiException('There is no active transaction');
+    	    throw new DibiException('There is no active transaction.');
         }
         $this->driver->commit();
         $this->inTxn = FALSE;
@@ -335,7 +336,7 @@ class DibiConnection extends NObject
     public function rollback()
     {
         if (!$this->inTxn) {
-    	    throw new DibiException('There is no active transaction');
+    	    throw new DibiException('There is no active transaction.');
         }
         $this->driver->rollback();
         $this->inTxn = FALSE;
@@ -345,7 +346,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Escapes the string
+     * Escapes the string.
      *
      * @param  string    unescaped string
      * @return string    escaped and optionally quoted string
@@ -359,7 +360,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Delimites identifier (table's or column's name, etc.)
+     * Delimites identifier (table's or column's name, etc.).
      *
      * @param  string    identifier
      * @return string    delimited identifier
@@ -372,7 +373,7 @@ class DibiConnection extends NObject
 
 
     /**
-     * Injects LIMIT/OFFSET to the SQL query
+     * Injects LIMIT/OFFSET to the SQL query.
      *
      * @param  string &$sql  The SQL query that will be modified.
      * @param  int $limit
@@ -400,7 +401,7 @@ class DibiConnection extends NObject
 
         $handle = @fopen($file, 'r');
         if (!$handle) {
-            throw new DibiException("Cannot open file '$file'");
+            throw new FileNotFoundException("Cannot open file '$file'.");
         }
 
         $count = 0;
@@ -427,27 +428,27 @@ class DibiConnection extends NObject
      */
     public function getDibiReflection()
     {
-        throw new BadMethodCallException(__METHOD__ . ' is not implemented');
+        throw new NotImplementedException;
     }
 
 
 
     /**
-     * Prevents unserialization
+     * Prevents unserialization.
      */
     public function __wakeup()
     {
-        throw new DibiException('You cannot serialize or unserialize ' . $this->getClass() . ' instances');
+        throw new NotSupportedException('You cannot serialize or unserialize ' . $this->getClass() . ' instances.');
     }
 
 
 
     /**
-     * Prevents serialization
+     * Prevents serialization.
      */
     public function __sleep()
     {
-        throw new DibiException('You cannot serialize or unserialize ' . $this->getClass() . ' instances');
+        throw new NotSupportedException('You cannot serialize or unserialize ' . $this->getClass() . ' instances.');
     }
 
 }

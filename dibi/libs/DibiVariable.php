@@ -20,7 +20,7 @@
 
 
 /**
- * Default implemenation of IDibiVariable
+ * Default implemenation of IDibiVariable.
  * @package dibi
  */
 class DibiVariable extends NObject implements IDibiVariable

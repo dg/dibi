@@ -66,7 +66,7 @@ abstract class NObject
 {
 
     /**
-     * Returns the name of the class of this object
+     * Returns the name of the class of this object.
      *
      * @return string
      */
@@ -78,7 +78,7 @@ abstract class NObject
 
 
     /**
-     * Access to reflection
+     * Access to reflection.
      *
      * @return ReflectionObject
      */
@@ -90,17 +90,17 @@ abstract class NObject
 
 
     /**
-     * Call to undefined method
+     * Call to undefined method.
      *
      * @param  string  method name
      * @param  array   arguments
      * @return mixed
-     * @throws BadMethodCallException
+     * @throws MemberAccessException
      */
     protected function __call($name, $args)
     {
         if ($name === '') {
-            throw new BadMethodCallException("Call to method without name");
+            throw new MemberAccessException("Call to method without name.");
         }
 
         $class = get_class($this);
@@ -126,7 +126,7 @@ abstract class NObject
             }
         } while ($cl = get_parent_class($cl));
 
-        throw new BadMethodCallException("Call to undefined method $class::$name()");
+        throw new MemberAccessException("Call to undefined method $class::$name().");
     }
 
 
@@ -136,12 +136,12 @@ abstract class NObject
      *
      * @param  string  property name
 	 * @return mixed   property value
-	 * @throws LogicException if the property is not defined.
+	 * @throws MemberAccessException if the property is not defined.
 	 */
 	protected function &__get($name)
 	{
         if ($name === '') {
-            throw new LogicException("Cannot read an property without name");
+            throw new MemberAccessException("Cannot read an property without name.");
         }
 
         // property getter support
@@ -155,7 +155,7 @@ abstract class NObject
             return $val;
 
         } else {
-            throw new LogicException("Cannot read an undeclared property $class::\$$name");
+            throw new MemberAccessException("Cannot read an undeclared property $class::\$$name.");
         }
 	}
 
@@ -167,12 +167,12 @@ abstract class NObject
 	 * @param string  property name
 	 * @param mixed   property value
      * @return void
-     * @throws LogicException if the property is not defined or is read-only
+     * @throws MemberAccessException if the property is not defined or is read-only
 	 */
 	protected function __set($name, $value)
 	{
         if ($name === '') {
-            throw new LogicException('Cannot assign to an property without name');
+            throw new MemberAccessException('Cannot assign to an property without name.');
         }
 
         // property setter support
@@ -183,11 +183,11 @@ abstract class NObject
                 $this->$m($value);
 
             } else {
-                throw new LogicException("Cannot assign to a read-only property $class::\$$name");
+                throw new MemberAccessException("Cannot assign to a read-only property $class::\$$name.");
             }
 
         } else {
-            throw new LogicException("Cannot assign to an undeclared property $class::\$$name");
+            throw new MemberAccessException("Cannot assign to an undeclared property $class::\$$name.");
         }
 	}
 
@@ -207,16 +207,16 @@ abstract class NObject
 
 
     /**
-     * Access to undeclared property
+     * Access to undeclared property.
      *
      * @param  string  property name
 	 * @return void
-     * @throws LogicException
+     * @throws MemberAccessException
      */
     protected function __unset($name)
     {
         $class = get_class($this);
-        throw new LogicException("Cannot unset an property $class::\$$name");
+        throw new MemberAccessException("Cannot unset an property $class::\$$name.");
     }
 
 
