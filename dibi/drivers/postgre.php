@@ -26,6 +26,7 @@
  *   - 'string' - or use connection string
  *   - 'persistent' - try to find a persistent link?
  *   - 'charset' - character encoding to set
+ *   - 'schema' - the schema search path
  *   - 'lazy' - if TRUE, connection will be established only when required
  *
  * @author     David Grudl
@@ -103,6 +104,10 @@ class DibiPostgreDriver extends NObject implements IDibiDriver
             DibiDriverException::catchError();
             @pg_set_client_encoding($this->connection, $config['charset']);
             DibiDriverException::restore();
+        }
+
+        if (isset($config['schema'])) {
+            $this->query('SET search_path TO ' . $config['schema']);
         }
 
         $this->escMethod = version_compare(PHP_VERSION , '5.2.0', '>=');

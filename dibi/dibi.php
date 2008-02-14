@@ -23,8 +23,8 @@
 /**
  * Check PHP configuration.
  */
-if (version_compare(PHP_VERSION , '5.1.0', '<')) {
-    throw new LogicException('dibi needs PHP 5.1.0 or newer.');
+if (version_compare(PHP_VERSION, '5.1.0', '<')) {
+    throw new Exception('dibi needs PHP 5.1.0 or newer.');
 }
 
 

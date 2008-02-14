@@ -225,14 +225,20 @@ abstract class DibiTable extends NObject
 
     /**
      * Fetches single row.
-     * @param  scalar  primary key value
+     * @param  scalar|array  primary key value
      * @return array|object row
      */
-    public function fetch($what)
+    public function fetch($conditions)
     {
+        if (is_array($conditions)) {
+            return $this->complete($this->connection->query(
+                'SELECT * FROM %n', $this->name,
+                'WHERE %and', $conditions
+            ))->fetch();
+        }
         return $this->complete($this->connection->query(
             'SELECT * FROM %n', $this->name,
-            'WHERE %n', $this->primary, '=' . $this->primaryModifier, $what
+            'WHERE %n=' . $this->primaryModifier, $this->primary, $conditions
         ))->fetch();
     }
 
