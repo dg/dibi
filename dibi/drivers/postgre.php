@@ -4,7 +4,7 @@
  * dibi - tiny'n'smart database abstraction layer
  * ----------------------------------------------
  *
- * Copyright (c) 2005, 2008 David Grudl aka -dgx- (http://www.dgx.cz)
+ * Copyright (c) 2005, 2008 David Grudl (http://www.davidgrudl.com)
  *
  * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.

@@ -1,4 +1,4 @@
-Dibi (c) David Grudl, 2005-2008 (http://www.dgx.cz)
+Dibi (c) David Grudl, 2005-2008 (http://www.davidgrudl.com)
 
 
 
@@ -38,4 +38,4 @@ whitespaces are removed.
 
 -----
 For more information, visit the author's weblog (in czech language):
-http://latrine.dgx.cz
+http://www.latrine.cz

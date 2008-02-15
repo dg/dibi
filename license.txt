@@ -1,7 +1,7 @@
 The Dibi License, Version 1
 ===========================
 
-Copyright (c) 2005, 2008 David Grudl (http://www.dgx.cz)
+Copyright (c) 2005, 2008 David Grudl (http://www.davidgrudl.com)
 All rights reserved.
 
 This license is a legal agreement between you and David Grudl for the use
