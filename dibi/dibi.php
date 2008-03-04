@@ -32,8 +32,8 @@ if (version_compare(PHP_VERSION, '5.1.0', '<')) {
 
 // nette libraries
 if (!class_exists('NotImplementedException', FALSE)) { require_once dirname(__FILE__) . '/Nette/exceptions.php'; }
-if (!class_exists('NObject', FALSE)) { require_once dirname(__FILE__) . '/Nette/NObject.php'; }
-if (!class_exists('NException', FALSE)) { require_once dirname(__FILE__) . '/Nette/NException.php'; }
+if (!class_exists('NObject', FALSE)) { require_once dirname(__FILE__) . '/Nette/Object.php'; }
+if (!interface_exists('IDebuggable', FALSE)) { require_once dirname(__FILE__) . '/Nette/IDebuggable.php'; }
 
 // dibi libraries
 require_once dirname(__FILE__) . '/libs/interfaces.php';
@@ -164,7 +164,7 @@ class dibi
      */
     public static function connect($config = array(), $name = 0)
     {
-        if (is_array($config)) {
+        if (is_array($config) || $config instanceof IMap) {
             $config['name'] = $name;
         } else {
             $config .= '&name=' . urlencode($name);
@@ -404,9 +404,9 @@ class dibi
 
 
     /**
-     * Experimental; will be used in PHP 5.3.
+     * Replacement for majority of dibi::methods() in future.
      */
-    public static function __callStatic($name, $args)
+    protected static function __callStatic($name, $args)
     {
         return call_user_func_array(array(self::getConnection(), $name), $args);
     }

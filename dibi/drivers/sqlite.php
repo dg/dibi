@@ -127,13 +127,15 @@ class DibiSqliteDriver extends NObject implements IDibiDriver
      */
     public function query($sql)
     {
-        DibiDriverException::catchError();
+        DibiDriverException::tryError();
         if ($this->buffered) {
             $this->resultset = sqlite_query($this->connection, $sql);
         } else {
             $this->resultset = sqlite_unbuffered_query($this->connection, $sql);
         }
-        DibiDriverException::restore();
+        if (DibiDriverException::catchError($msg)) {
+            throw new DibiDriverException($msg, sqlite_last_error($this->connection), $sql);
+        }
 
         return is_resource($this->resultset);
     }

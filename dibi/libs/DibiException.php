@@ -27,7 +27,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiException extends NException
+class DibiException extends Exception
 {
 }
 
@@ -42,8 +42,11 @@ class DibiException extends NException
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiDriverException extends DibiException
+class DibiDriverException extends DibiException implements IDebuggable
 {
+    /** @var string */
+    private static $errorMsg;
+
     /** @var string */
     private $sql;
 
@@ -84,12 +87,52 @@ class DibiDriverException extends DibiException
 
 
 
+    /********************* error catching ****************d*g**/
+
+
+
     /**
-     * @see NException::catchError (this is Late static binding fix
+     * Starts catching potential errors/warnings
+     *
+     * @return void
      */
-    public static function catchError($class = __CLASS__)
+    public static function tryError()
     {
-        parent::catchError($class);
+        set_error_handler(array(__CLASS__, '_errorHandler'), E_ALL);
+        self::$errorMsg = NULL;
+    }
+
+
+
+    /**
+     * Returns catched error/warning message.
+     *
+     * @param  string  catched message
+     * @return bool
+     */
+    public static function catchError(& $message)
+    {
+        restore_error_handler();
+        $message = self::$errorMsg;
+        self::$errorMsg = NULL;
+        return $message !== NULL;
+    }
+
+
+
+    /**
+     * Internal error handler. Do not call directly.
+     */
+    public static function _errorHandler($code, $message)
+    {
+        restore_error_handler();
+
+        if (ini_get('html_errors')) {
+            $message = strip_tags($message);
+            $message = html_entity_decode($message);
+        }
+
+        self::$errorMsg = $message;
     }
 
 }

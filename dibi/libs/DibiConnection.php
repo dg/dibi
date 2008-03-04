@@ -58,7 +58,7 @@ class DibiConnection extends NObject
     /**
      * Creates object and (optionally) connects to a database.
      *
-     * @param  array|string connection parameters
+     * @param  array|string|IMap connection parameters
      * @throws DibiException
      */
     public function __construct($config)
@@ -66,6 +66,9 @@ class DibiConnection extends NObject
         // DSN string
         if (is_string($config)) {
             parse_str($config, $config);
+
+        } elseif ($config instanceof IMap) {
+            $config = $config->toArray();
         }
 
         if (!isset($config['driver'])) {

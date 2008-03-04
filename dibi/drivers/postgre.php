@@ -88,22 +88,26 @@ class DibiPostgreDriver extends NObject implements IDibiDriver
             }
         }
 
-        DibiDriverException::catchError();
+        DibiDriverException::tryError();
         if (isset($config['persistent'])) {
-            $this->connection = @pg_connect($string, PGSQL_CONNECT_FORCE_NEW);
+            $this->connection = pg_connect($string, PGSQL_CONNECT_FORCE_NEW);
         } else {
-            $this->connection = @pg_pconnect($string, PGSQL_CONNECT_FORCE_NEW);
+            $this->connection = pg_pconnect($string, PGSQL_CONNECT_FORCE_NEW);
         }
-        DibiDriverException::restore();
+        if (DibiDriverException::catchError($msg)) {
+            throw new DibiDriverException($msg, 0);
+        }
 
         if (!is_resource($this->connection)) {
             throw new DibiDriverException('Connecting error.');
         }
 
         if (isset($config['charset'])) {
-            DibiDriverException::catchError();
-            @pg_set_client_encoding($this->connection, $config['charset']);
-            DibiDriverException::restore();
+            DibiDriverException::tryError();
+            pg_set_client_encoding($this->connection, $config['charset']);
+            if (DibiDriverException::catchError($msg)) {
+                throw new DibiDriverException($msg, 0);
+            }
         }
 
         if (isset($config['schema'])) {

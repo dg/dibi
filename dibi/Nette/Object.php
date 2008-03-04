@@ -1,19 +1,19 @@
 <?php
 
 /**
- * dibi - tiny'n'smart database abstraction layer
- * ----------------------------------------------
+ * Nette Framework
  *
- * Copyright (c) 2005, 2008 David Grudl (http://www.davidgrudl.com)
+ * Copyright (c) 2004, 2008 David Grudl (http://www.davidgrudl.com)
  *
- * This source file is subject to the "dibi license" that is bundled
+ * This source file is subject to the "Nette license" that is bundled
  * with this package in the file license.txt.
  *
- * For more information please see http://dibiphp.com/
+ * For more information please see http://nettephp.com/
  *
  * @copyright  Copyright (c) 2004, 2008 David Grudl
  * @license    http://nettephp.com/license  Nette license
  * @link       http://nettephp.com/
+ * @category   Nette
  * @package    Nette
  */
 
@@ -21,7 +21,7 @@
 
 
 /**
- * NObject is the ultimate ancestor of all instantiable classes.
+ * Nette::Object is the ultimate ancestor of all instantiable classes.
  *
  * It defines some handful methods and enhances object core of PHP:
  *   - access to undeclared members throws exceptions
@@ -58,9 +58,8 @@
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2004, 2008 David Grudl
- * @license    http://nettephp.com/license  Nette license
- * @link       http://nettephp.com/
  * @package    Nette
+ * @version    $Revision$ $Date$
  */
 abstract class NObject
 {
@@ -132,6 +131,22 @@ abstract class NObject
 
 
     /**
+     * Call to undefined static method.
+     *
+     * @param  string  method name (in lower case!)
+     * @param  array   arguments
+     * @return mixed
+     * @throws MemberAccessException
+     */
+    protected static function __callStatic($name, $args)
+    {
+        $class = get_called_class();
+        throw new MemberAccessException("Call to undefined static method $class::$name().");
+    }
+
+
+
+    /**
 	 * Returns property value. Do not call directly.
      *
      * @param  string  property name
@@ -149,7 +164,7 @@ abstract class NObject
         $m = 'get' . $name;
         if (self::hasAccessor($class, $m)) {
             // ampersands:
-            // - using &__get() because declaration should be forward compatible (e.g. with NHtml)
+            // - using &__get() because declaration should be forward compatible (e.g. with Web::Html)
             // - not using &$this->$m because user could bypass property setter by: $x = & $obj->property; $x = 'new value';
             $val = $this->$m();
             return $val;
@@ -232,7 +247,7 @@ abstract class NObject
     {
         static $cache;
         if (!isset($cache[$c])) {
-            // get_class_methods returns private, protected and public methods of NObject (doesn't matter)
+            // get_class_methods returns private, protected and public methods of Object (doesn't matter)
             // and ONLY PUBLIC methods of descendants (perfect!)
             // but returns static methods too (nothing doing...)
             // and is much faster than reflection
