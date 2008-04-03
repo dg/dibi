@@ -42,7 +42,7 @@ class DibiException extends Exception
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiDriverException extends DibiException implements IDebuggable
+class DibiDriverException extends DibiException implements Nette_IDebuggable
 {
     /** @var string */
     private static $errorMsg;
@@ -83,6 +83,27 @@ class DibiDriverException extends DibiException implements IDebuggable
     public function __toString()
     {
         return parent::__toString() . ($this->sql ? "\nSQL: " . $this->sql : '');
+    }
+
+
+
+    /********************* interface Nette_IDebuggable ****************d*g**/
+
+
+    /**
+     * Returns custom panels.
+     * @return array
+     */
+    public function getPanels()
+    {
+        $panels = array();
+        if ($this->sql !== NULL) {
+            $panels['SQL'] = array(
+                'expanded' => TRUE,
+                'content' => dibi::dump($this->sql, TRUE),
+            );
+        }
+        return $panels;
     }
 
 

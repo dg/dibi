@@ -32,8 +32,8 @@ if (version_compare(PHP_VERSION, '5.1.0', '<')) {
 
 // nette libraries
 if (!class_exists('NotImplementedException', FALSE)) { require_once dirname(__FILE__) . '/Nette/exceptions.php'; }
-if (!class_exists('NObject', FALSE)) { require_once dirname(__FILE__) . '/Nette/Object.php'; }
-if (!interface_exists('IDebuggable', FALSE)) { require_once dirname(__FILE__) . '/Nette/IDebuggable.php'; }
+if (!class_exists('Nette_Object', FALSE)) { require_once dirname(__FILE__) . '/Nette/Object.php'; }
+if (!interface_exists('Nette_IDebuggable', FALSE)) { require_once dirname(__FILE__) . '/Nette/IDebuggable.php'; }
 
 // dibi libraries
 require_once dirname(__FILE__) . '/libs/interfaces.php';
@@ -154,6 +154,10 @@ class dibi
 
 
 
+    /********************* connections handling ****************d*g**/
+
+
+
     /**
      * Creates a new DibiConnection object and connects it to specified database.
      *
@@ -164,7 +168,11 @@ class dibi
      */
     public static function connect($config = array(), $name = 0)
     {
-        if (is_array($config) || $config instanceof IMap) {
+        if (class_exists('Nette_Debug', FALSE) && Nette_Debug::isEnabled()) {
+            Nette_Debug::addColophon(array(__CLASS__, 'getColophon'));
+        }
+
+        if (is_array($config) || $config instanceof Nette_Collections_IMap) {
             $config['name'] = $name;
         } else {
             $config .= '&name=' . urlencode($name);
@@ -235,6 +243,10 @@ class dibi
     {
         self::$connection = self::getConnection($name);
     }
+
+
+
+    /********************* monostate for active connection ****************d*g**/
 
 
 
@@ -413,6 +425,10 @@ class dibi
 
 
 
+    /********************* data types ****************d*g**/
+
+
+
     /**
      * Pseudotype for timestamp representation.
      *
@@ -445,6 +461,10 @@ class dibi
         $var->modifier = dibi::FIELD_DATE;
         return $var;
     }
+
+
+
+    /********************* substitutions ****************d*g**/
 
 
 
@@ -488,6 +508,10 @@ class dibi
     {
         return self::$substs;
     }
+
+
+
+    /********************* event handling ****************d*g**/
 
 
 
@@ -540,6 +564,10 @@ class dibi
         self::addHandler(array($logger, 'handler'));
         return $logger;
     }
+
+
+
+    /********************* misc tools ****************d*g**/
 
 
 
@@ -603,5 +631,18 @@ class dibi
             return '<strong style="color:green">' . $matches[4] . '</strong>';
     }
 
+
+
+    /**
+     * Returns brief descriptions.
+     * @return array
+     */
+    public static function getColophon()
+    {
+        return array(
+            'dibi version: ' . dibi::VERSION,
+            'Number or queries: ' . dibi::$numOfQueries . (dibi::$totalTime === NULL ? '' : ' (elapsed time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms)'),
+        );
+    }
 
 }

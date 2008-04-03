@@ -41,7 +41,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiResult extends NObject implements IDataSource
+class DibiResult extends Nette_Object implements IDataSource
 {
     /**
      * IDibiDriver.
@@ -240,7 +240,7 @@ class DibiResult extends NObject implements IDataSource
         if ($this->xlat !== NULL) {
             foreach ($this->xlat as $col => $type) {
                 if (isset($row[$col])) {
-                    $row[$col] = $this->convert($row[$col], $type);
+                    $row[$col] = $this->convert($row[$col], $type[0], $type[1]);
                 }
             }
         }
@@ -269,7 +269,8 @@ class DibiResult extends NObject implements IDataSource
         // types-converting?
         $key = key($row);
         if (isset($this->xlat[$key])) {
-            return $this->convert($value, $this->xlat[$key]);
+            $type = $this->xlat[$key];
+            return $this->convert($value, $type[0], $type[1]);
         }
 
         return $value;
@@ -447,14 +448,9 @@ class DibiResult extends NObject implements IDataSource
 
 
 
-    final public function setType($col, $type = NULL)
+    final public function setType($col, $type = NULL, $format = NULL)
     {
-        if (is_array($col)) {
-            $this->xlat = $col;
-
-        } else {
-            $this->xlat[$col] = $type;
-        }
+        $this->xlat[$col] = array($type, $format);
     }
 
 
@@ -466,7 +462,7 @@ class DibiResult extends NObject implements IDataSource
 
 
 
-    final public function convert($value, $type)
+    final public function convert($value, $type, $format = NULL)
     {
         if ($value === NULL || $value === FALSE) {
             return $value;
@@ -478,7 +474,7 @@ class DibiResult extends NObject implements IDataSource
         }
 
         if ($type === dibi::FIELD_DATE || $type === dibi::FIELD_DATETIME) {
-            return strtotime($value);
+            return $format === NULL ? strtotime($value) : date($format, strtotime($value));
         }
 
         if ($type === dibi::FIELD_BOOL) {

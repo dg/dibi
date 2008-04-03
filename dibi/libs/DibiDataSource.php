@@ -27,7 +27,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiDataSource extends NObject implements IDataSource
+class DibiDataSource extends Nette_Object implements IDataSource
 {
     /** @var DibiConnection */
     private $connection;

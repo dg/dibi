@@ -27,7 +27,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-final class DibiLogger extends NObject
+final class DibiLogger extends Nette_Object
 {
     /** @var string  Name of the file where SQL errors should be logged */
     private $file;

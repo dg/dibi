@@ -61,7 +61,7 @@
  * @package    Nette
  * @version    $Revision$ $Date$
  */
-abstract class NObject
+abstract class Nette_Object
 {
 
     /**

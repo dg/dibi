@@ -23,7 +23,7 @@
  * Default implemenation of IDibiVariable.
  * @package dibi
  */
-class DibiVariable extends NObject implements IDibiVariable
+class DibiVariable extends Nette_Object implements IDibiVariable
 {
     /** @var mixed */
     public $value;

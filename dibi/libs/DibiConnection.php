@@ -27,7 +27,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiConnection extends NObject
+class DibiConnection extends Nette_Object
 {
     /**
      * Current connection configuration.
@@ -58,7 +58,7 @@ class DibiConnection extends NObject
     /**
      * Creates object and (optionally) connects to a database.
      *
-     * @param  array|string|IMap connection parameters
+     * @param  array|string|Nette_Collections_IMap connection parameters
      * @throws DibiException
      */
     public function __construct($config)
@@ -67,7 +67,7 @@ class DibiConnection extends NObject
         if (is_string($config)) {
             parse_str($config, $config);
 
-        } elseif ($config instanceof IMap) {
+        } elseif ($config instanceof Nette_Collections_IMap) {
             $config = $config->toArray();
         }
 

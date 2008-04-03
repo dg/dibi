@@ -23,6 +23,13 @@
 /**
  * Custom output for Nette::Debug.
  */
-interface IDebuggable
+interface Nette_IDebuggable
 {
+
+    /**
+     * Returns custom panels.
+     * @return array
+     */
+    function getPanels();
+
 }

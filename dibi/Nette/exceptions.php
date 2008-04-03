@@ -112,7 +112,7 @@ class DirectoryNotFoundException extends IOException
 
 
 /**
- * User attempt to terminate the current script
+ * User attempt to terminate the current script.
  */
 class AbortException extends RuntimeException
 {

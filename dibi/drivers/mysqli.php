@@ -40,7 +40,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiMySqliDriver extends NObject implements IDibiDriver
+class DibiMySqliDriver extends Nette_Object implements IDibiDriver
 {
 
     /**
