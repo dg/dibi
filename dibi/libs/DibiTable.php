@@ -26,7 +26,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-abstract class DibiTable extends Nette_Object
+abstract class DibiTable extends /*Nette::*/Object
 {
     /** @var string  primary key mask */
     public static $primaryMask = 'id';

@@ -3,7 +3,7 @@
 /**
  * Nette Framework
  *
- * Copyright (c) 2004, 2008 David Grudl (http://www.davidgrudl.com)
+ * Copyright (c) 2004, 2008 David Grudl (http://davidgrudl.com)
  *
  * This source file is subject to the "Nette license" that is bundled
  * with this package in the file license.txt.
@@ -17,7 +17,7 @@
  * @package    Nette
  */
 
-// no namespace;
+/*no namespace*/
 
 
 
@@ -106,14 +106,5 @@ class FileNotFoundException extends IOException
  * The exception that is thrown when part of a file or directory cannot be found.
  */
 class DirectoryNotFoundException extends IOException
-{
-}
-
-
-
-/**
- * User attempt to terminate the current script.
- */
-class AbortException extends RuntimeException
 {
 }

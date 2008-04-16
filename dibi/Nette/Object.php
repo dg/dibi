@@ -3,7 +3,7 @@
 /**
  * Nette Framework
  *
- * Copyright (c) 2004, 2008 David Grudl (http://www.davidgrudl.com)
+ * Copyright (c) 2004, 2008 David Grudl (http://davidgrudl.com)
  *
  * This source file is subject to the "Nette license" that is bundled
  * with this package in the file license.txt.
@@ -17,7 +17,7 @@
  * @package    Nette
  */
 
-// namespace Nette;
+/*namespace Nette;*/
 
 
 /**
@@ -61,7 +61,7 @@
  * @package    Nette
  * @version    $Revision$ $Date$
  */
-abstract class Nette_Object
+abstract class Object
 {
 
     /**
@@ -94,12 +94,12 @@ abstract class Nette_Object
      * @param  string  method name
      * @param  array   arguments
      * @return mixed
-     * @throws MemberAccessException
+     * @throws ::MemberAccessException
      */
     protected function __call($name, $args)
     {
         if ($name === '') {
-            throw new MemberAccessException("Call to method without name.");
+            throw new /*::*/MemberAccessException("Call to method without name.");
         }
 
         $class = get_class($this);
@@ -125,7 +125,7 @@ abstract class Nette_Object
             }
         } while ($cl = get_parent_class($cl));
 
-        throw new MemberAccessException("Call to undefined method $class::$name().");
+        throw new /*::*/MemberAccessException("Call to undefined method $class::$name().");
     }
 
 
@@ -136,12 +136,12 @@ abstract class Nette_Object
      * @param  string  method name (in lower case!)
      * @param  array   arguments
      * @return mixed
-     * @throws MemberAccessException
+     * @throws ::MemberAccessException
      */
     protected static function __callStatic($name, $args)
     {
         $class = get_called_class();
-        throw new MemberAccessException("Call to undefined static method $class::$name().");
+        throw new /*::*/MemberAccessException("Call to undefined static method $class::$name().");
     }
 
 
@@ -151,12 +151,12 @@ abstract class Nette_Object
      *
      * @param  string  property name
 	 * @return mixed   property value
-	 * @throws MemberAccessException if the property is not defined.
+	 * @throws ::MemberAccessException if the property is not defined.
 	 */
 	protected function &__get($name)
 	{
         if ($name === '') {
-            throw new MemberAccessException("Cannot read an property without name.");
+            throw new /*::*/MemberAccessException("Cannot read an property without name.");
         }
 
         // property getter support
@@ -164,13 +164,13 @@ abstract class Nette_Object
         $m = 'get' . $name;
         if (self::hasAccessor($class, $m)) {
             // ampersands:
-            // - using &__get() because declaration should be forward compatible (e.g. with Web::Html)
+            // - using &__get() because declaration should be forward compatible (e.g. with Nette::Web::Html)
             // - not using &$this->$m because user could bypass property setter by: $x = & $obj->property; $x = 'new value';
             $val = $this->$m();
             return $val;
 
         } else {
-            throw new MemberAccessException("Cannot read an undeclared property $class::\$$name.");
+            throw new /*::*/MemberAccessException("Cannot read an undeclared property $class::\$$name.");
         }
 	}
 
@@ -182,12 +182,12 @@ abstract class Nette_Object
 	 * @param string  property name
 	 * @param mixed   property value
      * @return void
-     * @throws MemberAccessException if the property is not defined or is read-only
+     * @throws ::MemberAccessException if the property is not defined or is read-only
 	 */
 	protected function __set($name, $value)
 	{
         if ($name === '') {
-            throw new MemberAccessException('Cannot assign to an property without name.');
+            throw new /*::*/MemberAccessException('Cannot assign to an property without name.');
         }
 
         // property setter support
@@ -198,11 +198,11 @@ abstract class Nette_Object
                 $this->$m($value);
 
             } else {
-                throw new MemberAccessException("Cannot assign to a read-only property $class::\$$name.");
+                throw new /*::*/MemberAccessException("Cannot assign to a read-only property $class::\$$name.");
             }
 
         } else {
-            throw new MemberAccessException("Cannot assign to an undeclared property $class::\$$name.");
+            throw new /*::*/MemberAccessException("Cannot assign to an undeclared property $class::\$$name.");
         }
 	}
 
@@ -226,12 +226,12 @@ abstract class Nette_Object
      *
      * @param  string  property name
 	 * @return void
-     * @throws MemberAccessException
+     * @throws ::MemberAccessException
      */
     protected function __unset($name)
     {
         $class = get_class($this);
-        throw new MemberAccessException("Cannot unset an property $class::\$$name.");
+        throw new /*::*/MemberAccessException("Cannot unset an property $class::\$$name.");
     }
 
 

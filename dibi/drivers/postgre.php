@@ -34,7 +34,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiPostgreDriver extends Nette_Object implements IDibiDriver
+class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 {
 
     /**

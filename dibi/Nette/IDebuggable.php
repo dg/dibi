@@ -3,7 +3,7 @@
 /**
  * Nette Framework
  *
- * Copyright (c) 2004, 2008 David Grudl (http://www.davidgrudl.com)
+ * Copyright (c) 2004, 2008 David Grudl (http://davidgrudl.com)
  *
  * This source file is subject to the "Nette license" that is bundled
  * with this package in the file license.txt.
@@ -17,13 +17,14 @@
  * @package    Nette
  */
 
-// namespace Nette;
+/*namespace Nette;*/
+
 
 
 /**
  * Custom output for Nette::Debug.
  */
-interface Nette_IDebuggable
+interface IDebuggable
 {
 
     /**

@@ -5,7 +5,7 @@ require_once '../dibi/dibi.php';
 require_once 'Nette/Debug.php';
 
 
-Nette_Debug::enable();
+Debug::enable();
 
 
 dibi::connect(array(

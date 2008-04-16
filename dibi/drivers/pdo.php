@@ -33,7 +33,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiPdoDriver extends Nette_Object implements IDibiDriver
+class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 {
 
     /**

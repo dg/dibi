@@ -41,7 +41,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiResult extends Nette_Object implements IDataSource
+class DibiResult extends /*Nette::*/Object implements IDataSource
 {
     /**
      * IDibiDriver.

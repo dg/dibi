@@ -27,7 +27,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-final class DibiTranslator extends Nette_Object
+final class DibiTranslator extends /*Nette::*/Object
 {
     /** @var string */
     public $sql;

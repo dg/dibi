@@ -34,7 +34,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiMsSqlDriver extends Nette_Object implements IDibiDriver
+class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 {
 
     /**

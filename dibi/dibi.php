@@ -32,8 +32,8 @@ if (version_compare(PHP_VERSION, '5.1.0', '<')) {
 
 // nette libraries
 if (!class_exists('NotImplementedException', FALSE)) { require_once dirname(__FILE__) . '/Nette/exceptions.php'; }
-if (!class_exists('Nette_Object', FALSE)) { require_once dirname(__FILE__) . '/Nette/Object.php'; }
-if (!interface_exists('Nette_IDebuggable', FALSE)) { require_once dirname(__FILE__) . '/Nette/IDebuggable.php'; }
+if (!class_exists(/*Nette::*/'Object', FALSE)) { require_once dirname(__FILE__) . '/Nette/Object.php'; }
+if (!interface_exists(/*Nette::*/'IDebuggable', FALSE)) { require_once dirname(__FILE__) . '/Nette/IDebuggable.php'; }
 
 // dibi libraries
 require_once dirname(__FILE__) . '/libs/interfaces.php';
@@ -168,11 +168,11 @@ class dibi
      */
     public static function connect($config = array(), $name = 0)
     {
-        if (class_exists('Nette_Debug', FALSE) && Nette_Debug::isEnabled()) {
-            Nette_Debug::addColophon(array(__CLASS__, 'getColophon'));
+        if (class_exists(/*Nette::*/'Debug', FALSE) && /*Nette::*/Debug::isEnabled()) {
+            /*Nette::*/Debug::addColophon(array(__CLASS__, 'getColophon'));
         }
 
-        if (is_array($config) || $config instanceof Nette_Collections_IMap) {
+        if (is_array($config) || $config instanceof /*Nette::Collections::*/IMap) {
             $config['name'] = $name;
         } else {
             $config .= '&name=' . urlencode($name);

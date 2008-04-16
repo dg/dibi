@@ -42,7 +42,7 @@ class DibiException extends Exception
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-class DibiDriverException extends DibiException implements Nette_IDebuggable
+class DibiDriverException extends DibiException implements /*Nette::*/IDebuggable
 {
     /** @var string */
     private static $errorMsg;
@@ -87,7 +87,7 @@ class DibiDriverException extends DibiException implements Nette_IDebuggable
 
 
 
-    /********************* interface Nette_IDebuggable ****************d*g**/
+    /********************* interface Nette::IDebuggable ****************d*g**/
 
 
     /**
