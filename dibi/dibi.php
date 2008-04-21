@@ -161,23 +161,18 @@ class dibi
     /**
      * Creates a new DibiConnection object and connects it to specified database.
      *
-     * @param  array|string connection parameters
+     * @param  array|string|Nette::Collections::IMap connection parameters
      * @param  string       connection name
      * @return DibiConnection
      * @throws DibiException
      */
     public static function connect($config = array(), $name = 0)
     {
-        if (class_exists(/*Nette::*/'Debug', FALSE) && /*Nette::*/Debug::isEnabled()) {
+        if (class_exists(/*Nette::*/'Debug', FALSE)) {
             /*Nette::*/Debug::addColophon(array(__CLASS__, 'getColophon'));
         }
 
-        if (is_array($config) || $config instanceof /*Nette::Collections::*/IMap) {
-            $config['name'] = $name;
-        } else {
-            $config .= '&name=' . urlencode($name);
-        }
-        return self::$connection = self::$registry[$name] = new DibiConnection($config);
+        return self::$connection = self::$registry[$name] = new DibiConnection($config, $name);
     }
 
 

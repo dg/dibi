@@ -59,9 +59,10 @@ class DibiConnection extends /*Nette::*/Object
      * Creates object and (optionally) connects to a database.
      *
      * @param  array|string|Nette::Collections::IMap connection parameters
+     * @param  string       connection name
      * @throws DibiException
      */
-    public function __construct($config)
+    public function __construct($config, $name = NULL)
     {
         // DSN string
         if (is_string($config)) {
@@ -69,6 +70,9 @@ class DibiConnection extends /*Nette::*/Object
 
         } elseif ($config instanceof /*Nette::Collections::*/IMap) {
             $config = $config->toArray();
+
+        } elseif (!is_array($config)) {
+            throw new InvalidArgumentException('Configuration must be array, string or Nette::Collections::IMap.');
         }
 
         if (!isset($config['driver'])) {
@@ -85,6 +89,7 @@ class DibiConnection extends /*Nette::*/Object
             }
         }
 
+        $config['name'] = $name;
         $this->config = $config;
         $this->driver = new $class;
 
