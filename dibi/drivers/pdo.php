@@ -26,6 +26,7 @@
  *   - 'username' (or 'user')
  *   - 'password' (or 'pass')
  *   - 'options' - driver specific options array
+ *   - 'pdo' - PDO object (optional)
  *   - 'lazy' - if TRUE, connection will be established only when required
  *
  * @author     David Grudl
@@ -81,10 +82,15 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
         DibiConnection::alias($config, 'username', 'user');
         DibiConnection::alias($config, 'password', 'pass');
         DibiConnection::alias($config, 'dsn');
+        DibiConnection::alias($config, 'pdo');
         DibiConnection::alias($config, 'options');
 
-        try {
+        if ($config['pdo'] instanceof PDO) {
+            $this->connection = $config['pdo'];
+
+        } else try {
             $this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
+
         } catch (PDOException $e) {
            throw new DibiDriverException($e->getMessage(), $e->getCode());
         }
