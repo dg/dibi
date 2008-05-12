@@ -9,8 +9,8 @@ require_once '../dibi/dibi.php';
 
 
 dibi::connect(array(
-    'driver'   => 'sqlite',
-    'database' => 'sample.sdb',
+	'driver'   => 'sqlite',
+	'database' => 'sample.sdb',
 ));
 
 
@@ -35,8 +35,8 @@ dibi::test("
 SELECT *
 FROM [people]
 WHERE [id] > 0
-    %if", ($foo > 0), "AND [foo]=%i", $foo, "
-    %else %if", ($bar > 0), "AND [bar]=%i", $bar, "
+	%if", ($foo > 0), "AND [foo]=%i", $foo, "
+	%else %if", ($bar > 0), "AND [bar]=%i", $bar, "
 ");
 
 
@@ -45,7 +45,7 @@ dibi::test('
 SELECT *
 FROM [customers]
 WHERE
-    %if', isset($name), '[name] LIKE %s', $name, '
-        %if', $cond2, 'AND [admin]=1 %end
-    %else 1 LIMIT 10 %end'
+	%if', isset($name), '[name] LIKE %s', $name, '
+		%if', $cond2, 'AND [admin]=1 %end
+	%else 1 LIMIT 10 %end'
 );

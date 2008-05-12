@@ -12,26 +12,26 @@ date_default_timezone_set('Europe/Prague');
 
 
 dibi::connect(array(
-    'driver'   => 'sqlite',
-    'database' => 'sample.sdb',
+	'driver'   => 'sqlite',
+	'database' => 'sample.sdb',
 ));
 
 
 // dibi detects INSERT or REPLACE command
 dibi::test('
 REPLACE INTO [products]', array(
-    'title'  => 'Drtièka na trávu',
-    'price'  => 318,
-    'active' => TRUE,
+	'title'  => 'Drtièka na trávu',
+	'price'  => 318,
+	'active' => TRUE,
 ));
 
 
 // multiple INSERT command
 $array = array(
-    'title'   => 'Super Product',
-    'price'   => 12,
-    'brand'   => NULL,
-    'created' => dibi::datetime(),
+	'title'   => 'Super Product',
+	'price'   => 12,
+	'brand'   => NULL,
+	'created' => dibi::datetime(),
 );
 dibi::test("INSERT INTO [products]", $array, $array, $array);
 
@@ -39,8 +39,8 @@ dibi::test("INSERT INTO [products]", $array, $array, $array);
 // dibi detects UPDATE command
 dibi::test("
 UPDATE [colors] SET", array(
-    'color' => 'blue',
-    'order' => 12,
+	'color' => 'blue',
+	'order' => 12,
 ), "
 WHERE [id]=%i", 123);
 

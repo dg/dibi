@@ -29,78 +29,78 @@
  */
 final class DibiLogger extends /*Nette::*/Object
 {
-    /** @var string  Name of the file where SQL errors should be logged */
-    private $file;
+	/** @var string  Name of the file where SQL errors should be logged */
+	private $file;
 
-    /** @var bool */
-    public $logErrors = TRUE;
+	/** @var bool */
+	public $logErrors = TRUE;
 
-    /** @var bool */
-    public $logQueries = TRUE;
-
-
-
-    /**
-     * @param  string  filename
-     */
-    public function __construct($file)
-    {
-        $this->file = $file;
-    }
+	/** @var bool */
+	public $logQueries = TRUE;
 
 
 
-    /**
-     * Event handler (events: exception, connected, beforeQuery, afterQuery, begin, commit, rollback).
-     *
-     * @param  DibiConnection
-     * @param  string event name
-     * @param  mixed
-     * @return void
-     */
-    public function handler($connection, $event, $arg)
-    {
-        if ($event === 'afterQuery' && $this->logQueries) {
-            $this->write(
-                "OK: " . dibi::$sql
-                . ($arg instanceof DibiResult ? ";\n-- rows: " . count($arg) : '')
-                . "\n-- takes: " . sprintf('%0.3f', dibi::$elapsedTime * 1000) . ' ms'
-                . "\n-- driver: " . $connection->getConfig('driver')
-                . "\n-- " . date('Y-m-d H:i:s')
-                . "\n\n"
-            );
-            return;
-        }
-
-        if ($event === 'exception' && $this->logErrors) {
-            // $arg is DibiDriverException
-            $message = $arg->getMessage();
-            $code = $arg->getCode();
-            if ($code) {
-                $message = "[$code] $message";
-            }
-
-            $this->write(
-                "ERROR: $message"
-                . "\n-- SQL: " . dibi::$sql
-                . "\n-- driver: " //. $connection->getConfig('driver')
-                . ";\n-- " . date('Y-m-d H:i:s')
-                . "\n\n"
-            );
-            return;
-        }
-    }
+	/**
+	 * @param  string  filename
+	 */
+	public function __construct($file)
+	{
+		$this->file = $file;
+	}
 
 
 
-    private function write($message)
-    {
-        $handle = fopen($this->file, 'a');
-        if (!$handle) return; // or throw exception?
+	/**
+	 * Event handler (events: exception, connected, beforeQuery, afterQuery, begin, commit, rollback).
+	 *
+	 * @param  DibiConnection
+	 * @param  string event name
+	 * @param  mixed
+	 * @return void
+	 */
+	public function handler($connection, $event, $arg)
+	{
+		if ($event === 'afterQuery' && $this->logQueries) {
+			$this->write(
+				"OK: " . dibi::$sql
+				. ($arg instanceof DibiResult ? ";\n-- rows: " . count($arg) : '')
+				. "\n-- takes: " . sprintf('%0.3f', dibi::$elapsedTime * 1000) . ' ms'
+				. "\n-- driver: " . $connection->getConfig('driver')
+				. "\n-- " . date('Y-m-d H:i:s')
+				. "\n\n"
+			);
+			return;
+		}
 
-        flock($handle, LOCK_EX);
-        fwrite($handle, $message);
-        fclose($handle);
-    }
+		if ($event === 'exception' && $this->logErrors) {
+			// $arg is DibiDriverException
+			$message = $arg->getMessage();
+			$code = $arg->getCode();
+			if ($code) {
+				$message = "[$code] $message";
+			}
+
+			$this->write(
+				"ERROR: $message"
+				. "\n-- SQL: " . dibi::$sql
+				. "\n-- driver: " //. $connection->getConfig('driver')
+				. ";\n-- " . date('Y-m-d H:i:s')
+				. "\n\n"
+			);
+			return;
+		}
+	}
+
+
+
+	private function write($message)
+	{
+		$handle = fopen($this->file, 'a');
+		if (!$handle) return; // or throw exception?
+
+		flock($handle, LOCK_EX);
+		fwrite($handle, $message);
+		fclose($handle);
+	}
 
 }

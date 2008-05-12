@@ -9,21 +9,21 @@ dibi::startLogger('log.sql', TRUE);
 
 
 dibi::connect(array(
-    'driver'   => 'sqlite',
-    'database' => 'sample.sdb',
+	'driver'   => 'sqlite',
+	'database' => 'sample.sdb',
 ));
 
 
 
 try {
-    $res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] = %i', 1);
+	$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] = %i', 1);
 
-    $res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] < %i', 5);
+	$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] < %i', 5);
 
-    $res = dibi::query('SELECT FROM [customers] WHERE [customer_id] < %i', 38);
+	$res = dibi::query('SELECT FROM [customers] WHERE [customer_id] < %i', 38);
 
 } catch (DibiException $e) {
-    echo '<p>', get_class($e), ': ', $e->getMessage(), '</p>';
+	echo '<p>', get_class($e), ': ', $e->getMessage(), '</p>';
 }
 
 

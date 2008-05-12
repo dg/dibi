@@ -6,8 +6,8 @@ require_once '../dibi/dibi.php';
 
 
 dibi::connect(array(
-    'driver'   => 'sqlite',
-    'database' => 'sample.sdb',
+	'driver'   => 'sqlite',
+	'database' => 'sample.sdb',
 ));
 
 dibi::begin();
@@ -39,7 +39,7 @@ echo "Primary key: $products->primary\n";
 
 // Finds rows by primary key
 foreach ($products->find(1, 3) as $row) {
-    print_r($row);
+	print_r($row);
 }
 
 

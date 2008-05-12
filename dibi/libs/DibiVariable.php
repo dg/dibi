@@ -25,24 +25,24 @@
  */
 class DibiVariable extends /*Nette::*/Object implements IDibiVariable
 {
-    /** @var mixed */
-    public $value;
+	/** @var mixed */
+	public $value;
 
-    /** @var string */
-    public $modifier;
-
-
-    public function __construct($value, $modifier)
-    {
-        $this->value = $value;
-        $this->modifier = $modifier;
-    }
+	/** @var string */
+	public $modifier;
 
 
+	public function __construct($value, $modifier)
+	{
+		$this->value = $value;
+		$this->modifier = $modifier;
+	}
 
-    public function toSql(DibiTranslator $translator, $modifier)
-    {
-        return $translator->formatValue($this->value, $this->modifier);
-    }
+
+
+	public function toSql(DibiTranslator $translator, $modifier)
+	{
+		return $translator->formatValue($this->value, $this->modifier);
+	}
 
 }

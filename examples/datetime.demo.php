@@ -11,10 +11,10 @@ date_default_timezone_set('Europe/Prague');
 
 // CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
-    'driver'   => 'sqlite',
-    'database' => 'sample.sdb',
-    'format:date' => "'Y-m-d'",
-    'format:datetime' => "'Y-m-d H-i-s'",
+	'driver'   => 'sqlite',
+	'database' => 'sample.sdb',
+	'format:date' => "'Y-m-d'",
+	'format:datetime' => "'Y-m-d H-i-s'",
 ));
 
 
@@ -22,7 +22,7 @@ dibi::connect(array(
 // generate and dump SQL
 dibi::test("
 INSERT INTO [mytable]", array(
-    'id'    => 123,
-    'date'  => dibi::date('12.3.2007'),
-    'stamp' => dibi::dateTime('23.1.2007 10:23'),
+	'id'    => 123,
+	'date'  => dibi::date('12.3.2007'),
+	'stamp' => dibi::dateTime('23.1.2007 10:23'),
 ));

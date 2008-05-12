@@ -28,264 +28,264 @@
  */
 abstract class DibiTable extends /*Nette::*/Object
 {
-    /** @var string  primary key mask */
-    public static $primaryMask = 'id';
+	/** @var string  primary key mask */
+	public static $primaryMask = 'id';
 
-    /** @var bool */
-    public static $lowerCase = TRUE;
+	/** @var bool */
+	public static $lowerCase = TRUE;
 
-    /** @var DibiConnection */
-    private $connection;
+	/** @var DibiConnection */
+	private $connection;
 
-    /** @var array */
-    private $options;
+	/** @var array */
+	private $options;
 
-    /** @var string  table name */
-    protected $name;
+	/** @var string  table name */
+	protected $name;
 
-    /** @var string  primary key name */
-    protected $primary;
+	/** @var string  primary key name */
+	protected $primary;
 
-    /** @var string  primary key type */
-    protected $primaryModifier = '%i';
+	/** @var string  primary key type */
+	protected $primaryModifier = '%i';
 
-    /** @var array */
-    protected $blankRow = array();
-
-
-    /**
-     * Table constructor.
-     * @param  array
-     * @return void
-     */
-    public function __construct(array $options = array())
-    {
-        $this->options = $options;
-
-        $this->setup();
-
-        if ($this->connection === NULL) {
-            $this->connection = dibi::getConnection();
-        }
-    }
+	/** @var array */
+	protected $blankRow = array();
 
 
+	/**
+	 * Table constructor.
+	 * @param  array
+	 * @return void
+	 */
+	public function __construct(array $options = array())
+	{
+		$this->options = $options;
 
-    /**
-     * Returns the table name.
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+		$this->setup();
+
+		if ($this->connection === NULL) {
+			$this->connection = dibi::getConnection();
+		}
+	}
 
 
 
-    /**
-     * Returns the primary key name.
-     * @return string
-     */
-    public function getPrimary()
-    {
-        return $this->primary;
-    }
+	/**
+	 * Returns the table name.
+	 * @return string
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
 
 
 
-    /**
-     * Returns the dibi connection.
-     * @return DibiConnection
-     */
-    public function getConnection()
-    {
-        return $this->connection;
-    }
+	/**
+	 * Returns the primary key name.
+	 * @return string
+	 */
+	public function getPrimary()
+	{
+		return $this->primary;
+	}
 
 
 
-    /**
-     * Setup object.
-     * @return void
-     */
-    protected function setup()
-    {
-        // autodetect table name
-        if ($this->name === NULL) {
-            $name = $this->getClass();
-            if (FALSE !== ($pos = strrpos($name, ':'))) {
-                $name = substr($name, $pos + 1);
-            }
-            if (self::$lowerCase) {
-                $name = strtolower($name);
-            }
-            $this->name = $name;
-        }
-
-        // autodetect primary key name
-        if ($this->primary === NULL) {
-            $this->primary = str_replace(
-                array('%p', '%s'),
-                array($this->name, trim($this->name, 's')), // the simplest inflector in the world :-))
-                self::$primaryMask
-            );
-        }
-    }
+	/**
+	 * Returns the dibi connection.
+	 * @return DibiConnection
+	 */
+	public function getConnection()
+	{
+		return $this->connection;
+	}
 
 
 
-    /**
-     * Inserts row into a table.
-     * @param  array|object
-     * @return int  new primary key
-     */
-    public function insert($data)
-    {
-        $this->connection->query(
-            'INSERT INTO %n', $this->name, '%v', $this->prepare($data)
-        );
-        return $this->connection->insertId();
-    }
+	/**
+	 * Setup object.
+	 * @return void
+	 */
+	protected function setup()
+	{
+		// autodetect table name
+		if ($this->name === NULL) {
+			$name = $this->getClass();
+			if (FALSE !== ($pos = strrpos($name, ':'))) {
+				$name = substr($name, $pos + 1);
+			}
+			if (self::$lowerCase) {
+				$name = strtolower($name);
+			}
+			$this->name = $name;
+		}
+
+		// autodetect primary key name
+		if ($this->primary === NULL) {
+			$this->primary = str_replace(
+				array('%p', '%s'),
+				array($this->name, trim($this->name, 's')), // the simplest inflector in the world :-))
+				self::$primaryMask
+			);
+		}
+	}
 
 
 
-    /**
-     * Updates rows in a table.
-     * @param  mixed  primary key value(s)
-     * @param  array|object
-     * @return int    number of updated rows
-     */
-    public function update($where, $data)
-    {
-        $this->connection->query(
-            'UPDATE %n', $this->name,
-            'SET %a', $this->prepare($data),
-            'WHERE %n', $this->primary, 'IN (' . $this->primaryModifier, $where, ')'
-        );
-        return $this->connection->affectedRows();
-    }
+	/**
+	 * Inserts row into a table.
+	 * @param  array|object
+	 * @return int  new primary key
+	 */
+	public function insert($data)
+	{
+		$this->connection->query(
+			'INSERT INTO %n', $this->name, '%v', $this->prepare($data)
+		);
+		return $this->connection->insertId();
+	}
 
 
 
-    /**
-     * Deletes rows from a table by primary key.
-     * @param  mixed  primary key value(s)
-     * @return int    number of deleted rows
-     */
-    public function delete($where)
-    {
-        $this->connection->query(
-            'DELETE FROM %n', $this->name,
-            'WHERE %n', $this->primary, 'IN (' . $this->primaryModifier, $where, ')'
-        );
-        return $this->connection->affectedRows();
-    }
+	/**
+	 * Updates rows in a table.
+	 * @param  mixed  primary key value(s)
+	 * @param  array|object
+	 * @return int    number of updated rows
+	 */
+	public function update($where, $data)
+	{
+		$this->connection->query(
+			'UPDATE %n', $this->name,
+			'SET %a', $this->prepare($data),
+			'WHERE %n', $this->primary, 'IN (' . $this->primaryModifier, $where, ')'
+		);
+		return $this->connection->affectedRows();
+	}
 
 
 
-    /**
-     * Finds rows by primary key.
-     * @param  mixed  primary key value(s)
-     * @return DibiResult
-     */
-    public function find($what)
-    {
-        if (!is_array($what)) {
-            $what = func_get_args();
-        }
-        return $this->complete($this->connection->query(
-            'SELECT * FROM %n', $this->name,
-            'WHERE %n', $this->primary, 'IN (' . $this->primaryModifier, $what, ')'
-        ));
-    }
+	/**
+	 * Deletes rows from a table by primary key.
+	 * @param  mixed  primary key value(s)
+	 * @return int    number of deleted rows
+	 */
+	public function delete($where)
+	{
+		$this->connection->query(
+			'DELETE FROM %n', $this->name,
+			'WHERE %n', $this->primary, 'IN (' . $this->primaryModifier, $where, ')'
+		);
+		return $this->connection->affectedRows();
+	}
 
 
 
-    /**
-     * Selects all rows.
-     * @param  string  column to order by
-     * @return DibiResult
-     */
-    public function findAll($order = NULL)
-    {
-        if ($order === NULL) {
-            return $this->complete($this->connection->query(
-                'SELECT * FROM %n', $this->name
-            ));
-        } else {
-            $order = func_get_args();
-            return $this->complete($this->connection->query(
-                'SELECT * FROM %n', $this->name,
-                'ORDER BY %n', $order
-            ));
-        }
-    }
+	/**
+	 * Finds rows by primary key.
+	 * @param  mixed  primary key value(s)
+	 * @return DibiResult
+	 */
+	public function find($what)
+	{
+		if (!is_array($what)) {
+			$what = func_get_args();
+		}
+		return $this->complete($this->connection->query(
+			'SELECT * FROM %n', $this->name,
+			'WHERE %n', $this->primary, 'IN (' . $this->primaryModifier, $what, ')'
+		));
+	}
 
 
 
-    /**
-     * Fetches single row.
-     * @param  scalar|array  primary key value
-     * @return array|object row
-     */
-    public function fetch($conditions)
-    {
-        if (is_array($conditions)) {
-            return $this->complete($this->connection->query(
-                'SELECT * FROM %n', $this->name,
-                'WHERE %and', $conditions
-            ))->fetch();
-        }
-        return $this->complete($this->connection->query(
-            'SELECT * FROM %n', $this->name,
-            'WHERE %n=' . $this->primaryModifier, $this->primary, $conditions
-        ))->fetch();
-    }
+	/**
+	 * Selects all rows.
+	 * @param  string  column to order by
+	 * @return DibiResult
+	 */
+	public function findAll($order = NULL)
+	{
+		if ($order === NULL) {
+			return $this->complete($this->connection->query(
+				'SELECT * FROM %n', $this->name
+			));
+		} else {
+			$order = func_get_args();
+			return $this->complete($this->connection->query(
+				'SELECT * FROM %n', $this->name,
+				'ORDER BY %n', $order
+			));
+		}
+	}
 
 
 
-    /**
-     * Returns a blank row (not fetched from database).
-     * @return array|object
-     */
-    public function createBlank()
-    {
-        $row = $this->blankRow;
-        $row[$this->primary] = NULL;
-        if ($this->connection->getConfig('result:objects')) {
-            $row = (object) $row;
-        }
-        return $row;
-    }
+	/**
+	 * Fetches single row.
+	 * @param  scalar|array  primary key value
+	 * @return array|object row
+	 */
+	public function fetch($conditions)
+	{
+		if (is_array($conditions)) {
+			return $this->complete($this->connection->query(
+				'SELECT * FROM %n', $this->name,
+				'WHERE %and', $conditions
+			))->fetch();
+		}
+		return $this->complete($this->connection->query(
+			'SELECT * FROM %n', $this->name,
+			'WHERE %n=' . $this->primaryModifier, $this->primary, $conditions
+		))->fetch();
+	}
 
 
 
-    /**
-     * User data pre-processing.
-     * @param  array|object
-     * @return array
-     */
-    protected function prepare($data)
-    {
-        if (is_object($data)) {
-            return (array) $data;
-        } elseif (is_array($data)) {
-            return $data;
-        }
-
-        throw new InvalidArgumentException('Dataset must be array or anonymous object.');
-    }
+	/**
+	 * Returns a blank row (not fetched from database).
+	 * @return array|object
+	 */
+	public function createBlank()
+	{
+		$row = $this->blankRow;
+		$row[$this->primary] = NULL;
+		if ($this->connection->getConfig('result:objects')) {
+			$row = (object) $row;
+		}
+		return $row;
+	}
 
 
 
-    /**
-     * User DibiResult post-processing.
-     * @param  DibiResult
-     * @return DibiResult
-     */
-    protected function complete($res)
-    {
-        return $res;
-    }
+	/**
+	 * User data pre-processing.
+	 * @param  array|object
+	 * @return array
+	 */
+	protected function prepare($data)
+	{
+		if (is_object($data)) {
+			return (array) $data;
+		} elseif (is_array($data)) {
+			return $data;
+		}
+
+		throw new InvalidArgumentException('Dataset must be array or anonymous object.');
+	}
+
+
+
+	/**
+	 * User DibiResult post-processing.
+	 * @param  DibiResult
+	 * @return DibiResult
+	 */
+	protected function complete($res)
+	{
+		return $res;
+	}
 
 }

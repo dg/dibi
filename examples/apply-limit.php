@@ -6,15 +6,15 @@ require_once '../dibi/dibi.php';
 
 
 dibi::connect(array(
-    'driver'   => 'sqlite',
-    'database' => 'sample.sdb',
+	'driver'   => 'sqlite',
+	'database' => 'sample.sdb',
 ));
 
 
 // no limit
 $res = dibi::query('SELECT * FROM [products]');
 foreach ($res as $n => $row) {
-    print_r($row);
+	print_r($row);
 }
 
 echo '<hr>';
@@ -22,7 +22,7 @@ echo '<hr>';
 // with limit = 2
 $res = dibi::query('SELECT * FROM [products] %lmt', 2);
 foreach ($res as $n => $row) {
-    print_r($row);
+	print_r($row);
 }
 
 echo '<hr>';
@@ -30,5 +30,5 @@ echo '<hr>';
 // with limit = 2, offset = 1
 $res = dibi::query('SELECT * FROM [products] %lmt %ofs', 2, 1);
 foreach ($res as $n => $row) {
-    print_r($row);
+	print_r($row);
 }

@@ -6,8 +6,8 @@ require_once '../dibi/dibi.php';
 
 
 dibi::connect(array(
-    'driver'   => 'sqlite',
-    'database' => 'sample.sdb',
+	'driver'   => 'sqlite',
+	'database' => 'sample.sdb',
 ));
 
 
@@ -16,9 +16,9 @@ TABLE products
 
 product_id | title
 -----------+----------
-    1      | Chair
-    2      | Table
-    3      | Computer
+	1      | Chair
+	2      | Table
+	3      | Computer
 
 */
 
@@ -56,19 +56,19 @@ echo '<hr>';
 
 // fetch row by row
 foreach ($res as $n => $row) {
-    print_r($row);
+	print_r($row);
 }
 echo '<hr>';
 
 
 // fetch row by row with defined offset
 foreach ($res->getIterator(2) as $n => $row) {
-    print_r($row);
+	print_r($row);
 }
 
 // fetch row by row with defined offset and limit
 foreach ($res->getIterator(2, 1) as $n => $row) {
-    print_r($row);
+	print_r($row);
 }
 
 

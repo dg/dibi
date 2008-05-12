@@ -6,8 +6,8 @@ require_once '../dibi/dibi.php';
 
 
 dibi::connect(array(
-    'driver'   => 'sqlite',
-    'database' => 'sample.sdb',
+	'driver'   => 'sqlite',
+	'database' => 'sample.sdb',
 ));
 
 
@@ -15,9 +15,9 @@ dibi::connect(array(
 // using the "prototype" to add custom method to class DibiResult
 function DibiResult_prototype_fetchShuffle(DibiResult $obj)
 {
-    $all = $obj->fetchAll();
-    shuffle($all);
-    return $all;
+	$all = $obj->fetchAll();
+	shuffle($all);
+	return $all;
 }
 
 

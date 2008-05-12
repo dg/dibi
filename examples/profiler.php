@@ -5,13 +5,13 @@ require_once '../dibi/dibi.php';
 
 
 dibi::connect(array(
-    'driver'   => 'sqlite',
-    'database' => 'sample.sdb',
+	'driver'   => 'sqlite',
+	'database' => 'sample.sdb',
 ));
 
 
 for ($i=0; $i<20; $i++) {
-    $res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] < %i', $i);
+	$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] < %i', $i);
 }
 
 ?>

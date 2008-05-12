@@ -29,64 +29,64 @@
  */
 class DibiDataSource extends /*Nette::*/Object implements IDataSource
 {
-    /** @var DibiConnection */
-    private $connection;
+	/** @var DibiConnection */
+	private $connection;
 
-    /** @var string */
-    private $sql;
+	/** @var string */
+	private $sql;
 
-    /** @var int */
-    private $count;
-
-
-
-    /**
-     * @param  string  SQL command or table name, as data source
-     * @param  DibiConnection  connection
-     */
-    public function __construct($sql, DibiConnection $connection = NULL)
-    {
-        if (strpos($sql, ' ') === FALSE) {
-            // table name
-            $this->sql = $sql;
-        } else {
-            // SQL command
-            $this->sql = '(' . $sql . ') AS [source]';
-        }
-
-        $this->connection = $connection === NULL ? dibi::getConnection() : $connection;
-    }
+	/** @var int */
+	private $count;
 
 
 
-    /**
-     * @param  int  offset
-     * @param  int  limit
-     * @param  array columns
-     * @return ArrayIterator
-     */
-    public function getIterator($offset = NULL, $limit = NULL, $cols = NULL)
-    {
-        return $this->connection->query('
-            SELECT *
-            FROM', $this->sql, '
-            %ofs %lmt', $offset, $limit
-        );
-    }
+	/**
+	 * @param  string  SQL command or table name, as data source
+	 * @param  DibiConnection  connection
+	 */
+	public function __construct($sql, DibiConnection $connection = NULL)
+	{
+		if (strpos($sql, ' ') === FALSE) {
+			// table name
+			$this->sql = $sql;
+		} else {
+			// SQL command
+			$this->sql = '(' . $sql . ') AS [source]';
+		}
+
+		$this->connection = $connection === NULL ? dibi::getConnection() : $connection;
+	}
 
 
 
-    /**
-     * @return int
-     */
-    public function count()
-    {
-        if ($this->count === NULL) {
-            $this->count = $this->connection->query('
-                SELECT COUNT(*) FROM', $this->sql
-            )->fetchSingle();
-        }
-        return $this->count;
-    }
+	/**
+	 * @param  int  offset
+	 * @param  int  limit
+	 * @param  array columns
+	 * @return ArrayIterator
+	 */
+	public function getIterator($offset = NULL, $limit = NULL, $cols = NULL)
+	{
+		return $this->connection->query('
+			SELECT *
+			FROM', $this->sql, '
+			%ofs %lmt', $offset, $limit
+		);
+	}
+
+
+
+	/**
+	 * @return int
+	 */
+	public function count()
+	{
+		if ($this->count === NULL) {
+			$this->count = $this->connection->query('
+				SELECT COUNT(*) FROM', $this->sql
+			)->fetchSingle();
+		}
+		return $this->count;
+	}
 
 }

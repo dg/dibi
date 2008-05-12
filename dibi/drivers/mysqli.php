@@ -43,339 +43,339 @@
 class DibiMySqliDriver extends /*Nette::*/Object implements IDibiDriver
 {
 
-    /**
-     * Connection resource.
-     * @var mysqli
-     */
-    private $connection;
-
-
-    /**
-     * Resultset resource.
-     * @var mysqli_result
-     */
-    private $resultset;
-
-
-    /**
-     * Is buffered (seekable and countable)?
-     * @var bool
-     */
-    private $buffered;
-
-
-
-    /**
-     * @throws DibiException
-     */
-    public function __construct()
-    {
-        if (!extension_loaded('mysqli')) {
-            throw new DibiDriverException("PHP extension 'mysqli' is not loaded.");
-        }
-    }
-
-
-
-    /**
-     * Connects to a database.
-     *
-     * @return void
-     * @throws DibiException
-     */
-    public function connect(array &$config)
-    {
-        DibiConnection::alias($config, 'username', 'user');
-        DibiConnection::alias($config, 'password', 'pass');
-        DibiConnection::alias($config, 'options');
-        DibiConnection::alias($config, 'database');
-
-        // default values
-        if (!isset($config['username'])) $config['username'] = ini_get('mysqli.default_user');
-        if (!isset($config['password'])) $config['password'] = ini_get('mysqli.default_pw');
-        if (!isset($config['socket'])) $config['socket'] = ini_get('mysqli.default_socket');
-        if (!isset($config['host'])) {
-            $config['host'] = ini_get('mysqli.default_host');
-            if (!isset($config['port'])) $config['port'] = ini_get('mysqli.default_port');
-            if (!isset($config['host'])) $config['host'] = 'localhost';
-        }
-
-        $this->connection = mysqli_init();
-        @mysqli_real_connect($this->connection, $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['options']);
-
-        if ($errno = mysqli_connect_errno()) {
-            throw new DibiDriverException(mysqli_connect_error(), $errno);
-        }
-
-        if (isset($config['charset'])) {
-            $ok = FALSE;
-            if (version_compare(PHP_VERSION , '5.1.5', '>=')) {
-                // affects the character set used by mysql_real_escape_string() (was added in MySQL 5.0.7 and PHP 5.0.5, fixed in PHP 5.1.5)
-                $ok = @mysqli_set_charset($this->connection, $config['charset']);
-            }
-            if (!$ok) $ok = @mysqli_query($this->connection, "SET NAMES '$config[charset]'");
-            if (!$ok) $this->throwException();
-        }
-
-        if (isset($config['sqlmode'])) {
-            if (!@mysqli_query($this->connection, "SET sql_mode='$config[sqlmode]'")) $this->throwException();
-        }
-
-        $this->buffered = empty($config['unbuffered']);
-    }
-
-
-
-    /**
-     * Disconnects from a database.
-     *
-     * @return void
-     */
-    public function disconnect()
-    {
-        mysqli_close($this->connection);
-    }
-
-
-
-    /**
-     * Executes the SQL query.
-     *
-     * @param  string      SQL statement.
-     * @return bool        have resultset?
-     * @throws DibiDriverException
-     */
-    public function query($sql)
-    {
-        $this->resultset = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT);
-
-        if (mysqli_errno($this->connection)) {
-            $this->throwException($sql);
-        }
-
-        return is_object($this->resultset);
-    }
-
-
-
-    /**
-     * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-     *
-     * @return int|FALSE  number of rows or FALSE on error
-     */
-    public function affectedRows()
-    {
-        return mysqli_affected_rows($this->connection);
-    }
-
-
-
-    /**
-     * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-     *
-     * @return int|FALSE  int on success or FALSE on failure
-     */
-    public function insertId($sequence)
-    {
-        return mysqli_insert_id($this->connection);
-    }
-
-
-
-    /**
-     * Begins a transaction (if supported).
-     * @return void
-     * @throws DibiDriverException
-     */
-    public function begin()
-    {
-        $this->query('START TRANSACTION');
-    }
-
-
-
-    /**
-     * Commits statements in a transaction.
-     * @return void
-     * @throws DibiDriverException
-     */
-    public function commit()
-    {
-        $this->query('COMMIT');
-    }
-
-
-
-    /**
-     * Rollback changes in a transaction.
-     * @return void
-     * @throws DibiDriverException
-     */
-    public function rollback()
-    {
-        $this->query('ROLLBACK');
-    }
-
-
-
-    /**
-     * Format to SQL command.
-     *
-     * @param  string    value
-     * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
-     * @return string    formatted value
-     * @throws InvalidArgumentException
-     */
-    public function format($value, $type)
-    {
-        if ($type === dibi::FIELD_TEXT) return "'" . mysqli_real_escape_string($this->connection, $value) . "'";
-        if ($type === dibi::IDENTIFIER) return '`' . str_replace('.', '`.`', $value) . '`';
-        if ($type === dibi::FIELD_BOOL) return $value ? 1 : 0;
-        if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
-        if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
-        throw new InvalidArgumentException('Unsupported formatting type.');
-    }
-
-
-
-    /**
-     * Injects LIMIT/OFFSET to the SQL query.
-     *
-     * @param  string &$sql  The SQL query that will be modified.
-     * @param  int $limit
-     * @param  int $offset
-     * @return void
-     */
-    public function applyLimit(&$sql, $limit, $offset)
-    {
-        if ($limit < 0 && $offset < 1) return;
-
-        // see http://dev.mysql.com/doc/refman/5.0/en/select.html
-        $sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
-             . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
-    }
-
-
-
-    /**
-     * Returns the number of rows in a result set.
-     *
-     * @return int
-     */
-    public function rowCount()
-    {
-        if (!$this->buffered) {
-            throw new DibiDriverException('Row count is not available for unbuffered queries.');
-        }
-        return mysqli_num_rows($this->resultset);
-    }
-
-
-
-    /**
-     * Fetches the row at current position and moves the internal cursor to the next position.
-     * internal usage only
-     *
-     * @param  bool     TRUE for associative array, FALSE for numeric
-     * @return array    array on success, nonarray if no next record
-     */
-    public function fetch($type)
-    {
-        return mysqli_fetch_array($this->resultset, $type ? MYSQLI_ASSOC : MYSQLI_NUM);
-    }
-
-
-
-    /**
-     * Moves cursor position without fetching row.
-     *
-     * @param  int      the 0-based cursor pos to seek to
-     * @return boolean  TRUE on success, FALSE if unable to seek to specified record
-     * @throws DibiException
-     */
-    public function seek($row)
-    {
-        if (!$this->buffered) {
-            throw new DibiDriverException('Cannot seek an unbuffered result set.');
-        }
-        return mysqli_data_seek($this->resultset, $row);
-    }
-
-
-
-    /**
-     * Frees the resources allocated for this result set.
-     *
-     * @return void
-     */
-    public function free()
-    {
-        mysqli_free_result($this->resultset);
-        $this->resultset = NULL;
-    }
-
-
-
-    /**
-     * Returns metadata for all columns in a result set.
-     *
-     * @return array
-     */
-    public function getColumnsMeta()
-    {
-        $count = mysqli_num_fields($this->resultset);
-        $meta = array();
-        for ($i = 0; $i < $count; $i++) {
-            // items 'name' and 'table' are required
-            $meta[] = (array) mysqli_fetch_field_direct($this->resultset, $i);
-        }
-        return $meta;
-    }
-
-
-
-    /**
-     * Converts database error to DibiDriverException.
-     *
-     * @throws DibiDriverException
-     */
-    protected function throwException($sql = NULL)
-    {
-        throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection), $sql);
-    }
-
-
-
-    /**
-     * Returns the connection resource.
-     *
-     * @return mysqli
-     */
-    public function getResource()
-    {
-        return $this->connection;
-    }
-
-
-
-    /**
-     * Returns the resultset resource.
-     *
-     * @return mysqli_result
-     */
-    public function getResultResource()
-    {
-        return $this->resultset;
-    }
-
-
-
-    /**
-     * Gets a information of the current database.
-     *
-     * @return DibiReflection
-     */
-    function getDibiReflection()
-    {}
+	/**
+	 * Connection resource.
+	 * @var mysqli
+	 */
+	private $connection;
+
+
+	/**
+	 * Resultset resource.
+	 * @var mysqli_result
+	 */
+	private $resultset;
+
+
+	/**
+	 * Is buffered (seekable and countable)?
+	 * @var bool
+	 */
+	private $buffered;
+
+
+
+	/**
+	 * @throws DibiException
+	 */
+	public function __construct()
+	{
+		if (!extension_loaded('mysqli')) {
+			throw new DibiDriverException("PHP extension 'mysqli' is not loaded.");
+		}
+	}
+
+
+
+	/**
+	 * Connects to a database.
+	 *
+	 * @return void
+	 * @throws DibiException
+	 */
+	public function connect(array &$config)
+	{
+		DibiConnection::alias($config, 'username', 'user');
+		DibiConnection::alias($config, 'password', 'pass');
+		DibiConnection::alias($config, 'options');
+		DibiConnection::alias($config, 'database');
+
+		// default values
+		if (!isset($config['username'])) $config['username'] = ini_get('mysqli.default_user');
+		if (!isset($config['password'])) $config['password'] = ini_get('mysqli.default_pw');
+		if (!isset($config['socket'])) $config['socket'] = ini_get('mysqli.default_socket');
+		if (!isset($config['host'])) {
+			$config['host'] = ini_get('mysqli.default_host');
+			if (!isset($config['port'])) $config['port'] = ini_get('mysqli.default_port');
+			if (!isset($config['host'])) $config['host'] = 'localhost';
+		}
+
+		$this->connection = mysqli_init();
+		@mysqli_real_connect($this->connection, $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['options']);
+
+		if ($errno = mysqli_connect_errno()) {
+			throw new DibiDriverException(mysqli_connect_error(), $errno);
+		}
+
+		if (isset($config['charset'])) {
+			$ok = FALSE;
+			if (version_compare(PHP_VERSION , '5.1.5', '>=')) {
+				// affects the character set used by mysql_real_escape_string() (was added in MySQL 5.0.7 and PHP 5.0.5, fixed in PHP 5.1.5)
+				$ok = @mysqli_set_charset($this->connection, $config['charset']);
+			}
+			if (!$ok) $ok = @mysqli_query($this->connection, "SET NAMES '$config[charset]'");
+			if (!$ok) $this->throwException();
+		}
+
+		if (isset($config['sqlmode'])) {
+			if (!@mysqli_query($this->connection, "SET sql_mode='$config[sqlmode]'")) $this->throwException();
+		}
+
+		$this->buffered = empty($config['unbuffered']);
+	}
+
+
+
+	/**
+	 * Disconnects from a database.
+	 *
+	 * @return void
+	 */
+	public function disconnect()
+	{
+		mysqli_close($this->connection);
+	}
+
+
+
+	/**
+	 * Executes the SQL query.
+	 *
+	 * @param  string      SQL statement.
+	 * @return bool        have resultset?
+	 * @throws DibiDriverException
+	 */
+	public function query($sql)
+	{
+		$this->resultset = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT);
+
+		if (mysqli_errno($this->connection)) {
+			$this->throwException($sql);
+		}
+
+		return is_object($this->resultset);
+	}
+
+
+
+	/**
+	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
+	 *
+	 * @return int|FALSE  number of rows or FALSE on error
+	 */
+	public function affectedRows()
+	{
+		return mysqli_affected_rows($this->connection);
+	}
+
+
+
+	/**
+	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
+	 *
+	 * @return int|FALSE  int on success or FALSE on failure
+	 */
+	public function insertId($sequence)
+	{
+		return mysqli_insert_id($this->connection);
+	}
+
+
+
+	/**
+	 * Begins a transaction (if supported).
+	 * @return void
+	 * @throws DibiDriverException
+	 */
+	public function begin()
+	{
+		$this->query('START TRANSACTION');
+	}
+
+
+
+	/**
+	 * Commits statements in a transaction.
+	 * @return void
+	 * @throws DibiDriverException
+	 */
+	public function commit()
+	{
+		$this->query('COMMIT');
+	}
+
+
+
+	/**
+	 * Rollback changes in a transaction.
+	 * @return void
+	 * @throws DibiDriverException
+	 */
+	public function rollback()
+	{
+		$this->query('ROLLBACK');
+	}
+
+
+
+	/**
+	 * Format to SQL command.
+	 *
+	 * @param  string    value
+	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
+	 * @return string    formatted value
+	 * @throws InvalidArgumentException
+	 */
+	public function format($value, $type)
+	{
+		if ($type === dibi::FIELD_TEXT) return "'" . mysqli_real_escape_string($this->connection, $value) . "'";
+		if ($type === dibi::IDENTIFIER) return '`' . str_replace('.', '`.`', $value) . '`';
+		if ($type === dibi::FIELD_BOOL) return $value ? 1 : 0;
+		if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
+		if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
+		throw new InvalidArgumentException('Unsupported formatting type.');
+	}
+
+
+
+	/**
+	 * Injects LIMIT/OFFSET to the SQL query.
+	 *
+	 * @param  string &$sql  The SQL query that will be modified.
+	 * @param  int $limit
+	 * @param  int $offset
+	 * @return void
+	 */
+	public function applyLimit(&$sql, $limit, $offset)
+	{
+		if ($limit < 0 && $offset < 1) return;
+
+		// see http://dev.mysql.com/doc/refman/5.0/en/select.html
+		$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
+			 . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+	}
+
+
+
+	/**
+	 * Returns the number of rows in a result set.
+	 *
+	 * @return int
+	 */
+	public function rowCount()
+	{
+		if (!$this->buffered) {
+			throw new DibiDriverException('Row count is not available for unbuffered queries.');
+		}
+		return mysqli_num_rows($this->resultset);
+	}
+
+
+
+	/**
+	 * Fetches the row at current position and moves the internal cursor to the next position.
+	 * internal usage only
+	 *
+	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @return array    array on success, nonarray if no next record
+	 */
+	public function fetch($type)
+	{
+		return mysqli_fetch_array($this->resultset, $type ? MYSQLI_ASSOC : MYSQLI_NUM);
+	}
+
+
+
+	/**
+	 * Moves cursor position without fetching row.
+	 *
+	 * @param  int      the 0-based cursor pos to seek to
+	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+	 * @throws DibiException
+	 */
+	public function seek($row)
+	{
+		if (!$this->buffered) {
+			throw new DibiDriverException('Cannot seek an unbuffered result set.');
+		}
+		return mysqli_data_seek($this->resultset, $row);
+	}
+
+
+
+	/**
+	 * Frees the resources allocated for this result set.
+	 *
+	 * @return void
+	 */
+	public function free()
+	{
+		mysqli_free_result($this->resultset);
+		$this->resultset = NULL;
+	}
+
+
+
+	/**
+	 * Returns metadata for all columns in a result set.
+	 *
+	 * @return array
+	 */
+	public function getColumnsMeta()
+	{
+		$count = mysqli_num_fields($this->resultset);
+		$meta = array();
+		for ($i = 0; $i < $count; $i++) {
+			// items 'name' and 'table' are required
+			$meta[] = (array) mysqli_fetch_field_direct($this->resultset, $i);
+		}
+		return $meta;
+	}
+
+
+
+	/**
+	 * Converts database error to DibiDriverException.
+	 *
+	 * @throws DibiDriverException
+	 */
+	protected function throwException($sql = NULL)
+	{
+		throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection), $sql);
+	}
+
+
+
+	/**
+	 * Returns the connection resource.
+	 *
+	 * @return mysqli
+	 */
+	public function getResource()
+	{
+		return $this->connection;
+	}
+
+
+
+	/**
+	 * Returns the resultset resource.
+	 *
+	 * @return mysqli_result
+	 */
+	public function getResultResource()
+	{
+		return $this->resultset;
+	}
+
+
+
+	/**
+	 * Gets a information of the current database.
+	 *
+	 * @return DibiReflection
+	 */
+	function getDibiReflection()
+	{}
 
 }

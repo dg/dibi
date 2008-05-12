@@ -6,8 +6,8 @@ require_once '../dibi/dibi.php';
 
 
 dibi::connect(array(
-    'driver'   => 'sqlite',
-    'database' => 'sample.sdb',
+	'driver'   => 'sqlite',
+	'database' => 'sample.sdb',
 ));
 
 
@@ -18,7 +18,7 @@ dibi::query('SELECT * FROM [products]')->dump();
 
 dibi::begin();
 dibi::query('INSERT INTO [products]', array(
-    'title' => 'Test product',
+	'title' => 'Test product',
 ));
 dibi::rollback(); // or dibi::commit();
 

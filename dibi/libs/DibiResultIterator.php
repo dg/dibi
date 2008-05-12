@@ -45,92 +45,92 @@
  */
 final class DibiResultIterator implements Iterator
 {
-    /** @var DibiResult */
-    private $result;
+	/** @var DibiResult */
+	private $result;
 
-    /** @var int */
-    private $offset;
+	/** @var int */
+	private $offset;
 
-    /** @var int */
-    private $limit;
+	/** @var int */
+	private $limit;
 
-    /** @var int */
-    private $row;
+	/** @var int */
+	private $row;
 
-    /** @var int */
-    private $pointer;
-
-
-    /**
-     * Required by the Iterator interface.
-     * @param  int  offset
-     * @param  int  limit
-     */
-    public function __construct(DibiResult $result, $offset, $limit)
-    {
-        $this->result = $result;
-        $this->offset = (int) $offset;
-        $this->limit = $limit === NULL ? -1 : (int) $limit;
-    }
+	/** @var int */
+	private $pointer;
 
 
-
-    /**
-     * Rewinds the Iterator to the first element.
-     * @return void
+	/**
+	 * Required by the Iterator interface.
+	 * @param  int  offset
+	 * @param  int  limit
 	 */
-    public function rewind()
-    {
-        $this->pointer = 0;
-        $this->result->seek($this->offset);
-        $this->row = $this->result->fetch();
-    }
+	public function __construct(DibiResult $result, $offset, $limit)
+	{
+		$this->result = $result;
+		$this->offset = (int) $offset;
+		$this->limit = $limit === NULL ? -1 : (int) $limit;
+	}
 
 
 
-    /**
-     * Returns the key of the current element.
-     * @return mixed
+	/**
+	 * Rewinds the Iterator to the first element.
+	 * @return void
 	 */
-    public function key()
-    {
-        return $this->pointer;
-    }
+	public function rewind()
+	{
+		$this->pointer = 0;
+		$this->result->seek($this->offset);
+		$this->row = $this->result->fetch();
+	}
 
 
 
-    /**
-     * Returns the current element.
-     * @return mixed
+	/**
+	 * Returns the key of the current element.
+	 * @return mixed
 	 */
-    public function current()
-    {
-        return $this->row;
-    }
+	public function key()
+	{
+		return $this->pointer;
+	}
 
 
 
-    /**
-     * Moves forward to next element.
-     * @return void
+	/**
+	 * Returns the current element.
+	 * @return mixed
 	 */
-    public function next()
-    {
-        //$this->result->seek($this->offset + $this->pointer + 1);
-        $this->row = $this->result->fetch();
-        $this->pointer++;
-    }
+	public function current()
+	{
+		return $this->row;
+	}
 
 
 
-    /**
-     * Checks if there is a current element after calls to rewind() or next().
-     * @return bool
+	/**
+	 * Moves forward to next element.
+	 * @return void
 	 */
-    public function valid()
-    {
-        return !empty($this->row) && ($this->limit < 0 || $this->pointer < $this->limit);
-    }
+	public function next()
+	{
+		//$this->result->seek($this->offset + $this->pointer + 1);
+		$this->row = $this->result->fetch();
+		$this->pointer++;
+	}
+
+
+
+	/**
+	 * Checks if there is a current element after calls to rewind() or next().
+	 * @return bool
+	 */
+	public function valid()
+	{
+		return !empty($this->row) && ($this->limit < 0 || $this->pointer < $this->limit);
+	}
 
 
 }
