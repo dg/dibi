@@ -53,7 +53,7 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 
 	/**
 	 * Affected rows.
-	 * @var int
+	 * @var int|FALSE
 	 */
 	private $affectedRows = FALSE;
 
@@ -92,7 +92,7 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 			$this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
 
 		} catch (PDOException $e) {
-		   throw new DibiDriverException($e->getMessage(), $e->getCode());
+			throw new DibiDriverException($e->getMessage(), $e->getCode());
 		}
 
 		if (!$this->connection) {

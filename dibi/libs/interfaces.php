@@ -32,7 +32,7 @@ interface IDibiVariable
 	 * @param  string  optional modifier
 	 * @return string  SQL code
 	 */
-	public function toSql(DibiTranslator $translator, $modifier);
+	function toSql(DibiTranslator $translator, $modifier);
 }
 
 

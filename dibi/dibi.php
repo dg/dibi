@@ -79,9 +79,12 @@ class dibi
 
 		// special
 		FIELD_COUNTER =  'C', // counter or autoincrement, is integer
-		IDENTIFIER =     'n',
+		IDENTIFIER =     'n';
 
-		// dibi version
+	/**
+	 * dibi version
+	 */
+	const
 		VERSION =        '0.9 (Revision: $WCREV$, Date: $WCDATE$)';
 
 

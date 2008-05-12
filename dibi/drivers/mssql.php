@@ -217,7 +217,7 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 	{
 		// offset suppot is missing...
 		if ($limit >= 0) {
-		   $sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
+			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
 		}
 
 		if ($offset) {

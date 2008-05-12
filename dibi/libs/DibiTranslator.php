@@ -119,16 +119,16 @@ final class DibiTranslator extends /*Nette::*/Object
 				} else {
 					$sql[] = substr($arg, 0, $toSkip)
 /*
-					 . preg_replace_callback('/
-					   (?=`|\[|\'|"|%)                ## speed-up
-					   (?:
-						  `(.+?)`|                     ## 1) `identifier`
-						  \[(.+?)\]|                   ## 2) [identifier]
-						  (\')((?:\'\'|[^\'])*)\'|     ## 3,4) string
-						  (")((?:""|[^"])*)"|          ## 5,6) "string"
-						  (\'|")                       ## 7) lone-quote
-						  %([a-zA-Z]{1,4})(?![a-zA-Z])|## 8) modifier
-					   )/xs',
+					preg_replace_callback('/
+					(?=`|\[|\'|"|%)                ## speed-up
+					(?:
+						`(.+?)`|                     ## 1) `identifier`
+						\[(.+?)\]|                   ## 2) [identifier]
+						(\')((?:\'\'|[^\'])*)\'|     ## 3,4) string
+						(")((?:""|[^"])*)"|          ## 5,6) "string"
+						(\'|")                       ## 7) lone-quote
+						%([a-zA-Z]{1,4})(?![a-zA-Z])|## 8) modifier
+					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
 					 . preg_replace_callback('/(?=`|\[|\'|"|%)(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|%([a-zA-Z]{1,4})(?![a-zA-Z]))/s',
 						   array($this, 'cb'),

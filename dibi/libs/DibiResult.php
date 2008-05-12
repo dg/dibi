@@ -74,10 +74,10 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	private $withTables = FALSE;
 
 	/**
-	 * Fetch as object?
-	 * @var bool
+	 * Fetch as objects or arrays?
+	 * @var mixed  TRUE | FALSE | class name
 	 */
-	public $asObjects = FALSE;
+	private $objects = FALSE;
 
 
 
@@ -98,8 +98,14 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	public function __construct($driver, $config)
 	{
 		$this->driver = $driver;
-		$this->setWithTables(!empty($config['result:withtables']));
-		$this->asObjects = !empty($config['result:objects']);
+
+		if (!empty($config['result:withtables'])) {
+			$this->setWithTables(TRUE);
+		}
+
+		if (isset($config['result:objects'])) {
+			$this->setObjects($config['result:objects']);
+		}
 	}
 
 
@@ -216,13 +222,38 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 
 
 	/**
+	 * Returns rows as arrays or objects?
+	 *
+	 * @param  mixed  TRUE | FALSE | class name
+	 * @return void
+	 */
+	public function setObjects($type)
+	{
+		$this->objects = is_string($type) ? $type : (bool) $type;
+	}
+
+
+
+	/**
+	 * Returns rows as arrays or objects?
+	 *
+	 * @return mixed  TRUE | FALSE | class name
+	 */
+	public function getObjects()
+	{
+		return $this->objects;
+	}
+
+
+
+	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
 	 *
-	 * @param  bool  fetch as object? Overrides $this->asObjects
+	 * @param  mixed  fetch as object? Overrides $this->setObjects()
 	 * @return array|FALSE  array on success, FALSE if no next record
 	 */
-	final public function fetch($asObject = NULL)
+	final public function fetch($objects = NULL)
 	{
 		if ($this->withTables === FALSE) {
 			$row = $this->getDriver()->fetch(TRUE);
@@ -245,9 +276,17 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 			}
 		}
 
-		if ($asObject || ($asObject === NULL && $this->asObjects)) {
-			$row = (object) $row;
+		if ($objects === NULL) {
+			$objects = $this->objects;
 		}
+
+		if ($objects) {
+	 		if ($objects === TRUE) {
+	 			$row = (object) $row;
+		 	} else {
+	 			$row = new $objects($row);
+	 		}
+	 	}
 
 		return $row;
 	}
@@ -286,18 +325,18 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	final function fetchAll()
 	{
 		$this->seek(0);
-		$row = $this->fetch(FALSE);
+		$row = $this->fetch();
 		if (!$row) return array();  // empty resultset
 
 		$data = array();
-		if (count($row) === 1) {
+		if (!$this->objects && count($row) === 1) {
+			// special case: one-column result set
 			$key = key($row);
 			do {
 				$data[] = $row[$key];
-			} while ($row = $this->fetch(FALSE));
+			} while ($row = $this->fetch());
 
 		} else {
-			if ($this->asObjects) $row = (object) $row;
 			do {
 				$data[] = $row;
 			} while ($row = $this->fetch());
