@@ -164,7 +164,7 @@ class dibi
 	/**
 	 * Creates a new DibiConnection object and connects it to specified database.
 	 *
-	 * @param  array|string|Nette::Collections::IMap connection parameters
+	 * @param  array|string|Nette::Collections::Hashtable connection parameters
 	 * @param  string       connection name
 	 * @return DibiConnection
 	 * @throws DibiException

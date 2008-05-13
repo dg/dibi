@@ -229,7 +229,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	 */
 	public function setObjects($type)
 	{
-		$this->objects = is_string($type) ? $type : (bool) $type;
+		$this->objects = $type;
 	}
 
 
@@ -281,12 +281,12 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 		}
 
 		if ($objects) {
-	 		if ($objects === TRUE) {
-	 			$row = (object) $row;
-		 	} else {
-	 			$row = new $objects($row);
-	 		}
-	 	}
+			if ($objects === TRUE) {
+				$row = (object) $row;
+			} else {
+				$row = new $objects($row);
+			}
+		}
 
 		return $row;
 	}

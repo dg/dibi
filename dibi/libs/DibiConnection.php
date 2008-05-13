@@ -58,7 +58,7 @@ class DibiConnection extends /*Nette::*/Object
 	/**
 	 * Creates object and (optionally) connects to a database.
 	 *
-	 * @param  array|string|Nette::Collections::IMap connection parameters
+	 * @param  array|string|Nette::Collections::Hashtable connection parameters
 	 * @param  string       connection name
 	 * @throws DibiException
 	 */
@@ -68,11 +68,11 @@ class DibiConnection extends /*Nette::*/Object
 		if (is_string($config)) {
 			parse_str($config, $config);
 
-		} elseif ($config instanceof /*Nette::Collections::*/IMap) {
-			$config = $config->toArray();
+		} elseif ($config instanceof /*Nette::Collections::*/Hashtable) {
+			$config = (array) $config;
 
 		} elseif (!is_array($config)) {
-			throw new InvalidArgumentException('Configuration must be array, string or Nette::Collections::IMap.');
+			throw new InvalidArgumentException('Configuration must be array, string or Nette::Collections::Hashtable.');
 		}
 
 		if (!isset($config['driver'])) {
@@ -87,6 +87,12 @@ class DibiConnection extends /*Nette::*/Object
 			if (!class_exists($class, FALSE)) {
 				throw new DibiException("Unable to create instance of dibi driver class '$class'.");
 			}
+		}
+
+		if (isset($config['result:objects'])) {
+            // normalize
+			$val = $config['result:objects'];
+			$config['result:objects'] = is_string($val) && !is_numeric($val) ? $val : (bool) $val;
 		}
 
 		$config['name'] = $name;
