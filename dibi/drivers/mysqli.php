@@ -101,7 +101,7 @@ class DibiMySqliDriver extends /*Nette::*/Object implements IDibiDriver
 		}
 
 		$this->connection = mysqli_init();
-		@mysqli_real_connect($this->connection, $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['options']);
+		@mysqli_real_connect($this->connection, $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['options']); // intentionally @
 
 		if ($errno = mysqli_connect_errno()) {
 			throw new DibiDriverException(mysqli_connect_error(), $errno);
@@ -111,14 +111,14 @@ class DibiMySqliDriver extends /*Nette::*/Object implements IDibiDriver
 			$ok = FALSE;
 			if (version_compare(PHP_VERSION , '5.1.5', '>=')) {
 				// affects the character set used by mysql_real_escape_string() (was added in MySQL 5.0.7 and PHP 5.0.5, fixed in PHP 5.1.5)
-				$ok = @mysqli_set_charset($this->connection, $config['charset']);
+				$ok = @mysqli_set_charset($this->connection, $config['charset']); // intentionally @
 			}
-			if (!$ok) $ok = @mysqli_query($this->connection, "SET NAMES '$config[charset]'");
+			if (!$ok) $ok = @mysqli_query($this->connection, "SET NAMES '$config[charset]'"); // intentionally @
 			if (!$ok) $this->throwException();
 		}
 
 		if (isset($config['sqlmode'])) {
-			if (!@mysqli_query($this->connection, "SET sql_mode='$config[sqlmode]'")) $this->throwException();
+			if (!@mysqli_query($this->connection, "SET sql_mode='$config[sqlmode]'")) $this->throwException(); // intentionally @
 		}
 
 		$this->buffered = empty($config['unbuffered']);
@@ -147,7 +147,7 @@ class DibiMySqliDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function query($sql)
 	{
-		$this->resultset = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT);
+		$this->resultset = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT); // intentionally @
 
 		if (mysqli_errno($this->connection)) {
 			$this->throwException($sql);

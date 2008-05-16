@@ -90,7 +90,7 @@ class DibiConnection extends /*Nette::*/Object
 		}
 
 		if (isset($config['result:objects'])) {
-            // normalize
+			// normalize
 			$val = $config['result:objects'];
 			$config['result:objects'] = is_string($val) && !is_numeric($val) ? $val : (bool) $val;
 		}
@@ -150,6 +150,18 @@ class DibiConnection extends /*Nette::*/Object
 			$this->connected = FALSE;
 			dibi::notify($this, 'disconnected');
 		}
+	}
+
+
+
+	/**
+	 * Returns TRUE when connection was established.
+	 *
+	 * @return bool
+	 */
+	final public function isConnected()
+	{
+		return $this->connected;
 	}
 
 
@@ -411,9 +423,9 @@ class DibiConnection extends /*Nette::*/Object
 	{
 		$this->connect();
 
-		@set_time_limit(0);
+		@set_time_limit(0); // intentionally @
 
-		$handle = @fopen($file, 'r');
+		$handle = @fopen($file, 'r'); // intentionally @
 		if (!$handle) {
 			throw new FileNotFoundException("Cannot open file '$file'.");
 		}

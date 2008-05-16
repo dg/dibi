@@ -87,9 +87,9 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 		if (!isset($config['dsn'])) $config['dsn'] = ini_get('odbc.default_db');
 
 		if (empty($config['persistent'])) {
-			$this->connection = @odbc_connect($config['dsn'], $config['username'], $config['password']);
+			$this->connection = @odbc_connect($config['dsn'], $config['username'], $config['password']); // intentionally @
 		} else {
-			$this->connection = @odbc_pconnect($config['dsn'], $config['username'], $config['password']);
+			$this->connection = @odbc_pconnect($config['dsn'], $config['username'], $config['password']); // intentionally @
 		}
 
 		if (!is_resource($this->connection)) {
@@ -120,7 +120,7 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function query($sql)
 	{
-		$this->resultset = @odbc_exec($this->connection, $sql);
+		$this->resultset = @odbc_exec($this->connection, $sql); // intentionally @
 
 		if ($this->resultset === FALSE) {
 			$this->throwException($sql);

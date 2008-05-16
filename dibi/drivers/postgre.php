@@ -58,13 +58,6 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	private $escMethod = FALSE;
 
 
-	/**
-	 * Affected rows.
-	 * @var int|FALSE
-	 */
-	private $affectedRows = FALSE;
-
-
 
 	/**
 	 * @throws DibiException
@@ -148,16 +141,13 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function query($sql)
 	{
-		$this->resultset = @pg_query($this->connection, $sql);
+		$this->resultset = @pg_query($this->connection, $sql); // intentionally @
 
 		if ($this->resultset === FALSE) {
-			$this->affectedRows = FALSE;
 			throw new DibiDriverException(pg_last_error($this->connection), 0, $sql);
 		}
 
-		$this->affectedRows = pg_affected_rows($this->resultset); // retrieve immediately due PHP bug
-
-		return is_resource($this->resultset);
+		return is_resource($this->resultset) && pg_num_fields($this->resultset);
 	}
 
 
@@ -169,7 +159,7 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function affectedRows()
 	{
-		return $this->affectedRows;
+		return pg_affected_rows($this->resultset);
 	}
 
 

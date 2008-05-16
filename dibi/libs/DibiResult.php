@@ -117,7 +117,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	 */
 	public function __destruct()
 	{
-		@$this->free();
+		@$this->free(); // intentionally @
 	}
 
 

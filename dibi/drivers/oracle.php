@@ -82,7 +82,7 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 		DibiConnection::alias($config, 'database', 'db');
 		DibiConnection::alias($config, 'charset');
 
-		$this->connection = @oci_new_connect($config['username'], $config['password'], $config['database'], $config['charset']);
+		$this->connection = @oci_new_connect($config['username'], $config['password'], $config['database'], $config['charset']); // intentionally @
 
 		if (!$this->connection) {
 			$err = oci_error();

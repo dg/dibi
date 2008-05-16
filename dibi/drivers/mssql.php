@@ -77,16 +77,16 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 		DibiConnection::alias($config, 'host');
 
 		if (empty($config['persistent'])) {
-			$this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE);
+			$this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE); // intentionally @
 		} else {
-			$this->connection = @mssql_pconnect($config['host'], $config['username'], $config['password']);
+			$this->connection = @mssql_pconnect($config['host'], $config['username'], $config['password']); // intentionally @
 		}
 
 		if (!is_resource($this->connection)) {
 			throw new DibiDriverException("Can't connect to DB.");
 		}
 
-		if (isset($config['database']) && !@mssql_select_db($config['database'], $this->connection)) {
+		if (isset($config['database']) && !@mssql_select_db($config['database'], $this->connection)) { // intentionally @
 			throw new DibiDriverException("Can't select DB '$config[database]'.");
 		}
 	}
@@ -114,7 +114,7 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function query($sql)
 	{
-		$this->resultset = @mssql_query($sql, $this->connection);
+		$this->resultset = @mssql_query($sql, $this->connection); // intentionally @
 
 		if ($this->resultset === FALSE) {
 			throw new DibiDriverException('Query error', 0, $sql);

@@ -86,6 +86,15 @@ interface IDibiDriver
 
 
 	/**
+	 * Returns TRUE when connection was established.
+	 *
+	 * @return bool
+	 */
+	function isConnected();
+
+
+
+	/**
 	 * Internal: Executes the SQL query.
 	 *
 	 * @param  string      SQL statement.

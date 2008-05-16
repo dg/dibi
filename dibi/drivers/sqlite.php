@@ -92,9 +92,9 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 
 		$errorMsg = '';
 		if (empty($config['persistent'])) {
-			$this->connection = @sqlite_open($config['database'], 0666, $errorMsg);
+			$this->connection = @sqlite_open($config['database'], 0666, $errorMsg); // intentionally @
 		} else {
-			$this->connection = @sqlite_popen($config['database'], 0666, $errorMsg);
+			$this->connection = @sqlite_popen($config['database'], 0666, $errorMsg); // intentionally @
 		}
 
 		if (!$this->connection) {

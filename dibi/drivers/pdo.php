@@ -316,7 +316,7 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 		$meta = array();
 		for ($i = 0; $i < $count; $i++) {
 			// items 'name' and 'table' are required
-			$info = @$this->resultset->getColumnsMeta($i);
+			$info = @$this->resultset->getColumnsMeta($i); // intentionally @
 			if ($info === FALSE) {
 				throw new DibiDriverException('Driver does not support meta data.');
 			}

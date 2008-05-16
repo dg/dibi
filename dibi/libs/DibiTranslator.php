@@ -131,9 +131,9 @@ final class DibiTranslator extends /*Nette::*/Object
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
 					 . preg_replace_callback('/(?=`|\[|\'|"|%)(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|%([a-zA-Z]{1,4})(?![a-zA-Z]))/s',
-						   array($this, 'cb'),
-						   substr($arg, $toSkip)
-					   );
+							array($this, 'cb'),
+							substr($arg, $toSkip)
+					);
 
 				}
 				continue;
@@ -302,9 +302,9 @@ final class DibiTranslator extends /*Nette::*/Object
 				} else {
 					return substr($value, 0, $toSkip)
 					 . preg_replace_callback('/(?=`|\[|\'|")(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"(\'|"))/s',
-						   array($this, 'cb'),
-						   substr($value, $toSkip)
-					   );
+							array($this, 'cb'),
+							substr($value, $toSkip)
+					);
 				}
 
 			case 'a':

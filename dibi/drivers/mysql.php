@@ -110,9 +110,9 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 		}
 
 		if (empty($config['persistent'])) {
-			$this->connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['options']);
+			$this->connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['options']); // intentionally @
 		} else {
-			$this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['options']);
+			$this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['options']); // intentionally @
 		}
 
 		if (!is_resource($this->connection)) {
@@ -123,18 +123,18 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 			$ok = FALSE;
 			if (function_exists('mysql_set_charset')) {
 				// affects the character set used by mysql_real_escape_string() (was added in MySQL 5.0.7 and PHP 5.2.3)
-				$ok = @mysql_set_charset($config['charset'], $this->connection);
+				$ok = @mysql_set_charset($config['charset'], $this->connection); // intentionally @
 			}
-			if (!$ok) $ok = @mysql_query("SET NAMES '$config[charset]'", $this->connection);
+			if (!$ok) $ok = @mysql_query("SET NAMES '$config[charset]'", $this->connection); // intentionally @
 			if (!$ok) $this->throwException();
 		}
 
 		if (isset($config['database'])) {
-			@mysql_select_db($config['database'], $this->connection) or $this->throwException();
+			@mysql_select_db($config['database'], $this->connection) or $this->throwException(); // intentionally @
 		}
 
 		if (isset($config['sqlmode'])) {
-			if (!@mysql_query("SET sql_mode='$config[sqlmode]'", $this->connection)) $this->throwException();
+			if (!@mysql_query("SET sql_mode='$config[sqlmode]'", $this->connection)) $this->throwException(); // intentionally @
 		}
 
 		$this->buffered = empty($config['unbuffered']);
@@ -164,9 +164,9 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 	public function query($sql)
 	{
 		if ($this->buffered) {
-			$this->resultset = @mysql_query($sql, $this->connection);
+			$this->resultset = @mysql_query($sql, $this->connection); // intentionally @
 		} else {
-			$this->resultset = @mysql_unbuffered_query($sql, $this->connection);
+			$this->resultset = @mysql_unbuffered_query($sql, $this->connection); // intentionally @
 		}
 
 		if (mysql_errno($this->connection)) {
