@@ -31,18 +31,24 @@ if (version_compare(PHP_VERSION, '5.1.0', '<')) {
 
 
 // nette libraries
-if (!class_exists('NotImplementedException', FALSE)) { require_once dirname(__FILE__) . '/Nette/exceptions.php'; }
-if (!class_exists(/*Nette::*/'Object', FALSE)) { require_once dirname(__FILE__) . '/Nette/Object.php'; }
-if (!interface_exists(/*Nette::*/'IDebuggable', FALSE)) { require_once dirname(__FILE__) . '/Nette/IDebuggable.php'; }
+if (!class_exists('NotImplementedException', FALSE)) {
+	require_once dirname(__FILE__) . '/Nette/exceptions.php';
+}
+
+if (!class_exists(/*Nette::*/'Object', FALSE)) {
+	require_once dirname(__FILE__) . '/Nette/Object.php';
+}
+
+if (!interface_exists(/*Nette::*/'IDebuggable', FALSE)) {
+	require_once dirname(__FILE__) . '/Nette/IDebuggable.php';
+}
 
 // dibi libraries
 require_once dirname(__FILE__) . '/libs/interfaces.php';
 require_once dirname(__FILE__) . '/libs/DibiException.php';
 require_once dirname(__FILE__) . '/libs/DibiConnection.php';
 require_once dirname(__FILE__) . '/libs/DibiResult.php';
-require_once dirname(__FILE__) . '/libs/DibiResultIterator.php';
 require_once dirname(__FILE__) . '/libs/DibiTranslator.php';
-require_once dirname(__FILE__) . '/libs/DibiLogger.php';
 require_once dirname(__FILE__) . '/libs/DibiVariable.php';
 require_once dirname(__FILE__) . '/libs/DibiTable.php';
 require_once dirname(__FILE__) . '/libs/DibiDataSource.php';
@@ -251,8 +257,8 @@ class dibi
 	/**
 	 * Generates and executes SQL query - Monostate for DibiConnection::query().
 	 *
-	 * @param  array|mixed    one or more arguments
-	 * @return DibiResult     Result set object (if any)
+	 * @param  array|mixed      one or more arguments
+	 * @return DibiResult|NULL  result set object (if any)
 	 * @throws DibiException
 	 */
 	public static function query($args)
@@ -266,8 +272,8 @@ class dibi
 	/**
 	 * Executes the SQL query - Monostate for DibiConnection::nativeQuery().
 	 *
-	 * @param  string         SQL statement.
-	 * @return DibiResult     Result set object (if any)
+	 * @param  string           SQL statement.
+	 * @return DibiResult|NULL  result set object (if any)
 	 */
 	public static function nativeQuery($sql)
 	{
@@ -557,6 +563,8 @@ class dibi
 	 */
 	public static function startLogger($file, $logQueries = FALSE)
 	{
+		require_once dirname(__FILE__) . '/libs/DibiLogger.php';
+
 		$logger = new DibiLogger($file);
 		$logger->logQueries = $logQueries;
 		self::addHandler(array($logger, 'handler'));

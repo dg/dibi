@@ -226,8 +226,8 @@ class DibiConnection extends /*Nette::*/Object
 	/**
 	 * Generates (translates) and executes SQL query.
 	 *
-	 * @param  array|mixed    one or more arguments
-	 * @return DibiResult     Result set object (if any)
+	 * @param  array|mixed      one or more arguments
+	 * @return DibiResult|NULL  result set object (if any)
 	 * @throws DibiException
 	 */
 	final public function query($args)
@@ -265,8 +265,8 @@ class DibiConnection extends /*Nette::*/Object
 	/**
 	 * Executes the SQL query.
 	 *
-	 * @param  string         SQL statement.
-	 * @return DibiResult     Result set object (if any)
+	 * @param  string           SQL statement.
+	 * @return DibiResult|NULL  result set object (if any)
 	 * @throws DibiException
 	 */
 	final public function nativeQuery($sql)
@@ -279,7 +279,7 @@ class DibiConnection extends /*Nette::*/Object
 		$time = -microtime(TRUE);
 		dibi::notify($this, 'beforeQuery', $sql);
 
-		$res = $this->driver->query($sql) ? new DibiResult(clone $this->driver, $this->config) : TRUE; // backward compatibility - will be changed to NULL
+		$res = $this->driver->query($sql) ? new DibiResult(clone $this->driver, $this->config) : NULL;
 
 		$time += microtime(TRUE);
 		dibi::$elapsedTime = $time;

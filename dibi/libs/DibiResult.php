@@ -320,24 +320,32 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	/**
 	 * Fetches all records from table.
 	 *
+	 * @param  int  offset
+	 * @param  int  limit
+	 * @param  bool simplify one-column result set?
 	 * @return array
 	 */
-	final function fetchAll()
+	final function fetchAll($offset = NULL, $limit = NULL, $simplify = TRUE)
 	{
-		$this->seek(0);
+		$limit = $limit === NULL ? -1 : (int) $limit;
+		$this->seek((int) $offset);
 		$row = $this->fetch();
 		if (!$row) return array();  // empty resultset
 
 		$data = array();
-		if (!$this->objects && count($row) === 1) {
+		if ($simplify && !$this->objects && count($row) === 1) {
 			// special case: one-column result set
 			$key = key($row);
 			do {
+				if ($limit === 0) break;
+				$limit--;
 				$data[] = $row[$key];
 			} while ($row = $this->fetch());
 
 		} else {
 			do {
+				if ($limit === 0) break;
+				$limit--;
 				$data[] = $row;
 			} while ($row = $this->fetch());
 		}
@@ -591,7 +599,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	 */
 	final public function getIterator($offset = NULL, $limit = NULL)
 	{
-		return new DibiResultIterator($this, $offset, $limit);
+		return new ArrayIterator($this->fetchAll($offset, $limit, FALSE));
 	}
 
 
