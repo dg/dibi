@@ -52,6 +52,7 @@ require_once dirname(__FILE__) . '/libs/DibiTranslator.php';
 require_once dirname(__FILE__) . '/libs/DibiVariable.php';
 require_once dirname(__FILE__) . '/libs/DibiTable.php';
 require_once dirname(__FILE__) . '/libs/DibiDataSource.php';
+require_once dirname(__FILE__) . '/libs/DibiFluent.php';
 
 
 
@@ -424,7 +425,72 @@ class dibi
 	 */
 	protected static function __callStatic($name, $args)
 	{
+		//if ($name = 'select', 'update', ...') {
+		//	return self::command()->$name($args);
+		//}
 		return call_user_func_array(array(self::getConnection(), $name), $args);
+	}
+
+
+
+	/********************* fluent SQL builders ****************d*g**/
+
+
+
+	/**
+	 * @return DibiFluent
+	 */
+	public static function command()
+	{
+		return new DibiFluent(self::getConnection());
+	}
+
+
+
+	/**
+	 * @param  string    column name
+	 * @return DibiFluent
+	 */
+	public static function select($args)
+	{
+		$args = func_get_args();
+		return self::command()->__call('select', $args);
+	}
+
+
+
+	/**
+	 * @param  string   table
+	 * @param  array
+	 * @return DibiFluent
+	 */
+	public static function update($table, array $args)
+	{
+		return self::command()->update('%n', $table)->set($args);
+	}
+
+
+
+	/**
+	 * @param  string   table
+	 * @param  array
+	 * @return DibiFluent
+	 */
+	public static function insert($table, array $args)
+	{
+		return self::command()->insert()
+			->into('%n', $table, '(%n)', array_keys($args))->values('%l', array_values($args));
+	}
+
+
+
+	/**
+	 * @param  string   table
+	 * @return DibiFluent
+	 */
+	public static function delete($table)
+	{
+		return self::command()->delete()->from('%n', $table);
 	}
 
 
@@ -593,8 +659,8 @@ class dibi
 		} else {
 			if ($sql === NULL) $sql = self::$sql;
 
+			static $keywords1 = 'SELECT|UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
 			static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|LIKE|TRUE|FALSE';
-			static $keywords1 = 'SELECT|UPDATE|INSERT(?:\s+INTO)|REPLACE(?:\s+INTO)|DELETE|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN';
 
 			// insert new lines
 			$sql = ' ' . $sql;
@@ -647,7 +713,8 @@ class dibi
 	{
 		return array(
 			'dibi version: ' . dibi::VERSION,
-			'Number or queries: ' . dibi::$numOfQueries . (dibi::$totalTime === NULL ? '' : ' (elapsed time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms)'),
+			'Number or queries: ' . dibi::$numOfQueries
+			. (dibi::$totalTime === NULL ? '' : ' (elapsed time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms)'),
 		);
 	}
 

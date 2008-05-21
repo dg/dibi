@@ -252,7 +252,7 @@ class DibiMySqliDriver extends /*Nette::*/Object implements IDibiDriver
 
 		// see http://dev.mysql.com/doc/refman/5.0/en/select.html
 		$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
-			 . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+			. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
 	}
 
 

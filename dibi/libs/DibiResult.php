@@ -495,13 +495,36 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 
 
 
-	final public function setType($col, $type = NULL, $format = NULL)
+	/**
+	 * Define column type.
+	 * @param string  column
+	 * @param string  type (use constant Dibi::FIELD_*)
+	 * @param string  optional format
+	 * @return void
+	 */
+	final public function setType($col, $type, $format = NULL)
 	{
 		$this->xlat[$col] = array($type, $format);
 	}
 
 
 
+	/**
+	 * Define multiple columns types (for internal usage).
+	 * @param array
+	 * @return void
+	 */
+	final public function setTypes(array $types)
+	{
+		$this->xlat = $types;
+	}
+
+
+
+	/**
+	 * Returns column type.
+	 * @return array  ($type, $format)
+	 */
 	final public function getType($col)
 	{
 		return isset($this->xlat[$col]) ? $this->xlat[$col] : NULL;
@@ -509,6 +532,10 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 
 
 
+	/**
+	 * Converts value to specified type and format
+	 * @return array  ($type, $format)
+	 */
 	final public function convert($value, $type, $format = NULL)
 	{
 		if ($value === NULL || $value === FALSE) {

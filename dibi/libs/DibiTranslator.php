@@ -130,7 +130,7 @@ final class DibiTranslator extends /*Nette::*/Object
 						%([a-zA-Z]{1,4})(?![a-zA-Z])|## 8) modifier
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
-					 . preg_replace_callback('/(?=`|\[|\'|"|%)(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|%([a-zA-Z]{1,4})(?![a-zA-Z]))/s',
+					. preg_replace_callback('/(?=`|\[|\'|"|%)(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|%([a-zA-Z]{1,4})(?![a-zA-Z]))/s',
 							array($this, 'cb'),
 							substr($arg, $toSkip)
 					);
@@ -219,7 +219,7 @@ final class DibiTranslator extends /*Nette::*/Object
 				return implode($separator, $vx);
 
 
-			case 'l': // LIST val, val, ...
+			case 'l': // LIST (val, val, ...)
 				foreach ($value as $k => $v) {
 					$pair = explode('%', $k, 2); // split into identifier & modifier
 					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
@@ -301,7 +301,7 @@ final class DibiTranslator extends /*Nette::*/Object
 					return $value;
 				} else {
 					return substr($value, 0, $toSkip)
-					 . preg_replace_callback('/(?=`|\[|\'|")(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"(\'|"))/s',
+					. preg_replace_callback('/(?=`|\[|\'|")(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"(\'|"))/s',
 							array($this, 'cb'),
 							substr($value, $toSkip)
 					);
