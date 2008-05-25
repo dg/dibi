@@ -81,16 +81,6 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 
 
 
-	private static $types = array(
-		dibi::FIELD_TEXT =>    'string',
-		dibi::FIELD_BINARY =>  'string',
-		dibi::FIELD_INTEGER => 'int',
-		dibi::FIELD_FLOAT =>   'float',
-		dibi::FIELD_COUNTER => 'int',
-	);
-
-
-
 	/**
 	 * @param  IDibiDriver
 	 * @param  array
@@ -542,20 +532,30 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 			return $value;
 		}
 
-		if (isset(self::$types[$type])) {
-			settype($value, self::$types[$type]);
+		switch ($type) {
+		case dibi::FIELD_TEXT:
+			return (string) $value;
+
+		case dibi::FIELD_BINARY:
+			return $this->getDriver()->unescape($value, $type);
+
+		case dibi::FIELD_INTEGER:
+			return (int) $value;
+
+		case dibi::FIELD_FLOAT:
+			return (float) $value;
+
+		case dibi::FIELD_DATE:
+		case dibi::FIELD_DATETIME:
+			$value = strtotime($value);
+			return $format === NULL ? $value : date($format, $value);
+
+		case dibi::FIELD_BOOL:
+			return ((bool) $value) && $value !== 'f' && $value !== 'F';
+
+		default:
 			return $value;
 		}
-
-		if ($type === dibi::FIELD_DATE || $type === dibi::FIELD_DATETIME) {
-			return $format === NULL ? strtotime($value) : date($format, strtotime($value));
-		}
-
-		if ($type === dibi::FIELD_BOOL) {
-			return ((bool) $value) && $value !== 'f' && $value !== 'F';
-		}
-
-		return $value;
 	}
 
 

@@ -224,31 +224,69 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Format to SQL command.
+	 * Encodes data for use in an SQL statement.
 	 *
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
-	 * @return string    formatted value
+	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
+	 * @return string    encoded value
 	 * @throws InvalidArgumentException
 	 */
-	public function format($value, $type)
+	public function escape($value, $type)
 	{
-		if ($type === dibi::FIELD_TEXT) {
-			if ($this->escMethod) return "'" . pg_escape_string($this->connection, $value) . "'";
-			return "'" . pg_escape_string($value) . "'";
-		}
+		switch ($type) {
+		case dibi::FIELD_TEXT:
+			if ($this->escMethod) {
+				return "'" . pg_escape_string($this->connection, $value) . "'";
+			} else {
+				return "'" . pg_escape_string($value) . "'";
+			}
 
-		if ($type === dibi::IDENTIFIER) {
+		case dibi::FIELD_BINARY:
+			if ($this->escMethod) {
+				return "'" . pg_escape_bytea($this->connection, $value) . "'";
+			} else {
+				return "'" . pg_escape_bytea($value) . "'";
+			}
+
+		case dibi::IDENTIFIER:
 			$a = strrpos($value, '.');
 			if ($a === FALSE) return '"' . str_replace('"', '""', $value) . '"';
 			// table.col delimite as table."col"
 			return substr($value, 0, $a) . '."' . str_replace('"', '""', substr($value, $a + 1)) . '"';
-		}
 
-		if ($type === dibi::FIELD_BOOL) return $value ? 'TRUE' : 'FALSE';
-		if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
-		if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
-		throw new InvalidArgumentException('Unsupported formatting type.');
+		case dibi::FIELD_BOOL:
+			return $value ? 'TRUE' : 'FALSE';
+
+		case dibi::FIELD_DATE:
+			return date("'Y-m-d'", $value);
+
+		case dibi::FIELD_DATETIME:
+			return date("'Y-m-d H:i:s'", $value);
+
+		default:
+			throw new InvalidArgumentException('Unsupported type.');
+		}
+	}
+
+
+
+	/**
+	 * Decodes data from resultset.
+	 *
+	 * @param  string    value
+	 * @param  string    type (dibi::FIELD_BINARY)
+	 * @return string    decoded value
+	 * @throws InvalidArgumentException
+	 */
+	public function unescape($value, $type)
+	{
+		switch ($type) {
+		case dibi::FIELD_BINARY:
+			return pg_unescape_bytea($value);
+
+		default:
+			throw new InvalidArgumentException('Unsupported type.');
+		}
 	}
 
 

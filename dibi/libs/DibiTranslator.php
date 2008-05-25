@@ -261,13 +261,12 @@ final class DibiTranslator extends /*Nette::*/Object
 
 			switch ($modifier) {
 			case 's':  // string
-				return $this->driver->format($value, dibi::FIELD_TEXT);
+			case 'bin':// binary
+			case 'b':  // boolean
+				return $this->driver->escape($value, $modifier);
 
 			case 'sn': // string or NULL
-				return $value == '' ? 'NULL' : $this->driver->format($value, dibi::FIELD_TEXT); // notice two equal signs
-
-			case 'b':  // boolean
-				return $this->driver->format($value, dibi::FIELD_BOOL);
+				return $value == '' ? 'NULL' : $this->driver->escape($value, dibi::FIELD_TEXT); // notice two equal signs
 
 			case 'i':  // signed int
 			case 'u':  // unsigned int, ignored
@@ -285,10 +284,8 @@ final class DibiTranslator extends /*Nette::*/Object
 				return (string) ($value + 0);
 
 			case 'd':  // date
-				return $this->driver->format(is_string($value) ? strtotime($value) : $value, dibi::FIELD_DATE);
-
 			case 't':  // datetime
-				return $this->driver->format(is_string($value) ? strtotime($value) : $value, dibi::FIELD_DATETIME);
+				return $this->driver->escape(is_string($value) ? strtotime($value) : $value, $modifier);
 
 			case 'n':  // identifier name
 				return $this->delimite($value);
@@ -307,7 +304,10 @@ final class DibiTranslator extends /*Nette::*/Object
 					);
 				}
 
+			case 'and':
+			case 'or':
 			case 'a':
+			case 'l':
 			case 'v':
 				$this->hasError = TRUE;
 				return '**Unexpected type ' . gettype($value) . '**';
@@ -321,13 +321,13 @@ final class DibiTranslator extends /*Nette::*/Object
 
 		// without modifier procession
 		if (is_string($value))
-			return $this->driver->format($value, dibi::FIELD_TEXT);
+			return $this->driver->escape($value, dibi::FIELD_TEXT);
 
 		if (is_int($value) || is_float($value))
 			return (string) $value;  // something like -9E-005 is accepted by SQL
 
 		if (is_bool($value))
-			return $this->driver->format($value, dibi::FIELD_BOOL);
+			return $this->driver->escape($value, dibi::FIELD_BOOL);
 
 		if ($value === NULL)
 			return 'NULL';
@@ -427,10 +427,10 @@ final class DibiTranslator extends /*Nette::*/Object
 			return $this->delimite($matches[2]);
 
 		if ($matches[3])  // SQL strings: '...'
-			return $this->driver->format( str_replace("''", "'", $matches[4]), dibi::FIELD_TEXT);
+			return $this->driver->escape( str_replace("''", "'", $matches[4]), dibi::FIELD_TEXT);
 
 		if ($matches[5])  // SQL strings: "..."
-			return $this->driver->format( str_replace('""', '"', $matches[6]), dibi::FIELD_TEXT);
+			return $this->driver->escape( str_replace('""', '"', $matches[6]), dibi::FIELD_TEXT);
 
 		if ($matches[7]) { // string quote
 			$this->hasError = TRUE;
@@ -453,7 +453,7 @@ final class DibiTranslator extends /*Nette::*/Object
 		if (strpos($value, ':') !== FALSE) {
 			$value = strtr($value, dibi::getSubst());
 		}
-		return $this->driver->format($value, dibi::IDENTIFIER);
+		return $this->driver->escape($value, dibi::IDENTIFIER);
 	}
 
 

@@ -239,21 +239,50 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Format to SQL command.
+	 * Encodes data for use in an SQL statement.
 	 *
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
-	 * @return string    formatted value
+	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
+	 * @return string    encoded value
 	 * @throws InvalidArgumentException
 	 */
-	public function format($value, $type)
+	public function escape($value, $type)
 	{
-		if ($type === dibi::FIELD_TEXT) return "'" . mysql_real_escape_string($value, $this->connection) . "'";
-		if ($type === dibi::IDENTIFIER) return '`' . str_replace('.', '`.`', $value) . '`';
-		if ($type === dibi::FIELD_BOOL) return $value ? 1 : 0;
-		if ($type === dibi::FIELD_DATE) return date("'Y-m-d'", $value);
-		if ($type === dibi::FIELD_DATETIME) return date("'Y-m-d H:i:s'", $value);
-		throw new InvalidArgumentException('Unsupported formatting type.');
+		switch ($type) {
+		case dibi::FIELD_TEXT:
+		case dibi::FIELD_BINARY:
+			return "'" . mysql_real_escape_string($value, $this->connection) . "'";
+
+		case dibi::IDENTIFIER:
+			return '`' . str_replace('.', '`.`', $value) . '`';
+
+		case dibi::FIELD_BOOL:
+			return $value ? 1 : 0;
+
+		case dibi::FIELD_DATE:
+			return date("'Y-m-d'", $value);
+
+		case dibi::FIELD_DATETIME:
+			return date("'Y-m-d H:i:s'", $value);
+
+		default:
+			throw new InvalidArgumentException('Unsupported type.');
+		}
+	}
+
+
+
+	/**
+	 * Decodes data from resultset.
+	 *
+	 * @param  string    value
+	 * @param  string    type (dibi::FIELD_BINARY)
+	 * @return string    decoded value
+	 * @throws InvalidArgumentException
+	 */
+	public function unescape($value, $type)
+	{
+		throw new InvalidArgumentException('Unsupported type.');
 	}
 
 

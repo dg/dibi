@@ -142,13 +142,27 @@ interface IDibiDriver
 
 
 	/**
-	 * Format to SQL command.
+	 * Encodes data for use in an SQL statement.
 	 *
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, dibi::FIELD_DATE, dibi::FIELD_DATETIME, dibi::IDENTIFIER)
-	 * @return string    formatted value
+	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
+	 * @return string    encoded value
+	 * @throws InvalidArgumentException
 	 */
-	function format($value, $type);
+	function escape($value, $type);
+
+
+
+	/**
+	 * Decodes data from resultset.
+	 *
+	 * @param  string    value
+	 * @param  string    type (dibi::FIELD_BINARY)
+	 * @return string    decoded value
+	 * @throws InvalidArgumentException
+	 */
+	function unescape($value, $type);
+
 
 
 	/**

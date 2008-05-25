@@ -372,15 +372,30 @@ class DibiConnection extends /*Nette::*/Object
 
 
 	/**
-	 * Escapes the string.
+	 * Encodes data for use in an SQL statement.
 	 *
 	 * @param  string    unescaped string
-	 * @return string    escaped and optionally quoted string
+	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
+	 * @return string    escaped and quoted string
 	 */
-	public function escape($value)
+	public function escape($value, $type = dibi::FIELD_TEXT)
 	{
 		$this->connect(); // MySQL & PDO require connection
-		return $this->driver->format($value, dibi::FIELD_TEXT);
+		return $this->driver->escape($value, $type);
+	}
+
+
+
+	/**
+	 * Decodes data from resultset.
+	 *
+	 * @param  string    value
+	 * @param  string    type (dibi::FIELD_BINARY)
+	 * @return string    decoded value
+	 */
+	public function unescape($value, $type = dibi::FIELD_BINARY)
+	{
+		return $this->driver->unescape($value, $type);
 	}
 
 
@@ -393,7 +408,7 @@ class DibiConnection extends /*Nette::*/Object
 	 */
 	public function delimite($value)
 	{
-		return $this->driver->format($value, dibi::IDENTIFIER);
+		return $this->driver->escape($value, dibi::IDENTIFIER);
 	}
 
 

@@ -76,16 +76,14 @@ class dibi
 	 */
 	const
 		FIELD_TEXT =     's', // as 'string'
-		FIELD_BINARY =   'S',
+		FIELD_BINARY =   'bin',
 		FIELD_BOOL =     'b',
 		FIELD_INTEGER =  'i',
 		FIELD_FLOAT =    'f',
 		FIELD_DATE =     'd',
 		FIELD_DATETIME = 't',
-		FIELD_UNKNOWN =  '?',
 
 		// special
-		FIELD_COUNTER =  'C', // counter or autoincrement, is integer
 		IDENTIFIER =     'n';
 
 	/**
