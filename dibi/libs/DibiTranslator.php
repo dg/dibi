@@ -450,10 +450,7 @@ final class DibiTranslator extends /*Nette::*/Object
 	 */
 	private function delimite($value)
 	{
-		if (strpos($value, ':') !== FALSE) {
-			$value = strtr($value, dibi::getSubst());
-		}
-		return $this->driver->escape($value, dibi::IDENTIFIER);
+		return $this->driver->escape(dibi::substitute($value), dibi::IDENTIFIER);
 	}
 
 

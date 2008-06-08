@@ -27,7 +27,7 @@
  * @package    dibi
  * @version    $Revision$ $Date$
  */
-final class DibiFluent extends /*Nette::*/Object
+class DibiFluent extends /*Nette::*/Object
 {
 	/** @var array */
 	public static $masks = array(
@@ -103,6 +103,7 @@ final class DibiFluent extends /*Nette::*/Object
 		// special types or argument
 		if (count($args) === 1) {
 			$arg = $args[0];
+			// TODO: really ignore TRUE?
 			if ($arg === TRUE) {
 				$args = array();
 
@@ -115,6 +116,7 @@ final class DibiFluent extends /*Nette::*/Object
 			// append to clause
 			$this->cursor = & $this->clauses[$clause];
 
+			// TODO: really delete?
 			if ($args === array(FALSE)) {
 				$this->cursor = NULL;
 				return $this;
@@ -220,6 +222,21 @@ final class DibiFluent extends /*Nette::*/Object
 	public function execute()
 	{
 		return $this->connection->query($this->_export());
+	}
+
+
+
+	/**
+	 * Generates, executes SQL query and fetches the single row.
+	 * @return array|FALSE  array on success, FALSE if no next record
+	 * @throws DibiException
+	 */
+	public function fetch()
+	{
+		if ($this->command === 'SELECT') {
+			$this->clauses['LIMIT'] = array(1);
+		}
+		return $this->connection->query($this->_export())->fetch();
 	}
 
 
