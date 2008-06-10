@@ -89,7 +89,7 @@ interface IDibiDriver
 	 * Internal: Executes the SQL query.
 	 *
 	 * @param  string      SQL statement.
-	 * @return bool        have resultset?
+	 * @return IDibiDriver|NULL
 	 * @throws DibiDriverException
 	 */
 	function query($sql);

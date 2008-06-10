@@ -37,9 +37,6 @@ abstract class DibiTable extends /*Nette::*/Object
 	/** @var DibiConnection */
 	private $connection;
 
-	/** @var array */
-	private $options;
-
 	/** @var string  table name */
 	protected $name;
 
@@ -53,20 +50,16 @@ abstract class DibiTable extends /*Nette::*/Object
 	protected $blankRow = array();
 
 
+
 	/**
 	 * Table constructor.
-	 * @param  array
+	 * @param  DibiConnection
 	 * @return void
 	 */
-	public function __construct(array $options = array())
+	public function __construct(DibiConnection $connection = NULL)
 	{
-		$this->options = $options;
-
+		$this->connection = $connection === NULL ? dibi::getConnection() : $connection;
 		$this->setup();
-
-		if ($this->connection === NULL) {
-			$this->connection = dibi::getConnection();
-		}
 	}
 
 

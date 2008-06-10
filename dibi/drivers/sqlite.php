@@ -122,7 +122,7 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 	 * Executes the SQL query.
 	 *
 	 * @param  string      SQL statement.
-	 * @return bool        have resultset?
+	 * @return IDibiDriver|NULL
 	 * @throws DibiDriverException
 	 */
 	public function query($sql)
@@ -137,7 +137,7 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 			throw new DibiDriverException($msg, sqlite_last_error($this->connection), $sql);
 		}
 
-		return is_resource($this->resultset);
+		return is_resource($this->resultset) ? clone $this : NULL;
 	}
 
 

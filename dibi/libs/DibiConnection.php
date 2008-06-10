@@ -279,7 +279,9 @@ class DibiConnection extends /*Nette::*/Object
 		$time = -microtime(TRUE);
 		dibi::notify($this, 'beforeQuery', $sql);
 
-		$res = $this->driver->query($sql) ? new DibiResult(clone $this->driver, $this->config) : NULL;
+		if ($res = $this->driver->query($sql)) { // intentionally =
+			$res = new DibiResult($res, $this->config);
+		}
 
 		$time += microtime(TRUE);
 		dibi::$elapsedTime = $time;

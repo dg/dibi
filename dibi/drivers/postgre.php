@@ -136,7 +136,7 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	 *
 	 * @param  string      SQL statement.
 	 * @param  bool        update affected rows?
-	 * @return bool        have resultset?
+	 * @return IDibiDriver|NULL
 	 * @throws DibiDriverException
 	 */
 	public function query($sql)
@@ -147,7 +147,7 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 			throw new DibiDriverException(pg_last_error($this->connection), 0, $sql);
 		}
 
-		return is_resource($this->resultset) && pg_num_fields($this->resultset);
+		return is_resource($this->resultset) && pg_num_fields($this->resultset) ? clone $this : NULL;
 	}
 
 

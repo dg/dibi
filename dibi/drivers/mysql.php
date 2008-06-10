@@ -158,7 +158,7 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 * Executes the SQL query.
 	 *
 	 * @param  string      SQL statement.
-	 * @return bool        have resultset?
+	 * @return IDibiDriver|NULL
 	 * @throws DibiDriverException
 	 */
 	public function query($sql)
@@ -173,7 +173,7 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 			$this->throwException($sql);
 		}
 
-		return is_resource($this->resultset);
+		return is_resource($this->resultset) ? clone $this : NULL;
 	}
 
 
