@@ -250,9 +250,12 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 
 		case dibi::IDENTIFIER:
 			$a = strrpos($value, '.');
-			if ($a === FALSE) return '"' . str_replace('"', '""', $value) . '"';
-			// table.col delimite as table."col"
-			return substr($value, 0, $a) . '."' . str_replace('"', '""', substr($value, $a + 1)) . '"';
+			if ($a === FALSE) {
+				return '"' . str_replace('"', '""', $value) . '"';
+			} else {
+				// table.col delimite as table."col"
+				return substr($value, 0, $a) . '."' . str_replace('"', '""', substr($value, $a + 1)) . '"';
+			}
 
 		case dibi::FIELD_BOOL:
 			return $value ? 'TRUE' : 'FALSE';

@@ -235,7 +235,28 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 			return $this->connection->quote($value, PDO::PARAM_LOB);
 
 		case dibi::IDENTIFIER:
-			return $value; // quoting is not supported by PDO
+			switch ($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+			case 'mysql':
+				return '`' . str_replace('.', '`.`', $value) . '`';
+
+			case 'pgsql':
+				$a = strrpos($value, '.');
+				if ($a === FALSE) {
+					return '"' . str_replace('"', '""', $value) . '"';
+				} else {
+					return substr($value, 0, $a) . '."' . str_replace('"', '""', substr($value, $a + 1)) . '"';
+				}
+
+			case 'sqlite':
+			case 'sqlite2':
+			case 'odbc':
+			case 'oci': // TODO: not tested
+			case 'mssql':
+				return '[' . str_replace('.', '].[', $value) . ']';
+
+			default:
+				return $value;
+			}
 
 		case dibi::FIELD_BOOL:
 			return $this->connection->quote($value, PDO::PARAM_BOOL);
