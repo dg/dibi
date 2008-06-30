@@ -154,7 +154,7 @@ interface IDibiDriver
 
 
 	/**
-	 * Decodes data from resultset.
+	 * Decodes data from result set.
 	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
@@ -211,7 +211,7 @@ interface IDibiDriver
 	/**
 	 * Frees the resources allocated for this result set.
 	 *
-	 * @param  resource  resultset resource
+	 * @param  resource  result set resource
 	 * @return void
 	 */
 	function free();
@@ -238,7 +238,7 @@ interface IDibiDriver
 
 
 	/**
-	 * Returns the resultset resource.
+	 * Returns the result set resource.
 	 *
 	 * @return mixed
 	 */

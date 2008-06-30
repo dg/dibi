@@ -389,7 +389,7 @@ class DibiConnection extends /*Nette::*/Object
 
 
 	/**
-	 * Decodes data from resultset.
+	 * Decodes data from result set.
 	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)

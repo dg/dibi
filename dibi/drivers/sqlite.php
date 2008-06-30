@@ -48,7 +48,7 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 	 * Resultset resource.
 	 * @var resource
 	 */
-	private $resultset;
+	private $resultSet;
 
 
 	/**
@@ -129,15 +129,15 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 	{
 		DibiDriverException::tryError();
 		if ($this->buffered) {
-			$this->resultset = sqlite_query($this->connection, $sql);
+			$this->resultSet = sqlite_query($this->connection, $sql);
 		} else {
-			$this->resultset = sqlite_unbuffered_query($this->connection, $sql);
+			$this->resultSet = sqlite_unbuffered_query($this->connection, $sql);
 		}
 		if (DibiDriverException::catchError($msg)) {
 			throw new DibiDriverException($msg, sqlite_last_error($this->connection), $sql);
 		}
 
-		return is_resource($this->resultset) ? clone $this : NULL;
+		return is_resource($this->resultSet) ? clone $this : NULL;
 	}
 
 
@@ -237,7 +237,7 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Decodes data from resultset.
+	 * Decodes data from result set.
 	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
@@ -277,7 +277,7 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 		if (!$this->buffered) {
 			throw new DibiDriverException('Row count is not available for unbuffered queries.');
 		}
-		return sqlite_num_rows($this->resultset);
+		return sqlite_num_rows($this->resultSet);
 	}
 
 
@@ -291,7 +291,7 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function fetch($type)
 	{
-		return sqlite_fetch_array($this->resultset, $type ? SQLITE_ASSOC : SQLITE_NUM);
+		return sqlite_fetch_array($this->resultSet, $type ? SQLITE_ASSOC : SQLITE_NUM);
 	}
 
 
@@ -308,7 +308,7 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 		if (!$this->buffered) {
 			throw new DibiDriverException('Cannot seek an unbuffered result set.');
 		}
-		return sqlite_seek($this->resultset, $row);
+		return sqlite_seek($this->resultSet, $row);
 	}
 
 
@@ -320,7 +320,7 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function free()
 	{
-		$this->resultset = NULL;
+		$this->resultSet = NULL;
 	}
 
 
@@ -332,12 +332,12 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function getColumnsMeta()
 	{
-		$count = sqlite_num_fields($this->resultset);
+		$count = sqlite_num_fields($this->resultSet);
 		$meta = array();
 		for ($i = 0; $i < $count; $i++) {
 			// items 'name' and 'table' are required
 			$meta[] = array(
-				'name'  => sqlite_field_name($this->resultset, $i),
+				'name'  => sqlite_field_name($this->resultSet, $i),
 				'table' => NULL,
 			);
 		}
@@ -359,13 +359,13 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Returns the resultset resource.
+	 * Returns the result set resource.
 	 *
 	 * @return mixed
 	 */
 	public function getResultResource()
 	{
-		return $this->resultset;
+		return $this->resultSet;
 	}
 
 

@@ -113,7 +113,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 
 
 	/**
-	 * Returns the resultset resource.
+	 * Returns the result set resource.
 	 *
 	 * @return mixed
 	 */
@@ -320,7 +320,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 		$limit = $limit === NULL ? -1 : (int) $limit;
 		$this->seek((int) $offset);
 		$row = $this->fetch();
-		if (!$row) return array();  // empty resultset
+		if (!$row) return array();  // empty result set
 
 		$data = array();
 		if ($simplify && !$this->objects && count($row) === 1) {
@@ -358,7 +358,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	{
 		$this->seek(0);
 		$row = $this->fetch(FALSE);
-		if (!$row) return array();  // empty resultset
+		if (!$row) return array();  // empty result set
 
 		$data = NULL;
 		$assoc = explode(',', $assoc);
@@ -441,7 +441,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	{
 		$this->seek(0);
 		$row = $this->fetch(FALSE);
-		if (!$row) return array();  // empty resultset
+		if (!$row) return array();  // empty result set
 
 		$data = array();
 
@@ -610,7 +610,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 		}
 
 		if ($none) {
-			echo '<p><em>empty resultset</em></p>';
+			echo '<p><em>empty result set</em></p>';
 		} else {
 			echo "</tbody>\n</table>\n";
 		}

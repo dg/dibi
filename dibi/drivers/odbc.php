@@ -47,7 +47,7 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 	 * Resultset resource.
 	 * @var resource
 	 */
-	private $resultset;
+	private $resultSet;
 
 
 	/**
@@ -120,13 +120,13 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function query($sql)
 	{
-		$this->resultset = @odbc_exec($this->connection, $sql); // intentionally @
+		$this->resultSet = @odbc_exec($this->connection, $sql); // intentionally @
 
-		if ($this->resultset === FALSE) {
+		if ($this->resultSet === FALSE) {
 			$this->throwException($sql);
 		}
 
-		return is_resource($this->resultset) ? clone $this : NULL;
+		return is_resource($this->resultSet) ? clone $this : NULL;
 	}
 
 
@@ -138,7 +138,7 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function affectedRows()
 	{
-		return odbc_num_rows($this->resultset);
+		return odbc_num_rows($this->resultSet);
 	}
 
 
@@ -234,7 +234,7 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Decodes data from resultset.
+	 * Decodes data from result set.
 	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
@@ -276,7 +276,7 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 	public function rowCount()
 	{
 		// will return -1 with many drivers :-(
-		return odbc_num_rows($this->resultset);
+		return odbc_num_rows($this->resultSet);
 	}
 
 
@@ -291,9 +291,9 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 	public function fetch($type)
 	{
 		if ($type) {
-			return odbc_fetch_array($this->resultset, ++$this->row);
+			return odbc_fetch_array($this->resultSet, ++$this->row);
 		} else {
-			$set = $this->resultset;
+			$set = $this->resultSet;
 			if (!odbc_fetch_row($set, ++$this->row)) return FALSE;
 			$count = odbc_num_fields($set);
 			$cols = array();
@@ -326,8 +326,8 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function free()
 	{
-		odbc_free_result($this->resultset);
-		$this->resultset = NULL;
+		odbc_free_result($this->resultSet);
+		$this->resultSet = NULL;
 	}
 
 
@@ -339,17 +339,17 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function getColumnsMeta()
 	{
-		$count = odbc_num_fields($this->resultset);
+		$count = odbc_num_fields($this->resultSet);
 		$meta = array();
 		for ($i = 1; $i <= $count; $i++) {
 			// items 'name' and 'table' are required
 			$meta[] = array(
-				'name'      => odbc_field_name($this->resultset, $i),
+				'name'      => odbc_field_name($this->resultSet, $i),
 				'table'     => NULL,
-				'type'      => odbc_field_type($this->resultset, $i),
-				'length'    => odbc_field_len($this->resultset, $i),
-				'scale'     => odbc_field_scale($this->resultset, $i),
-				'precision' => odbc_field_precision($this->resultset, $i),
+				'type'      => odbc_field_type($this->resultSet, $i),
+				'length'    => odbc_field_len($this->resultSet, $i),
+				'scale'     => odbc_field_scale($this->resultSet, $i),
+				'precision' => odbc_field_precision($this->resultSet, $i),
 			);
 		}
 		return $meta;
@@ -382,13 +382,13 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Returns the resultset resource.
+	 * Returns the result set resource.
 	 *
 	 * @return mixed
 	 */
 	public function getResultResource()
 	{
-		return $this->resultset;
+		return $this->resultSet;
 	}
 
 

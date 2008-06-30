@@ -48,7 +48,7 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 	 * Resultset resource.
 	 * @var PDOStatement
 	 */
-	private $resultset;
+	private $resultSet;
 
 
 	/**
@@ -123,12 +123,12 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function query($sql)
 	{
-		// must detect if SQL returns resultset or num of affected rows
+		// must detect if SQL returns result set or num of affected rows
 		$cmd = strtoupper(substr(ltrim($sql), 0, 6));
 		$list = array('UPDATE'=>1, 'DELETE'=>1, 'INSERT'=>1, 'REPLAC'=>1);
 
 		if (isset($list[$cmd])) {
-			$this->resultset = NULL;
+			$this->resultSet = NULL;
 			$this->affectedRows = $this->connection->exec($sql);
 
 			if ($this->affectedRows === FALSE) {
@@ -138,10 +138,10 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 			return NULL;
 
 		} else {
-			$this->resultset = $this->connection->query($sql);
+			$this->resultSet = $this->connection->query($sql);
 			$this->affectedRows = FALSE;
 
-			if ($this->resultset === FALSE) {
+			if ($this->resultSet === FALSE) {
 				$this->throwException($sql);
 			}
 
@@ -275,7 +275,7 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Decodes data from resultset.
+	 * Decodes data from result set.
 	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
@@ -325,7 +325,7 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function fetch($type)
 	{
-		return $this->resultset->fetch($type ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
+		return $this->resultSet->fetch($type ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
 	}
 
 
@@ -351,7 +351,7 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function free()
 	{
-		$this->resultset = NULL;
+		$this->resultSet = NULL;
 	}
 
 
@@ -364,11 +364,11 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function getColumnsMeta()
 	{
-		$count = $this->resultset->columnCount();
+		$count = $this->resultSet->columnCount();
 		$meta = array();
 		for ($i = 0; $i < $count; $i++) {
 			// items 'name' and 'table' are required
-			$info = @$this->resultset->getColumnsMeta($i); // intentionally @
+			$info = @$this->resultSet->getColumnsMeta($i); // intentionally @
 			if ($info === FALSE) {
 				throw new DibiDriverException('Driver does not support meta data.');
 			}
@@ -405,13 +405,13 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Returns the resultset resource.
+	 * Returns the result set resource.
 	 *
 	 * @return PDOStatement
 	 */
 	public function getResultResource()
 	{
-		return $this->resultset;
+		return $this->resultSet;
 	}
 
 

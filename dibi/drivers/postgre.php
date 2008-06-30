@@ -48,7 +48,7 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	 * Resultset resource.
 	 * @var resource
 	 */
-	private $resultset;
+	private $resultSet;
 
 
 	/**
@@ -141,13 +141,13 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function query($sql)
 	{
-		$this->resultset = @pg_query($this->connection, $sql); // intentionally @
+		$this->resultSet = @pg_query($this->connection, $sql); // intentionally @
 
-		if ($this->resultset === FALSE) {
+		if ($this->resultSet === FALSE) {
 			throw new DibiDriverException(pg_last_error($this->connection), 0, $sql);
 		}
 
-		return is_resource($this->resultset) && pg_num_fields($this->resultset) ? clone $this : NULL;
+		return is_resource($this->resultSet) && pg_num_fields($this->resultSet) ? clone $this : NULL;
 	}
 
 
@@ -159,7 +159,7 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function affectedRows()
 	{
-		return pg_affected_rows($this->resultset);
+		return pg_affected_rows($this->resultSet);
 	}
 
 
@@ -274,7 +274,7 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Decodes data from resultset.
+	 * Decodes data from result set.
 	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
@@ -320,7 +320,7 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function rowCount()
 	{
-		return pg_num_rows($this->resultset);
+		return pg_num_rows($this->resultSet);
 	}
 
 
@@ -334,7 +334,7 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function fetch($type)
 	{
-		return pg_fetch_array($this->resultset, NULL, $type ? PGSQL_ASSOC : PGSQL_NUM);
+		return pg_fetch_array($this->resultSet, NULL, $type ? PGSQL_ASSOC : PGSQL_NUM);
 	}
 
 
@@ -348,7 +348,7 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function seek($row)
 	{
-		return pg_result_seek($this->resultset, $row);
+		return pg_result_seek($this->resultSet, $row);
 	}
 
 
@@ -360,8 +360,8 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function free()
 	{
-		pg_free_result($this->resultset);
-		$this->resultset = NULL;
+		pg_free_result($this->resultSet);
+		$this->resultSet = NULL;
 	}
 
 
@@ -374,16 +374,16 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 	public function getColumnsMeta()
 	{
 		$hasTable = version_compare(PHP_VERSION , '5.2.0', '>=');
-		$count = pg_num_fields($this->resultset);
+		$count = pg_num_fields($this->resultSet);
 		$meta = array();
 		for ($i = 0; $i < $count; $i++) {
 			// items 'name' and 'table' are required
 			$meta[] = array(
-				'name'      => pg_field_name($this->resultset, $i),
-				'table'     => $hasTable ? pg_field_table($this->resultset, $i) : NULL,
-				'type'      => pg_field_type($this->resultset, $i),
-				'size'      => pg_field_size($this->resultset, $i),
-				'prtlen'    => pg_field_prtlen($this->resultset, $i),
+				'name'      => pg_field_name($this->resultSet, $i),
+				'table'     => $hasTable ? pg_field_table($this->resultSet, $i) : NULL,
+				'type'      => pg_field_type($this->resultSet, $i),
+				'size'      => pg_field_size($this->resultSet, $i),
+				'prtlen'    => pg_field_prtlen($this->resultSet, $i),
 			);
 		}
 		return $meta;
@@ -404,13 +404,13 @@ class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Returns the resultset resource.
+	 * Returns the result set resource.
 	 *
 	 * @return mixed
 	 */
 	public function getResultResource()
 	{
-		return $this->resultset;
+		return $this->resultSet;
 	}
 
 

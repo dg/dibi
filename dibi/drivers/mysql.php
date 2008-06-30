@@ -54,7 +54,7 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 * Resultset resource.
 	 * @var resource
 	 */
-	private $resultset;
+	private $resultSet;
 
 
 	/**
@@ -164,16 +164,16 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 	public function query($sql)
 	{
 		if ($this->buffered) {
-			$this->resultset = @mysql_query($sql, $this->connection); // intentionally @
+			$this->resultSet = @mysql_query($sql, $this->connection); // intentionally @
 		} else {
-			$this->resultset = @mysql_unbuffered_query($sql, $this->connection); // intentionally @
+			$this->resultSet = @mysql_unbuffered_query($sql, $this->connection); // intentionally @
 		}
 
 		if (mysql_errno($this->connection)) {
 			$this->throwException($sql);
 		}
 
-		return is_resource($this->resultset) ? clone $this : NULL;
+		return is_resource($this->resultSet) ? clone $this : NULL;
 	}
 
 
@@ -273,7 +273,7 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Decodes data from resultset.
+	 * Decodes data from result set.
 	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
@@ -316,7 +316,7 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 		if (!$this->buffered) {
 			throw new DibiDriverException('Row count is not available for unbuffered queries.');
 		}
-		return mysql_num_rows($this->resultset);
+		return mysql_num_rows($this->resultSet);
 	}
 
 
@@ -330,7 +330,7 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function fetch($type)
 	{
-		return mysql_fetch_array($this->resultset, $type ? MYSQL_ASSOC : MYSQL_NUM);
+		return mysql_fetch_array($this->resultSet, $type ? MYSQL_ASSOC : MYSQL_NUM);
 	}
 
 
@@ -348,7 +348,7 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 			throw new DibiDriverException('Cannot seek an unbuffered result set.');
 		}
 
-		return mysql_data_seek($this->resultset, $row);
+		return mysql_data_seek($this->resultSet, $row);
 	}
 
 
@@ -360,8 +360,8 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function free()
 	{
-		mysql_free_result($this->resultset);
-		$this->resultset = NULL;
+		mysql_free_result($this->resultSet);
+		$this->resultSet = NULL;
 	}
 
 
@@ -373,11 +373,11 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function getColumnsMeta()
 	{
-		$count = mysql_num_fields($this->resultset);
+		$count = mysql_num_fields($this->resultSet);
 		$meta = array();
 		for ($i = 0; $i < $count; $i++) {
 			// items 'name' and 'table' are required
-			$meta[] = (array) mysql_fetch_field($this->resultset, $i);
+			$meta[] = (array) mysql_fetch_field($this->resultSet, $i);
 		}
 		return $meta;
 	}
@@ -409,13 +409,13 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Returns the resultset resource.
+	 * Returns the result set resource.
 	 *
 	 * @return mixed
 	 */
 	public function getResultResource()
 	{
-		return $this->resultset;
+		return $this->resultSet;
 	}
 
 

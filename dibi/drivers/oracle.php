@@ -47,7 +47,7 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 	 * Resultset resource.
 	 * @var resource
 	 */
-	private $resultset;
+	private $resultSet;
 
 
 	/**
@@ -114,10 +114,10 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 	public function query($sql)
 	{
 
-		$this->resultset = oci_parse($this->connection, $sql);
-		if ($this->resultset) {
-			oci_execute($this->resultset, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
-			$err = oci_error($this->resultset);
+		$this->resultSet = oci_parse($this->connection, $sql);
+		if ($this->resultSet) {
+			oci_execute($this->resultSet, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
+			$err = oci_error($this->resultSet);
 			if ($err) {
 				throw new DibiDriverException($err['message'], $err['code'], $sql);
 			}
@@ -125,7 +125,7 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 			$this->throwException($sql);
 		}
 
-		return is_resource($this->resultset) ? clone $this : NULL;
+		return is_resource($this->resultSet) ? clone $this : NULL;
 	}
 
 
@@ -231,7 +231,7 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Decodes data from resultset.
+	 * Decodes data from result set.
 	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
@@ -268,7 +268,7 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function rowCount()
 	{
-		return oci_num_rows($this->resultset);
+		return oci_num_rows($this->resultSet);
 	}
 
 
@@ -282,7 +282,7 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function fetch($type)
 	{
-		return oci_fetch_array($this->resultset, ($type ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS);
+		return oci_fetch_array($this->resultSet, ($type ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS);
 	}
 
 
@@ -308,8 +308,8 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function free()
 	{
-		oci_free_statement($this->resultset);
-		$this->resultset = NULL;
+		oci_free_statement($this->resultSet);
+		$this->resultSet = NULL;
 	}
 
 
@@ -321,17 +321,17 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function getColumnsMeta()
 	{
-		$count = oci_num_fields($this->resultset);
+		$count = oci_num_fields($this->resultSet);
 		$meta = array();
 		for ($i = 1; $i <= $count; $i++) {
 			// items 'name' and 'table' are required
 			$meta[] = array(
-				'name'      => oci_field_name($this->resultset, $i),
+				'name'      => oci_field_name($this->resultSet, $i),
 				'table'     => NULL,
-				'type'      => oci_field_type($this->resultset, $i),
-				'size'      => oci_field_size($this->resultset, $i),
-				'scale'     => oci_field_scale($this->resultset, $i),
-				'precision' => oci_field_precision($this->resultset, $i),
+				'type'      => oci_field_type($this->resultSet, $i),
+				'size'      => oci_field_size($this->resultSet, $i),
+				'scale'     => oci_field_scale($this->resultSet, $i),
+				'precision' => oci_field_precision($this->resultSet, $i),
 			);
 		}
 		return $meta;
@@ -365,13 +365,13 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Returns the resultset resource.
+	 * Returns the result set resource.
 	 *
 	 * @return mixed
 	 */
 	public function getResultResource()
 	{
-		return $this->resultset;
+		return $this->resultSet;
 	}
 
 

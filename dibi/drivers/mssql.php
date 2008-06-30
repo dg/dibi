@@ -48,7 +48,7 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 * Resultset resource.
 	 * @var resource
 	 */
-	private $resultset;
+	private $resultSet;
 
 
 
@@ -114,13 +114,13 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function query($sql)
 	{
-		$this->resultset = @mssql_query($sql, $this->connection); // intentionally @
+		$this->resultSet = @mssql_query($sql, $this->connection); // intentionally @
 
-		if ($this->resultset === FALSE) {
+		if ($this->resultSet === FALSE) {
 			throw new DibiDriverException('Query error', 0, $sql);
 		}
 
-		return is_resource($this->resultset) ? clone $this : NULL;
+		return is_resource($this->resultSet) ? clone $this : NULL;
 	}
 
 
@@ -220,7 +220,7 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Decodes data from resultset.
+	 * Decodes data from result set.
 	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
@@ -263,7 +263,7 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function rowCount()
 	{
-		return mssql_num_rows($this->resultset);
+		return mssql_num_rows($this->resultSet);
 	}
 
 
@@ -277,7 +277,7 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function fetch($type)
 	{
-		return mssql_fetch_array($this->resultset, $type ? MSSQL_ASSOC : MSSQL_NUM);
+		return mssql_fetch_array($this->resultSet, $type ? MSSQL_ASSOC : MSSQL_NUM);
 	}
 
 
@@ -291,7 +291,7 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function seek($row)
 	{
-		return mssql_data_seek($this->resultset, $row);
+		return mssql_data_seek($this->resultSet, $row);
 	}
 
 
@@ -303,8 +303,8 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function free()
 	{
-		mssql_free_result($this->resultset);
-		$this->resultset = NULL;
+		mssql_free_result($this->resultSet);
+		$this->resultSet = NULL;
 	}
 
 
@@ -316,11 +316,11 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 	 */
 	public function getColumnsMeta()
 	{
-		$count = mssql_num_fields($this->resultset);
+		$count = mssql_num_fields($this->resultSet);
 		$meta = array();
 		for ($i = 0; $i < $count; $i++) {
 			// items 'name' and 'table' are required
-			$info = (array) mssql_fetch_field($this->resultset, $i);
+			$info = (array) mssql_fetch_field($this->resultSet, $i);
 			$info['table'] = $info['column_source'];
 			$meta[] = $info;
 		}
@@ -342,13 +342,13 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 
 
 	/**
-	 * Returns the resultset resource.
+	 * Returns the result set resource.
 	 *
 	 * @return mixed
 	 */
 	public function getResultResource()
 	{
-		return $this->resultset;
+		return $this->resultSet;
 	}
 
 
