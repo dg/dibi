@@ -30,9 +30,31 @@ if (version_compare(PHP_VERSION, '5.1.0', '<')) {
 
 
 
-// nette libraries
+/**
+ * Compatibility with Nette
+ */
 if (!class_exists('NotImplementedException', FALSE)) {
-	require_once dirname(__FILE__) . '/Nette/exceptions.php';
+	class NotImplementedException extends LogicException {}
+}
+
+if (!class_exists('NotSupportedException', FALSE)) {
+	class NotSupportedException extends LogicException {}
+}
+
+if (!class_exists('MemberAccessException', FALSE)) {
+	class MemberAccessException extends LogicException {}
+}
+
+if (!class_exists('InvalidStateException', FALSE)) {
+	class InvalidStateException extends RuntimeException {}
+}
+
+if (!class_exists('IOException', FALSE)) {
+	class IOException extends RuntimeException {}
+}
+
+if (!class_exists('FileNotFoundException', FALSE)) {
+	class FileNotFoundException extends IOException {}
 }
 
 if (!class_exists(/*Nette::*/'Object', FALSE)) {

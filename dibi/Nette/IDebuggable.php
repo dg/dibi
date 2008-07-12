@@ -23,6 +23,11 @@
 
 /**
  * Custom output for Nette::Debug.
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2004, 2008 David Grudl
+ * @package    Nette
+ * @version    $Revision$ $Date$
  */
 interface IDebuggable
 {

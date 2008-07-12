@@ -98,11 +98,11 @@ abstract class Object
 	 */
 	protected function __call($name, $args)
 	{
-		if ($name === '') {
-			throw new /*::*/MemberAccessException("Call to method without name.");
-		}
-
 		$class = get_class($this);
+
+		if ($name === '') {
+			throw new /*::*/MemberAccessException("Call to class '$class' method without name.");
+		}
 
 		// event functionality
 		if (self::hasEvent($class, $name)) {
@@ -155,17 +155,18 @@ abstract class Object
 	 */
 	protected function &__get($name)
 	{
+		$class = get_class($this);
+
 		if ($name === '') {
-			throw new /*::*/MemberAccessException("Cannot read an property without name.");
+			throw new /*::*/MemberAccessException("Cannot read an class '$class' property without name.");
 		}
 
 		// property getter support
-		$class = get_class($this);
 		$m = 'get' . $name;
 		if (self::hasAccessor($class, $m)) {
 			// ampersands:
-			// - using &__get() because declaration should be forward compatible (e.g. with Nette::Web::Html)
-			// - not using &$this->$m because user could bypass property setter by: $x = & $obj->property; $x = 'new value';
+			// - uses &__get() because declaration should be forward compatible (e.g. with Nette::Web::Html)
+			// - doesn't call &$this->$m because user could bypass property setter by: $x = & $obj->property; $x = 'new value';
 			$val = $this->$m();
 			return $val;
 
@@ -179,19 +180,20 @@ abstract class Object
 	/**
 	 * Sets value of a property. Do not call directly.
 	 *
-	 * @param string  property name
-	 * @param mixed   property value
+	 * @param  string  property name
+	 * @param  mixed   property value
 	 * @return void
 	 * @throws ::MemberAccessException if the property is not defined or is read-only
 	 */
 	protected function __set($name, $value)
 	{
+		$class = get_class($this);
+
 		if ($name === '') {
-			throw new /*::*/MemberAccessException('Cannot assign to an property without name.');
+			throw new /*::*/MemberAccessException("Cannot assign to an class '$class' property without name.");
 		}
 
 		// property setter support
-		$class = get_class($this);
 		if (self::hasAccessor($class, 'get' . $name)) {
 			$m = 'set' . $name;
 			if (self::hasAccessor($class, $m)) {
@@ -211,7 +213,7 @@ abstract class Object
 	/**
 	 * Is property defined?
 	 *
-	 * @param string  property name
+	 * @param  string  property name
 	 * @return bool
 	 */
 	protected function __isset($name)
