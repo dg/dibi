@@ -87,6 +87,7 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 	{
 		DibiConnection::alias($config, 'username', 'user');
 		DibiConnection::alias($config, 'password', 'pass');
+		DibiConnection::alias($config, 'host', 'hostname');
 		DibiConnection::alias($config, 'options');
 
 		// default values

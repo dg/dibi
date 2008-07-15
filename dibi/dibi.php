@@ -778,15 +778,19 @@ class dibi
 
 	/**
 	 * Returns brief descriptions.
+	 * @return string
 	 * @return array
 	 */
-	public static function getColophon()
+	public static function getColophon($sender = NULL)
 	{
-		return array(
-			'dibi version: ' . dibi::VERSION,
-			'Number or queries: ' . dibi::$numOfQueries
-			. (dibi::$totalTime === NULL ? '' : ' (elapsed time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms)'),
+		$arr = array(
+			'Number of SQL queries: ' . dibi::$numOfQueries
+			. (dibi::$totalTime === NULL ? '' : ', elapsed time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms'),
 		);
+		if ($sender === 'bluescreen') {
+			$arr[] = 'dibi version ' . dibi::VERSION;
+		}
+		return $arr;
 	}
 
 }

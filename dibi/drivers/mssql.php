@@ -74,7 +74,7 @@ class DibiMsSqlDriver extends /*Nette::*/Object implements IDibiDriver
 	{
 		DibiConnection::alias($config, 'username', 'user');
 		DibiConnection::alias($config, 'password', 'pass');
-		DibiConnection::alias($config, 'host');
+		DibiConnection::alias($config, 'host', 'hostname');
 
 		if (empty($config['persistent'])) {
 			$this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE); // intentionally @

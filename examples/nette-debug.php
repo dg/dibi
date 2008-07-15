@@ -1,11 +1,11 @@
 <h1>Nette::Debug && dibi example</h1>
 <?php
 
-require_once '../dibi/dibi.php';
 require_once 'Nette/Debug.php';
-
+require_once '../dibi/dibi.php';
 
 Debug::enable();
+Debug::enableProfiler();
 
 
 dibi::connect(array(
