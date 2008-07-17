@@ -11,10 +11,8 @@
  *
  * For more information please see http://dibiphp.com
  *
- * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @license    http://dibiphp.com/license  dibi license
- * @version    0.9 (Revision: $WCREV$, Date: $WCDATE$)
  * @link       http://dibiphp.com
  * @package    dibi
  * @version    $Id$
