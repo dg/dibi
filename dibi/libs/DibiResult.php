@@ -9,12 +9,13 @@
  * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
- * For more information please see http://dibiphp.com/
+ * For more information please see http://dibiphp.com
  *
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @license    http://dibiphp.com/license  dibi license
- * @link       http://dibiphp.com/
+ * @link       http://dibiphp.com
  * @package    dibi
+ * @version    $Id$
  */
 
 
@@ -39,7 +40,6 @@
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
- * @version    $Revision$ $Date$
  */
 class DibiResult extends /*Nette::*/Object implements IDataSource
 {

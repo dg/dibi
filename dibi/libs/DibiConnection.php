@@ -9,12 +9,13 @@
  * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
- * For more information please see http://dibiphp.com/
+ * For more information please see http://dibiphp.com
  *
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @license    http://dibiphp.com/license  dibi license
- * @link       http://dibiphp.com/
+ * @link       http://dibiphp.com
  * @package    dibi
+ * @version    $Id$
  */
 
 
@@ -25,7 +26,6 @@
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
- * @version    $Revision$ $Date$
  */
 class DibiConnection extends /*Nette::*/Object
 {
@@ -64,6 +64,10 @@ class DibiConnection extends /*Nette::*/Object
 	 */
 	public function __construct($config, $name = NULL)
 	{
+		if (class_exists(/*Nette::*/'Debug', FALSE)) {
+			/*Nette::*/Debug::addColophon(array('dibi', 'getColophon'));
+		}
+
 		// DSN string
 		if (is_string($config)) {
 			parse_str($config, $config);

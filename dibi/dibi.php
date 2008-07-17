@@ -9,14 +9,15 @@
  * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
- * For more information please see http://dibiphp.com/
+ * For more information please see http://dibiphp.com
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @license    http://dibiphp.com/license  dibi license
  * @version    0.9 (Revision: $WCREV$, Date: $WCDATE$)
- * @link       http://dibiphp.com/
+ * @link       http://dibiphp.com
  * @package    dibi
+ * @version    $Id$
  */
 
 
@@ -89,7 +90,6 @@ require_once dirname(__FILE__) . '/libs/DibiFluent.php';
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
- * @version    $Revision$ $Date$
  */
 class dibi
 {
@@ -112,7 +112,8 @@ class dibi
 	 * dibi version
 	 */
 	const
-		VERSION =        '0.9 (Revision: $WCREV$, Date: $WCDATE$)';
+		VERSION = '0.9',
+		REVISION = '$WCREV$ released on $WCDATE$';
 
 
 	/**
@@ -204,10 +205,6 @@ class dibi
 	 */
 	public static function connect($config = array(), $name = 0)
 	{
-		if (class_exists(/*Nette::*/'Debug', FALSE)) {
-			/*Nette::*/Debug::addColophon(array(__CLASS__, 'getColophon'));
-		}
-
 		return self::$connection = self::$registry[$name] = new DibiConnection($config, $name);
 	}
 
@@ -788,7 +785,7 @@ class dibi
 			. (dibi::$totalTime === NULL ? '' : ', elapsed time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms'),
 		);
 		if ($sender === 'bluescreen') {
-			$arr[] = 'dibi version ' . dibi::VERSION;
+			$arr[] = 'dibi ' . dibi::VERSION . ' (revision ' . dibi::REVISION . ')';
 		}
 		return $arr;
 	}
