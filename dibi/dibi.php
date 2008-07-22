@@ -444,7 +444,7 @@ class dibi
 	/**
 	 * Replacement for majority of dibi::methods() in future.
 	 */
-	protected static function __callStatic($name, $args)
+	public static function __callStatic($name, $args)
 	{
 		//if ($name = 'select', 'update', ...') {
 		//	return self::command()->$name($args);

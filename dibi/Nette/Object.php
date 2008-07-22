@@ -95,7 +95,7 @@ abstract class Object
 	 * @return mixed
 	 * @throws ::MemberAccessException
 	 */
-	protected function __call($name, $args)
+	public function __call($name, $args)
 	{
 		$class = get_class($this);
 
@@ -137,7 +137,7 @@ abstract class Object
 	 * @return mixed
 	 * @throws ::MemberAccessException
 	 */
-	protected static function __callStatic($name, $args)
+	public static function __callStatic($name, $args)
 	{
 		$class = get_called_class();
 		throw new /*::*/MemberAccessException("Call to undefined static method $class::$name().");
@@ -152,7 +152,7 @@ abstract class Object
 	 * @return mixed   property value
 	 * @throws ::MemberAccessException if the property is not defined.
 	 */
-	protected function &__get($name)
+	public function &__get($name)
 	{
 		$class = get_class($this);
 
@@ -184,7 +184,7 @@ abstract class Object
 	 * @return void
 	 * @throws ::MemberAccessException if the property is not defined or is read-only
 	 */
-	protected function __set($name, $value)
+	public function __set($name, $value)
 	{
 		$class = get_class($this);
 
@@ -215,7 +215,7 @@ abstract class Object
 	 * @param  string  property name
 	 * @return bool
 	 */
-	protected function __isset($name)
+	public function __isset($name)
 	{
 		return $name !== '' && self::hasAccessor(get_class($this), 'get' . $name);
 	}
@@ -229,7 +229,7 @@ abstract class Object
 	 * @return void
 	 * @throws ::MemberAccessException
 	 */
-	protected function __unset($name)
+	public function __unset($name)
 	{
 		$class = get_class($this);
 		throw new /*::*/MemberAccessException("Cannot unset an property $class::\$$name.");
