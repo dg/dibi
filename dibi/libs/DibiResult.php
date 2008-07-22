@@ -261,7 +261,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 		if ($this->xlat !== NULL) {
 			foreach ($this->xlat as $col => $type) {
 				if (isset($row[$col])) {
-					$row[$col] = $this->convert($row[$col], $type[0], $type[1]);
+					$row[$col] = $this->convert($row[$col], $type['type'], $type['format']);
 				}
 			}
 		}
@@ -299,7 +299,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 		$key = key($row);
 		if (isset($this->xlat[$key])) {
 			$type = $this->xlat[$key];
-			return $this->convert($value, $type[0], $type[1]);
+			return $this->convert($value, $type['type'], $type['format']);
 		}
 
 		return $value;
@@ -494,7 +494,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	 */
 	final public function setType($col, $type, $format = NULL)
 	{
-		$this->xlat[$col] = array($type, $format);
+		$this->xlat[$col] = array('type' => $type, 'format' => $format);
 	}
 
 

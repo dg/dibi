@@ -49,6 +49,8 @@ abstract class DibiTable extends /*Nette::*/Object
 	/** @var array */
 	protected $blankRow = array();
 
+	/** @var array of pairs [type, format] */
+	protected $types = array();
 
 
 	/**
@@ -137,7 +139,10 @@ abstract class DibiTable extends /*Nette::*/Object
 		$this->connection->query(
 			'INSERT INTO %n', $this->name, '%v', $this->prepare($data)
 		);
-		return $this->connection->insertId();
+
+		if ($this->primary) {
+			return $this->connection->insertId();
+		}
 	}
 
 
@@ -284,6 +289,7 @@ abstract class DibiTable extends /*Nette::*/Object
 	 */
 	protected function complete($res)
 	{
+		$res->setTypes($this->types);
 		return $res;
 	}
 
