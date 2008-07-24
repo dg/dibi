@@ -46,6 +46,9 @@ abstract class DibiTable extends /*Nette::*/Object
 	/** @var string  primary key type */
 	protected $primaryModifier = '%i';
 
+	/** @var bool  primary key is auto increment */
+	protected $primaryAutoIncrement = TRUE;
+
 	/** @var array */
 	protected $blankRow = array();
 
@@ -140,7 +143,7 @@ abstract class DibiTable extends /*Nette::*/Object
 			'INSERT INTO %n', $this->name, '%v', $this->prepare($data)
 		);
 
-		if ($this->primary) {
+		if ($this->primaryAutoIncrement) {
 			return $this->connection->insertId();
 		}
 	}
