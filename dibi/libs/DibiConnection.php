@@ -58,7 +58,7 @@ class DibiConnection extends /*Nette::*/Object
 	/**
 	 * Creates object and (optionally) connects to a database.
 	 *
-	 * @param  array|string|Nette::Collections::Hashtable connection parameters
+	 * @param  array|string|ArrayObject connection parameters
 	 * @param  string       connection name
 	 * @throws DibiException
 	 */
@@ -72,11 +72,11 @@ class DibiConnection extends /*Nette::*/Object
 		if (is_string($config)) {
 			parse_str($config, $config);
 
-		} elseif ($config instanceof /*Nette::Collections::*/Hashtable) {
+		} elseif ($config instanceof ArrayObject) {
 			$config = (array) $config;
 
 		} elseif (!is_array($config)) {
-			throw new InvalidArgumentException('Configuration must be array, string or Nette::Collections::Hashtable.');
+			throw new InvalidArgumentException('Configuration must be array, string or ArrayObject.');
 		}
 
 		if (!isset($config['driver'])) {
@@ -93,10 +93,20 @@ class DibiConnection extends /*Nette::*/Object
 			}
 		}
 
+		if (isset($config['result:withtables'])) {
+			$config['resultWithTables'] = $config['result:withtables'];
+			unset($config['result:withtables']);
+		}
+
 		if (isset($config['result:objects'])) {
+			$config['resultObjects'] = $config['result:objects'];
+			unset($config['result:objects']);
+		}
+
+		if (isset($config['resultObjects'])) {
 			// normalize
-			$val = $config['result:objects'];
-			$config['result:objects'] = is_string($val) && !is_numeric($val) ? $val : (bool) $val;
+			$val = $config['resultObjects'];
+			$config['resultObjects'] = is_string($val) && !is_numeric($val) ? $val : (bool) $val;
 		}
 
 		$config['name'] = $name;

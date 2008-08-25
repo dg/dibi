@@ -254,7 +254,7 @@ abstract class DibiTable extends /*Nette::*/Object
 		$row = $this->blankRow;
 		$row[$this->primary] = NULL;
 
-		if ($class = $this->connection->getConfig('result:objects')) {
+		if ($class = $this->connection->getConfig('resultObjects')) {
 			if ($class === TRUE) {
 				$row = (object) $row;
 			} else {

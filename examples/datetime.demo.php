@@ -13,8 +13,8 @@ date_default_timezone_set('Europe/Prague');
 dibi::connect(array(
 	'driver'   => 'sqlite',
 	'database' => 'sample.sdb',
-	'format:date' => "'Y-m-d'",
-	'format:datetime' => "'Y-m-d H-i-s'",
+	'formatDate' => "'Y-m-d'",
+	'formatDateTime' => "'Y-m-d H-i-s'",
 ));
 
 

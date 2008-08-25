@@ -89,12 +89,12 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	{
 		$this->driver = $driver;
 
-		if (!empty($config['result:withtables'])) {
+		if (!empty($config['resultWithTables'])) {
 			$this->setWithTables(TRUE);
 		}
 
-		if (isset($config['result:objects'])) {
-			$this->setObjects($config['result:objects']);
+		if (isset($config['resultObjects'])) {
+			$this->setObjects($config['resultObjects']);
 		}
 	}
 

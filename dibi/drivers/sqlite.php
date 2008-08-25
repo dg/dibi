@@ -27,8 +27,8 @@
  *   - 'persistent' - try to find a persistent link?
  *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
  *   - 'lazy' - if TRUE, connection will be established only when required
- *   - 'format:date' - how to format date in SQL (@see date)
- *   - 'format:datetime' - how to format datetime in SQL (@see date)
+ *   - 'formatDate' - how to format date in SQL (@see date)
+ *   - 'formatDateTime' - how to format datetime in SQL (@see date)
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2008 David Grudl
@@ -87,8 +87,8 @@ class DibiSqliteDriver extends /*Nette::*/Object implements IDibiDriver
 	public function connect(array &$config)
 	{
 		DibiConnection::alias($config, 'database', 'file');
-		$this->fmtDate = isset($config['format:date']) ? $config['format:date'] : 'U';
-		$this->fmtDateTime = isset($config['format:datetime']) ? $config['format:datetime'] : 'U';
+		$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
+		$this->fmtDateTime = isset($config['formatDateTime']) ? $config['formatDateTime'] : 'U';
 
 		$errorMsg = '';
 		if (empty($config['persistent'])) {

@@ -51,9 +51,9 @@
  * Adding method to class (i.e. to all instances) works similar to JavaScript
  * prototype property. The syntax for adding a new method is:
  * <code>
- * function MyClass_prototype_newMethod(MyClass $obj, $arg, ...) { ... }
+ * MyClass::extensionMethod('newMethod', function(MyClass $obj, $arg, ...) { ... });
  * $obj = new MyClass;
- * $obj->newMethod($x); // equivalent to MyClass_prototype_newMethod($obj, $x);
+ * $obj->newMethod($x);
  * </code>
  *
  * @author     David Grudl
@@ -62,15 +62,19 @@
  */
 abstract class Object
 {
+	/** @var array (method => array(type => callback)) */
+	private static $extMethods;
+
+
 
 	/**
 	 * Returns the name of the class of this object.
 	 *
 	 * @return string
 	 */
-	final public function getClass()
+	final public /*static*/ function getClass()
 	{
-		return get_class($this);
+		return /*get_called_class()*/ /**/get_class($this)/**/;
 	}
 
 
@@ -104,7 +108,7 @@ abstract class Object
 		}
 
 		// event functionality
-		if (self::hasEvent($class, $name)) {
+		if (property_exists($class, $name) && preg_match('#^on[A-Z]#', $name)) {
 			$list = $this->$name;
 			if (is_array($list) || $list instanceof Traversable) {
 				foreach ($list as $handler) {
@@ -114,15 +118,11 @@ abstract class Object
 			return;
 		}
 
-		// object prototypes support Class__method()
-		// (or use class Class__method { static function ... } with autoloading?)
-		$cl = $class;
-		do {
-			if (function_exists($nm = $cl . '_prototype_' . $name)) {
-				array_unshift($args, $this);
-				return call_user_func_array($nm, $args);
-			}
-		} while ($cl = get_parent_class($cl));
+		// extension methods
+		if ($cb = self::extensionMethod("$class::$name")) {
+			array_unshift($args, $this);
+			return call_user_func_array($cb, $args);
+		}
 
 		throw new /*::*/MemberAccessException("Call to undefined method $class::$name().");
 	}
@@ -141,6 +141,69 @@ abstract class Object
 	{
 		$class = get_called_class();
 		throw new /*::*/MemberAccessException("Call to undefined static method $class::$name().");
+	}
+
+
+
+	/**
+	 * Adding method to class.
+	 *
+	 * @param  string  method name
+	 * @param  mixed   callback or closure
+	 * @return mixed
+	 */
+	public static function extensionMethod($name, $callback = NULL)
+	{
+		if (self::$extMethods === NULL || $name === NULL) { // for backwards compatibility
+			$list = get_defined_functions();
+			foreach ($list['user'] as $fce) {
+				$pair = explode('_prototype_', $fce);
+				if (count($pair) === 2) {
+					self::$extMethods[$pair[1]][$pair[0]] = $fce;
+					self::$extMethods[$pair[1]][''] = NULL;
+				}
+			}
+			if ($name === NULL) return;
+		}
+
+		$name = strtolower($name);
+		$a = strrpos($name, ':'); // search ::
+		if ($a === FALSE) {
+			$class = strtolower(get_called_class());
+			$l = & self::$extMethods[$name];
+		} else {
+			$class = substr($name, 0, $a - 1);
+			$l = & self::$extMethods[substr($name, $a + 1)];
+		}
+
+		if ($callback !== NULL) { // works as setter
+			$l[$class] = $callback;
+			$l[''] = NULL;
+			return;
+		}
+
+		// works as getter
+		if (empty($l)) {
+			return FALSE;
+
+		} elseif (isset($l[''][$class])) { // cached value
+			return $l[''][$class];
+		}
+		$cl = $class;
+		do {
+			$cl = strtolower($cl);
+			if (isset($l[$cl])) {
+				return $l[''][$class] = $l[$cl];
+			}
+		} while (($cl = get_parent_class($cl)) !== FALSE);
+
+		foreach (class_implements($class) as $cl) {
+			$cl = strtolower($cl);
+			if (isset($l[$cl])) {
+				return $l[''][$class] = $l[$cl];
+			}
+		}
+		return $l[''][$class] = FALSE;
 	}
 
 
@@ -258,20 +321,6 @@ abstract class Object
 		// case-sensitive checking, capitalize the fourth character
 		$m[3] = $m[3] & "\xDF";
 		return isset($cache[$c][$m]);
-	}
-
-
-
-	/**
-	 * Is property an event?
-	 *
-	 * @param  string  class name
-	 * @param  string  method name
-	 * @return bool
-	 */
-	private static function hasEvent($c, $m)
-	{
-		return preg_match('#^on[A-Z]#', $m) && property_exists($c, $m);
 	}
 
 }
