@@ -95,10 +95,16 @@ class DibiMySqliDriver extends /*Nette::*/Object implements IDibiDriver
 		if (!isset($config['username'])) $config['username'] = ini_get('mysqli.default_user');
 		if (!isset($config['password'])) $config['password'] = ini_get('mysqli.default_pw');
 		if (!isset($config['socket'])) $config['socket'] = ini_get('mysqli.default_socket');
+		if (!isset($config['port'])) $config['port'] = NULL;
 		if (!isset($config['host'])) {
-			$config['host'] = ini_get('mysqli.default_host');
-			if (!isset($config['port'])) $config['port'] = ini_get('mysqli.default_port');
-			if (!isset($config['host'])) $config['host'] = 'localhost';
+			$host = ini_get('mysqli.default_host');
+			if ($host) {
+				$config['host'] = $host;
+				$config['port'] = ini_get('mysqli.default_port');
+			} else {
+				$config['host'] = NULL;
+				$config['port'] = NULL;
+			}
 		}
 
 		$this->connection = mysqli_init();
