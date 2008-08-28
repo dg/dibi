@@ -53,6 +53,12 @@ class DibiConnection extends /*Nette::*/Object
 	 */
 	private $inTxn = FALSE;
 
+	/**
+	 * Result set encapsulation.
+	 * @var string
+	 */
+	private $resultClass = 'DibiResult';
+
 
 
 	/**
@@ -103,10 +109,16 @@ class DibiConnection extends /*Nette::*/Object
 			unset($config['result:objects']);
 		}
 
-		if (isset($config['resultObjects'])) {
-			// normalize
+		if (isset($config['resultObjects'])) { // normalize
 			$val = $config['resultObjects'];
 			$config['resultObjects'] = is_string($val) && !is_numeric($val) ? $val : (bool) $val;
+		}
+
+		if (isset($config['resultClass'])) {
+			if (strcasecmp($config['resultClass'], 'DibiResult') && !is_subclass_of($config['resultClass'], 'DibiResult')) {
+				throw new InvalidArgumentException("Class '$config[resultClass]' is not DibiResult descendant.");
+			}
+			$this->resultClass = $config['resultClass'];
 		}
 
 		$config['name'] = $name;
@@ -294,7 +306,7 @@ class DibiConnection extends /*Nette::*/Object
 		dibi::notify($this, 'beforeQuery', $sql);
 
 		if ($res = $this->driver->query($sql)) { // intentionally =
-			$res = new DibiResult($res, $this->config);
+			$res = new $this->resultClass($res, $this->config);
 		}
 
 		$time += microtime(TRUE);

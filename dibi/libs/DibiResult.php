@@ -21,7 +21,7 @@
 
 
 /**
- * dibi result-set abstract class.
+ * dibi result-set.
  *
  * <code>
  * $result = dibi::query('SELECT * FROM [table]');
@@ -288,7 +288,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	 *
 	 * @return mixed  value on success, FALSE if no next record
 	 */
-	final function fetchSingle()
+	final public function fetchSingle()
 	{
 		$row = $this->getDriver()->fetch(TRUE);
 		if (!is_array($row)) return FALSE;
@@ -315,7 +315,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	 * @param  bool simplify one-column result set?
 	 * @return array
 	 */
-	final function fetchAll($offset = NULL, $limit = NULL, $simplify = TRUE)
+	final public function fetchAll($offset = NULL, $limit = NULL, $simplify = TRUE)
 	{
 		$limit = $limit === NULL ? -1 : (int) $limit;
 		$this->seek((int) $offset);
@@ -354,7 +354,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	 * @return array
 	 * @throws InvalidArgumentException
 	 */
-	final function fetchAssoc($assoc)
+	final public function fetchAssoc($assoc)
 	{
 		$this->seek(0);
 		$row = $this->fetch(FALSE);
@@ -437,7 +437,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	 * @return array
 	 * @throws InvalidArgumentException
 	 */
-	final function fetchPairs($key = NULL, $value = NULL)
+	final public function fetchPairs($key = NULL, $value = NULL)
 	{
 		$this->seek(0);
 		$row = $this->fetch(FALSE);

@@ -224,6 +224,7 @@ abstract class Object
 		}
 
 		// property getter support
+		$name[0] = $name[0] & "\xDF"; // case-sensitive checking, capitalize first character
 		$m = 'get' . $name;
 		if (self::hasAccessor($class, $m)) {
 			// ampersands:
@@ -231,10 +232,16 @@ abstract class Object
 			// - doesn't call &$this->$m because user could bypass property setter by: $x = & $obj->property; $x = 'new value';
 			$val = $this->$m();
 			return $val;
-
-		} else {
-			throw new /*::*/MemberAccessException("Cannot read an undeclared property $class::\$$name.");
 		}
+
+		$m = 'is' . $name;
+		if (self::hasAccessor($class, $m)) {
+			$val = $this->$m();
+			return $val;
+		}
+
+		$name = func_get_arg(0);
+		throw new /*::*/MemberAccessException("Cannot read an undeclared property $class::\$$name.");
 	}
 
 
@@ -256,18 +263,21 @@ abstract class Object
 		}
 
 		// property setter support
-		if (self::hasAccessor($class, 'get' . $name)) {
+		$name[0] = $name[0] & "\xDF"; // case-sensitive checking, capitalize first character
+		if (self::hasAccessor($class, 'get' . $name) || self::hasAccessor($class, 'is' . $name)) {
 			$m = 'set' . $name;
 			if (self::hasAccessor($class, $m)) {
 				$this->$m($value);
+				return;
 
 			} else {
+				$name = func_get_arg(0);
 				throw new /*::*/MemberAccessException("Cannot assign to a read-only property $class::\$$name.");
 			}
-
-		} else {
-			throw new /*::*/MemberAccessException("Cannot assign to an undeclared property $class::\$$name.");
 		}
+
+		$name = func_get_arg(0);
+		throw new /*::*/MemberAccessException("Cannot assign to an undeclared property $class::\$$name.");
 	}
 
 
@@ -280,6 +290,7 @@ abstract class Object
 	 */
 	public function __isset($name)
 	{
+		$name[0] = $name[0] & "\xDF";
 		return $name !== '' && self::hasAccessor(get_class($this), 'get' . $name);
 	}
 
@@ -318,8 +329,6 @@ abstract class Object
 			// (works good since 5.0.4)
 			$cache[$c] = array_flip(get_class_methods($c));
 		}
-		// case-sensitive checking, capitalize the fourth character
-		$m[3] = $m[3] & "\xDF";
 		return isset($cache[$c][$m]);
 	}
 
