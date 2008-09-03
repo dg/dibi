@@ -371,7 +371,7 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 		}
 
 		// strip leading = and @
-		$assoc[] = '=';  // gap
+		$leaf = $this->objects ? $this->objects : '=';  // gap
 		$last = count($assoc) - 1;
 		while ($assoc[$last] === '=' || $assoc[$last] === '@') {
 			$leaf = $assoc[$last];
@@ -418,7 +418,13 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 			}
 
 			if ($x === NULL) { // build leaf
-				if ($leaf === '=') $x = $row; else $x = (object) $row;
+				if ($leaf === '=') {
+					$x = $row; 
+				} elseif ($leaf === TRUE || $leaf === '@') {
+					$x = (object) $row;
+				} else {
+					$x = new $leaf($row);
+				}
 			}
 
 		} while ($row = $this->fetch(FALSE));
@@ -588,9 +594,10 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 	 */
 	final public function dump()
 	{
-		$none = TRUE;
-		foreach ($this as $i => $row) {
-			if ($none) {
+		$i = 0;
+		$this->seek(0);
+		while ($row = $this->fetch(FALSE)) {
+			if ($i === 0) {
 				echo "\n<table class=\"dump\">\n<thead>\n\t<tr>\n\t\t<th>#row</th>\n";
 
 				foreach ($row as $col => $foo) {
@@ -598,7 +605,6 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 				}
 
 				echo "\t</tr>\n</thead>\n<tbody>\n";
-				$none = FALSE;
 			}
 
 			echo "\t<tr>\n\t\t<th>", $i, "</th>\n";
@@ -607,9 +613,10 @@ class DibiResult extends /*Nette::*/Object implements IDataSource
 				echo "\t\t<td>", htmlSpecialChars($col), "</td>\n";
 			}
 			echo "\t</tr>\n";
+			$i++;
 		}
 
-		if ($none) {
+		if ($i === 0) {
 			echo '<p><em>empty result set</em></p>';
 		} else {
 			echo "</tbody>\n</table>\n";

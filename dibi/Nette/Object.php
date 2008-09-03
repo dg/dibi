@@ -108,14 +108,22 @@ abstract class Object
 		}
 
 		// event functionality
-		if (property_exists($class, $name) && preg_match('#^on[A-Z]#', $name)) {
-			$list = $this->$name;
-			if (is_array($list) || $list instanceof Traversable) {
-				foreach ($list as $handler) {
-					call_user_func_array($handler, $args);
+		if (preg_match('#^on[A-Z]#', $name)) {
+			$rp = new ReflectionProperty($class, $name);
+			if ($rp->isPublic() && !$rp->isStatic()) {
+				$list = $this->$name;
+				if (is_array($list) || $list instanceof Traversable) {
+					foreach ($list as $handler) {
+						/**/if (is_object($handler)) {
+							call_user_func_array(array($handler, '__invoke'), $args);
+
+						} else /**/{
+							call_user_func_array($handler, $args);
+						}
+					}
 				}
+				return;
 			}
-			return;
 		}
 
 		// extension methods
