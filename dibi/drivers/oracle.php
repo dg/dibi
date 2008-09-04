@@ -122,7 +122,8 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 				throw new DibiDriverException($err['message'], $err['code'], $sql);
 			}
 		} else {
-			$this->throwException($sql);
+			$err = oci_error($this->connection);
+			throw new DibiDriverException($err['message'], $err['code'], $sql);
 		}
 
 		return is_resource($this->resultSet) ? clone $this : NULL;
@@ -174,7 +175,8 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 	public function commit()
 	{
 		if (!oci_commit($this->connection)) {
-			$this->throwException();
+			$err = oci_error($this->connection);
+			throw new DibiDriverException($err['message'], $err['code']);
 		}
 		$this->autocommit = TRUE;
 	}
@@ -189,7 +191,8 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 	public function rollback()
 	{
 		if (!oci_rollback($this->connection)) {
-			$this->throwException();
+			$err = oci_error($this->connection);
+			throw new DibiDriverException($err['message'], $err['code']);
 		}
 		$this->autocommit = TRUE;
 	}
@@ -335,19 +338,6 @@ class DibiOracleDriver extends /*Nette::*/Object implements IDibiDriver
 			);
 		}
 		return $meta;
-	}
-
-
-
-	/**
-	 * Converts database error to DibiDriverException.
-	 *
-	 * @throws DibiDriverException
-	 */
-	protected function throwException($sql = NULL)
-	{
-		$err = oci_error($this->connection);
-		throw new DibiDriverException($err['message'], $err['code'], $sql);
 	}
 
 

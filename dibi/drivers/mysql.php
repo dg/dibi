@@ -126,16 +126,24 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 				// affects the character set used by mysql_real_escape_string() (was added in MySQL 5.0.7 and PHP 5.2.3)
 				$ok = @mysql_set_charset($config['charset'], $this->connection); // intentionally @
 			}
-			if (!$ok) $ok = @mysql_query("SET NAMES '$config[charset]'", $this->connection); // intentionally @
-			if (!$ok) $this->throwException();
+			if (!$ok) {
+				$ok = @mysql_query("SET NAMES '$config[charset]'", $this->connection); // intentionally @
+				if (!$ok) {
+					throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection));
+				}
+			}	
 		}
 
 		if (isset($config['database'])) {
-			@mysql_select_db($config['database'], $this->connection) or $this->throwException(); // intentionally @
+			if (!@mysql_select_db($config['database'], $this->connection)) { // intentionally @
+				throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection));
+			}
 		}
 
 		if (isset($config['sqlmode'])) {
-			if (!@mysql_query("SET sql_mode='$config[sqlmode]'", $this->connection)) $this->throwException(); // intentionally @
+			if (!@mysql_query("SET sql_mode='$config[sqlmode]'", $this->connection)) { // intentionally @
+				throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection));
+			}
 		}
 
 		$this->buffered = empty($config['unbuffered']);
@@ -171,7 +179,7 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 		}
 
 		if (mysql_errno($this->connection)) {
-			$this->throwException($sql);
+			throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection), $sql);
 		}
 
 		return is_resource($this->resultSet) ? clone $this : NULL;
@@ -381,18 +389,6 @@ class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
 			$meta[] = (array) mysql_fetch_field($this->resultSet, $i);
 		}
 		return $meta;
-	}
-
-
-
-	/**
-	 * Converts database error to DibiDriverException.
-	 *
-	 * @throws DibiDriverException
-	 */
-	protected function throwException($sql = NULL)
-	{
-		throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection), $sql);
 	}
 
 

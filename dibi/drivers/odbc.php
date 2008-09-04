@@ -123,7 +123,7 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 		$this->resultSet = @odbc_exec($this->connection, $sql); // intentionally @
 
 		if ($this->resultSet === FALSE) {
-			$this->throwException($sql);
+			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
 		}
 
 		return is_resource($this->resultSet) ? clone $this : NULL;
@@ -163,7 +163,7 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 	public function begin()
 	{
 		if (!odbc_autocommit($this->connection, FALSE)) {
-			$this->throwException();
+			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 	}
 
@@ -177,7 +177,7 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 	public function commit()
 	{
 		if (!odbc_commit($this->connection)) {
-			$this->throwException();
+			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 		odbc_autocommit($this->connection, TRUE);
 	}
@@ -192,7 +192,7 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 	public function rollback()
 	{
 		if (!odbc_rollback($this->connection)) {
-			$this->throwException();
+			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 		odbc_autocommit($this->connection, TRUE);
 	}
@@ -353,18 +353,6 @@ class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
 			);
 		}
 		return $meta;
-	}
-
-
-
-	/**
-	 * Converts database error to DibiDriverException.
-	 *
-	 * @throws DibiDriverException
-	 */
-	protected function throwException($sql = NULL)
-	{
-		throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
 	}
 
 

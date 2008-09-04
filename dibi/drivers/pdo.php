@@ -132,7 +132,8 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 			$this->affectedRows = $this->connection->exec($sql);
 
 			if ($this->affectedRows === FALSE) {
-				$this->throwException($sql);
+				$err = $this->connection->errorInfo();
+				throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
 			}
 
 			return NULL;
@@ -142,7 +143,8 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 			$this->affectedRows = FALSE;
 
 			if ($this->resultSet === FALSE) {
-				$this->throwException($sql);
+				$err = $this->connection->errorInfo();
+				throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
 			}
 
 			return clone $this;
@@ -183,7 +185,8 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 	public function begin()
 	{
 		if (!$this->connection->beginTransaction()) {
-			$this->throwException();
+			$err = $this->connection->errorInfo();
+			throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
 		}
 	}
 
@@ -197,7 +200,8 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 	public function commit()
 	{
 		if (!$this->connection->commit()) {
-			$this->throwException();
+			$err = $this->connection->errorInfo();
+			throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
 		}
 	}
 
@@ -211,7 +215,8 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 	public function rollback()
 	{
 		if (!$this->connection->rollBack()) {
-			$this->throwException();
+			$err = $this->connection->errorInfo();
+			throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
 		}
 	}
 
@@ -375,19 +380,6 @@ class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
 			$meta[] = $info;
 		}
 		return $meta;
-	}
-
-
-
-	/**
-	 * Converts database error to DibiDriverException.
-	 *
-	 * @throws DibiDriverException
-	 */
-	protected function throwException($sql = NULL)
-	{
-		$err = $this->connection->errorInfo();
-		throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
 	}
 
 

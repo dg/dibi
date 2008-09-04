@@ -120,12 +120,18 @@ class DibiMySqliDriver extends /*Nette::*/Object implements IDibiDriver
 				// affects the character set used by mysql_real_escape_string() (was added in MySQL 5.0.7 and PHP 5.0.5, fixed in PHP 5.1.5)
 				$ok = @mysqli_set_charset($this->connection, $config['charset']); // intentionally @
 			}
-			if (!$ok) $ok = @mysqli_query($this->connection, "SET NAMES '$config[charset]'"); // intentionally @
-			if (!$ok) $this->throwException();
+			if (!$ok) {
+				$ok = @mysqli_query($this->connection, "SET NAMES '$config[charset]'"); // intentionally @
+				if (!$ok) {
+					throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection));
+				}	
+			}	
 		}
 
 		if (isset($config['sqlmode'])) {
-			if (!@mysqli_query($this->connection, "SET sql_mode='$config[sqlmode]'")) $this->throwException(); // intentionally @
+			if (!@mysqli_query($this->connection, "SET sql_mode='$config[sqlmode]'")) { // intentionally @
+				throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection));
+			}	
 		}
 
 		$this->buffered = empty($config['unbuffered']);
@@ -157,7 +163,7 @@ class DibiMySqliDriver extends /*Nette::*/Object implements IDibiDriver
 		$this->resultSet = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT); // intentionally @
 
 		if (mysqli_errno($this->connection)) {
-			$this->throwException($sql);
+			throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection), $sql);
 		}
 
 		return is_object($this->resultSet) ? clone $this : NULL;
@@ -366,18 +372,6 @@ class DibiMySqliDriver extends /*Nette::*/Object implements IDibiDriver
 			$meta[] = (array) mysqli_fetch_field_direct($this->resultSet, $i);
 		}
 		return $meta;
-	}
-
-
-
-	/**
-	 * Converts database error to DibiDriverException.
-	 *
-	 * @throws DibiDriverException
-	 */
-	protected function throwException($sql = NULL)
-	{
-		throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection), $sql);
 	}
 
 
