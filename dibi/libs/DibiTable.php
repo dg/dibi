@@ -26,7 +26,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-abstract class DibiTable extends /*Nette::*/Object
+abstract class DibiTable extends DibiObject
 {
 	/** @var string  primary key mask */
 	public static $primaryMask = 'id';
@@ -204,22 +204,23 @@ abstract class DibiTable extends /*Nette::*/Object
 
 	/**
 	 * Selects all rows.
+	 * @param  array  conditions
 	 * @param  string  column to order by
 	 * @return DibiResult
 	 */
-	public function findAll($order = NULL)
+	public function findAll($conditions = NULL, $order = NULL)
 	{
-		if ($order === NULL) {
-			return $this->complete($this->connection->query(
-				'SELECT * FROM %n', $this->name
-			));
+		$order = func_get_args();
+		if (is_array($conditions)) {
+			array_shift($order);
 		} else {
-			$order = func_get_args();
-			return $this->complete($this->connection->query(
-				'SELECT * FROM %n', $this->name,
-				'ORDER BY %n', $order
-			));
+			$conditions = NULL;
 		}
+		return $this->complete($this->connection->query(
+			'SELECT * FROM %n', $this->name,
+			'%ex', $conditions ? array('WHERE %and', $conditions) : NULL,
+			'%ex', $order ? array('ORDER BY %n', $order) : NULL
+		));
 	}
 
 

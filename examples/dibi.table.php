@@ -49,6 +49,7 @@ $products->findAll()->dump();
 
 // select all, order by title, product_id
 $products->findAll('title', $products->primary)->dump();
+$products->findAll(array('title' => 'Chair'), 'title')->dump();
 
 
 // fetches single row with id 3

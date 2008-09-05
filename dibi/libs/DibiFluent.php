@@ -27,7 +27,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-class DibiFluent extends /*Nette::*/Object
+class DibiFluent extends DibiObject
 {
 	/** @var array */
 	public static $masks = array(

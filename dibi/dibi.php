@@ -56,16 +56,13 @@ if (!class_exists('FileNotFoundException', FALSE)) {
 	class FileNotFoundException extends IOException {}
 }
 
-if (!class_exists(/*Nette::*/'Object', FALSE)) {
-	require_once dirname(__FILE__) . '/Nette/Object.php';
-}
-
 if (!interface_exists(/*Nette::*/'IDebuggable', FALSE)) {
 	require_once dirname(__FILE__) . '/Nette/IDebuggable.php';
 }
 
 // dibi libraries
 require_once dirname(__FILE__) . '/libs/interfaces.php';
+require_once dirname(__FILE__) . '/libs/DibiObject.php';
 require_once dirname(__FILE__) . '/libs/DibiException.php';
 require_once dirname(__FILE__) . '/libs/DibiConnection.php';
 require_once dirname(__FILE__) . '/libs/DibiResult.php';

@@ -27,7 +27,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-final class DibiTranslator extends /*Nette::*/Object
+final class DibiTranslator extends DibiObject
 {
 	/** @var string */
 	public $sql;
@@ -201,16 +201,37 @@ final class DibiTranslator extends /*Nette::*/Object
 			$separator = ', ';
 			switch ($modifier) {
 			case 'and':
-			case 'or':
+			case 'or':  // key=val AND key IS NULL AND ...
 				$separator = ' ' . strtoupper($modifier) . ' ';
-				if (!is_string(key($value))) {
+				if (empty($value)) {
+					return '1';
+
+				} elseif (!is_string(key($value))) {
 					foreach ($value as $v) {
 						$vx[] = $this->formatValue($v, 'sql');
 					}
-					return implode($separator, $vx);
+
+				} else {
+					foreach ($value as $k => $v) {
+						$pair = explode('%', $k, 2); // split into identifier & modifier
+						$k = $this->delimite($pair[0]);						
+						if (isset($pair[1])) {
+							$pair = explode(' ', $pair[1], 2); // split into modifier & operator
+							$op = isset($pair[1]) ? $pair[1] : '=';
+							$v = $this->formatValue($v, $pair[0]);
+						} else {
+							$op = '=';
+							$v = $this->formatValue($v, FALSE);
+						}
+						if ($v === 'NULL') {
+							$op = 'IS';
+						}
+						$vx[] = $k . ' ' . $op . ' ' . $v;
+					}
 				}
-				// break intentionally omitted
-			case 'a': // SET key=val, key=val, ...
+				return implode($separator, $vx);
+
+			case 'a': // key=val, key=val, ...
 				foreach ($value as $k => $v) {
 					$pair = explode('%', $k, 2); // split into identifier & modifier
 					$vx[] = $this->delimite($pair[0]) . '='
@@ -219,7 +240,7 @@ final class DibiTranslator extends /*Nette::*/Object
 				return implode($separator, $vx);
 
 
-			case 'l': // LIST (val, val, ...)
+			case 'l': // (val, val, ...)
 				foreach ($value as $k => $v) {
 					$pair = explode('%', $k, 2); // split into identifier & modifier
 					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
@@ -235,7 +256,7 @@ final class DibiTranslator extends /*Nette::*/Object
 				}
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
-			default:
+			default:  // value, value, value - all with the same modifier
 				foreach ($value as $v) {
 					$vx[] = $this->formatValue($v, $modifier);
 				}

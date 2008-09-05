@@ -34,7 +34,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-class DibiPdoDriver extends /*Nette::*/Object implements IDibiDriver
+class DibiPdoDriver extends DibiObject implements IDibiDriver
 {
 
 	/**

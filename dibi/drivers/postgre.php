@@ -34,7 +34,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-class DibiPostgreDriver extends /*Nette::*/Object implements IDibiDriver
+class DibiPostgreDriver extends DibiObject implements IDibiDriver
 {
 
 	/**

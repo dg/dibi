@@ -40,7 +40,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-class DibiMySqlDriver extends /*Nette::*/Object implements IDibiDriver
+class DibiMySqlDriver extends DibiObject implements IDibiDriver
 {
 
 	/**

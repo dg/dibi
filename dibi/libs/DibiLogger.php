@@ -27,7 +27,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-final class DibiLogger extends /*Nette::*/Object
+final class DibiLogger extends DibiObject
 {
 	/** @var string  Name of the file where SQL errors should be logged */
 	private $file;

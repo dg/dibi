@@ -41,7 +41,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-class DibiResult extends /*Nette::*/Object implements IDataSource
+class DibiResult extends DibiObject implements IDataSource
 {
 	/**
 	 * IDibiDriver.

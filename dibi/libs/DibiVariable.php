@@ -24,7 +24,7 @@
  * Default implemenation of IDibiVariable.
  * @package dibi
  */
-class DibiVariable extends /*Nette::*/Object implements IDibiVariable
+class DibiVariable extends DibiObject implements IDibiVariable
 {
 	/** @var mixed */
 	public $value;

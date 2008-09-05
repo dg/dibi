@@ -33,7 +33,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-class DibiOdbcDriver extends /*Nette::*/Object implements IDibiDriver
+class DibiOdbcDriver extends DibiObject implements IDibiDriver
 {
 
 	/**

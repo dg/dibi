@@ -27,7 +27,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-class DibiDataSource extends /*Nette::*/Object implements IDataSource
+class DibiDataSource extends DibiObject implements IDataSource
 {
 	/** @var DibiConnection */
 	private $connection;

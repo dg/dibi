@@ -27,7 +27,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-class DibiConnection extends /*Nette::*/Object
+class DibiConnection extends DibiObject
 {
 	/**
 	 * Current connection configuration.

@@ -1,27 +1,29 @@
 <?php
 
 /**
- * Nette Framework
+ * dibi - tiny'n'smart database abstraction layer
+ * ----------------------------------------------
  *
- * Copyright (c) 2004, 2008 David Grudl (http://davidgrudl.com)
+ * Copyright (c) 2005, 2008 David Grudl (http://davidgrudl.com)
  *
- * This source file is subject to the "Nette license" that is bundled
+ * This source file is subject to the "dibi license" that is bundled
  * with this package in the file license.txt.
  *
- * For more information please see http://nettephp.com
+ * For more information please see http://dibiphp.com
  *
- * @copyright  Copyright (c) 2004, 2008 David Grudl
- * @license    http://nettephp.com/license  Nette license
- * @link       http://nettephp.com
- * @category   Nette
- * @package    Nette
+ * @copyright  Copyright (c) 2005, 2008 David Grudl
+ * @license    http://dibiphp.com/license  dibi license
+ * @link       http://dibiphp.com
+ * @package    dibi
+ * @version    $Id$
  */
 
-/*namespace Nette;*/
 
 
 /**
- * Nette::Object is the ultimate ancestor of all instantiable classes.
+ * DibiObject is the ultimate ancestor of all instantiable classes.
+ *
+ * DibiObject is copy of Nette::Object from Nette Framework (http://nettephp.com).
  *
  * It defines some handful methods and enhances object core of PHP:
  *   - access to undeclared members throws exceptions
@@ -57,10 +59,10 @@
  * </code>
  *
  * @author     David Grudl
- * @copyright  Copyright (c) 2004, 2008 David Grudl
- * @package    Nette
+ * @copyright  Copyright (c) 2005, 2008 David Grudl
+ * @package    dibi
  */
-abstract class Object
+abstract class DibiObject
 {
 	/** @var array (method => array(type => callback)) */
 	private static $extMethods;
