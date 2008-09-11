@@ -242,6 +242,63 @@ class DibiFluent extends DibiObject
 
 
 	/**
+	 * Like fetch(), but returns only first field.
+	 * @return mixed  value on success, FALSE if no next record
+	 */
+	public function fetchSingle()
+	{
+		if ($this->command === 'SELECT') {
+			$this->clauses['LIMIT'] = array(1);
+		}
+		return $this->connection->query($this->_export())->fetchSingle();
+	}
+
+
+
+	/**
+	 * Fetches all records from table.
+	 * @param  int  offset
+	 * @param  int  limit
+	 * @param  bool simplify one-column result set?
+	 * @return array
+	 */
+	public function fetchAll($offset = NULL, $limit = NULL, $simplify = TRUE)
+	{
+		return $this->connection->query($this->_export())->fetchAll($offset, $limit, $simplify);
+	}
+
+
+
+	/**
+	 * Fetches all records from table and returns associative tree.
+	 * Associative descriptor:  assoc1,#,assoc2,=,assoc3,@
+	 * builds a tree:           $data[assoc1][index][assoc2]['assoc3']->value = {record}
+	 * @param  string  associative descriptor
+	 * @return array
+	 * @throws InvalidArgumentException
+	 */
+	public function fetchAssoc($assoc)
+	{
+		return $this->connection->query($this->_export())->fetchAssoc($assoc);
+	}
+
+
+
+	/**
+	 * Fetches all records from table like $key => $value pairs.
+	 * @param  string  associative key
+	 * @param  string  value
+	 * @return array
+	 * @throws InvalidArgumentException
+	 */
+	public function fetchPairs($key = NULL, $value = NULL)
+	{
+		return $this->connection->query($this->_export())->fetchPairs($key, $value)
+	}
+
+
+
+	/**
 	 * Generates and prints SQL query or it's part.
 	 * @param  string clause name
 	 * @return bool
