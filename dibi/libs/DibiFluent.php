@@ -293,7 +293,7 @@ class DibiFluent extends DibiObject
 	 */
 	public function fetchPairs($key = NULL, $value = NULL)
 	{
-		return $this->connection->query($this->_export())->fetchPairs($key, $value)
+		return $this->connection->query($this->_export())->fetchPairs($key, $value);
 	}
 
 
