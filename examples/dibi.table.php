@@ -87,3 +87,7 @@ var_dump($id); // generated id
 $key = '3 OR 1=1';
 $products->delete($key);
 // --> DELETE FROM  [products] WHERE  [product_id] IN ( 3 )
+
+
+// select all using fluent interface
+var_dump($products->select('*')->orderBy('title')->fetchAll());

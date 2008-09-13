@@ -214,7 +214,7 @@ final class DibiTranslator extends DibiObject
 				} else {
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
-						$k = $this->delimite($pair[0]);						
+						$k = $this->delimite($pair[0]);
 						if (isset($pair[1])) {
 							$pair = explode(' ', $pair[1], 2); // split into modifier & operator
 							$op = isset($pair[1]) ? $pair[1] : '=';

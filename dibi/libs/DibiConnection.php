@@ -456,6 +456,72 @@ class DibiConnection extends DibiObject
 
 
 
+	/********************* fluent SQL builders ****************d*g**/
+
+
+
+	/**
+	 * @return DibiFluent
+	 */
+	public function command()
+	{
+		return new DibiFluent($this);
+	}
+
+
+
+	/**
+	 * @param  string    column name
+	 * @return DibiFluent
+	 */
+	public function select($args)
+	{
+		$args = func_get_args();
+		return $this->command()->__call('select', $args);
+	}
+
+
+
+	/**
+	 * @param  string   table
+	 * @param  array
+	 * @return DibiFluent
+	 */
+	public function update($table, array $args)
+	{
+		return $this->command()->update('%n', $table)->set($args);
+	}
+
+
+
+	/**
+	 * @param  string   table
+	 * @param  array
+	 * @return DibiFluent
+	 */
+	public function insert($table, array $args)
+	{
+		return $this->command()->insert()
+			->into('%n', $table, '(%n)', array_keys($args))->values('%l', array_values($args));
+	}
+
+
+
+	/**
+	 * @param  string   table
+	 * @return DibiFluent
+	 */
+	public function delete($table)
+	{
+		return $this->command()->delete()->from('%n', $table);
+	}
+
+
+
+	/********************* misc ****************d*g**/
+
+
+
 	/**
 	 * Import SQL dump from file - extreme fast!
 	 *

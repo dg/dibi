@@ -28,6 +28,13 @@ dibi::select('product_id')->as('id')
 
 echo "\n";
 
+// SELECT ...
+echo dibi::select('title')->as('id')
+	->from('products')
+	->fetchSingle();
+
+echo "\n";
+
 // INSERT ...
 dibi::insert('products', $record)
 	->setFlag('IGNORE')

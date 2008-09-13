@@ -236,7 +236,7 @@ class DibiFluent extends DibiObject
 		if ($this->command === 'SELECT') {
 			$this->clauses['LIMIT'] = array(1);
 		}
-		return $this->connection->query($this->_export())->fetch();
+		return $this->execute()->fetch();
 	}
 
 
@@ -250,7 +250,7 @@ class DibiFluent extends DibiObject
 		if ($this->command === 'SELECT') {
 			$this->clauses['LIMIT'] = array(1);
 		}
-		return $this->connection->query($this->_export())->fetchSingle();
+		return $this->execute()->fetchSingle();
 	}
 
 
@@ -264,7 +264,7 @@ class DibiFluent extends DibiObject
 	 */
 	public function fetchAll($offset = NULL, $limit = NULL, $simplify = TRUE)
 	{
-		return $this->connection->query($this->_export())->fetchAll($offset, $limit, $simplify);
+		return $this->execute()->fetchAll($offset, $limit, $simplify);
 	}
 
 
@@ -279,7 +279,7 @@ class DibiFluent extends DibiObject
 	 */
 	public function fetchAssoc($assoc)
 	{
-		return $this->connection->query($this->_export())->fetchAssoc($assoc);
+		return $this->execute()->fetchAssoc($assoc);
 	}
 
 
@@ -293,7 +293,7 @@ class DibiFluent extends DibiObject
 	 */
 	public function fetchPairs($key = NULL, $value = NULL)
 	{
-		return $this->connection->query($this->_export())->fetchPairs($key, $value);
+		return $this->execute()->fetchPairs($key, $value);
 	}
 
 

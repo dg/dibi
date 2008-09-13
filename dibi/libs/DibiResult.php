@@ -419,7 +419,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 			if ($x === NULL) { // build leaf
 				if ($leaf === '=') {
-					$x = $row; 
+					$x = $row;
 				} elseif ($leaf === TRUE || $leaf === '@') {
 					$x = (object) $row;
 				} else {

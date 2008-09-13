@@ -460,7 +460,7 @@ class dibi
 	 */
 	public static function command()
 	{
-		return new DibiFluent(self::getConnection());
+		return self::getConnection()->command();
 	}
 
 
@@ -472,7 +472,7 @@ class dibi
 	public static function select($args)
 	{
 		$args = func_get_args();
-		return self::command()->__call('select', $args);
+		return self::getConnection()->command()->__call('select', $args);
 	}
 
 
@@ -484,7 +484,7 @@ class dibi
 	 */
 	public static function update($table, array $args)
 	{
-		return self::command()->update('%n', $table)->set($args);
+		return self::getConnection()->update($table, $args);
 	}
 
 
@@ -496,8 +496,7 @@ class dibi
 	 */
 	public static function insert($table, array $args)
 	{
-		return self::command()->insert()
-			->into('%n', $table, '(%n)', array_keys($args))->values('%l', array_values($args));
+		return self::getConnection()->insert($table, $args);
 	}
 
 
@@ -508,7 +507,7 @@ class dibi
 	 */
 	public static function delete($table)
 	{
-		return self::command()->delete()->from('%n', $table);
+		return self::getConnection()->delete($table);
 	}
 
 

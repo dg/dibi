@@ -132,6 +132,10 @@ abstract class DibiTable extends DibiObject
 
 
 
+	/********************* basic commands ****************d*g**/
+
+
+
 	/**
 	 * Inserts row into a table.
 	 * @param  array|object
@@ -295,6 +299,33 @@ abstract class DibiTable extends DibiObject
 	{
 		$res->setTypes($this->types);
 		return $res;
+	}
+
+
+
+	/********************* fluent SQL builders ****************d*g**/
+
+
+
+	/**
+	 * Creates fluent SQL builder.
+	 * @return DibiFluent
+	 */
+	public function command()
+	{
+		return new DibiFluent($this->connection);
+	}
+
+
+
+	/**
+	 * @param  string    column name
+	 * @return DibiFluent
+	 */
+	public function select($args)
+	{
+		$args = func_get_args();
+		return $this->command()->__call('select', $args)->from($this->name);
 	}
 
 }

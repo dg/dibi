@@ -131,7 +131,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 				if (!$ok) {
 					throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection));
 				}
-			}	
+			}
 		}
 
 		if (isset($config['database'])) {

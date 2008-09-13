@@ -124,14 +124,14 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 				$ok = @mysqli_query($this->connection, "SET NAMES '$config[charset]'"); // intentionally @
 				if (!$ok) {
 					throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection));
-				}	
-			}	
+				}
+			}
 		}
 
 		if (isset($config['sqlmode'])) {
 			if (!@mysqli_query($this->connection, "SET sql_mode='$config[sqlmode]'")) { // intentionally @
 				throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection));
-			}	
+			}
 		}
 
 		$this->buffered = empty($config['unbuffered']);
