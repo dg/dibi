@@ -247,6 +247,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 			return "'" . mysqli_real_escape_string($this->connection, $value) . "'";
 
 		case dibi::IDENTIFIER:
+			$value = str_replace('`', '``', $value);
 			return '`' . str_replace('.', '`.`', $value) . '`';
 
 		case dibi::FIELD_BOOL:

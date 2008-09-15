@@ -218,7 +218,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 			return "'" . sqlite_escape_string($value) . "'";
 
 		case dibi::IDENTIFIER:
-			return '[' . str_replace('.', '].[', $value) . ']';
+			return '[' . str_replace('.', '].[', strtr($value, '[]', '  ')) . ']';
 
 		case dibi::FIELD_BOOL:
 			return $value ? 1 : 0;

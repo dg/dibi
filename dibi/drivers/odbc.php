@@ -215,6 +215,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 			return "'" . str_replace("'", "''", $value) . "'";
 
 		case dibi::IDENTIFIER:
+			$value = str_replace(array('[', ']'), array('[[', ']]'), $value);
 			return '[' . str_replace('.', '].[', $value) . ']';
 
 		case dibi::FIELD_BOOL:

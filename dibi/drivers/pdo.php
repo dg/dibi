@@ -242,6 +242,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 		case dibi::IDENTIFIER:
 			switch ($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME)) {
 			case 'mysql':
+				$value = str_replace('`', '``', $value);
 				return '`' . str_replace('.', '`.`', $value) . '`';
 
 			case 'pgsql':
@@ -254,9 +255,11 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 
 			case 'sqlite':
 			case 'sqlite2':
+				$value = strtr($value, '[]', '  ');
 			case 'odbc':
 			case 'oci': // TODO: not tested
 			case 'mssql':
+				$value = str_replace(array('[', ']'), array('[[', ']]'), $value);
 				return '[' . str_replace('.', '].[', $value) . ']';
 
 			default:

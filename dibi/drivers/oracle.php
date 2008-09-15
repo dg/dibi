@@ -215,7 +215,9 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 			return "'" . str_replace("'", "''", $value) . "'"; // TODO: not tested
 
 		case dibi::IDENTIFIER:
-			return '[' . str_replace('.', '].[', $value) . ']';  // TODO: not tested
+			// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
+			$value = str_replace('"', '""', $value);
+			return '"' . str_replace('.', '"."', $value) . '"';
 
 		case dibi::FIELD_BOOL:
 			return $value ? 1 : 0;
