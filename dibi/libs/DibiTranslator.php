@@ -249,8 +249,12 @@ final class DibiTranslator extends DibiObject
 
 			case 'by': // key ASC, key DESC
 				foreach ($value as $k => $v) {
-					$v = (is_string($v) && strcasecmp($v, 'desc')) || $v > 0 ? 'ASC' : 'DESC';
-					$vx[] = $this->delimite($k) . ' ' . $v;
+					if (is_string($k)) {
+						$v = (is_string($v) && strcasecmp($v, 'desc')) || $v > 0 ? 'ASC' : 'DESC';
+						$vx[] = $this->delimite($k) . ' ' . $v;
+					} else {
+						$vx[] = $this->delimite($v);
+					}
 				}
 				return implode(', ', $vx);
 
@@ -306,6 +310,7 @@ final class DibiTranslator extends DibiObject
 			case 't':  // datetime
 				return $this->driver->escape(is_string($value) ? strtotime($value) : $value, $modifier);
 
+			case 'by':
 			case 'n':  // identifier name
 				return $this->delimite($value);
 

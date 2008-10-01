@@ -245,21 +245,23 @@ abstract class DibiTable extends DibiObject
 	/**
 	 * Selects all rows.
 	 * @param  array  conditions
-	 * @param  string  column to order by
+	 * @param  string|array  column to order by
 	 * @return DibiResult
 	 */
 	public function findAll($conditions = NULL, $order = NULL)
 	{
-		$order = func_get_args();
-		if (is_array($conditions)) {
-			array_shift($order);
-		} else {
-			$conditions = NULL;
+		if (!is_array($order)) {
+			$order = func_get_args();
+			if (is_array($conditions)) {
+				array_shift($order);
+			} else {
+				$conditions = NULL;
+			}	
 		}
 		return $this->complete($this->connection->query(
 			'SELECT * FROM %n', $this->name,
 			'%ex', $conditions ? array('WHERE %and', $conditions) : NULL,
-			'%ex', $order ? array('ORDER BY %n', $order) : NULL
+			'%ex', $order ? array('ORDER BY %by', $order) : NULL
 		));
 	}
 
