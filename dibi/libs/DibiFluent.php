@@ -259,12 +259,11 @@ class DibiFluent extends DibiObject
 	 * Fetches all records from table.
 	 * @param  int  offset
 	 * @param  int  limit
-	 * @param  bool simplify one-column result set?
 	 * @return array
 	 */
-	public function fetchAll($offset = NULL, $limit = NULL, $simplify = TRUE)
+	public function fetchAll($offset = NULL, $limit = NULL)
 	{
-		return $this->execute()->fetchAll($offset, $limit, $simplify);
+		return $this->execute()->fetchAll($offset, $limit);
 	}
 
 

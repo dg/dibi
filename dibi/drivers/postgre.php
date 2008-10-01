@@ -249,6 +249,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 			}
 
 		case dibi::IDENTIFIER:
+			// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
 			$a = strrpos($value, '.');
 			if ($a === FALSE) {
 				return '"' . str_replace('"', '""', $value) . '"';

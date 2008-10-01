@@ -312,10 +312,9 @@ class DibiResult extends DibiObject implements IDataSource
 	 *
 	 * @param  int  offset
 	 * @param  int  limit
-	 * @param  bool simplify one-column result set?
 	 * @return array
 	 */
-	final public function fetchAll($offset = NULL, $limit = NULL, $simplify = TRUE)
+	final public function fetchAll($offset = NULL, $limit = NULL)
 	{
 		$limit = $limit === NULL ? -1 : (int) $limit;
 		$this->seek((int) $offset);
@@ -323,22 +322,11 @@ class DibiResult extends DibiObject implements IDataSource
 		if (!$row) return array();  // empty result set
 
 		$data = array();
-		if ($simplify && !$this->objects && count($row) === 1) {
-			// special case: one-column result set
-			$key = key($row);
-			do {
-				if ($limit === 0) break;
-				$limit--;
-				$data[] = $row[$key];
-			} while ($row = $this->fetch());
-
-		} else {
-			do {
-				if ($limit === 0) break;
-				$limit--;
-				$data[] = $row;
-			} while ($row = $this->fetch());
-		}
+		do {
+			if ($limit === 0) break;
+			$limit--;
+			$data[] = $row;
+		} while ($row = $this->fetch());
 
 		return $data;
 	}
@@ -456,13 +444,16 @@ class DibiResult extends DibiObject implements IDataSource
 				throw new InvalidArgumentException("Either none or both columns must be specified.");
 			}
 
-			if (count($row) < 2) {
-				throw new UnexpectedValueException("Result must have at least two columns.");
-			}
-
 			// autodetect
 			$tmp = array_keys($row);
 			$key = $tmp[0];
+			if (count($row) < 2) { // indexed-array
+				do {
+					$data[] = $row[$key];
+				} while ($row = $this->fetch(FALSE));
+				return $data;
+			}
+
 			$value = $tmp[1];
 
 		} else {
@@ -633,7 +624,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function getIterator($offset = NULL, $limit = NULL)
 	{
-		return new ArrayIterator($this->fetchAll($offset, $limit, FALSE));
+		return new ArrayIterator($this->fetchAll($offset, $limit));
 	}
 
 

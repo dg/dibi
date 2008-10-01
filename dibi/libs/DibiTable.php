@@ -162,12 +162,48 @@ abstract class DibiTable extends DibiObject
 	 */
 	public function update($where, $data)
 	{
+		$data = $this->prepare($data);
+		if ($where === NULL && isset($data[$this->primary])) {;
+			$where = $data[$this->primary];
+			unset($data[$this->primary]);
+		}
+
 		$this->connection->query(
 			'UPDATE %n', $this->name,
-			'SET %a', $this->prepare($data),
+			'SET %a', $data,
 			'WHERE %n', $this->primary, 'IN (' . $this->primaryModifier, $where, ')'
 		);
 		return $this->connection->affectedRows();
+	}
+
+
+
+	/**
+	 * Inserts or updates rows in a table.
+	 * @param  array|object
+	 * @return int    (new) primary key
+	 */
+	public function insertOrUpdate($data)
+	{
+		$data = $this->prepare($data);
+		if (!isset($data[$this->primary])) {
+			throw new InvalidArgumentException("Missing primary key '$this->primary' in dataset.");
+		}
+
+		try {
+			$this->connection->query(
+				'INSERT INTO %n', $this->name, '%v', $data
+			);
+
+		} catch (DibiDriverException $e) {
+			$where = $data[$this->primary];
+			unset($data[$this->primary]);
+			$this->connection->query(
+				'UPDATE %n', $this->name,
+				'SET %a', $data,
+				'WHERE %n', $this->primary, 'IN (' . $this->primaryModifier, $where, ')'
+			);
+		}
 	}
 
 

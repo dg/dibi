@@ -31,7 +31,7 @@ class Products extends DibiTable
 
 
 // create table object
-$products = new Products();
+$products = new Products;
 
 echo "Table name: $products->name\n";
 echo "Primary key: $products->primary\n";
@@ -81,6 +81,13 @@ $data = array();
 $data['title'] = 'New product';
 $id = $products->insert($data);
 var_dump($id); // generated id
+
+
+// inserts or updates row into a table
+$data = array();
+$data['title'] = 'New product';
+$data[$products->primary] = 5;
+$products->insertOrUpdate($data);
 
 
 // is absolutely SQL injection safe

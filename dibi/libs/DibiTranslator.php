@@ -198,11 +198,11 @@ final class DibiTranslator extends DibiObject
 		if (is_array($value)) {
 
 			$vx = $kx = array();
-			$separator = ', ';
+			$operator = ', ';
 			switch ($modifier) {
 			case 'and':
 			case 'or':  // key=val AND key IS NULL AND ...
-				$separator = ' ' . strtoupper($modifier) . ' ';
+				$operator = ' ' . strtoupper($modifier) . ' ';
 				if (empty($value)) {
 					return '1';
 
@@ -215,21 +215,12 @@ final class DibiTranslator extends DibiObject
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$k = $this->delimite($pair[0]);
-						if (isset($pair[1])) {
-							$pair = explode(' ', $pair[1], 2); // split into modifier & operator
-							$op = isset($pair[1]) ? $pair[1] : '=';
-							$v = $this->formatValue($v, $pair[0]);
-						} else {
-							$op = '=';
-							$v = $this->formatValue($v, FALSE);
-						}
-						if ($v === 'NULL') {
-							$op = 'IS';
-						}
+						$v = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
+						$op = isset($pair[1]) && $pair[1] === 'l' ? 'IN' : ($v === 'NULL' ? 'IS' : '=');
 						$vx[] = $k . ' ' . $op . ' ' . $v;
 					}
 				}
-				return implode($separator, $vx);
+				return implode($operator, $vx);
 
 			case 'a': // key=val, key=val, ...
 				foreach ($value as $k => $v) {
@@ -237,7 +228,7 @@ final class DibiTranslator extends DibiObject
 					$vx[] = $this->delimite($pair[0]) . '='
 						. $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
 				}
-				return implode($separator, $vx);
+				return implode($operator, $vx);
 
 
 			case 'l': // (val, val, ...)
@@ -255,6 +246,13 @@ final class DibiTranslator extends DibiObject
 					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
 				}
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
+
+			case 'by': // key ASC, key DESC
+				foreach ($value as $k => $v) {
+					$v = (is_string($v) && strcasecmp($v, 'desc')) || $v > 0 ? 'ASC' : 'DESC';
+					$vx[] = $this->delimite($k) . ' ' . $v;
+				}
+				return implode(', ', $vx);
 
 			default:  // value, value, value - all with the same modifier
 				foreach ($value as $v) {

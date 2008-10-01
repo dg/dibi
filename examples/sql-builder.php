@@ -64,3 +64,15 @@ SELECT *
 FROM [people]
 WHERE [id] IN (", $array, ")
 ");
+
+
+// ORDER BY array
+$order = array(
+	'field1' => 'asc',
+	'field2' => 'desc',
+);
+dibi::test("
+SELECT *
+FROM [people]
+ORDER BY %by", $order, "
+");
