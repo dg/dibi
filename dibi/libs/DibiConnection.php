@@ -36,8 +36,8 @@ class DibiConnection extends DibiObject
 	private $config;
 
 	/**
-	 * IDibiDriver.
-	 * @var array
+	 * Driver
+	 * @var IDibiDriver
 	 */
 	private $driver;
 
@@ -557,13 +557,13 @@ class DibiConnection extends DibiObject
 
 
 	/**
-	 * Gets a information of the current database.
+	 * Gets a information about the current database.
 	 *
-	 * @return DibiReflection
+	 * @return DibiDatabaseInfo
 	 */
-	public function getDibiReflection()
+	public function getDatabaseInfo()
 	{
-		throw new NotImplementedException;
+		return new DibiDatabaseInfo($this->driver, isset($this->config['database']) ? $this->config['database'] : NULL);
 	}
 
 

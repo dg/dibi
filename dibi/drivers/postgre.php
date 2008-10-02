@@ -224,6 +224,22 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 
 
 	/**
+	 * Returns the connection resource.
+	 *
+	 * @return mixed
+	 */
+	public function getResource()
+	{
+		return $this->connection;
+	}
+
+
+
+	/********************* SQL ****************d*g**/
+
+
+
+	/**
 	 * Encodes data for use in an SQL statement.
 	 *
 	 * @param  string    value
@@ -314,6 +330,10 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 
 
 
+	/********************* result set ****************d*g**/
+
+
+
 	/**
 	 * Returns the number of rows in a result set.
 	 *
@@ -382,24 +402,12 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 			$meta[] = array(
 				'name'      => pg_field_name($this->resultSet, $i),
 				'table'     => $hasTable ? pg_field_table($this->resultSet, $i) : NULL,
-				'type'      => pg_field_type($this->resultSet, $i),
+				'nativetype'=> pg_field_type($this->resultSet, $i),
 				'size'      => pg_field_size($this->resultSet, $i),
 				'prtlen'    => pg_field_prtlen($this->resultSet, $i),
 			);
 		}
 		return $meta;
-	}
-
-
-
-	/**
-	 * Returns the connection resource.
-	 *
-	 * @return mixed
-	 */
-	public function getResource()
-	{
-		return $this->connection;
 	}
 
 
@@ -416,12 +424,53 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 
 
 
+	/********************* reflection ****************d*g**/
+
+
+
 	/**
-	 * Gets a information of the current database.
-	 *
-	 * @return DibiReflection
+	 * Returns list of tables.
+	 * @return array
 	 */
-	function getDibiReflection()
-	{}
+	public function getTables()
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * Returns metadata for all columns in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getColumns($table)
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * Returns metadata for all indexes in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getIndexes($table)
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * Returns metadata for all foreign keys in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getForeignKeys($table)
+	{
+		throw new NotImplementedException;
+	}
 
 }

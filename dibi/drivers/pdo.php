@@ -223,6 +223,22 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 
 
 	/**
+	 * Returns the connection resource.
+	 *
+	 * @return PDO
+	 */
+	public function getResource()
+	{
+		return $this->connection;
+	}
+
+
+
+	/********************* SQL ****************d*g**/
+
+
+
+	/**
 	 * Encodes data for use in an SQL statement.
 	 *
 	 * @param  string    value
@@ -312,6 +328,10 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 
 
 
+	/********************* result set ****************d*g**/
+
+
+
 	/**
 	 * Returns the number of rows in a result set.
 	 *
@@ -380,21 +400,10 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 			if ($info === FALSE) {
 				throw new DibiDriverException('Driver does not support meta data.');
 			}
+			$info['nativetype'] = $info['native_type'];
 			$meta[] = $info;
 		}
 		return $meta;
-	}
-
-
-
-	/**
-	 * Returns the connection resource.
-	 *
-	 * @return PDO
-	 */
-	public function getResource()
-	{
-		return $this->connection;
 	}
 
 
@@ -411,12 +420,53 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 
 
 
+	/********************* reflection ****************d*g**/
+
+
+
 	/**
-	 * Gets a information of the current database.
-	 *
-	 * @return DibiReflection
+	 * Returns list of tables.
+	 * @return array
 	 */
-	function getDibiReflection()
-	{}
+	public function getTables()
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * Returns metadata for all columns in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getColumns($table)
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * Returns metadata for all indexes in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getIndexes($table)
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * Returns metadata for all foreign keys in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getForeignKeys($table)
+	{
+		throw new NotImplementedException;
+	}
 
 }

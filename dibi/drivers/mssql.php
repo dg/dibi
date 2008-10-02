@@ -186,6 +186,22 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 
 
 	/**
+	 * Returns the connection resource.
+	 *
+	 * @return mixed
+	 */
+	public function getResource()
+	{
+		return $this->connection;
+	}
+
+
+
+	/********************* SQL ****************d*g**/
+
+
+
+	/**
 	 * Encodes data for use in an SQL statement.
 	 *
 	 * @param  string    value
@@ -258,6 +274,10 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 
 
 
+	/********************* result set ****************d*g**/
+
+
+
 	/**
 	 * Returns the number of rows in a result set.
 	 *
@@ -324,21 +344,10 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 			// items 'name' and 'table' are required
 			$info = (array) mssql_fetch_field($this->resultSet, $i);
 			$info['table'] = $info['column_source'];
+			$info['nativetype'] = $info['type'];
 			$meta[] = $info;
 		}
 		return $meta;
-	}
-
-
-
-	/**
-	 * Returns the connection resource.
-	 *
-	 * @return mixed
-	 */
-	public function getResource()
-	{
-		return $this->connection;
 	}
 
 
@@ -355,12 +364,53 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 
 
 
+	/********************* reflection ****************d*g**/
+
+
+
 	/**
-	 * Gets a information of the current database.
-	 *
-	 * @return DibiReflection
+	 * Returns list of tables.
+	 * @return array
 	 */
-	function getDibiReflection()
-	{}
+	public function getTables()
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * Returns metadata for all columns in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getColumns($table)
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * Returns metadata for all indexes in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getIndexes($table)
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * Returns metadata for all foreign keys in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getForeignKeys($table)
+	{
+		throw new NotImplementedException;
+	}
 
 }

@@ -560,18 +560,35 @@ class DibiResult extends DibiObject implements IDataSource
 	/**
 	 * Gets an array of meta informations about column.
 	 *
-	 * @return array
+	 * @return array of DibiColumnInfo
 	 */
-	final public function getColumnsMeta()
+	final public function getColumns()
 	{
 		if ($this->metaCache === NULL) {
 			$this->metaCache = $this->getDriver()->getColumnsMeta();
 		}
 
 		$cols = array();
-		foreach ($this->metaCache as $col) {
-			$name = (!$this->withTables || $col['table'] === NULL) ? $col['name'] : ($col['table'] . '.' . $col['name']);
-			$cols[$name] = $col;
+		foreach ($this->metaCache as $info) {
+			$cols[] = new DibiColumnInfo($this->driver, $info);
+		}
+		return $cols;
+	}
+
+
+
+	/**
+	 * @param  bool
+	 * @return array of string
+	 */
+	public function getColumnNames($withTables = FALSE)
+	{
+		if ($this->metaCache === NULL) {
+			$this->metaCache = $this->getDriver()->getColumnsMeta();
+		}
+		$cols = array();
+		foreach ($this->metaCache as $info) {
+			$cols[] = (!$withTables || $info['table'] === NULL) ? $info['name'] : ($info['table'] . '.' . $info['name']);
 		}
 		return $cols;
 	}

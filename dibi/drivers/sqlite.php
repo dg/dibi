@@ -203,6 +203,22 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 
 
 	/**
+	 * Returns the connection resource.
+	 *
+	 * @return mixed
+	 */
+	public function getResource()
+	{
+		return $this->connection;
+	}
+
+
+
+	/********************* SQL ****************d*g**/
+
+
+
+	/**
 	 * Encodes data for use in an SQL statement.
 	 *
 	 * @param  string    value
@@ -264,6 +280,10 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 		if ($limit < 0 && $offset < 1) return;
 		$sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
 	}
+
+
+
+	/********************* result set ****************d*g**/
 
 
 
@@ -335,25 +355,16 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 		$count = sqlite_num_fields($this->resultSet);
 		$meta = array();
 		for ($i = 0; $i < $count; $i++) {
-			// items 'name' and 'table' are required
+			$pair = explode('.', sqlite_field_name($this->resultSet, $i));
+			if (!isset($pair[1])) {
+				array_unshift($pair, NULL);
+			}
 			$meta[] = array(
-				'name'  => sqlite_field_name($this->resultSet, $i),
-				'table' => NULL,
+				'name'  => $pair[1],
+				'table' => $pair[0],
 			);
 		}
 		return $meta;
-	}
-
-
-
-	/**
-	 * Returns the connection resource.
-	 *
-	 * @return mixed
-	 */
-	public function getResource()
-	{
-		return $this->connection;
 	}
 
 
@@ -370,12 +381,57 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 
 
 
+	/********************* reflection ****************d*g**/
+
+
+
 	/**
-	 * Gets a information of the current database.
-	 *
-	 * @return DibiReflection
+	 * Returns list of tables.
+	 * @return array
 	 */
-	function getDibiReflection()
-	{}
+	public function getTables()
+	{
+		$this->query("
+			SELECT name FROM sqlite_master WHERE type='table'
+			UNION ALL SELECT name FROM sqlite_temp_master WHERE type='table' ORDER BY name
+		");
+		return sqlite_fetch_all($this->resultSet, SQLITE_ASSOC);
+	}
+
+
+
+	/**
+	 * Returns metadata for all columns in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getColumns($table)
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * Returns metadata for all indexes in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getIndexes($table)
+	{
+		throw new NotImplementedException;
+	}
+
+
+
+	/**
+	 * Returns metadata for all foreign keys in a table.
+	 * @param  string
+	 * @return array
+	 */
+	public function getForeignKeys($table)
+	{
+		throw new NotImplementedException;
+	}
 
 }

@@ -142,6 +142,19 @@ interface IDibiDriver
 
 
 	/**
+	 * Returns the connection resource.
+	 *
+	 * @return mixed
+	 */
+	function getResource();
+
+
+
+	/********************* SQL ****************d*g**/
+
+
+
+	/**
 	 * Encodes data for use in an SQL statement.
 	 *
 	 * @param  string    value
@@ -174,6 +187,10 @@ interface IDibiDriver
 	 * @return void
 	 */
 	function applyLimit(&$sql, $limit, $offset);
+
+
+
+	/********************* result set ****************d*g**/
 
 
 
@@ -229,15 +246,6 @@ interface IDibiDriver
 
 
 	/**
-	 * Returns the connection resource.
-	 *
-	 * @return mixed
-	 */
-	function getResource();
-
-
-
-	/**
 	 * Returns the result set resource.
 	 *
 	 * @return mixed
@@ -246,11 +254,41 @@ interface IDibiDriver
 
 
 
+	/********************* reflection ****************d*g**/
+
+
+
 	/**
-	 * Gets a information of the current database.
-	 *
-	 * @return DibiReflection
+	 * Returns list of tables.
+	 * @return array
 	 */
-	function getDibiReflection();
+	function getTables();
+
+
+
+	/**
+	 * Returns metadata for all columns in a table.
+	 * @param  string
+	 * @return array
+	 */
+	function getColumns($table);
+
+
+
+	/**
+	 * Returns metadata for all indexes in a table.
+	 * @param  string
+	 * @return array
+	 */
+	function getIndexes($table);
+
+
+
+	/**
+	 * Returns metadata for all foreign keys in a table.
+	 * @param  string
+	 * @return array
+	 */
+	function getForeignKeys($table);
 
 }

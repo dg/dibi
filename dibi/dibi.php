@@ -71,6 +71,7 @@ require_once dirname(__FILE__) . '/libs/DibiVariable.php';
 require_once dirname(__FILE__) . '/libs/DibiTable.php';
 require_once dirname(__FILE__) . '/libs/DibiDataSource.php';
 require_once dirname(__FILE__) . '/libs/DibiFluent.php';
+require_once dirname(__FILE__) . '/libs/DibiDatabaseInfo.php';
 
 
 
@@ -436,6 +437,18 @@ class dibi
 	public static function rollback()
 	{
 		self::getConnection()->rollback();
+	}
+
+
+
+	/**
+	 * Gets a information about the current database - Monostate for DibiConnection::getDatabaseInfo().
+	 *
+	 * @return DibiDatabaseInfo
+	 */
+	public static function getDatabaseInfo()
+	{
+		return self::getConnection()->getDatabaseInfo();
 	}
 
 

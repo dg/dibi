@@ -256,7 +256,7 @@ abstract class DibiTable extends DibiObject
 				array_shift($order);
 			} else {
 				$conditions = NULL;
-			}	
+			}
 		}
 		return $this->complete($this->connection->query(
 			'SELECT * FROM %n', $this->name,
