@@ -361,6 +361,21 @@ class dibi
 
 
 	/**
+	 * Executes SQL query and fetch pairs - Monostate for DibiConnection::query() & fetchPairs().
+	 *
+	 * @param  array|mixed    one or more arguments
+	 * @return string
+	 * @throws DibiException
+	 */
+	public static function fetchPairs($args)
+	{
+		$args = func_get_args();
+		return self::getConnection()->query($args)->fetchPairs();
+	}
+
+
+
+	/**
 	 * Gets the number of affected rows.
 	 * Monostate for DibiConnection::affectedRows()
 	 *

@@ -293,18 +293,18 @@ final class DibiTranslator extends DibiObject
 
 			case 'i':  // signed int
 			case 'u':  // unsigned int, ignored
-				// support for numbers - keep them unchanged
+				// support for long numbers - keep them unchanged
 				if (is_string($value) && preg_match('#[+-]?\d+(e\d+)?$#A', $value)) {
 					return $value;
 				}
 				return (string) (int) ($value + 0);
 
 			case 'f':  // float
-				// support for numbers - keep them unchanged
-				if (is_numeric($value) && (!is_string($value) || strpos($value, 'x') === FALSE)) {
-					return $value; // something like -9E-005 is accepted by SQL, HEX values is not
+				// support for extreme numbers - keep them unchanged
+				if (is_string($value) && is_numeric($value) && strpos($value, 'x') === FALSE) {
+					return $value; // something like -9E-005 is accepted by SQL, HEX values are not
 				}
-				return (string) ($value + 0);
+				return rtrim(rtrim(number_format($value, 5, '.', ''), '0'), '.');
 
 			case 'd':  // date
 			case 't':  // datetime
@@ -348,7 +348,7 @@ final class DibiTranslator extends DibiObject
 			return $this->driver->escape($value, dibi::FIELD_TEXT);
 
 		if (is_int($value) || is_float($value))
-			return (string) $value;  // something like -9E-005 is accepted by SQL
+			return rtrim(rtrim(number_format($value, 5, '.', ''), '0'), '.');
 
 		if (is_bool($value))
 			return $this->driver->escape($value, dibi::FIELD_BOOL);
