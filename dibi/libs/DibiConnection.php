@@ -100,25 +100,25 @@ class DibiConnection extends DibiObject
 		}
 
 		if (isset($config['result:withtables'])) {
-			$config['resultWithTables'] = $config['result:withtables'];
+			$config[dibi::RESULT_WITH_TABLES] = $config['result:withtables'];
 			unset($config['result:withtables']);
 		}
 
 		if (isset($config['result:objects'])) {
-			$config['resultObjects'] = $config['result:objects'];
+			$config[dibi::RESULT_OBJECTS] = $config['result:objects'];
 			unset($config['result:objects']);
 		}
 
-		if (isset($config['resultObjects'])) { // normalize
-			$val = $config['resultObjects'];
-			$config['resultObjects'] = is_string($val) && !is_numeric($val) ? $val : (bool) $val;
+		if (isset($config[dibi::RESULT_OBJECTS])) { // normalize
+			$val = $config[dibi::RESULT_OBJECTS];
+			$config[dibi::RESULT_OBJECTS] = is_string($val) && !is_numeric($val) ? $val : (bool) $val;
 		}
 
-		if (isset($config['resultClass'])) {
-			if (strcasecmp($config['resultClass'], 'DibiResult') && !is_subclass_of($config['resultClass'], 'DibiResult')) {
+		if (isset($config[dibi::RESULT_CLASS])) {
+			if (strcasecmp($config[dibi::RESULT_CLASS], 'DibiResult') && !is_subclass_of($config[dibi::RESULT_CLASS], 'DibiResult')) {
 				throw new InvalidArgumentException("Class '$config[resultClass]' is not DibiResult descendant.");
 			}
-			$this->resultClass = $config['resultClass'];
+			$this->resultClass = $config[dibi::RESULT_CLASS];
 		}
 
 		$config['name'] = $name;

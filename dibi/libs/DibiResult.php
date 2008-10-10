@@ -89,12 +89,12 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		$this->driver = $driver;
 
-		if (!empty($config['resultWithTables'])) {
+		if (!empty($config[dibi::RESULT_WITH_TABLES])) {
 			$this->setWithTables(TRUE);
 		}
 
-		if (isset($config['resultObjects'])) {
-			$this->setObjects($config['resultObjects']);
+		if (isset($config[dibi::RESULT_OBJECTS])) {
+			$this->setObjects($config[dibi::RESULT_OBJECTS]);
 		}
 	}
 

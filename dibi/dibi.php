@@ -111,6 +111,13 @@ class dibi
 		VERSION = '0.9',
 		REVISION = '$WCREV$ released on $WCDATE$';
 
+	/**
+	 * Configuration options
+	 */
+	const 
+		RESULT_WITH_TABLES = 'resultWithTables',
+		RESULT_OBJECTS = 'resultObjects',
+		RESULT_CLASS = 'resultClass';
 
 	/**
 	 * Connection registry storage for DibiConnection objects.
