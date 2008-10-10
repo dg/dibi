@@ -114,10 +114,8 @@ class dibi
 	/**
 	 * Configuration options
 	 */
-	const 
-		RESULT_WITH_TABLES = 'resultWithTables',
-		RESULT_OBJECTS = 'resultObjects',
-		RESULT_CLASS = 'resultClass';
+	const
+		RESULT_WITH_TABLES = 'resultWithTables'; // for MySQL
 
 	/**
 	 * Connection registry storage for DibiConnection objects.
@@ -327,7 +325,7 @@ class dibi
 	 * Executes SQL query and fetch result - Monostate for DibiConnection::query() & fetch().
 	 *
 	 * @param  array|mixed    one or more arguments
-	 * @return array
+	 * @return DibiRow
 	 * @throws DibiException
 	 */
 	public static function fetch($args)
@@ -342,7 +340,7 @@ class dibi
 	 * Executes SQL query and fetch results - Monostate for DibiConnection::query() & fetchAll().
 	 *
 	 * @param  array|mixed    one or more arguments
-	 * @return array
+	 * @return array of DibiRow
 	 * @throws DibiException
 	 */
 	public static function fetchAll($args)

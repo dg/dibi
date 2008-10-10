@@ -353,9 +353,9 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
-	public function fetch($type)
+	public function fetch($assoc)
 	{
-		return pg_fetch_array($this->resultSet, NULL, $type ? PGSQL_ASSOC : PGSQL_NUM);
+		return pg_fetch_array($this->resultSet, NULL, $assoc ? PGSQL_ASSOC : PGSQL_NUM);
 	}
 
 

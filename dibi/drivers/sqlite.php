@@ -309,9 +309,17 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
-	public function fetch($type)
+	public function fetch($assoc)
 	{
-		return sqlite_fetch_array($this->resultSet, $type ? SQLITE_ASSOC : SQLITE_NUM);
+		$row = sqlite_fetch_array($this->resultSet, $assoc ? SQLITE_ASSOC : SQLITE_NUM);
+		if ($assoc && $row) {
+			$tmp = array();
+			foreach ($row as $k => $v) {
+				$tmp[str_replace(array('[', ']'), '', $k)] = $v;
+			}
+			return $tmp;
+		}
+		return $row;
 	}
 
 
@@ -355,7 +363,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 		$count = sqlite_num_fields($this->resultSet);
 		$meta = array();
 		for ($i = 0; $i < $count; $i++) {
-			$pair = explode('.', sqlite_field_name($this->resultSet, $i));
+			$pair = explode('.', str_replace(array('[', ']'), '', sqlite_field_name($this->resultSet, $i)));
 			if (!isset($pair[1])) {
 				array_unshift($pair, NULL);
 			}

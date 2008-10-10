@@ -10,7 +10,6 @@ try {
 	dibi::connect(array(
 		'driver'   => 'sqlite',
 		'database' => 'sample.sdb',
-		'resultObjects' => TRUE, // fetch rows as objects
 	));
 	echo 'OK';
 

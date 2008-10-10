@@ -270,7 +270,7 @@ abstract class DibiTable extends DibiObject
 	/**
 	 * Fetches single row.
 	 * @param  scalar|array  primary key value
-	 * @return array|object row
+	 * @return DibiRow
 	 */
 	public function fetch($conditions)
 	{
@@ -290,21 +290,12 @@ abstract class DibiTable extends DibiObject
 
 	/**
 	 * Returns a blank row (not fetched from database).
-	 * @return array|object
+	 * @return DibiRow
 	 */
 	public function createBlank()
 	{
-		$row = $this->blankRow;
+		$row = new DibiRow($this->blankRow, 2);
 		$row[$this->primary] = NULL;
-
-		if ($class = $this->connection->getConfig(dibi::RESULT_OBJECTS)) {
-			if ($class === TRUE) {
-				$row = (object) $row;
-			} else {
-				$row = new $class($row);
-			}
-		}
-
 		return $row;
 	}
 
@@ -319,6 +310,7 @@ abstract class DibiTable extends DibiObject
 	{
 		if (is_object($data)) {
 			return (array) $data;
+
 		} elseif (is_array($data)) {
 			return $data;
 		}

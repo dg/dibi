@@ -228,7 +228,7 @@ class DibiFluent extends DibiObject
 
 	/**
 	 * Generates, executes SQL query and fetches the single row.
-	 * @return array|FALSE  array on success, FALSE if no next record
+	 * @return DibiRow|FALSE  array on success, FALSE if no next record
 	 * @throws DibiException
 	 */
 	public function fetch()

@@ -342,9 +342,9 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
-	public function fetch($type)
+	public function fetch($assoc)
 	{
-		return mysqli_fetch_array($this->resultSet, $type ? MYSQLI_ASSOC : MYSQLI_NUM);
+		return mysqli_fetch_array($this->resultSet, $assoc ? MYSQLI_ASSOC : MYSQLI_NUM);
 	}
 
 

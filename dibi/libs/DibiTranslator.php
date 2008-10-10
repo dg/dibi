@@ -195,7 +195,7 @@ final class DibiTranslator extends DibiObject
 	public function formatValue($value, $modifier)
 	{
 		// array processing (with or without modifier)
-		if (is_array($value)) {
+		if (is_array($value) || $value instanceof ArrayObject) {
 
 			$vx = $kx = array();
 			$operator = ', ';

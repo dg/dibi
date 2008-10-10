@@ -27,7 +27,6 @@
  * $result = dibi::query('SELECT * FROM [table]');
  *
  * $row   = $result->fetch();
- * $obj   = $result->fetch(TRUE);
  * $value = $result->fetchSingle();
  * $table = $result->fetchAll();
  * $pairs = $result->fetchPairs();
@@ -73,12 +72,6 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	private $withTables = FALSE;
 
-	/**
-	 * Fetch as objects or arrays?
-	 * @var mixed  TRUE | FALSE | class name
-	 */
-	private $objects = FALSE;
-
 
 
 	/**
@@ -91,10 +84,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 		if (!empty($config[dibi::RESULT_WITH_TABLES])) {
 			$this->setWithTables(TRUE);
-		}
-
-		if (isset($config[dibi::RESULT_OBJECTS])) {
-			$this->setObjects($config[dibi::RESULT_OBJECTS]);
 		}
 	}
 
@@ -212,38 +201,12 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * Returns rows as arrays or objects?
-	 *
-	 * @param  mixed  TRUE | FALSE | class name
-	 * @return void
-	 */
-	public function setObjects($type)
-	{
-		$this->objects = $type;
-	}
-
-
-
-	/**
-	 * Returns rows as arrays or objects?
-	 *
-	 * @return mixed  TRUE | FALSE | class name
-	 */
-	public function getObjects()
-	{
-		return $this->objects;
-	}
-
-
-
-	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
 	 *
-	 * @param  mixed  fetch as object? Overrides $this->setObjects()
-	 * @return array|FALSE  array on success, FALSE if no next record
+	 * @return DibiRow|FALSE  array on success, FALSE if no next record
 	 */
-	final public function fetch($objects = NULL)
+	final public function fetch()
 	{
 		if ($this->withTables === FALSE) {
 			$row = $this->getDriver()->fetch(TRUE);
@@ -266,19 +229,7 @@ class DibiResult extends DibiObject implements IDataSource
 			}
 		}
 
-		if ($objects === NULL) {
-			$objects = $this->objects;
-		}
-
-		if ($objects) {
-			if ($objects === TRUE) {
-				$row = (object) $row;
-			} else {
-				$row = new $objects($row);
-			}
-		}
-
-		return $row;
+		return new DibiRow($row, 2);
 	}
 
 
@@ -312,7 +263,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 *
 	 * @param  int  offset
 	 * @param  int  limit
-	 * @return array
+	 * @return array of DibiRow
 	 */
 	final public function fetchAll($offset = NULL, $limit = NULL)
 	{
@@ -339,13 +290,13 @@ class DibiResult extends DibiObject implements IDataSource
 	 * builds a tree:           $data[assoc1][index][assoc2]['assoc3']->value = {record}
 	 *
 	 * @param  string  associative descriptor
-	 * @return array
+	 * @return DibiRow
 	 * @throws InvalidArgumentException
 	 */
 	final public function fetchAssoc($assoc)
 	{
 		$this->seek(0);
-		$row = $this->fetch(FALSE);
+		$row = $this->fetch();
 		if (!$row) return array();  // empty result set
 
 		$data = NULL;
@@ -359,7 +310,7 @@ class DibiResult extends DibiObject implements IDataSource
 		}
 
 		// strip leading = and @
-		$leaf = $this->objects ? $this->objects : '=';  // gap
+		$leaf = '@';  // gap
 		$last = count($assoc) - 1;
 		while ($assoc[$last] === '=' || $assoc[$last] === '@') {
 			$leaf = $assoc[$last];
@@ -374,6 +325,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 		// make associative tree
 		do {
+			$arr = (array) $row;
 			$x = & $data;
 
 			// iterative deepening
@@ -383,7 +335,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 				} elseif ($as === '=') { // "record" node
 					if ($x === NULL) {
-						$x = $row;
+						$x = $arr;
 						$x = & $x[ $assoc[$i+1] ];
 						$x = NULL; // prepare child node
 					} else {
@@ -392,7 +344,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 				} elseif ($as === '@') { // "object" node
 					if ($x === NULL) {
-						$x = (object) $row;
+						$x = clone $row;
 						$x = & $x->{$assoc[$i+1]};
 						$x = NULL; // prepare child node
 					} else {
@@ -401,21 +353,19 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 				} else { // associative-array node
-					$x = & $x[ $row[ $as ] ];
+					$x = & $x[ $arr[ $as ] ];
 				}
 			}
 
 			if ($x === NULL) { // build leaf
 				if ($leaf === '=') {
-					$x = $row;
-				} elseif ($leaf === TRUE || $leaf === '@') {
-					$x = (object) $row;
+					$x = $arr;
 				} else {
-					$x = new $leaf($row);
+					$x = $row;
 				}
 			}
 
-		} while ($row = $this->fetch(FALSE));
+		} while ($row = $this->fetch());
 
 		unset($x);
 		return $data;
@@ -434,7 +384,7 @@ class DibiResult extends DibiObject implements IDataSource
 	final public function fetchPairs($key = NULL, $value = NULL)
 	{
 		$this->seek(0);
-		$row = $this->fetch(FALSE);
+		$row = $this->fetch();
 		if (!$row) return array();  // empty result set
 
 		$data = array();
@@ -445,12 +395,12 @@ class DibiResult extends DibiObject implements IDataSource
 			}
 
 			// autodetect
-			$tmp = array_keys($row);
+			$tmp = array_keys((array) $row);
 			$key = $tmp[0];
 			if (count($row) < 2) { // indexed-array
 				do {
 					$data[] = $row[$key];
-				} while ($row = $this->fetch(FALSE));
+				} while ($row = $this->fetch());
 				return $data;
 			}
 
@@ -464,7 +414,7 @@ class DibiResult extends DibiObject implements IDataSource
 			if ($key === NULL) { // indexed-array
 				do {
 					$data[] = $row[$value];
-				} while ($row = $this->fetch(FALSE));
+				} while ($row = $this->fetch());
 				return $data;
 			}
 
@@ -475,7 +425,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 		do {
 			$data[ $row[$key] ] = $row[$value];
-		} while ($row = $this->fetch(FALSE));
+		} while ($row = $this->fetch());
 
 		return $data;
 	}
@@ -604,7 +554,7 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		$i = 0;
 		$this->seek(0);
-		while ($row = $this->fetch(FALSE)) {
+		while ($row = $this->fetch()) {
 			if ($i === 0) {
 				echo "\n<table class=\"dump\">\n<thead>\n\t<tr>\n\t\t<th>#row</th>\n";
 
@@ -673,4 +623,18 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
+}
+
+
+
+
+/**
+ * dibi result-set row
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2008 David Grudl
+ * @package    dibi
+ */
+class DibiRow extends ArrayObject
+{
 }

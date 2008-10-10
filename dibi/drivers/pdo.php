@@ -351,9 +351,9 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
-	public function fetch($type)
+	public function fetch($assoc)
 	{
-		return $this->resultSet->fetch($type ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
+		return $this->resultSet->fetch($assoc ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
 	}
 
 

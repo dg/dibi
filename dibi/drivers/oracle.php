@@ -305,9 +305,9 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
-	public function fetch($type)
+	public function fetch($assoc)
 	{
-		return oci_fetch_array($this->resultSet, ($type ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS);
+		return oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS);
 	}
 
 

@@ -53,12 +53,6 @@ class DibiConnection extends DibiObject
 	 */
 	private $inTxn = FALSE;
 
-	/**
-	 * Result set encapsulation.
-	 * @var string
-	 */
-	private $resultClass = 'DibiResult';
-
 
 
 	/**
@@ -97,28 +91,6 @@ class DibiConnection extends DibiObject
 			if (!class_exists($class, FALSE)) {
 				throw new DibiException("Unable to create instance of dibi driver class '$class'.");
 			}
-		}
-
-		if (isset($config['result:withtables'])) {
-			$config[dibi::RESULT_WITH_TABLES] = $config['result:withtables'];
-			unset($config['result:withtables']);
-		}
-
-		if (isset($config['result:objects'])) {
-			$config[dibi::RESULT_OBJECTS] = $config['result:objects'];
-			unset($config['result:objects']);
-		}
-
-		if (isset($config[dibi::RESULT_OBJECTS])) { // normalize
-			$val = $config[dibi::RESULT_OBJECTS];
-			$config[dibi::RESULT_OBJECTS] = is_string($val) && !is_numeric($val) ? $val : (bool) $val;
-		}
-
-		if (isset($config[dibi::RESULT_CLASS])) {
-			if (strcasecmp($config[dibi::RESULT_CLASS], 'DibiResult') && !is_subclass_of($config[dibi::RESULT_CLASS], 'DibiResult')) {
-				throw new InvalidArgumentException("Class '$config[resultClass]' is not DibiResult descendant.");
-			}
-			$this->resultClass = $config[dibi::RESULT_CLASS];
 		}
 
 		$config['name'] = $name;
@@ -306,7 +278,7 @@ class DibiConnection extends DibiObject
 		dibi::notify($this, 'beforeQuery', $sql);
 
 		if ($res = $this->driver->query($sql)) { // intentionally =
-			$res = new $this->resultClass($res, $this->config);
+			$res = new DibiResult($res, $this->config);
 		}
 
 		$time += microtime(TRUE);

@@ -297,9 +297,9 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
-	public function fetch($type)
+	public function fetch($assoc)
 	{
-		return mssql_fetch_array($this->resultSet, $type ? MSSQL_ASSOC : MSSQL_NUM);
+		return mssql_fetch_array($this->resultSet, $assoc ? MSSQL_ASSOC : MSSQL_NUM);
 	}
 
 

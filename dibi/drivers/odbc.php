@@ -309,9 +309,9 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
-	public function fetch($type)
+	public function fetch($assoc)
 	{
-		if ($type) {
+		if ($assoc) {
 			return odbc_fetch_array($this->resultSet, ++$this->row);
 		} else {
 			$set = $this->resultSet;
