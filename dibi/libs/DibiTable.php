@@ -358,4 +358,53 @@ abstract class DibiTable extends DibiObject
 		return $this->command()->__call('select', $args)->from($this->name);
 	}
 
+
+
+	/********************* magic fetching ****************d*g**/
+
+
+
+	/**
+	 * Magic fetch.
+	 * - $row = $model->fetchByUrl('about-us');
+	 * - $arr = $model->fetchAllByCategoryIdAndVisibility(5, TRUE);
+	 *
+	 * @param  string
+	 * @param  array
+	 * @return DibiRow|array
+	 */
+	public function __call($name, $args)
+	{
+		if (strncmp($name, 'fetchBy', 7) === 0) { // single row
+			$single = TRUE;
+			$name = substr($name, 7);
+
+		} elseif (strncmp($name, 'fetchAllBy', 10) === 0) { // multi row
+			$name = substr($name, 10);
+
+		} else {
+			parent::__call($name, $args);
+		}
+
+		// ProductIdAndTitle -> array('product', 'title')
+		$parts = explode('_and_', strtolower(preg_replace('#(.)(?=[A-Z])#', '$1_', $name)));
+
+		if (count($parts) !== count($args)) {
+			throw new InvalidArgumentException("Magic fetch expects " . count($parts) . " parameters, but " . count($args) . " was given.");
+		}
+
+		if (isset($single)) {
+			return $this->complete($this->connection->query(
+				'SELECT * FROM %n', $this->name,
+				'WHERE %and', array_combine($parts, $args),
+				'LIMIT 1'
+			))->fetch();
+		} else {
+			return $this->complete($this->connection->query(
+				'SELECT * FROM %n', $this->name,
+				'WHERE %and', array_combine($parts, $args)
+			))->fetchAll();
+		}
+	}
+
 }

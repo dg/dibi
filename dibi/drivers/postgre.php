@@ -89,7 +89,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 		}
 
 		DibiDriverException::tryError();
-		if (isset($config['persistent'])) {
+		if (empty($config['persistent'])) {
 			$this->connection = pg_connect($string, PGSQL_CONNECT_FORCE_NEW);
 		} else {
 			$this->connection = pg_pconnect($string, PGSQL_CONNECT_FORCE_NEW);

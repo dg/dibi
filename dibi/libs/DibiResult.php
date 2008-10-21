@@ -304,7 +304,8 @@ class DibiResult extends DibiObject implements IDataSource
 
 		// check columns
 		foreach ($assoc as $as) {
-			if ($as !== '#' && $as !== '=' && $as !== '@' && !array_key_exists($as, $row)) {
+			// offsetExists ignores NULL in PHP 5.2.1, isset() surprisingly NULL accepts
+			if ($as !== '#' && $as !== '=' && $as !== '@' && !isset($row[$as])) {
 				throw new InvalidArgumentException("Unknown column '$as' in associative descriptor.");
 			}
 		}
@@ -407,7 +408,7 @@ class DibiResult extends DibiObject implements IDataSource
 			$value = $tmp[1];
 
 		} else {
-			if (!array_key_exists($value, $row)) {
+			if (!isset($row[$value])) {
 				throw new InvalidArgumentException("Unknown value column '$value'.");
 			}
 
@@ -418,7 +419,7 @@ class DibiResult extends DibiObject implements IDataSource
 				return $data;
 			}
 
-			if (!array_key_exists($key, $row)) {
+			if (!isset($row[$key])) {
 				throw new InvalidArgumentException("Unknown key column '$key'.");
 			}
 		}
