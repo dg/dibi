@@ -72,6 +72,7 @@ require_once dirname(__FILE__) . '/libs/DibiTable.php';
 require_once dirname(__FILE__) . '/libs/DibiDataSource.php';
 require_once dirname(__FILE__) . '/libs/DibiFluent.php';
 require_once dirname(__FILE__) . '/libs/DibiDatabaseInfo.php';
+require_once dirname(__FILE__) . '/libs/DibiProfiler.php';
 
 
 
@@ -239,7 +240,7 @@ class dibi
 	 * Retrieve active connection.
 	 *
 	 * @param  string   connection registy name
-	 * @return object   DibiConnection object.
+	 * @return DibiConnection
 	 * @throws DibiException
 	 */
 	public static function getConnection($name = NULL)
@@ -271,6 +272,18 @@ class dibi
 	public static function activate($name)
 	{
 		self::$connection = self::getConnection($name);
+	}
+
+
+
+	/**
+	 * Retrieve active connection profiler.
+	 * @return IDibiProfiler
+	 * @throws DibiException
+	 */
+	public static function getProfiler()
+	{
+		return self::getConnection()->getProfiler();
 	}
 
 
@@ -672,64 +685,6 @@ class dibi
 		} else {
 			return $m;
 		}
-	}
-
-
-
-	/********************* event handling ****************d*g**/
-
-
-
-	/**
-	 * Add new event handler.
-	 *
-	 * @param  callback
-	 * @return void
-	 * @throws InvalidArgumentException
-	 */
-	public static function addHandler($callback)
-	{
-		if (!is_callable($callback)) {
-			throw new InvalidArgumentException("Invalid callback.");
-		}
-
-		self::$handlers[] = $callback;
-	}
-
-
-
-	/**
-	 * Event notification (events: exception, connected, beforeQuery, afterQuery, begin, commit, rollback).
-	 *
-	 * @param  DibiConnection
-	 * @param  string event name
-	 * @param  mixed
-	 * @return void
-	 */
-	public static function notify(DibiConnection $connection = NULL, $event, $arg = NULL)
-	{
-		foreach (self::$handlers as $handler) {
-			call_user_func($handler, $connection, $event, $arg);
-		}
-	}
-
-
-
-	/**
-	 * Enable profiler & logger.
-	 *
-	 * @param  string  filename
-	 * @param  bool    log all queries?
-	 * @return DibiProfiler
-	 */
-	public static function startLogger($file, $logQueries = FALSE)
-	{
-		require_once dirname(__FILE__) . '/libs/DibiLogger.php';
-
-		$logger = new DibiLogger($file);
-		$logger->logQueries = $logQueries;
-		self::addHandler(array($logger, 'handler'));
-		return $logger;
 	}
 
 

@@ -29,7 +29,7 @@ interface IDibiVariable
 	/**
 	 * Format for SQL.
 	 *
-	 * @param  object  DibiTranslator
+	 * @param  DibiTranslator
 	 * @param  string  optional modifier
 	 * @return string  SQL code
 	 */
@@ -48,6 +48,57 @@ interface IDataSource extends Countable, IteratorAggregate
 {
 	//function IteratorAggregate::getIterator();
 	//function Countable::count();
+}
+
+
+
+
+
+/**
+ * Defines method that must profiler implement.
+ * @package dibi
+ */
+interface IDibiProfiler
+{
+	/**#@+ event type */
+	const CONNECT = 1;
+	const SELECT = 4;
+	const INSERT = 8;
+	const DELETE = 16;
+	const UPDATE = 32;
+	const QUERY = 60;
+	const BEGIN = 64;
+	const COMMIT = 128;
+	const ROLLBACK = 256;
+	const TRANSACTION = 448;
+	const EXCEPTION = 512;
+	const ALL = 1023;
+	/**#@-*/
+
+	/**
+	 * Before event notification.
+	 * @param  DibiConnection
+	 * @param  int     event name
+	 * @param  string  sql
+	 * @return int
+	 */
+	function before(DibiConnection $connection, $event, $sql = NULL);
+
+	/**
+	 * After event notification.
+	 * @param  int
+	 * @param  DibiResult
+	 * @return void
+	 */
+	function after($ticket, $result = NULL);
+
+	/**
+	 * After exception notification.
+	 * @param  DibiDriverException
+	 * @return void
+	 */
+	function exception(DibiDriverException $exception);
+
 }
 
 

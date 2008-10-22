@@ -3,15 +3,16 @@
 
 require_once '../dibi/dibi.php';
 
-// enable log to this file, TRUE means "log all queries"
-dibi::startLogger('log.sql', TRUE);
-
-
 
 dibi::connect(array(
 	'driver'   => 'sqlite',
 	'database' => 'sample.sdb',
+	'profiler' => TRUE,
 ));
+
+
+// enable log to this file
+dibi::getProfiler()->setFile('log.sql');
 
 
 

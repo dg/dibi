@@ -42,6 +42,12 @@ class DibiConnection extends DibiObject
 	private $driver;
 
 	/**
+	 * Profiler
+	 * @var IDibiProfiler
+	 */
+	private $profiler;
+
+	/**
 	 * Is connected?
 	 * @var bool
 	 */
@@ -89,13 +95,24 @@ class DibiConnection extends DibiObject
 			include_once dirname(__FILE__) . "/../drivers/$driver.php";
 
 			if (!class_exists($class, FALSE)) {
-				throw new DibiException("Unable to create instance of dibi driver class '$class'.");
+				throw new DibiException("Unable to create instance of dibi driver '$class'.");
 			}
 		}
 
 		$config['name'] = $name;
 		$this->config = $config;
 		$this->driver = new $class;
+
+		if (!empty($config['profiler'])) {
+			$class = $config['profiler'];
+			if (is_numeric($class) || is_bool($class)) {
+				$class = 'DibiProfiler';
+			}
+			if (!class_exists($class)) {
+				throw new DibiException("Unable to create instance of dibi profiler '$class'.");
+			}
+			$this->setProfiler(new $class);
+		}
 
 		if (empty($config['lazy'])) {
 			$this->connect();
@@ -125,9 +142,14 @@ class DibiConnection extends DibiObject
 	final protected function connect()
 	{
 		if (!$this->connected) {
+			if ($this->profiler !== NULL) {
+				$ticket = $this->profiler->before($this, IDibiProfiler::CONNECT);
+			}
 			$this->driver->connect($this->config);
 			$this->connected = TRUE;
-			dibi::notify($this, 'connected');
+			if (isset($ticket)) {
+				$this->profiler->after($ticket);
+			}
 		}
 	}
 
@@ -146,7 +168,6 @@ class DibiConnection extends DibiObject
 			}
 			$this->driver->disconnect();
 			$this->connected = FALSE;
-			dibi::notify($this, 'disconnected');
 		}
 	}
 
@@ -271,11 +292,22 @@ class DibiConnection extends DibiObject
 	{
 		$this->connect();
 
+		if ($this->profiler !== NULL) {
+			$event = IDibiProfiler::QUERY;
+			if (preg_match('#\s*(SELECT|UPDATE|INSERT|DELETE)#i', $sql, $matches)) {
+				static $events = array(
+					'SELECT' => IDibiProfiler::SELECT, 'UPDATE' => IDibiProfiler::UPDATE,
+					'INSERT' => IDibiProfiler::INSERT, 'DELETE' => IDibiProfiler::DELETE,
+				);
+				$event = $events[strtoupper($matches[1])];
+			}
+			$ticket = $this->profiler->before($this, $event, $sql);
+		}
+		// TODO: move to profiler?
 		dibi::$numOfQueries++;
 		dibi::$sql = $sql;
 		dibi::$elapsedTime = FALSE;
 		$time = -microtime(TRUE);
-		dibi::notify($this, 'beforeQuery', $sql);
 
 		if ($res = $this->driver->query($sql)) { // intentionally =
 			$res = new DibiResult($res, $this->config);
@@ -284,8 +316,10 @@ class DibiConnection extends DibiObject
 		$time += microtime(TRUE);
 		dibi::$elapsedTime = $time;
 		dibi::$totalTime += $time;
-		dibi::notify($this, 'afterQuery', $res);
 
+		if (isset($ticket)) {
+			$this->profiler->after($ticket, $res);
+		}
 		return $res;
 	}
 
@@ -332,9 +366,14 @@ class DibiConnection extends DibiObject
 		if ($this->inTxn) {
 			throw new DibiException('There is already an active transaction.');
 		}
+		if ($this->profiler !== NULL) {
+			$ticket = $this->profiler->before($this, IDibiProfiler::BEGIN);
+		}
 		$this->driver->begin();
 		$this->inTxn = TRUE;
-		dibi::notify($this, 'begin');
+		if (isset($ticket)) {
+			$this->profiler->after($ticket);
+		}
 	}
 
 
@@ -348,9 +387,14 @@ class DibiConnection extends DibiObject
 		if (!$this->inTxn) {
 			throw new DibiException('There is no active transaction.');
 		}
+		if ($this->profiler !== NULL) {
+			$ticket = $this->profiler->before($this, IDibiProfiler::COMMIT);
+		}
 		$this->driver->commit();
 		$this->inTxn = FALSE;
-		dibi::notify($this, 'commit');
+		if (isset($ticket)) {
+			$this->profiler->after($ticket);
+		}
 	}
 
 
@@ -364,9 +408,14 @@ class DibiConnection extends DibiObject
 		if (!$this->inTxn) {
 			throw new DibiException('There is no active transaction.');
 		}
+		if ($this->profiler !== NULL) {
+			$ticket = $this->profiler->before($this, IDibiProfiler::ROLLBACK);
+		}
 		$this->driver->rollback();
 		$this->inTxn = FALSE;
-		dibi::notify($this, 'rollback');
+		if (isset($ticket)) {
+			$this->profiler->after($ticket);
+		}
 	}
 
 
@@ -486,6 +535,31 @@ class DibiConnection extends DibiObject
 	public function delete($table)
 	{
 		return $this->command()->delete()->from('%n', $table);
+	}
+
+
+
+	/********************* profiler ****************d*g**/
+
+
+
+	/**
+	 * @param  IDibiProfiler
+	 * @return void
+	 */
+	public function setProfiler(IDibiProfiler $profiler = NULL)
+	{
+		$this->profiler = $profiler;
+	}
+
+
+
+	/**
+	 * @return IDibiProfiler
+	 */
+	public function getProfiler()
+	{
+		return $this->profiler;
 	}
 
 

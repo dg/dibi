@@ -61,7 +61,7 @@ class DibiDriverException extends DibiException implements /*Nette::*/IDebuggabl
 	{
 		parent::__construct($message, (int) $code);
 		$this->sql = $sql;
-		dibi::notify(NULL, 'exception', $this);
+		// TODO: add $profiler->exception($this);
 	}
 
 
