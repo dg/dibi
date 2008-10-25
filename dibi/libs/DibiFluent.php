@@ -40,6 +40,8 @@ class DibiFluent extends DibiObject
 
 	/** @var array */
 	public static $modifiers = array(
+		'SELECT' => '%n',
+		'IN' => '%l',
 		'VALUES' => '%l',
 		'SET' => '%a',
 		'WHERE' => '%and',
@@ -120,8 +122,13 @@ class DibiFluent extends DibiObject
 			} elseif (is_string($arg) && preg_match('#^[a-z][a-z0-9_.]*$#i', $arg)) { // identifier
 				$args = array('%n', $arg);
 
-			} elseif (is_array($arg) && is_string(key($arg))) { // associative array
-				$args = array(isset(self::$modifiers[$clause]) ? self::$modifiers[$clause] : '%a', $arg);
+			} elseif (is_array($arg)) { // any array
+				if (isset(self::$modifiers[$clause])) {
+					$args = array(self::$modifiers[$clause], $arg);
+
+				} elseif (is_string(key($arg))) { // associative array
+					$args = array('%a', $arg);
+				}
 			}
 		}
 

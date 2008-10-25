@@ -111,17 +111,29 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 			if ($this->useFirebug) {
 				self::$table[] = array(
 					sprintf('%0.3f', dibi::$elapsedTime * 1000),
-					trim(preg_replace('#\s+#', ' ', $sql)),
+					trim($sql),
 					$res instanceof DibiResult ? count($res) : '-',
 					$connection->getConfig('driver') . '/' . $connection->getConfig('name')
 				);
-				$caption = 'dibi profiler (' . dibi::$numOfQueries . ' SQL queries took ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms)';
 
-				$payload['FirePHP.Firebug.Console'][] = array('TABLE', array($caption, self::$table));
+				header('X-Wf-Protocol-dibi: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');
+				header('X-Wf-dibi-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0');
+				header('X-Wf-dibi-Structure-1: http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1');
+
+				$payload = array(
+					array(
+						'Type' => 'TABLE',
+						'Label' => 'dibi profiler (' . dibi::$numOfQueries . ' SQL queries took ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms)',
+					),
+					self::$table,
+				);
 				$payload = function_exists('json_encode') ? json_encode($payload) : self::json_encode($payload);
-				foreach (str_split($payload, 4998) as $num => $s) {
-					header('X-FirePHP-Data-' . str_pad(++$num, 12, '0', STR_PAD_LEFT) . ': ' . $s);
+				foreach (str_split($payload, 4990) as $num => $s) {
+					$num++;
+					header("X-Wf-dibi-1-1-$num: |$s|\\"); // protocol-, structure-, plugin-, message-index
 				}
+				header("X-Wf-dibi-1-1-$num: |$s|");
+				header("X-Wf-dibi-Index: $num");
 			}
 
 			if ($this->file) {
