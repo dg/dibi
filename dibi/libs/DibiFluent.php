@@ -39,6 +39,16 @@ class DibiFluent extends DibiObject
 	);
 
 	/** @var array */
+	public static $modifiers = array(
+		'VALUES' => '%l',
+		'SET' => '%a',
+		'WHERE' => '%and',
+		'HAVING' => '%and',
+		'ORDER BY' => '%by',
+		'GROUP BY' => '%by',
+	);
+
+	/** @var array */
 	public static $separators = array(
 		'SELECT' => ',',
 		'FROM' => FALSE,
@@ -88,7 +98,7 @@ class DibiFluent extends DibiObject
 	 */
 	public function __call($clause, $args)
 	{
-		$clause = self::_clause($clause);
+		$clause = self::_formatClause($clause);
 
 		// lazy initialization
 		if ($this->command === NULL) {
@@ -104,11 +114,14 @@ class DibiFluent extends DibiObject
 		if (count($args) === 1) {
 			$arg = $args[0];
 			// TODO: really ignore TRUE?
-			if ($arg === TRUE) {
+			if ($arg === TRUE) { // flag
 				$args = array();
 
-			} elseif (is_string($arg) && preg_match('#^[a-z][a-z0-9_.]*$#i', $arg)) {
+			} elseif (is_string($arg) && preg_match('#^[a-z][a-z0-9_.]*$#i', $arg)) { // identifier
 				$args = array('%n', $arg);
+
+			} elseif (is_array($arg) && is_string(key($arg))) { // associative array
+				$args = array(isset(self::$modifiers[$clause]) ? self::$modifiers[$clause] : '%a', $arg);
 			}
 		}
 
@@ -158,7 +171,7 @@ class DibiFluent extends DibiObject
 	 */
 	public function clause($clause, $remove = FALSE)
 	{
-		$this->cursor = & $this->clauses[self::_clause($clause)];
+		$this->cursor = & $this->clauses[self::_formatClause($clause)];
 
 		if ($remove) {
 			$this->cursor = NULL;
@@ -320,7 +333,7 @@ class DibiFluent extends DibiObject
 			$data = $this->clauses;
 
 		} else {
-			$clause = self::_clause($clause);
+			$clause = self::_formatClause($clause);
 			if (array_key_exists($clause, $this->clauses)) {
 				$data = array($clause => $this->clauses[$clause]);
 			} else {
@@ -350,7 +363,7 @@ class DibiFluent extends DibiObject
 	 * @param  string
 	 * @return string
 	 */
-	private static function _clause($s)
+	private static function _formatClause($s)
 	{
 		if ($s === 'order' || $s === 'group') {
 			$s .= 'By';

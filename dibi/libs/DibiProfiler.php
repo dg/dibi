@@ -118,7 +118,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 				$caption = 'dibi profiler (' . dibi::$numOfQueries . ' SQL queries took ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms)';
 
 				$payload['FirePHP.Firebug.Console'][] = array('TABLE', array($caption, self::$table));
-				$payload = json_encode($payload);
+				$payload = function_exists('json_encode') ? json_encode($payload) : self::json_encode($payload);
 				foreach (str_split($payload, 4998) as $num => $s) {
 					header('X-FirePHP-Data-' . str_pad(++$num, 12, '0', STR_PAD_LEFT) . ': ' . $s);
 				}
@@ -177,6 +177,41 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 		flock($handle, LOCK_EX);
 		fwrite($handle, $message);
 		fclose($handle);
+	}
+
+
+
+	public static function json_encode($val)
+	{
+		// indexed array
+		if (is_array($val) && (!$val
+			|| array_keys($val) === range(0, count($val) - 1))) {
+			return '[' . implode(',', array_map(array(__CLASS__, 'json_encode'), $val)) . ']';
+		}
+
+		// associative array
+		if (is_array($val) || is_object($val)) {
+			$tmp = array();
+			foreach ($val as $k => $v) {
+				$tmp[] = self::json_encode((string) $k) . ':' . self::json_encode($v);
+			}
+			return '{' . implode(',', $tmp) . '}';
+		}
+
+		if (is_string($val)) {
+			$val = str_replace(array("\\", "\x00"), array("\\\\", "\\u0000"), $val); // due to bug #40915
+			return '"' . addcslashes($val, "\x8\x9\xA\xC\xD/\"") . '"';
+		}
+
+		if (is_int($val) || is_float($val)) {
+			return rtrim(rtrim(number_format($val, 5, '.', ''), '0'), '.');
+		}
+
+		if (is_bool($val)) {
+			return $val ? 'true' : 'false';
+		}
+
+		return 'null';
 	}
 
 }
