@@ -138,8 +138,11 @@ class DibiTableInfo extends DibiObject
 	/** @var IDibiDriver */
 	private $driver;
 
-	/** @var array */
-	private $info;
+	/** @var string */
+	private $name;
+
+	/** @var bool */
+	private $view;
 
 	/** @var array */
 	private $columns;
@@ -158,7 +161,8 @@ class DibiTableInfo extends DibiObject
 	public function __construct(IDibiDriver $driver, array $info)
 	{
 		$this->driver = $driver;
-		$this->info = $info;
+		$this->name = $info['name'];
+		$this->view = !empty($info['view']);
 	}
 
 
@@ -168,7 +172,7 @@ class DibiTableInfo extends DibiObject
 	 */
 	public function getName()
 	{
-		return $this->info['name'];
+		return $this->name;
 	}
 
 
@@ -178,7 +182,7 @@ class DibiTableInfo extends DibiObject
 	 */
 	public function isView()
 	{
-		return !empty($this->info['view']);
+		return $this->view;
 	}
 
 
@@ -279,7 +283,7 @@ class DibiTableInfo extends DibiObject
 	{
 		if ($this->columns === NULL) {
 			$this->columns = array();
-			foreach ($this->driver->getColumns($this->info['name']) as $info) {
+			foreach ($this->driver->getColumns($this->name) as $info) {
 				$this->columns[strtolower($info['name'])] = new DibiColumnInfo($this->driver, $info);
 			}
 		}
@@ -295,7 +299,7 @@ class DibiTableInfo extends DibiObject
 		if ($this->indexes === NULL) {
 			$this->initColumns();
 			$this->indexes = array();
-			foreach ($this->driver->getIndexes($this->info['name']) as $info) {
+			foreach ($this->driver->getIndexes($this->name) as $info) {
 				foreach ($info['columns'] as $key => $name) {
 					$info['columns'][$key] = $this->columns[strtolower($name)];
 				}
@@ -328,11 +332,17 @@ class DibiTableInfo extends DibiObject
  */
 class DibiColumnInfo extends DibiObject
 {
+	/** @var array */
+	private static $types;
+
 	/** @var IDibiDriver */
 	private $driver;
 
-	/** @var array (name, table, fullname, type, nativetype, size, nullable, default, autoincrement) */
+	/** @var array (name, nativetype, [table], [fullname], [size], [nullable], [default], [autoincrement], [vendor]) */
 	private $info;
+
+	/** @var string */
+	private $type;
 
 
 
@@ -340,6 +350,7 @@ class DibiColumnInfo extends DibiObject
 	{
 		$this->driver = $driver;
 		$this->info = $info;
+		$this->type = self::detectType($this->info['nativetype']);
 	}
 
 
@@ -382,7 +393,7 @@ class DibiColumnInfo extends DibiObject
 	 */
 	public function getType()
 	{
-		return isset($this->info['type']) ? $this->info['type'] : NULL;
+		return $this->type;
 	}
 
 
@@ -392,7 +403,7 @@ class DibiColumnInfo extends DibiObject
 	 */
 	public function getNativeType()
 	{
-		return isset($this->info['nativetype']) ? $this->info['nativetype'] : NULL;
+		return $this->info['nativetype'];
 	}
 
 
@@ -412,7 +423,7 @@ class DibiColumnInfo extends DibiObject
 	 */
 	public function isNullable()
 	{
-		return !empty($this->info['nullable']);
+		return isset($this->info['nullable']) ? (bool) $this->info['nullable'] : NULL;
 	}
 
 
@@ -422,7 +433,7 @@ class DibiColumnInfo extends DibiObject
 	 */
 	public function isAutoIncrement()
 	{
-		return !empty($this->info['autoincrement']);
+		return isset($this->info['autoincrement']) ? (bool) $this->info['autoincrement'] : NULL;
 	}
 
 
@@ -441,9 +452,39 @@ class DibiColumnInfo extends DibiObject
 	 * @param  string
 	 * @return mixed
 	 */
-	public function getInfo($key)
+	public function getVendorInfo($key)
 	{
-		return isset($this->info[$key]) ? $this->info[$key] : NULL;
+		return isset($this->info['vendor'][$key]) ? $this->info['vendor'][$key] : NULL;
+	}
+
+
+
+	/**
+	 * Heuristic type detection.
+	 * @param  string
+	 * @return string
+	 */
+	public static function detectType($type)
+	{
+		static $patterns = array(
+			'BYTE|COUNTER|SERIAL|INT|LONG' => dibi::FIELD_INTEGER,
+			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC' => dibi::FIELD_FLOAT,
+			'^TIME$' => dibi::FIELD_TIME,
+			'TIME' => dibi::FIELD_DATETIME, // DATETIME, TIMESTAMP
+			'YEAR|DATE' => dibi::FIELD_DATE,
+			'BYTEA|BLOB|BIN' => dibi::FIELD_BINARY,
+			'BOOL|BIT' => dibi::FIELD_BOOL,
+		);
+
+		if (!isset(self::$types[$type])) {
+			self::$types[$type] = dibi::FIELD_TEXT;
+			foreach ($patterns as $s => $val) {
+				if (preg_match("#$s#i", $type)) {
+					return self::$types[$type] = $val;
+				}
+			}
+		}
+		return self::$types[$type];
 	}
 
 }
@@ -454,6 +495,7 @@ class DibiColumnInfo extends DibiObject
 /**
  * Reflection metadata class for a foreign key.
  * @package dibi
+ * @todo
  */
 class DibiForeignKeyInfo extends DibiObject
 {
@@ -502,7 +544,7 @@ class DibiForeignKeyInfo extends DibiObject
  */
 class DibiIndexInfo extends DibiObject
 {
-	/** @var array (name, columns, unique, primary) */
+	/** @var array (name, columns, [unique], [primary]) */
 	private $info;
 
 

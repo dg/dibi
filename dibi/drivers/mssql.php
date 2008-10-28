@@ -346,9 +346,8 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 				'name' => $row['name'],
 				'fullname' => $row['column_source'] ? $row['column_source'] . '.' . $row['name'] : $row['name'],
 				'table' => $row['column_source'],
-				'type' => NULL,
 				'nativetype' => $row['type'],
-			) + $row;
+			);
 		}
 		return $res;
 	}

@@ -101,6 +101,7 @@ class dibi
 		FIELD_FLOAT =    'f',
 		FIELD_DATE =     'd',
 		FIELD_DATETIME = 't',
+		FIELD_TIME =     't',
 
 		// special
 		IDENTIFIER =     'n';

@@ -456,14 +456,14 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 		$this->query("
 			SELECT indkey
 			FROM pg_index, pg_class
-			WHERE pg_class.relname = '$_table' AND pg_class.oid = pg_index.indrelid AND pg_index.indisprimary
+			WHERE pg_class.relname = $_table AND pg_class.oid = pg_index.indrelid AND pg_index.indisprimary
 		");
 		$primary = (int) pg_fetch_object($this->resultSet)->indkey;
 
 		$this->query("
 			SELECT *
 			FROM information_schema.columns
-			WHERE table_name = '$_table' AND table_schema = current_schema()
+			WHERE table_name = $_table AND table_schema = current_schema()
 			ORDER BY ordinal_position
 		");
 		$res = array();
@@ -472,13 +472,13 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 			$res[] = array(
 				'name' => $row['column_name'],
 				'table' => $table,
-				'type' => NULL,
 				'nativetype' => strtoupper($row['udt_name']),
 				'size' => $size ? $size : NULL,
 				'nullable' => $row['is_nullable'] === 'YES',
 				'default' => $row['column_default'],
 				'autoincrement' => (int) $row['ordinal_position'] === $primary && substr($row['column_default'], 0, 7) === 'nextval',
-			) + $row;
+				'vendor' => $row,
+			);
 		}
 		$this->free();
 		return $res;

@@ -409,12 +409,12 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 		for ($i = 0; $i < $count; $i++) {
 			$row = (array) mysql_fetch_field($this->resultSet, $i);
 			$res[] = array(
+				'name' => $row['name'],
+				'table' => $row['table'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
-				'type' => NULL,
 				'nativetype' => strtoupper($row['type']),
-				'nullable' => !($row['not_null']),
-				'default' => $row['def'],
-			) + $row;
+				'vendor' => $row,
+			);
 		}
 		return $res;
 	}

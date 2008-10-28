@@ -386,21 +386,27 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getColumnsMeta()
 	{
+		static $types;
+		if (empty($types)) {
+			$consts = get_defined_constants(TRUE);
+			foreach ($consts['mysqli'] as $key => $value) {
+				if (strncmp($key, 'MYSQLI_TYPE_', 12) === 0) {
+					$types[$value] = substr($key, 12);
+				}
+			}
+		}
+
 		$count = mysqli_num_fields($this->resultSet);
 		$res = array();
 		for ($i = 0; $i < $count; $i++) {
 			$row = (array) mysqli_fetch_field_direct($this->resultSet, $i);
 			$res[] = array(
 				'name' => $row['name'],
-				'column' => $row['orgname'],
-				'alias' => $row['table'],
 				'table' => $row['orgtable'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
-				'type' => NULL,
-				'nativetype' => $row['type'],
-				'nullable' => !($row['flags'] & MYSQLI_NOT_NULL_FLAG),
-				'default' => $row['def'],
-			) + $row;
+				'nativetype' => $types[$row['type']],
+				'vendor' => $row,
+			);
 		}
 		return $res;
 	}

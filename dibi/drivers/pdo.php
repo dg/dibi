@@ -400,10 +400,12 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 				throw new DibiDriverException('Driver does not support meta data.');
 			}
 			$res[] = array(
-				'type' => NULL,
+				'name' => $row['name'],
+				'table' => $row['table'],
 				'nativetype' => $row['native_type'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
-			) + $row;
+				'vendor' => $row,
+			);
 		}
 		return $res;
 	}

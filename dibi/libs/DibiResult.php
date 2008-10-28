@@ -58,7 +58,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 * Cache for $driver->getColumnsMeta().
 	 * @var array
 	 */
-	private $metaCache;
+	private $meta;
 
 	/**
 	 * Already fetched? Used for allowance for first seek(0).
@@ -164,12 +164,8 @@ class DibiResult extends DibiObject implements IDataSource
 	final public function setWithTables($val)
 	{
 		if ($val) {
-			if ($this->metaCache === NULL) {
-				$this->metaCache = $this->getDriver()->getColumnsMeta();
-			}
-
 			$cols = array();
-			foreach ($this->metaCache as $info) {
+			foreach ($this->getMeta() as $info) {
 				$name = $info['fullname'];
 				if (isset($cols[$name])) {
 					$fix = 1;
@@ -447,6 +443,19 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
+	 * Autodetect column types.
+	 * @return void
+	 */
+	final public function detectTypes()
+	{
+		foreach ($this->getMeta() as $info) {
+			$this->xlat[$info['name']] = array('type' => $info['type'], 'format' => NULL);
+		}
+	}
+
+
+
+	/**
 	 * Define multiple columns types (for internal usage).
 	 * @param array
 	 * @return void
@@ -508,18 +517,14 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * Gets an array of meta informations about column.
+	 * Gets an array of meta informations about columns.
 	 *
 	 * @return array of DibiColumnInfo
 	 */
 	final public function getColumns()
 	{
-		if ($this->metaCache === NULL) {
-			$this->metaCache = $this->getDriver()->getColumnsMeta();
-		}
-
 		$cols = array();
-		foreach ($this->metaCache as $info) {
+		foreach ($this->getMeta() as $info) {
 			$cols[] = new DibiColumnInfo($this->driver, $info);
 		}
 		return $cols;
@@ -533,11 +538,8 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	public function getColumnNames($withTables = FALSE)
 	{
-		if ($this->metaCache === NULL) {
-			$this->metaCache = $this->getDriver()->getColumnsMeta();
-		}
 		$cols = array();
-		foreach ($this->metaCache as $info) {
+		foreach ($this->getMeta() as $info) {
 			$cols[] = $info[$withTables ? 'fullname' : 'name'];
 		}
 		return $cols;
@@ -622,6 +624,22 @@ class DibiResult extends DibiObject implements IDataSource
 		return $this->driver;
 	}
 
+
+
+	/**
+	 * Meta lazy initialization.
+	 * @return array
+	 */
+	private function getMeta()
+	{
+		if ($this->meta === NULL) {
+			$this->meta = $this->getDriver()->getColumnsMeta();
+			foreach ($this->meta as & $row) {
+				$row['type'] = DibiColumnInfo::detectType($row['nativetype']);
+			}
+		}
+		return $this->meta;
+	}
 
 }
 

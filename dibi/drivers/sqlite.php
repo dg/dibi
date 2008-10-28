@@ -369,6 +369,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 				'name'  => isset($pair[1]) ? $pair[1] : $pair[0],
 				'table' => isset($pair[1]) ? $pair[0] : NULL,
 				'fullname' => $name,
+				'nativetype' => NULL,
 			);
 		}
 		return $res;
