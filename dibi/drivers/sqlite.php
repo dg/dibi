@@ -361,18 +361,17 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	public function getColumnsMeta()
 	{
 		$count = sqlite_num_fields($this->resultSet);
-		$meta = array();
+		$res = array();
 		for ($i = 0; $i < $count; $i++) {
-			$pair = explode('.', str_replace(array('[', ']'), '', sqlite_field_name($this->resultSet, $i)));
-			if (!isset($pair[1])) {
-				array_unshift($pair, NULL);
-			}
-			$meta[] = array(
-				'name'  => $pair[1],
-				'table' => $pair[0],
+			$name = str_replace(array('[', ']'), '', sqlite_field_name($this->resultSet, $i));
+			$pair = explode('.', $name);
+			$res[] = array(
+				'name'  => isset($pair[1]) ? $pair[1] : $pair[0],
+				'table' => isset($pair[1]) ? $pair[0] : NULL,
+				'fullname' => $name,
 			);
 		}
-		return $meta;
+		return $res;
 	}
 
 
@@ -400,10 +399,14 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	public function getTables()
 	{
 		$this->query("
-			SELECT name FROM sqlite_master WHERE type='table'
-			UNION ALL SELECT name FROM sqlite_temp_master WHERE type='table' ORDER BY name
+			SELECT name, type = 'view' as view FROM sqlite_master WHERE type IN ('table', 'view')
+			UNION ALL
+			SELECT name, type = 'view' as view FROM sqlite_temp_master WHERE type IN ('table', 'view')
+			ORDER BY name
 		");
-		return sqlite_fetch_all($this->resultSet, SQLITE_ASSOC);
+		$res = sqlite_fetch_all($this->resultSet, SQLITE_ASSOC);
+		$this->free();
+		return $res;
 	}
 
 

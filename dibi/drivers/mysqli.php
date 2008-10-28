@@ -387,14 +387,22 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	public function getColumnsMeta()
 	{
 		$count = mysqli_num_fields($this->resultSet);
-		$meta = array();
+		$res = array();
 		for ($i = 0; $i < $count; $i++) {
-			// items 'name' and 'table' are required
-			$info = (array) mysqli_fetch_field_direct($this->resultSet, $i);
-			$info['nativetype'] = $info['type'];
-			$meta[] = $info;
+			$row = (array) mysqli_fetch_field_direct($this->resultSet, $i);
+			$res[] = array(
+				'name' => $row['name'],
+				'column' => $row['orgname'],
+				'alias' => $row['table'],
+				'table' => $row['orgtable'],
+				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
+				'type' => NULL,
+				'nativetype' => $row['type'],
+				'nullable' => !($row['flags'] & MYSQLI_NOT_NULL_FLAG),
+				'default' => $row['def'],
+			) + $row;
 		}
-		return $meta;
+		return $res;
 	}
 
 
@@ -421,10 +429,18 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getTables()
 	{
-		$this->query("SHOW TABLES");
+		/*$this->query("
+			SELECT TABLE_NAME as name, TABLE_TYPE = 'VIEW' as view
+			FROM INFORMATION_SCHEMA.TABLES
+			WHERE TABLE_SCHEMA = DATABASE()
+		");*/
+		$this->query("SHOW FULL TABLES");
 		$res = array();
-		while ($row = mysqli_fetch_array($this->resultSet, MYSQLI_NUM)) {
-			$res[] = array('name' => $row[0]);
+		while ($row = $this->fetch(FALSE)) {
+			$res[] = array(
+				'name' => $row[0],
+				'view' => isset($row[1]) && $row[1] === 'VIEW',
+			);
 		}
 		$this->free();
 		return $res;
@@ -439,7 +455,28 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getColumns($table)
 	{
-		throw new NotImplementedException;
+		/*$table = $this->escape($table, dibi::FIELD_TEXT);
+		$this->query("
+			SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_NAME = $table AND TABLE_SCHEMA = DATABASE()
+		");*/
+		$this->query("SHOW COLUMNS FROM `$table`");
+		$res = array();
+		while ($row = $this->fetch(TRUE)) {
+			$type = explode('(', $row['Type']);
+			$res[] = array(
+				'name' => $row['Field'],
+				'table' => $table,
+				'nativetype' => strtoupper($type[0]),
+				'size' => isset($type[1]) ? (int) $type[1] : NULL,
+				'nullable' => $row['Null'] === 'YES',
+				'default' => $row['Default'],
+				'autoincrement' => $row['Extra'] === 'auto_increment',
+			);
+		}
+		$this->free();
+		return $res;
 	}
 
 
@@ -451,7 +488,23 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getIndexes($table)
 	{
-		throw new NotImplementedException;
+		/*$table = $this->escape($table, dibi::FIELD_TEXT);
+		$this->query("
+			SELECT *
+			FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+			WHERE TABLE_NAME = $table AND TABLE_SCHEMA = DATABASE()
+			AND REFERENCED_COLUMN_NAME IS NULL
+		");*/
+		$this->query("SHOW INDEX FROM `$table`");
+		$res = array();
+		while ($row = $this->fetch(TRUE)) {
+			$res[$row['Key_name']]['name'] = $row['Key_name'];
+			$res[$row['Key_name']]['unique'] = !$row['Non_unique'];
+			$res[$row['Key_name']]['primary'] = $row['Key_name'] === 'PRIMARY';
+			$res[$row['Key_name']]['columns'][$row['Seq_in_index'] - 1] = $row['Column_name'];
+		}
+		$this->free();
+		return array_values($res);
 	}
 
 

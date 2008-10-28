@@ -216,7 +216,7 @@ class DibiFluent extends DibiObject
 	 * @param  string  flag name
 	 * @return bool
 	 */
-	final public function getFlag($flag, $value = TRUE)
+	final public function getFlag($flag)
 	{
 		return isset($this->flags[strtoupper($flag)]);
 	}

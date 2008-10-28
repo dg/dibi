@@ -250,7 +250,7 @@ final class DibiTranslator extends DibiObject
 			case 'by': // key ASC, key DESC
 				foreach ($value as $k => $v) {
 					if (is_string($k)) {
-						$v = (is_string($v) && strcasecmp($v, 'desc')) || $v > 0 ? 'ASC' : 'DESC';
+						$v = (is_string($v) && strncasecmp($v, 'd', 1)) || $v > 0 ? 'ASC' : 'DESC';
 						$vx[] = $this->delimite($k) . ' ' . $v;
 					} else {
 						$vx[] = $this->delimite($v);

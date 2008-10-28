@@ -147,9 +147,7 @@ abstract class DibiTable extends DibiObject
 			'INSERT INTO %n', $this->name, '%v', $this->prepare($data)
 		);
 
-		if ($this->primaryAutoIncrement) {
-			return $this->connection->insertId();
-		}
+		return $this->primaryAutoIncrement ? $this->connection->insertId() : NULL;
 	}
 
 

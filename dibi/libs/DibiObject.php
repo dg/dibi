@@ -124,7 +124,7 @@ abstract class DibiObject
 						}
 					}
 				}
-				return;
+				return NULL;
 			}
 		}
 
@@ -173,7 +173,7 @@ abstract class DibiObject
 					self::$extMethods[$pair[1]][''] = NULL;
 				}
 			}
-			if ($name === NULL) return;
+			if ($name === NULL) return NULL;
 		}
 
 		$name = strtolower($name);
@@ -189,7 +189,7 @@ abstract class DibiObject
 		if ($callback !== NULL) { // works as setter
 			$l[$class] = $callback;
 			$l[''] = NULL;
-			return;
+			return NULL;
 		}
 
 		// works as getter

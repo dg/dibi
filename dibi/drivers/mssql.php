@@ -339,15 +339,18 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 	public function getColumnsMeta()
 	{
 		$count = mssql_num_fields($this->resultSet);
-		$meta = array();
+		$res = array();
 		for ($i = 0; $i < $count; $i++) {
-			// items 'name' and 'table' are required
-			$info = (array) mssql_fetch_field($this->resultSet, $i);
-			$info['table'] = $info['column_source'];
-			$info['nativetype'] = $info['type'];
-			$meta[] = $info;
+			$row = (array) mssql_fetch_field($this->resultSet, $i);
+			$res[] = array(
+				'name' => $row['name'],
+				'fullname' => $row['column_source'] ? $row['column_source'] . '.' . $row['name'] : $row['name'],
+				'table' => $row['column_source'],
+				'type' => NULL,
+				'nativetype' => $row['type'],
+			) + $row;
 		}
-		return $meta;
+		return $res;
 	}
 
 

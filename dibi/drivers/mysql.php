@@ -405,13 +405,18 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 	public function getColumnsMeta()
 	{
 		$count = mysql_num_fields($this->resultSet);
-		$meta = array();
+		$res = array();
 		for ($i = 0; $i < $count; $i++) {
-			$info = (array) mysql_fetch_field($this->resultSet, $i);
-			$info['nativetype'] = $info['type'];
-			$meta[] = $info;
+			$row = (array) mysql_fetch_field($this->resultSet, $i);
+			$res[] = array(
+				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
+				'type' => NULL,
+				'nativetype' => strtoupper($row['type']),
+				'nullable' => !($row['not_null']),
+				'default' => $row['def'],
+			) + $row;
 		}
-		return $meta;
+		return $res;
 	}
 
 
@@ -438,10 +443,13 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getTables()
 	{
-		$this->query("SHOW TABLES");
+		$this->query("SHOW FULL TABLES");
 		$res = array();
-		while ($row = mysql_fetch_array($this->resultSet, MYSQL_NUM)) {
-			$res[] = array('name' => $row[0]);
+		while ($row = $this->fetch(FALSE)) {
+			$res[] = array(
+				'name' => $row[0],
+				'view' => isset($row[1]) && $row[1] === 'VIEW',
+			);
 		}
 		$this->free();
 		return $res;
@@ -456,7 +464,22 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getColumns($table)
 	{
-		throw new NotImplementedException;
+		$this->query("SHOW COLUMNS FROM `$table`");
+		$res = array();
+		while ($row = $this->fetch(TRUE)) {
+			$type = explode('(', $row['Type']);
+			$res[] = array(
+				'name' => $row['Field'],
+				'table' => $table,
+				'nativetype' => strtoupper($type[0]),
+				'size' => isset($type[1]) ? (int) $type[1] : NULL,
+				'nullable' => $row['Null'] === 'YES',
+				'default' => $row['Default'],
+				'autoincrement' => $row['Extra'] === 'auto_increment',
+			);
+		}
+		$this->free();
+		return $res;
 	}
 
 
@@ -468,7 +491,16 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getIndexes($table)
 	{
-		throw new NotImplementedException;
+		$this->query("SHOW INDEX FROM `$table`");
+		$res = array();
+		while ($row = $this->fetch(TRUE)) {
+			$res[$row['Key_name']]['name'] = $row['Key_name'];
+			$res[$row['Key_name']]['unique'] = !$row['Non_unique'];
+			$res[$row['Key_name']]['primary'] = $row['Key_name'] === 'PRIMARY';
+			$res[$row['Key_name']]['columns'][$row['Seq_in_index'] - 1] = $row['Column_name'];
+		}
+		$this->free();
+		return array_values($res);
 	}
 
 

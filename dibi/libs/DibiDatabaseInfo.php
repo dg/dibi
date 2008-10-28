@@ -112,16 +112,6 @@ class DibiDatabaseInfo extends DibiObject
 
 
 	/**
-	 * @return array
-	 */
-	public function getSequences()
-	{
-		throw new NotImplementedException;
-	}
-
-
-
-	/**
 	 * @return void
 	 */
 	protected function init()
@@ -289,7 +279,7 @@ class DibiTableInfo extends DibiObject
 	{
 		if ($this->columns === NULL) {
 			$this->columns = array();
-			foreach ($this->driver->getColumns($this->name) as $info) {
+			foreach ($this->driver->getColumns($this->info['name']) as $info) {
 				$this->columns[strtolower($info['name'])] = new DibiColumnInfo($this->driver, $info);
 			}
 		}
@@ -305,15 +295,13 @@ class DibiTableInfo extends DibiObject
 		if ($this->indexes === NULL) {
 			$this->initColumns();
 			$this->indexes = array();
-			foreach ($this->driver->getIndexes($this->name) as $info) {
-				$cols = array();
-				foreach ($info['columns'] as $name) {
-					$cols[] = $this->columns[strtolower($name)];
+			foreach ($this->driver->getIndexes($this->info['name']) as $info) {
+				foreach ($info['columns'] as $key => $name) {
+					$info['columns'][$key] = $this->columns[strtolower($name)];
 				}
-				$name = $info['name'];
-				$this->indexes[strtolower($name)] = new DibiIndexInfo($this, $name, $cols, $info['unique']);
+				$this->indexes[strtolower($info['name'])] = new DibiIndexInfo($info);
 				if (!empty($info['primary'])) {
-					$this->primaryKey = $this->indexes[strtolower($name)];
+					$this->primaryKey = $this->indexes[strtolower($info['name'])];
 				}
 			}
 		}
@@ -343,7 +331,7 @@ class DibiColumnInfo extends DibiObject
 	/** @var IDibiDriver */
 	private $driver;
 
-	/** @var array (name, table, type, nativetype, size, precision, scale, nullable, default, autoincrement) */
+	/** @var array (name, table, fullname, type, nativetype, size, nullable, default, autoincrement) */
 	private $info;
 
 
@@ -362,6 +350,16 @@ class DibiColumnInfo extends DibiObject
 	public function getName()
 	{
 		return $this->info['name'];
+	}
+
+
+
+	/**
+	 * @return bool
+	 */
+	public function hasTable()
+	{
+		return !empty($this->info['table']);
 	}
 
 
@@ -410,26 +408,6 @@ class DibiColumnInfo extends DibiObject
 
 
 	/**
-	 * @return int
-	 */
-	public function getPrecision()
-	{
-		return isset($this->info['precision']) ? (int) $this->info['precision'] : NULL;
-	}
-
-
-
-	/**
-	 * @return int
-	 */
-	public function getScale()
-	{
-		return isset($this->info['scale']) ? (int) $this->info['scale'] : NULL;
-	}
-
-
-
-	/**
 	 * @return bool
 	 */
 	public function isNullable()
@@ -452,9 +430,20 @@ class DibiColumnInfo extends DibiObject
 	/**
 	 * @return mixed
 	 */
-	public function getDefaultValue()
+	public function getDefault()
 	{
 		return isset($this->info['default']) ? $this->info['default'] : NULL;
+	}
+
+
+
+	/**
+	 * @param  string
+	 * @return mixed
+	 */
+	public function getInfo($key)
+	{
+		return isset($this->info[$key]) ? $this->info[$key] : NULL;
 	}
 
 }
@@ -513,22 +502,13 @@ class DibiForeignKeyInfo extends DibiObject
  */
 class DibiIndexInfo extends DibiObject
 {
-	/** @var string */
-	private $name;
-
-	/** @var array of DibiColumnInfo */
-	private $columns;
-
-	/** @var bool */
-	private $unique;
+	/** @var array (name, columns, unique, primary) */
+	private $info;
 
 
-
-	public function __construct($name, array $columns, $unique)
+	public function __construct(array $info)
 	{
-		$this->name = $name;
-		$this->columns = $columns;
-		$this->unique = (bool) $unique;
+		$this->info = $info;
 	}
 
 
@@ -538,7 +518,7 @@ class DibiIndexInfo extends DibiObject
 	 */
 	public function getName()
 	{
-		return $this->name;
+		return $this->info['name'];
 	}
 
 
@@ -548,7 +528,7 @@ class DibiIndexInfo extends DibiObject
 	 */
 	public function getColumns()
 	{
-		return $this->columns;
+		return $this->info['columns'];
 	}
 
 
@@ -558,7 +538,18 @@ class DibiIndexInfo extends DibiObject
 	 */
 	public function isUnique()
 	{
-		return $this->unique;
+		return !empty($this->info['unique']);
+	}
+
+
+
+
+	/**
+	 * @return bool
+	 */
+	public function isPrimary()
+	{
+		return !empty($this->info['primary']);
 	}
 
 }

@@ -393,17 +393,19 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 	public function getColumnsMeta()
 	{
 		$count = $this->resultSet->columnCount();
-		$meta = array();
+		$res = array();
 		for ($i = 0; $i < $count; $i++) {
-			// items 'name' and 'table' are required
-			$info = @$this->resultSet->getColumnsMeta($i); // intentionally @
-			if ($info === FALSE) {
+			$row = @$this->resultSet->getColumnMeta($i); // intentionally @
+			if ($row === FALSE) {
 				throw new DibiDriverException('Driver does not support meta data.');
 			}
-			$info['nativetype'] = $info['native_type'];
-			$meta[] = $info;
+			$res[] = array(
+				'type' => NULL,
+				'nativetype' => $row['native_type'],
+				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
+			) + $row;
 		}
-		return $meta;
+		return $res;
 	}
 
 

@@ -396,18 +396,17 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	{
 		$hasTable = version_compare(PHP_VERSION , '5.2.0', '>=');
 		$count = pg_num_fields($this->resultSet);
-		$meta = array();
+		$res = array();
 		for ($i = 0; $i < $count; $i++) {
-			// items 'name' and 'table' are required
-			$meta[] = array(
+			$row = array(
 				'name'      => pg_field_name($this->resultSet, $i),
 				'table'     => $hasTable ? pg_field_table($this->resultSet, $i) : NULL,
 				'nativetype'=> pg_field_type($this->resultSet, $i),
-				'size'      => pg_field_size($this->resultSet, $i),
-				'prtlen'    => pg_field_prtlen($this->resultSet, $i),
 			);
+			$row['fullname'] = $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'];
+			$res[] = $row;
 		}
-		return $meta;
+		return $res;
 	}
 
 
@@ -434,7 +433,14 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getTables()
 	{
-		throw new NotImplementedException;
+		$this->query("
+			SELECT table_name as name, CAST(table_type = 'VIEW' AS INTEGER) as view
+			FROM information_schema.tables
+			WHERE table_schema = current_schema()
+		");
+		$res = pg_fetch_all($this->resultSet);
+		$this->free();
+		return $res;
 	}
 
 

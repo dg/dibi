@@ -361,19 +361,16 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 	public function getColumnsMeta()
 	{
 		$count = odbc_num_fields($this->resultSet);
-		$meta = array();
+		$res = array();
 		for ($i = 1; $i <= $count; $i++) {
-			// items 'name' and 'table' are required
-			$meta[] = array(
+			$res[] = array(
 				'name'      => odbc_field_name($this->resultSet, $i),
 				'table'     => NULL,
+				'fullname'  => odbc_field_name($this->resultSet, $i),
 				'nativetype'=> odbc_field_type($this->resultSet, $i),
-				'length'    => odbc_field_len($this->resultSet, $i),
-				'scale'     => odbc_field_scale($this->resultSet, $i),
-				'precision' => odbc_field_precision($this->resultSet, $i),
 			);
 		}
-		return $meta;
+		return $res;
 	}
 
 
@@ -402,9 +399,15 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 	{
 		$result = odbc_tables($this->connection);
 		$res = array();
-		while (odbc_fetch_row($result)) {
-			$res[] = array('name' => odbc_result($result, 'TABLE_NAME'));
+		while ($row = odbc_fetch_array($result)) {
+			if ($row['TABLE_TYPE'] === 'TABLE' || $row['TABLE_TYPE'] === 'VIEW') {
+				$res[] = array(
+					'name' => $row['TABLE_NAME'],
+					'view' => $row['TABLE_TYPE'] === 'VIEW',
+				);
+			}
 		}
+		odbc_free_result($result);
 		return $res;
 	}
 
@@ -417,7 +420,22 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getColumns($table)
 	{
-		throw new NotImplementedException;
+		$result = odbc_columns($this->connection);
+		$res = array();
+		while ($row = odbc_fetch_array($result)) {
+			if ($row['TABLE_NAME'] === $table) {
+				$res[] = array(
+					'name' => $row['COLUMN_NAME'],
+					'table' => $table,
+					'nativetype' => $row['TYPE_NAME'],
+					'size' => $row['COLUMN_SIZE'],
+					'nullable' => (bool) $row['NULLABLE'],
+					'default' => $row['COLUMN_DEF'],
+				);
+			}
+		}
+		odbc_free_result($result);
+		return $res;
 	}
 
 

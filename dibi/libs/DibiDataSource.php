@@ -65,7 +65,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 	 * @param  array columns
 	 * @return ArrayIterator
 	 */
-	public function getIterator($offset = NULL, $limit = NULL, $cols = NULL)
+	public function getIterator($offset = NULL, $limit = NULL)
 	{
 		return $this->connection->query('
 			SELECT *

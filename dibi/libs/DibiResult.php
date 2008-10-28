@@ -169,9 +169,8 @@ class DibiResult extends DibiObject implements IDataSource
 			}
 
 			$cols = array();
-			foreach ($this->metaCache as $col) {
-				// intentional ==
-				$name = $col['table'] == '' ? $col['name'] : ($col['table'] . '.' . $col['name']);
+			foreach ($this->metaCache as $info) {
+				$name = $info['fullname'];
 				if (isset($cols[$name])) {
 					$fix = 1;
 					while (isset($cols[$name . '#' . $fix])) $fix++;
@@ -539,7 +538,7 @@ class DibiResult extends DibiObject implements IDataSource
 		}
 		$cols = array();
 		foreach ($this->metaCache as $info) {
-			$cols[] = (!$withTables || $info['table'] === NULL) ? $info['name'] : ($info['table'] . '.' . $info['name']);
+			$cols[] = $info[$withTables ? 'fullname' : 'name'];
 		}
 		return $cols;
 	}

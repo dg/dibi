@@ -347,19 +347,16 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	public function getColumnsMeta()
 	{
 		$count = oci_num_fields($this->resultSet);
-		$meta = array();
+		$res = array();
 		for ($i = 1; $i <= $count; $i++) {
-			// items 'name' and 'table' are required
-			$meta[] = array(
+			$res[] = array(
 				'name'      => oci_field_name($this->resultSet, $i),
 				'table'     => NULL,
+				'fullname'  => oci_field_name($this->resultSet, $i),
 				'nativetype'=> oci_field_type($this->resultSet, $i),
-				'size'      => oci_field_size($this->resultSet, $i),
-				'scale'     => oci_field_scale($this->resultSet, $i),
-				'precision' => oci_field_precision($this->resultSet, $i),
 			);
 		}
-		return $meta;
+		return $res;
 	}
 
 
