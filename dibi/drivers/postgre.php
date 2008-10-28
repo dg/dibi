@@ -452,7 +452,36 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getColumns($table)
 	{
-		throw new NotImplementedException;
+		$_table = $this->escape($table, dibi::FIELD_TEXT);
+		$this->query("
+			SELECT indkey
+			FROM pg_index, pg_class
+			WHERE pg_class.relname = '$_table' AND pg_class.oid = pg_index.indrelid AND pg_index.indisprimary
+		");
+		$primary = (int) pg_fetch_object($this->resultSet)->indkey;
+
+		$this->query("
+			SELECT *
+			FROM information_schema.columns
+			WHERE table_name = '$_table' AND table_schema = current_schema()
+			ORDER BY ordinal_position
+		");
+		$res = array();
+		while ($row = $this->fetch(TRUE)) {
+			$size = (int) max($row['character_maximum_length'], $row['numeric_precision']);
+			$res[] = array(
+				'name' => $row['column_name'],
+				'table' => $table,
+				'type' => NULL,
+				'nativetype' => strtoupper($row['udt_name']),
+				'size' => $size ? $size : NULL,
+				'nullable' => $row['is_nullable'] === 'YES',
+				'default' => $row['column_default'],
+				'autoincrement' => (int) $row['ordinal_position'] === $primary && substr($row['column_default'], 0, 7) === 'nextval',
+			) + $row;
+		}
+		$this->free();
+		return $res;
 	}
 
 
