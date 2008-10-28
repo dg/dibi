@@ -36,24 +36,15 @@
 class DibiOdbcDriver extends DibiObject implements IDibiDriver
 {
 
-	/**
-	 * Connection resource.
-	 * @var resource
-	 */
+	/** @var resource  Connection resource */
 	private $connection;
 
 
-	/**
-	 * Resultset resource.
-	 * @var resource
-	 */
+	/** @var resource  Resultset resource */
 	private $resultSet;
 
 
-	/**
-	 * Cursor.
-	 * @var int
-	 */
+	/** @var int  Cursor */
 	private $row = 0;
 
 
@@ -72,7 +63,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Connects to a database.
-	 *
 	 * @return void
 	 * @throws DibiException
 	 */
@@ -101,7 +91,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Disconnects from a database.
-	 *
 	 * @return void
 	 */
 	public function disconnect()
@@ -113,7 +102,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Executes the SQL query.
-	 *
 	 * @param  string      SQL statement.
 	 * @return IDibiDriver|NULL
 	 * @throws DibiDriverException
@@ -133,7 +121,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 *
 	 * @return int|FALSE  number of rows or FALSE on error
 	 */
 	public function affectedRows()
@@ -145,7 +132,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 *
 	 * @return int|FALSE  int on success or FALSE on failure
 	 */
 	public function insertId($sequence)
@@ -201,7 +187,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Returns the connection resource.
-	 *
 	 * @return mixed
 	 */
 	public function getResource()
@@ -217,7 +202,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Encodes data for use in an SQL statement.
-	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
 	 * @return string    encoded value
@@ -252,7 +236,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Decodes data from result set.
-	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
 	 * @return string    decoded value
@@ -267,7 +250,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 *
 	 * @param  string &$sql  The SQL query that will be modified.
 	 * @param  int $limit
 	 * @param  int $offset
@@ -291,7 +273,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Returns the number of rows in a result set.
-	 *
 	 * @return int
 	 */
 	public function rowCount()
@@ -304,10 +285,9 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * internal usage only
-	 *
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
+	 * @internal
 	 */
 	public function fetch($assoc)
 	{
@@ -327,7 +307,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Moves cursor position without fetching row.
-	 *
 	 * @param  int      the 0-based cursor pos to seek to
 	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
 	 * @throws DibiException
@@ -342,7 +321,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Frees the resources allocated for this result set.
-	 *
 	 * @return void
 	 */
 	public function free()
@@ -355,7 +333,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Returns metadata for all columns in a result set.
-	 *
 	 * @return array
 	 */
 	public function getColumnsMeta()
@@ -377,7 +354,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Returns the result set resource.
-	 *
 	 * @return mixed
 	 */
 	public function getResultResource()

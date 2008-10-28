@@ -42,34 +42,19 @@
  */
 class DibiResult extends DibiObject implements IDataSource
 {
-	/**
-	 * IDibiDriver.
-	 * @var array
-	 */
+	/** @var array  IDibiDriver */
 	private $driver;
 
-	/**
-	 * Translate table.
-	 * @var array
-	 */
+	/** @var array  Translate table */
 	private $xlat;
 
-	/**
-	 * Cache for $driver->getColumnsMeta().
-	 * @var array
-	 */
+	/** @var array  Cache for $driver->getColumnsMeta() */
 	private $meta;
 
-	/**
-	 * Already fetched? Used for allowance for first seek(0).
-	 * @var bool
-	 */
+	/** @var bool  Already fetched? Used for allowance for first seek(0) */
 	private $fetched = FALSE;
 
-	/**
-	 * Qualifiy each column name with the table name?
-	 * @var array|FALSE
-	 */
+	/** @var array|FALSE  Qualifiy each column name with the table name? */
 	private $withTables = FALSE;
 
 
@@ -91,7 +76,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Automatically frees the resources allocated for this result set.
-	 *
 	 * @return void
 	 */
 	public function __destruct()
@@ -103,7 +87,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Returns the result set resource.
-	 *
 	 * @return mixed
 	 */
 	final public function getResource()
@@ -115,7 +98,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Moves cursor position without fetching row.
-	 *
 	 * @param  int      the 0-based cursor pos to seek to
 	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
 	 * @throws DibiException
@@ -129,7 +111,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Returns the number of rows in a result set.
-	 *
 	 * @return int
 	 */
 	final public function rowCount()
@@ -141,7 +122,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Frees the resources allocated for this result set.
-	 *
 	 * @return void
 	 */
 	final public function free()
@@ -156,7 +136,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Qualifiy each column name with the table name?
-	 *
 	 * @param  bool
 	 * @return void
 	 * @throws DibiException
@@ -185,7 +164,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Qualifiy each key with the table name?
-	 *
 	 * @return bool
 	 */
 	final public function getWithTables()
@@ -198,7 +176,6 @@ class DibiResult extends DibiObject implements IDataSource
 	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
-	 *
 	 * @return DibiRow|FALSE  array on success, FALSE if no next record
 	 */
 	final public function fetch()
@@ -231,7 +208,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Like fetch(), but returns only first field.
-	 *
 	 * @return mixed  value on success, FALSE if no next record
 	 */
 	final public function fetchSingle()
@@ -255,7 +231,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Fetches all records from table.
-	 *
 	 * @param  int  offset
 	 * @param  int  limit
 	 * @return array of DibiRow
@@ -283,7 +258,6 @@ class DibiResult extends DibiObject implements IDataSource
 	 * Fetches all records from table and returns associative tree.
 	 * Associative descriptor:  assoc1,#,assoc2,=,assoc3,@
 	 * builds a tree:           $data[assoc1][index][assoc2]['assoc3']->value = {record}
-	 *
 	 * @param  string  associative descriptor
 	 * @return DibiRow
 	 * @throws InvalidArgumentException
@@ -371,7 +345,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Fetches all records from table like $key => $value pairs.
-	 *
 	 * @param  string  associative key
 	 * @param  string  value
 	 * @return array
@@ -456,9 +429,10 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * Define multiple columns types (for internal usage).
+	 * Define multiple columns types.
 	 * @param array
 	 * @return void
+	 * @internal
 	 */
 	final public function setTypes(array $types)
 	{
@@ -518,7 +492,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Gets an array of meta informations about columns.
-	 *
 	 * @return array of DibiColumnInfo
 	 */
 	final public function getColumns()
@@ -549,7 +522,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Displays complete result-set as HTML table for debug purposes.
-	 *
 	 * @return void
 	 */
 	final public function dump()
@@ -611,7 +583,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Safe access to property $driver.
-	 *
 	 * @return IDibiDriver
 	 * @throws InvalidStateException
 	 */

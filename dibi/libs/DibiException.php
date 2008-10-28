@@ -52,7 +52,6 @@ class DibiDriverException extends DibiException implements /*Nette::*/IDebuggabl
 
 	/**
 	 * Construct an dibi driver exception.
-	 *
 	 * @param string  Message describing the exception
 	 * @param int     Some code
 	 * @param  string SQL command
@@ -113,7 +112,6 @@ class DibiDriverException extends DibiException implements /*Nette::*/IDebuggabl
 
 	/**
 	 * Starts catching potential errors/warnings
-	 *
 	 * @return void
 	 */
 	public static function tryError()
@@ -126,7 +124,6 @@ class DibiDriverException extends DibiException implements /*Nette::*/IDebuggabl
 
 	/**
 	 * Returns catched error/warning message.
-	 *
 	 * @param  string  catched message
 	 * @return bool
 	 */
@@ -142,6 +139,7 @@ class DibiDriverException extends DibiException implements /*Nette::*/IDebuggabl
 
 	/**
 	 * Internal error handler. Do not call directly.
+	 * @internal
 	 */
 	public static function _errorHandler($code, $message)
 	{

@@ -29,41 +29,25 @@
  */
 class DibiConnection extends DibiObject
 {
-	/**
-	 * Current connection configuration.
-	 * @var array
-	 */
+	/** @var array  Current connection configuration */
 	private $config;
 
-	/**
-	 * Driver
-	 * @var IDibiDriver
-	 */
+	/** @var IDibiDriver  Driver */
 	private $driver;
 
-	/**
-	 * Profiler
-	 * @var IDibiProfiler
-	 */
+	/** @var IDibiProfiler  Profiler */
 	private $profiler;
 
-	/**
-	 * Is connected?
-	 * @var bool
-	 */
+	/** @var bool  Is connected? */
 	private $connected = FALSE;
 
-	/**
-	 * Is in transaction?
-	 * @var bool
-	 */
+	/** @var bool  Is in transaction? */
 	private $inTxn = FALSE;
 
 
 
 	/**
 	 * Creates object and (optionally) connects to a database.
-	 *
 	 * @param  array|string|ArrayObject connection parameters
 	 * @param  string       connection name
 	 * @throws DibiException
@@ -123,7 +107,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Automatically frees the resources allocated for this result set.
-	 *
 	 * @return void
 	 */
 	public function __destruct()
@@ -136,7 +119,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Connects to a database.
-	 *
 	 * @return void
 	 */
 	final protected function connect()
@@ -157,7 +139,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Disconnects from a database.
-	 *
 	 * @return void
 	 */
 	final public function disconnect()
@@ -175,7 +156,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Returns TRUE when connection was established.
-	 *
 	 * @return bool
 	 */
 	final public function isConnected()
@@ -187,7 +167,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Returns configuration variable. If no $key is passed, returns the entire array.
-	 *
 	 * @see self::__construct
 	 * @param  string
 	 * @param  mixed  default value to use if key not found
@@ -210,7 +189,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Apply configuration alias or default values.
-	 *
 	 * @param  array  connect configuration
 	 * @param  string key
 	 * @param  string alias key
@@ -232,7 +210,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Returns the connection resource.
-	 *
 	 * @return resource
 	 */
 	final public function getResource()
@@ -244,7 +221,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Generates (translates) and executes SQL query.
-	 *
 	 * @param  array|mixed      one or more arguments
 	 * @return DibiResult|NULL  result set object (if any)
 	 * @throws DibiException
@@ -265,7 +241,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Generates and prints SQL query.
-	 *
 	 * @param  array|mixed  one or more arguments
 	 * @return bool
 	 */
@@ -283,7 +258,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Executes the SQL query.
-	 *
 	 * @param  string           SQL statement.
 	 * @return DibiResult|NULL  result set object (if any)
 	 * @throws DibiException
@@ -327,7 +301,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 *
 	 * @return int  number of rows
 	 * @throws DibiException
 	 */
@@ -342,7 +315,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 *
 	 * @param  string     optional sequence name
 	 * @return int
 	 * @throws DibiException
@@ -422,7 +394,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Encodes data for use in an SQL statement.
-	 *
 	 * @param  string    unescaped string
 	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
 	 * @return string    escaped and quoted string
@@ -437,7 +408,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Decodes data from result set.
-	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
 	 * @return string    decoded value
@@ -451,7 +421,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Delimites identifier (table's or column's name, etc.).
-	 *
 	 * @param  string    identifier
 	 * @return string    delimited identifier
 	 */
@@ -464,7 +433,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 *
 	 * @param  string &$sql  The SQL query that will be modified.
 	 * @param  int $limit
 	 * @param  int $offset
@@ -570,7 +538,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Import SQL dump from file - extreme fast!
-	 *
 	 * @param  string  filename
 	 * @return int  count of sql commands
 	 */
@@ -604,7 +571,6 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Gets a information about the current database.
-	 *
 	 * @return DibiDatabaseInfo
 	 */
 	public function getDatabaseInfo()

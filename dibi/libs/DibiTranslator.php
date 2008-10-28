@@ -80,7 +80,6 @@ final class DibiTranslator extends DibiObject
 
 	/**
 	 * Generates SQL.
-	 *
 	 * @param  array
 	 * @return bool
 	 */
@@ -468,7 +467,6 @@ final class DibiTranslator extends DibiObject
 
 	/**
 	 * Apply substitutions to indentifier and delimites it.
-	 *
 	 * @param  string indentifier
 	 * @return string
 	 */

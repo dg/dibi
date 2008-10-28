@@ -71,7 +71,6 @@ abstract class DibiObject
 
 	/**
 	 * Returns the name of the class of this object.
-	 *
 	 * @return string
 	 */
 	final public /*static*/ function getClass()
@@ -83,7 +82,6 @@ abstract class DibiObject
 
 	/**
 	 * Access to reflection.
-	 *
 	 * @return ReflectionObject
 	 */
 	final public function getReflection()
@@ -95,7 +93,6 @@ abstract class DibiObject
 
 	/**
 	 * Call to undefined method.
-	 *
 	 * @param  string  method name
 	 * @param  array   arguments
 	 * @return mixed
@@ -141,7 +138,6 @@ abstract class DibiObject
 
 	/**
 	 * Call to undefined static method.
-	 *
 	 * @param  string  method name (in lower case!)
 	 * @param  array   arguments
 	 * @return mixed
@@ -157,7 +153,6 @@ abstract class DibiObject
 
 	/**
 	 * Adding method to class.
-	 *
 	 * @param  string  method name
 	 * @param  mixed   callback or closure
 	 * @return mixed
@@ -220,7 +215,6 @@ abstract class DibiObject
 
 	/**
 	 * Returns property value. Do not call directly.
-	 *
 	 * @param  string  property name
 	 * @return mixed   property value
 	 * @throws ::MemberAccessException if the property is not defined.
@@ -258,7 +252,6 @@ abstract class DibiObject
 
 	/**
 	 * Sets value of a property. Do not call directly.
-	 *
 	 * @param  string  property name
 	 * @param  mixed   property value
 	 * @return void
@@ -294,7 +287,6 @@ abstract class DibiObject
 
 	/**
 	 * Is property defined?
-	 *
 	 * @param  string  property name
 	 * @return bool
 	 */
@@ -308,7 +300,6 @@ abstract class DibiObject
 
 	/**
 	 * Access to undeclared property.
-	 *
 	 * @param  string  property name
 	 * @return void
 	 * @throws ::MemberAccessException
@@ -323,7 +314,6 @@ abstract class DibiObject
 
 	/**
 	 * Has property an accessor?
-	 *
 	 * @param  string  class name
 	 * @param  string  method name
 	 * @return bool

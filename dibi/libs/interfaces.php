@@ -28,7 +28,6 @@ interface IDibiVariable
 {
 	/**
 	 * Format for SQL.
-	 *
 	 * @param  DibiTranslator
 	 * @param  string  optional modifier
 	 * @return string  SQL code
@@ -116,8 +115,7 @@ interface IDibiDriver
 {
 
 	/**
-	 * Internal: Connects to a database.
-	 *
+	 * Connects to a database.
 	 * @param  array
 	 * @return void
 	 * @throws DibiException
@@ -127,8 +125,7 @@ interface IDibiDriver
 
 
 	/**
-	 * Internal: Disconnects from a database.
-	 *
+	 * Disconnects from a database.
 	 * @return void
 	 * @throws DibiException
 	 */
@@ -138,7 +135,6 @@ interface IDibiDriver
 
 	/**
 	 * Internal: Executes the SQL query.
-	 *
 	 * @param  string      SQL statement.
 	 * @return IDibiDriver|NULL
 	 * @throws DibiDriverException
@@ -149,7 +145,6 @@ interface IDibiDriver
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 *
 	 * @return int|FALSE  number of rows or FALSE on error
 	 */
 	function affectedRows();
@@ -158,7 +153,6 @@ interface IDibiDriver
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 *
 	 * @return int|FALSE  int on success or FALSE on failure
 	 */
 	function insertId($sequence);
@@ -194,7 +188,6 @@ interface IDibiDriver
 
 	/**
 	 * Returns the connection resource.
-	 *
 	 * @return mixed
 	 */
 	function getResource();
@@ -207,7 +200,6 @@ interface IDibiDriver
 
 	/**
 	 * Encodes data for use in an SQL statement.
-	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
 	 * @return string    encoded value
@@ -219,7 +211,6 @@ interface IDibiDriver
 
 	/**
 	 * Decodes data from result set.
-	 *
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
 	 * @return string    decoded value
@@ -231,7 +222,6 @@ interface IDibiDriver
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 *
 	 * @param  string &$sql  The SQL query that will be modified.
 	 * @param  int $limit
 	 * @param  int $offset
@@ -247,7 +237,6 @@ interface IDibiDriver
 
 	/**
 	 * Returns the number of rows in a result set.
-	 *
 	 * @return int
 	 */
 	function rowCount();
@@ -256,7 +245,6 @@ interface IDibiDriver
 
 	/**
 	 * Moves cursor position without fetching row.
-	 *
 	 * @param  int      the 0-based cursor pos to seek to
 	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
 	 * @throws DibiException
@@ -267,10 +255,9 @@ interface IDibiDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * internal usage only
-	 *
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
+	 * @internal
 	 */
 	function fetch($type);
 
@@ -278,7 +265,6 @@ interface IDibiDriver
 
 	/**
 	 * Frees the resources allocated for this result set.
-	 *
 	 * @param  resource  result set resource
 	 * @return void
 	 */
@@ -288,7 +274,6 @@ interface IDibiDriver
 
 	/**
 	 * Returns metadata for all columns in a result set.
-	 *
 	 * @return array
 	 * @throws DibiException
 	 */
@@ -298,7 +283,6 @@ interface IDibiDriver
 
 	/**
 	 * Returns the result set resource.
-	 *
 	 * @return mixed
 	 */
 	function getResultResource();
