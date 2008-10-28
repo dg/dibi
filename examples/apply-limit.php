@@ -12,23 +12,19 @@ dibi::connect(array(
 
 
 // no limit
-$res = dibi::query('SELECT * FROM [products]');
-foreach ($res as $n => $row) {
-	print_r($row);
-}
+dibi::test('SELECT * FROM [products]');
+// -> SELECT * FROM [products]
+
 
 echo '<hr>';
 
 // with limit = 2
-$res = dibi::query('SELECT * FROM [products] %lmt', 2);
-foreach ($res as $n => $row) {
-	print_r($row);
-}
+dibi::test('SELECT * FROM [products] %lmt', 2);
+// -> SELECT * FROM [products] LIMIT 2
+
 
 echo '<hr>';
 
 // with limit = 2, offset = 1
-$res = dibi::query('SELECT * FROM [products] %lmt %ofs', 2, 1);
-foreach ($res as $n => $row) {
-	print_r($row);
-}
+dibi::test('SELECT * FROM [products] %lmt %ofs', 2, 1);
+// -> SELECT * FROM [products] LIMIT 2 OFFSET 1

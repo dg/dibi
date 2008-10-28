@@ -11,6 +11,6 @@ dibi::connect(array(
 ));
 
 
-$count = dibi::loadFile('compress.zlib://dump.sql.gz');
+$count = dibi::loadFile('compress.zlib://sample.dump.sql.gz');
 
 echo 'Number of SQL commands:', $count;

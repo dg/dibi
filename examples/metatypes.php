@@ -13,9 +13,15 @@ dibi::connect(array(
 
 $res = dibi::query('SELECT * FROM [customers]');
 
-// auto-convert this column to integer
+// auto-converts this column to integer
 $res->setType('customer_id', Dibi::FIELD_INTEGER);
 $res->setType('added', Dibi::FIELD_DATETIME, 'H:i j.n.Y');
 
 $row = $res->fetch();
 var_dump($row);
+// outputs:
+// object(DibiRow)#3 (3) {
+//     customer_id => int(1)
+//     name =>  string(11) "Dave Lister"
+//     added =>  string(15) "17:20 11.3.2007"
+// }

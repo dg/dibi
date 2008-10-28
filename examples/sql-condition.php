@@ -14,8 +14,8 @@ dibi::connect(array(
 ));
 
 
-$cond1 = rand(0,2) < 1;
-$cond2 = rand(0,2) < 1;
+$cond1 = TRUE;
+$cond2 = FALSE;
 $foo = -1;
 $bar = 2;
 
@@ -28,6 +28,9 @@ SELECT *
 FROM [customers]
 %if', isset($name), 'WHERE [name] LIKE %s', $name, '%end'
 );
+// -> SELECT * FROM [customers] WHERE [name] LIKE 'K%'
+
+
 
 
 // if & else & (optional) end
@@ -38,6 +41,8 @@ WHERE [id] > 0
 	%if", ($foo > 0), "AND [foo]=%i", $foo, "
 	%else %if", ($bar > 0), "AND [bar]=%i", $bar, "
 ");
+// -> SELECT * FROM [people] WHERE [id] > 0 AND [bar]=2
+
 
 
 // nested condition
@@ -49,3 +54,4 @@ WHERE
 		%if', $cond2, 'AND [admin]=1 %end
 	%else 1 LIMIT 10 %end'
 );
+// -> SELECT * FROM [customers] WHERE LIMIT 10

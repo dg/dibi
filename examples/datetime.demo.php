@@ -26,3 +26,4 @@ INSERT INTO [mytable]", array(
 	'date'  => dibi::date('12.3.2007'),
 	'stamp' => dibi::dateTime('23.1.2007 10:23'),
 ));
+// -> INSERT INTO [mytable] ([id], [date], [stamp]) VALUES (123, '2007-03-12', '2007-01-23 10-23-00')

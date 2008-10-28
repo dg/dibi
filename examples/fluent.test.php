@@ -12,7 +12,7 @@ dibi::connect(array(
 
 $id = 10;
 $record = array(
-	'title'  => 'Drtička na trávu',
+	'title'  => 'Super product',
 	'price'  => 318,
 	'active' => TRUE,
 );
@@ -25,6 +25,10 @@ dibi::select('product_id')->as('id')
 	->innerJoin('customers USING (customer_id)')
 	->orderBy('title')
 	->test();
+// -> SELECT [product_id] AS [id] , [title] FROM [products] INNER JOIN [orders]
+//    USING (product_id) INNER JOIN customers USING (customer_id) ORDER BY [title]
+
+
 
 echo "\n";
 
@@ -32,6 +36,9 @@ echo "\n";
 echo dibi::select('title')->as('id')
 	->from('products')
 	->fetchSingle();
+// -> Chair (as result of query: SELECT [title] AS [id] FROM [products])
+
+
 
 echo "\n";
 
@@ -39,6 +46,9 @@ echo "\n";
 dibi::insert('products', $record)
 	->setFlag('IGNORE')
 	->test();
+// -> INSERT IGNORE INTO [products] ([title], [price], [active]) VALUES ('Super product', 318, 1)
+
+
 
 echo "\n";
 
@@ -46,6 +56,9 @@ echo "\n";
 dibi::update('products', $record)
 	->where('product_id = %d', $id)
 	->test();
+// -> UPDATE [products] SET [title]='Super product', [price]=318, [active]=1 WHERE product_id = 10
+
+
 
 echo "\n";
 
@@ -53,6 +66,9 @@ echo "\n";
 dibi::delete('products')
 	->where('product_id = %d', $id)
 	->test();
+// -> DELETE FROM [products] WHERE product_id = 10
+
+
 
 echo "\n";
 
@@ -62,9 +78,13 @@ dibi::command()
 	->where('product_id = %d', $id)
 	->set($record)
 	->test();
+// -> UPDATE [products] SET [title]='Super product', [price]=318, [active]=1 WHERE product_id = 10
+
+
 
 echo "\n";
 
 dibi::command()
 	->truncate('products')
 	->test();
+// -> TRUNCATE [products]

@@ -13,7 +13,7 @@ dibi::connect(array(
 
 echo "<h2>Before:</h2>\n";
 dibi::query('SELECT * FROM [products]')->dump();
-
+// -> 3 rows
 
 
 dibi::begin();
@@ -26,3 +26,4 @@ dibi::rollback(); // or dibi::commit();
 
 echo "<h2>After:</h2>\n";
 dibi::query('SELECT * FROM [products]')->dump();
+// -> 3 rows
