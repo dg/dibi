@@ -409,6 +409,11 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getTables()
 	{
+		$version = pg_version($this->connection);
+		if ($version['server'] < 8) {
+			throw new NotSupportedException('Reflection requires PostgreSQL 8.');
+		}
+
 		$this->query("
 			SELECT table_name as name, CAST(table_type = 'VIEW' AS INTEGER) as view
 			FROM information_schema.tables
@@ -431,8 +436,9 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 		$_table = $this->escape($table, dibi::FIELD_TEXT);
 		$this->query("
 			SELECT indkey
-			FROM pg_index, pg_class
-			WHERE pg_class.relname = $_table AND pg_class.oid = pg_index.indrelid AND pg_index.indisprimary
+			FROM pg_class
+			LEFT JOIN pg_index on pg_class.oid = pg_index.indrelid AND pg_index.indisprimary
+			WHERE pg_class.relname = $_table
 		");
 		$primary = (int) pg_fetch_object($this->resultSet)->indkey;
 
@@ -469,7 +475,38 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getIndexes($table)
 	{
-		throw new NotImplementedException;
+		$_table = $this->escape($table, dibi::FIELD_TEXT);
+		$this->query("
+			SELECT ordinal_position, column_name
+			FROM information_schema.columns
+			WHERE table_name = $_table AND table_schema = current_schema()
+			ORDER BY ordinal_position
+		");
+
+		$columns = array();
+		while ($row = $this->fetch(TRUE)) {
+			$columns[$row['ordinal_position']] = $row['column_name'];
+		}
+
+		$this->query("
+			SELECT pg_class2.relname, indisunique, indisprimary, indkey
+			FROM pg_class
+			LEFT JOIN pg_index on pg_class.oid = pg_index.indrelid
+			INNER JOIN pg_class as pg_class2 on pg_class2.oid = pg_index.indexrelid
+			WHERE pg_class.relname = $_table
+		");
+
+		$res = array();
+		while ($row = $this->fetch(TRUE)) {
+			$res[$row['relname']]['name'] = $row['relname'];
+			$res[$row['relname']]['unique'] = $row['indisunique'] === 't';
+			$res[$row['relname']]['primary'] = $row['indisprimary'] === 't';
+			foreach (explode(' ', $row['indkey']) as $index) {
+				$res[$row['relname']]['columns'][] = $columns[$index];
+			}
+		}
+		$this->free();
+		return array_values($res);
 	}
 
 

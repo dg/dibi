@@ -52,7 +52,7 @@ abstract class DibiTable extends DibiObject
 	/** @var array */
 	protected $blankRow = array();
 
-	/** @var array of pairs [type, format] */
+	/** @var mixed; TRUE means autodetect, or array of pairs [type, format] */
 	protected $types = array();
 
 
@@ -325,7 +325,12 @@ abstract class DibiTable extends DibiObject
 	 */
 	protected function complete($res)
 	{
-		$res->setTypes($this->types);
+		if (is_array($this->types)) {
+			$res->setTypes($this->types);
+
+		} elseif ($this->types === TRUE) {
+			$res->detectTypes();
+		}
 		return $res;
 	}
 

@@ -1,6 +1,6 @@
-<h1>Dibi profiler example</h1>
 <?php
 
+require_once 'Nette/Debug.php';
 require_once '../dibi/dibi.php';
 
 
@@ -16,6 +16,7 @@ for ($i=0; $i<20; $i++) {
 }
 
 ?>
+<h1>Dibi profiler example</h1>
 
 <p>Last query: <strong><?php echo dibi::$sql; ?></strong></p>
 

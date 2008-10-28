@@ -5,6 +5,7 @@ pre.dibi { padding-bottom: 10px; }
 <pre>
 <?php
 
+require_once 'Nette/Debug.php';
 require_once '../dibi/dibi.php';
 
 

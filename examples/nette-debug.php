@@ -1,7 +1,7 @@
 <h1>Nette::Debug & dibi example</h1>
 
 
-<p>Dibi can display and log exceptions via Nette::Debug. You first need to install Nette Framework. You can download it from here:</p>
+<p>Dibi can display and log exceptions via Nette::Debug, part of Nette Framework.</p>
 
 <ul>
 	<li>Nette Framework: http://nettephp.com

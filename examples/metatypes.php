@@ -2,6 +2,7 @@
 <pre>
 <?php
 
+require_once 'Nette/Debug.php';
 require_once '../dibi/dibi.php';
 
 
@@ -18,7 +19,7 @@ $res->setType('customer_id', Dibi::FIELD_INTEGER);
 $res->setType('added', Dibi::FIELD_DATETIME, 'H:i j.n.Y');
 
 $row = $res->fetch();
-var_dump($row);
+Debug::dump($row);
 // outputs:
 // object(DibiRow)#3 (3) {
 //     customer_id => int(1)

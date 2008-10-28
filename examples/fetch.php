@@ -2,6 +2,7 @@
 <pre>
 <?php
 
+require_once 'Nette/Debug.php';
 require_once '../dibi/dibi.php';
 
 
@@ -25,50 +26,50 @@ product_id | title
 
 // fetch a single row
 $row = dibi::fetch('SELECT title FROM [products]');
-print_r($row); // Chair
+Debug::dump($row); // Chair
 echo '<hr>';
 
 
 // fetch a single value
 $value = dibi::fetchSingle('SELECT [title] FROM [products]');
-print_r($value); // Chair
+Debug::dump($value); // Chair
 echo '<hr>';
 
 
 // fetch complete result set
 $all = dibi::fetchAll('SELECT * FROM [products]');
-print_r($all);
+Debug::dump($all);
 echo '<hr>';
 
 
 // fetch complete result set like association array
 $res = dibi::query('SELECT * FROM [products]');
 $assoc = $res->fetchAssoc('title'); // key
-print_r($assoc);
+Debug::dump($assoc);
 echo '<hr>';
 
 
 // fetch complete result set like pairs key => value
 $pairs = $res->fetchPairs('product_id', 'title');
-print_r($pairs);
+Debug::dump($pairs);
 echo '<hr>';
 
 
 // fetch row by row
 foreach ($res as $n => $row) {
-	print_r($row);
+	Debug::dump($row);
 }
 echo '<hr>';
 
 
 // fetch row by row with defined offset
 foreach ($res->getIterator(2) as $n => $row) {
-	print_r($row);
+	Debug::dump($row);
 }
 
 // fetch row by row with defined offset and limit
 foreach ($res->getIterator(2, 1) as $n => $row) {
-	print_r($row);
+	Debug::dump($row);
 }
 
 
@@ -81,13 +82,13 @@ INNER JOIN [customers] USING ([customer_id])
 ');
 
 $assoc = $res->fetchAssoc('customers.name,products.title'); // key
-print_r($assoc);
+Debug::dump($assoc);
 echo '<hr>';
 
 $assoc = $res->fetchAssoc('customers.name,#,products.title'); // key
-print_r($assoc);
+Debug::dump($assoc);
 echo '<hr>';
 
 $assoc = $res->fetchAssoc('customers.name,=,products.title'); // key
-print_r($assoc);
+Debug::dump($assoc);
 echo '<hr>';

@@ -2,6 +2,7 @@
 <pre>
 <?php
 
+require_once 'Nette/Debug.php';
 require_once '../dibi/dibi.php';
 
 
@@ -39,7 +40,7 @@ echo "Primary key: $products->primary\n";
 
 // Finds rows by primary key
 foreach ($products->find(1, 3) as $row) {
-	print_r($row);
+	Debug::dump($row);
 }
 
 
@@ -61,26 +62,26 @@ $count = $products->delete(1);
 
 // deletes multiple rows
 $count = $products->delete(array(1, 2, 3));
-var_dump($count); // number of deleted rows
+Debug::dump($count); // number of deleted rows
 
 
 // update row #2 in a table
 $data = (object) NULL;
 $data->title = 'New title';
 $count = $products->update(2, $data);
-var_dump($count); // number of updated rows
+Debug::dump($count); // number of updated rows
 
 
 // update multiple rows in a table
 $count = $products->update(array(3, 5), $data);
-var_dump($count); // number of updated rows
+Debug::dump($count); // number of updated rows
 
 
 // inserts row into a table
 $data = array();
 $data['title'] = 'New product';
 $id = $products->insert($data);
-var_dump($id); // generated id
+Debug::dump($id); // generated id
 
 
 // inserts or updates row into a table
@@ -97,4 +98,4 @@ $products->delete($key);
 
 
 // select all using fluent interface
-var_dump($products->select('*')->orderBy('title')->fetchAll());
+Debug::dump($products->select('*')->orderBy('title')->fetchAll());
