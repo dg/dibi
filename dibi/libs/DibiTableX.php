@@ -26,7 +26,7 @@
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-abstract class DibiTable extends DibiObject
+abstract class DibiTableX extends DibiObject
 {
 	/** @var string  primary key mask */
 	public static $primaryMask = 'id';
@@ -410,4 +410,11 @@ abstract class DibiTable extends DibiObject
 		}
 	}
 
+}
+
+
+
+
+abstract class DibiTable extends DibiTableX
+{
 }

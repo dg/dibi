@@ -130,10 +130,10 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 				$payload = function_exists('json_encode') ? json_encode($payload) : self::json_encode($payload);
 				foreach (str_split($payload, 4990) as $num => $s) {
 					$num++;
-					header("X-Wf-dibi-1-1-$num: |$s|\\"); // protocol-, structure-, plugin-, message-index
+					header("X-Wf-dibi-1-1-d$num: |$s|\\"); // protocol-, structure-, plugin-, message-index
 				}
-				header("X-Wf-dibi-1-1-$num: |$s|");
-				header("X-Wf-dibi-Index: $num");
+				header("X-Wf-dibi-1-1-d$num: |$s|");
+				header("X-Wf-dibi-Index: d$num");
 			}
 
 			if ($this->file) {

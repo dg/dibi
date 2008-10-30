@@ -68,7 +68,7 @@ require_once dirname(__FILE__) . '/libs/DibiConnection.php';
 require_once dirname(__FILE__) . '/libs/DibiResult.php';
 require_once dirname(__FILE__) . '/libs/DibiTranslator.php';
 require_once dirname(__FILE__) . '/libs/DibiVariable.php';
-require_once dirname(__FILE__) . '/libs/DibiTable.php';
+require_once dirname(__FILE__) . '/libs/DibiTableX.php';
 require_once dirname(__FILE__) . '/libs/DibiDataSource.php';
 require_once dirname(__FILE__) . '/libs/DibiFluent.php';
 require_once dirname(__FILE__) . '/libs/DibiDatabaseInfo.php';
@@ -111,7 +111,7 @@ class dibi
 	/**#@+
 	 * dibi version
 	 */
-	const VERSION = '0.9';
+	const VERSION = '1.0';
 	const REVISION = '$WCREV$ released on $WCDATE$';
 	/**#@-*/
 

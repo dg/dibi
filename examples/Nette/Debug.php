@@ -50,7 +50,7 @@ __construct($message,$code,$severity,$file,$line,$context){parent::__construct($
 class
 Framework{const
 VERSION='0.8';const
-REVISION='106 released on 2008/10/27 11:13:57';final
+REVISION='107 released on 2008/10/29 20:40:23';final
 public
 function
 __construct(){throw
@@ -80,8 +80,7 @@ static$emailProbability=0.01;public
 static$keysToHide=array('password','passwd','pass','pwd','creditcard','credit card','cc','pin');private
 static$colophons=array(array(__CLASS__,'getDefaultColophons'));private
 static$keyFilter=array();public
-static$time;private
-static$fireCounter;const
+static$time;const
 LOG='LOG';const
 INFO='INFO';const
 WARN='WARN';const
@@ -597,13 +596,13 @@ function
 fireLog($message,$priority=self::LOG,$label=NULL){if($message
 instanceof
 Exception){$priority='TRACE';$message=array('Class'=>get_class($message),'Message'=>$message->getMessage(),'File'=>$message->getFile(),'Line'=>$message->getLine(),'Trace'=>self::replaceObjects($message->getTrace()));}elseif($priority==='GROUP_START'){$label=$message;$message=NULL;}return
-self::fireSend(1,array(array('Type'=>$priority,'Label'=>$label),$message));}private
+self::fireSend(1,array(array('Type'=>$priority,'Label'=>$label),self::replaceObjects($message)));}private
 static
 function
 fireSend($index,$payload){if(headers_sent())return
-FALSE;if(!self::$fireCounter){header('X-Wf-Protocol-nette: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');header('X-Wf-nette-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0');header('X-Wf-nette-Structure-1: http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1');header('X-Wf-nette-Structure-2: http://meta.firephp.org/Wildfire/Structure/FirePHP/Dump/0.1');}$payload=json_encode($payload);foreach(str_split($payload,4990)as$s){$num=++self::$fireCounter;header("X-Wf-nette-$index-1-$num: |$s|\\");}header("X-Wf-nette-$index-1-$num: |$s|");header("X-Wf-nette-Index: $num");return
+FALSE;header('X-Wf-Protocol-nette: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');header('X-Wf-nette-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0');if($index===1){header('X-Wf-nette-Structure-1: http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1');}elseif($index===2){header('X-Wf-nette-Structure-2: http://meta.firephp.org/Wildfire/Structure/FirePHP/Dump/0.1');}$payload=json_encode($payload);static$counter;foreach(str_split($payload,4990)as$s){$num=++$counter;header("X-Wf-nette-$index-1-n$num: |$s|\\");}header("X-Wf-nette-$index-1-n$num: |$s|");header("X-Wf-nette-Index: n$num");return
 TRUE;}static
 private
 function
-replaceObjects($val){foreach($val
-as$k=>$v){if(is_object($v)){$val[$k]='object '.get_class($v).'';}elseif(is_array($v)){$val[$k]=self::replaceObjects($v);}}return$val;}}Debug::$html=PHP_SAPI!=='cli';Debug::$time=microtime(TRUE);
+replaceObjects($val){if(is_object($val)){return'object '.get_class($val).'';}elseif(is_array($val)){foreach($val
+as$k=>$v){unset($val[$k]);$val[$k]=self::replaceObjects($v);}}return$val;}}Debug::$html=PHP_SAPI!=='cli';Debug::$time=microtime(TRUE);

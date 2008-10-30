@@ -1,4 +1,4 @@
-<h1>DibiTable demo</h1>
+<h1>DibiTableX demo</h1>
 <pre>
 <?php
 
@@ -15,11 +15,11 @@ dibi::begin();
 
 
 // autodetection: primary keys are customer_id, order_id, ...
-DibiTable::$primaryMask = '%s_id';
+DibiTableX::$primaryMask = '%s_id';
 
 
 // table products
-class Products extends DibiTable
+class Products extends DibiTableX
 {
 //   rely on autodetection...
 //   protected $name = 'products';
