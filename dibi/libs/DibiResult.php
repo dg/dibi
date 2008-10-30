@@ -57,6 +57,9 @@ class DibiResult extends DibiObject implements IDataSource
 	/** @var array|FALSE  Qualifiy each column name with the table name? */
 	private $withTables = FALSE;
 
+	/** @var string  returned object class */
+	private $class = 'DibiRow';
+
 
 
 	/**
@@ -174,6 +177,29 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
+	 * Set fetched object class. This class should extend the DibiRow class.
+	 * @param  string
+	 * @return void
+	 */
+	public function setRowClass($class)
+	{
+		$this->class = $class;
+	}
+
+
+
+	/**
+	 * Returns fetched object class name.
+	 * @return string
+	 */
+	public function getRowClass()
+	{
+		return $this->class;
+	}
+
+
+
+	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
 	 * @return DibiRow|FALSE  array on success, FALSE if no next record
@@ -201,7 +227,7 @@ class DibiResult extends DibiObject implements IDataSource
 			}
 		}
 
-		return new DibiRow($row, 2);
+		return new $this->class($row);
 	}
 
 
@@ -626,4 +652,10 @@ class DibiResult extends DibiObject implements IDataSource
  */
 class DibiRow extends ArrayObject
 {
+
+	public function __construct($arr)
+	{
+		parent::__construct($arr, 2);
+	}
+
 }

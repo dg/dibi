@@ -292,7 +292,7 @@ abstract class DibiTableX extends DibiObject
 	 */
 	public function createBlank()
 	{
-		$row = new DibiRow($this->blankRow, 2);
+		$row = new DibiRow($this->blankRow);
 		$row[$this->primary] = NULL;
 		return $row;
 	}
