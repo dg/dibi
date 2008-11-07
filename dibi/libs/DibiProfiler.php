@@ -133,7 +133,6 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 					header("X-Wf-dibi-1-1-d$num: |$s|\\"); // protocol-, structure-, plugin-, message-index
 				}
 				header("X-Wf-dibi-1-1-d$num: |$s|");
-				header("X-Wf-dibi-Index: d$num");
 			}
 
 			if ($this->file) {

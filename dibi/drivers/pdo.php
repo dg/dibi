@@ -305,7 +305,36 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
-		throw new NotSupportedException('PDO does not support applying limit or offset.');
+		if ($limit < 0 && $offset < 1) return;
+
+		switch ($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+		case 'mysql':
+			$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
+				. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+			break;
+
+		case 'pgsql':
+			if ($limit >= 0) $sql .= ' LIMIT ' . (int) $limit;
+			if ($offset > 0) $sql .= ' OFFSET ' . (int) $offset;
+			break;
+
+		case 'sqlite':
+		case 'sqlite2':
+		case 'oci':
+			$sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+			break;
+
+		case 'odbc':
+		case 'mssql':
+			if ($offset < 1) {
+				$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
+				break;
+			}
+			// intentionally break omitted
+
+		default:
+			throw new NotSupportedException('PDO or driver does not support applying limit or offset.');
+		}
 	}
 
 
