@@ -133,7 +133,12 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 	 */
 	public function insertId($sequence)
 	{
-		throw new NotSupportedException('MS SQL does not support autoincrementing.');
+		$res = mssql_query('SELECT @@IDENTITY', $this->connection);
+		if (is_resource($res)) {
+			$row = mssql_fetch_row($res);
+			return $row[0];
+		}	
+		return FALSE;
 	}
 
 
