@@ -161,28 +161,31 @@ interface IDibiDriver
 
 	/**
 	 * Begins a transaction (if supported).
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	function begin();
+	function begin($savepoint = NULL);
 
 
 
 	/**
 	 * Commits statements in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	function commit();
+	function commit($savepoint = NULL);
 
 
 
 	/**
 	 * Rollback changes in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	function rollback();
+	function rollback($savepoint = NULL);
 
 
 

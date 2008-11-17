@@ -199,36 +199,39 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Begins a transaction (if supported).
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function begin()
+	public function begin($savepoint = NULL)
 	{
-		$this->query('START TRANSACTION');
+		$this->query($savepoint ? "SAVEPOINT $savepoint" : 'START TRANSACTION');
 	}
 
 
 
 	/**
 	 * Commits statements in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function commit()
+	public function commit($savepoint = NULL)
 	{
-		$this->query('COMMIT');
+		$this->query($savepoint ? "RELEASE SAVEPOINT $savepoint" : 'COMMIT');
 	}
 
 
 
 	/**
 	 * Rollback changes in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function rollback()
+	public function rollback($savepoint = NULL)
 	{
-		$this->query('ROLLBACK');
+		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT $savepoint" : 'ROLLBACK');
 	}
 
 

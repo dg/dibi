@@ -143,10 +143,11 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Begins a transaction (if supported).
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function begin()
+	public function begin($savepoint = NULL)
 	{
 		if (!odbc_autocommit($this->connection, FALSE)) {
 			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
@@ -157,10 +158,11 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Commits statements in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function commit()
+	public function commit($savepoint = NULL)
 	{
 		if (!odbc_commit($this->connection)) {
 			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
@@ -172,10 +174,11 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Rollback changes in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function rollback()
+	public function rollback($savepoint = NULL)
 	{
 		if (!odbc_rollback($this->connection)) {
 			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));

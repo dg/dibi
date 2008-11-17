@@ -56,7 +56,7 @@ if (!class_exists('FileNotFoundException', FALSE)) {
 	class FileNotFoundException extends IOException {}
 }
 
-if (!interface_exists(/*Nette::*/'IDebuggable', FALSE)) {
+if (!interface_exists(/*Nette\*/'IDebuggable', FALSE)) {
 	require_once dirname(__FILE__) . '/Nette/IDebuggable.php';
 }
 
@@ -380,36 +380,39 @@ class dibi
 
 	/**
 	 * Begins a transaction - Monostate for DibiConnection::begin().
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiException
 	 */
-	public static function begin()
+	public static function begin($savepoint = NULL)
 	{
-		self::getConnection()->begin();
+		self::getConnection()->begin($savepoint);
 	}
 
 
 
 	/**
-	 * Commits statements in a transaction - Monostate for DibiConnection::commit().
+	 * Commits statements in a transaction - Monostate for DibiConnection::commit($savepoint = NULL).
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiException
 	 */
-	public static function commit()
+	public static function commit($savepoint = NULL)
 	{
-		self::getConnection()->commit();
+		self::getConnection()->commit($savepoint);
 	}
 
 
 
 	/**
 	 * Rollback changes in a transaction - Monostate for DibiConnection::rollback().
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiException
 	 */
-	public static function rollback()
+	public static function rollback($savepoint = NULL)
 	{
-		self::getConnection()->rollback();
+		self::getConnection()->rollback($savepoint);
 	}
 
 

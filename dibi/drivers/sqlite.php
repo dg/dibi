@@ -151,10 +151,11 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Begins a transaction (if supported).
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function begin()
+	public function begin($savepoint = NULL)
 	{
 		$this->query('BEGIN');
 	}
@@ -163,10 +164,11 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Commits statements in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function commit()
+	public function commit($savepoint = NULL)
 	{
 		$this->query('COMMIT');
 	}
@@ -175,10 +177,11 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Rollback changes in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function rollback()
+	public function rollback($savepoint = NULL)
 	{
 		$this->query('ROLLBACK');
 	}

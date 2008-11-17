@@ -41,7 +41,7 @@ class DibiException extends Exception
  * @copyright  Copyright (c) 2005, 2008 David Grudl
  * @package    dibi
  */
-class DibiDriverException extends DibiException implements /*Nette::*/IDebuggable
+class DibiDriverException extends DibiException implements /*Nette\*/IDebuggable
 {
 	/** @var string */
 	private static $errorMsg;
@@ -85,7 +85,7 @@ class DibiDriverException extends DibiException implements /*Nette::*/IDebuggabl
 
 
 
-	/********************* interface Nette::IDebuggable ****************d*g**/
+	/********************* interface Nette\IDebuggable ****************d*g**/
 
 
 	/**

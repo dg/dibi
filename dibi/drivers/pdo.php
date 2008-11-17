@@ -165,10 +165,11 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Begins a transaction (if supported).
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function begin()
+	public function begin($savepoint = NULL)
 	{
 		if (!$this->connection->beginTransaction()) {
 			$err = $this->connection->errorInfo();
@@ -180,10 +181,11 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Commits statements in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function commit()
+	public function commit($savepoint = NULL)
 	{
 		if (!$this->connection->commit()) {
 			$err = $this->connection->errorInfo();
@@ -195,10 +197,11 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Rollback changes in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
-	public function rollback()
+	public function rollback($savepoint = NULL)
 	{
 		if (!$this->connection->rollBack()) {
 			$err = $this->connection->errorInfo();

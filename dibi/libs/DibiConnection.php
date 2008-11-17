@@ -330,18 +330,23 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Begins a transaction (if supported).
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 */
-	public function begin()
+	public function begin($savepoint = NULL)
 	{
 		$this->connect();
-		if ($this->inTxn) {
+		if (!$savepoint && $this->inTxn) {
 			throw new DibiException('There is already an active transaction.');
 		}
 		if ($this->profiler !== NULL) {
-			$ticket = $this->profiler->before($this, IDibiProfiler::BEGIN);
+			$ticket = $this->profiler->before($this, IDibiProfiler::BEGIN, $savepoint);
 		}
-		$this->driver->begin();
+		if ($savepoint && !$this->inTxn) {
+			$this->driver->begin();
+		}
+		$this->driver->begin($savepoint);
+
 		$this->inTxn = TRUE;
 		if (isset($ticket)) {
 			$this->profiler->after($ticket);
@@ -352,18 +357,19 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Commits statements in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 */
-	public function commit()
+	public function commit($savepoint = NULL)
 	{
 		if (!$this->inTxn) {
 			throw new DibiException('There is no active transaction.');
 		}
 		if ($this->profiler !== NULL) {
-			$ticket = $this->profiler->before($this, IDibiProfiler::COMMIT);
+			$ticket = $this->profiler->before($this, IDibiProfiler::COMMIT, $savepoint);
 		}
-		$this->driver->commit();
-		$this->inTxn = FALSE;
+		$this->driver->commit($savepoint);
+		$this->inTxn = (bool) $savepoint;
 		if (isset($ticket)) {
 			$this->profiler->after($ticket);
 		}
@@ -373,21 +379,33 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Rollback changes in a transaction.
+	 * @param  string  optinal savepoint name
 	 * @return void
 	 */
-	public function rollback()
+	public function rollback($savepoint = NULL)
 	{
 		if (!$this->inTxn) {
 			throw new DibiException('There is no active transaction.');
 		}
 		if ($this->profiler !== NULL) {
-			$ticket = $this->profiler->before($this, IDibiProfiler::ROLLBACK);
+			$ticket = $this->profiler->before($this, IDibiProfiler::ROLLBACK, $savepoint);
 		}
-		$this->driver->rollback();
-		$this->inTxn = FALSE;
+		$this->driver->rollback($savepoint);
+		$this->inTxn = (bool) $savepoint;
 		if (isset($ticket)) {
 			$this->profiler->after($ticket);
 		}
+	}
+
+
+
+	/**
+	 * Is in transaction?
+	 * @return bool
+	 */
+	public function inTransaction()
+	{
+		return $this->inTxn;
 	}
 
 
