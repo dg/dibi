@@ -122,6 +122,9 @@ class DibiFluent extends DibiObject
 			} elseif (is_string($arg) && preg_match('#^[a-z][a-z0-9_.]*$#i', $arg)) { // identifier
 				$args = array('%n', $arg);
 
+			} elseif ($arg instanceof self) {
+				$args = array_merge(array('('), $arg->_export(), array(')'));
+
 			} elseif (is_array($arg)) { // any array
 				if (isset(self::$modifiers[$clause])) {
 					$args = array(self::$modifiers[$clause], $arg);
@@ -383,14 +386,12 @@ class DibiFluent extends DibiObject
 
 
 	/**
-	 * Returns (highlighted) SQL query.
+	 * Returns SQL query.
 	 * @return string
 	 */
 	final public function __toString()
 	{
-		ob_start();
-		$this->test();
-		return ob_get_clean();
+		return $this->connection->sql($this->_export());
 	}
 
 }

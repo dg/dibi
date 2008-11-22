@@ -240,6 +240,26 @@ class DibiConnection extends DibiObject
 
 
 	/**
+	 * Generates and returns SQL query.
+	 * @param  array|mixed      one or more arguments
+	 * @return string
+	 * @throws DibiException
+	 */
+	final public function sql($args)
+	{
+		$args = func_get_args();
+		$this->connect();
+		$trans = new DibiTranslator($this->driver);
+		if ($trans->translate($args)) {
+			return $trans->sql;
+		} else {
+			throw new DibiException('SQL translate error: ' . $trans->sql);
+		}
+	}
+
+
+
+	/**
 	 * Generates and prints SQL query.
 	 * @param  array|mixed  one or more arguments
 	 * @return bool
