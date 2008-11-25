@@ -503,7 +503,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 		case dibi::FIELD_DATE:
 		case dibi::FIELD_DATETIME:
-			$value = strtotime($value);
+			$value = is_numeric($value) ? (int) $value : strtotime($value);
 			return $format === NULL ? $value : date($format, $value);
 
 		case dibi::FIELD_BOOL:

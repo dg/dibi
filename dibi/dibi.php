@@ -527,10 +527,10 @@ class dibi
 	{
 		if ($time === NULL) {
 			$time = time(); // current time
-		} elseif (is_string($time)) {
-			$time = strtotime($time); // try convert to timestamp
+		} elseif (is_numeric($time)) {
+			$time = (int) $time; // timestamp
 		} else {
-			$time = (int) $time;
+			$time = strtotime($time); // try convert to timestamp
 		}
 		return new DibiVariable($time, dibi::FIELD_DATETIME);
 	}
