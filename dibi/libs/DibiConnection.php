@@ -570,6 +570,66 @@ class DibiConnection extends DibiObject
 
 
 
+	/********************* shortcuts ****************d*g**/
+
+
+
+	/**
+	 * Executes SQL query and fetch result - shortcut for query() & fetch().
+	 * @param  array|mixed    one or more arguments
+	 * @return DibiRow
+	 * @throws DibiException
+	 */
+	public function fetch($args)
+	{
+		$args = func_get_args();
+		return $this->query($args)->fetch();
+	}
+
+
+
+	/**
+	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
+	 * @param  array|mixed    one or more arguments
+	 * @return array of DibiRow
+	 * @throws DibiException
+	 */
+	public function fetchAll($args)
+	{
+		$args = func_get_args();
+		return $this->query($args)->fetchAll();
+	}
+
+
+
+	/**
+	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
+	 * @param  array|mixed    one or more arguments
+	 * @return string
+	 * @throws DibiException
+	 */
+	public function fetchSingle($args)
+	{
+		$args = func_get_args();
+		return $this->query($args)->fetchSingle();
+	}
+
+
+
+	/**
+	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
+	 * @param  array|mixed    one or more arguments
+	 * @return string
+	 * @throws DibiException
+	 */
+	public function fetchPairs($args)
+	{
+		$args = func_get_args();
+		return $this->query($args)->fetchPairs();
+	}
+
+
+
 	/********************* misc ****************d*g**/
 
 
@@ -613,6 +673,7 @@ class DibiConnection extends DibiObject
 	 */
 	public function getDatabaseInfo()
 	{
+		$this->connect();
 		return new DibiDatabaseInfo($this->driver, isset($this->config['database']) ? $this->config['database'] : NULL);
 	}
 

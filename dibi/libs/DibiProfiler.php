@@ -33,7 +33,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 	private $file;
 
 	/** @var bool  log to firebug? */
-	private $useFirebug;
+	public $useFirebug;
 
 	/** @var int */
 	private $filter = self::ALL;
