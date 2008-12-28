@@ -307,7 +307,8 @@ final class DibiTranslator extends DibiObject
 
 			case 'd':  // date
 			case 't':  // datetime
-				return $this->driver->escape(is_numeric($value) ? (int) $value : strtotime($value), $modifier);
+				$value = is_numeric($value) ? (int) $value : ($value instanceof DateTime ? $value->format('U') : strtotime($value));
+				return $this->driver->escape($value, $modifier);
 
 			case 'by':
 			case 'n':  // identifier name

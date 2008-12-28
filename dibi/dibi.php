@@ -527,8 +527,13 @@ class dibi
 	{
 		if ($time === NULL) {
 			$time = time(); // current time
+
 		} elseif (is_numeric($time)) {
 			$time = (int) $time; // timestamp
+
+		} elseif ($time instanceof DateTime) {
+			$time = $time->format('U');
+
 		} else {
 			$time = strtotime($time); // try convert to timestamp
 		}

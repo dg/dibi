@@ -108,7 +108,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 		if (($event & $this->filter) === 0) return;
 
 		if ($event & self::QUERY) {
-			if ($this->useFirebug) {
+			if ($this->useFirebug && !headers_sent()) {
 				self::$table[] = array(
 					sprintf('%0.3f', dibi::$elapsedTime * 1000),
 					trim($sql),
