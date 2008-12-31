@@ -1,4 +1,4 @@
-Dibi (c) David Grudl, 2005-2008 (http://davidgrudl.com)
+Dibi (c) David Grudl, 2005-2009 (http://davidgrudl.com)
 
 
 

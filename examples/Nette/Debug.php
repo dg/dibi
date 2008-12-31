@@ -2,14 +2,14 @@
 /**
  * Nette Framework
  *
- * Copyright (c) 2004, 2008 David Grudl (http://davidgrudl.com)
+ * Copyright (c) 2004, 2009 David Grudl (http://davidgrudl.com)
  *
  * This source file is subject to the "Nette license" that is bundled
  * with this package in the file license.txt.
  *
  * For more information please see http://nettephp.com
  *
- * @copyright  Copyright (c) 2004, 2008 David Grudl
+ * @copyright  Copyright (c) 2004, 2009 David Grudl
  * @license    http://nettephp.com/license  Nette license
  * @link       http://nettephp.com
  * @category   Nette
@@ -30,6 +30,9 @@ LogicException{}class
 NotSupportedException
 extends
 LogicException{}class
+DeprecatedException
+extends
+NotSupportedException{}class
 MemberAccessException
 extends
 LogicException{}class
@@ -46,11 +49,18 @@ FatalErrorException
 extends
 Exception{public
 function
-__construct($message,$code,$severity,$file,$line,$context){parent::__construct($message,$code);$this->file=$file;$this->line=$line;$this->context=$context;}}final
+__construct($message,$code,$severity,$file,$line,$context){parent::__construct($message,$code);$this->file=$file;$this->line=$line;$this->context=$context;}}if(!function_exists('json_encode')){function
+json_encode($val){if(is_array($val)&&(!$val||array_keys($val)===range(0,count($val)-1))){return'['.implode(',',array_map('json_encode',$val)).']';}if(is_array($val)||is_object($val)){$tmp=array();foreach($val
+as$k=>$v){$tmp[]=json_encode((string)$k).':'.json_encode($v);}return'{'.implode(',',$tmp).'}';}if(is_string($val)){$val=str_replace(array("\\","\x00"),array("\\\\","\\u0000"),$val);return'"'.addcslashes($val,"\x8\x9\xA\xC\xD/\"").'"';}if(is_int($val)||is_float($val)){return
+rtrim(rtrim(number_format($val,5,'.',''),'0'),'.');}if(is_bool($val)){return$val?'true':'false';}return'null';}}if(version_compare(PHP_VERSION,'5.2.2','<')){function
+fixCallback(&$callback){if(is_string($callback)&&strpos($callback,':')){$callback=explode('::',$callback);}if(is_array($callback)&&is_string($callback[0])&&$a=strrpos($callback[0],'\\')){$callback[0]=substr($callback[0],$a+1);}}}else{function
+fixCallback(&$callback){if(is_string($callback)&&$a=strrpos($callback,'\\')){$callback=substr($callback,$a+1);}elseif(is_array($callback)&&is_string($callback[0])&&$a=strrpos($callback[0],'\\')){$callback[0]=substr($callback[0],$a+1);}}}if(version_compare(PHP_VERSION,'5.3.0','<')){function
+fixNamespace(&$class){if($a=strrpos($class,'\\')){$class=substr($class,$a+1);}}}else{function
+fixNamespace($foo){}}final
 class
 Framework{const
 VERSION='0.8';const
-REVISION='107 released on 2008/10/29 20:40:23';final
+REVISION='180 released on 2008/12/29 13:18:24';final
 public
 function
 __construct(){throw
@@ -67,17 +77,20 @@ class
 Debug{public
 static$counters=array();public
 static$html;public
+static$productionMode;public
+static$consoleMode;public
 static$maxDepth=3;public
-static$maxLen=150;private
-static$enabled=FALSE;public
-static$useFirebug;private
+static$maxLen=150;public
+static$keysToHide=array('password','passwd','pass','pwd','creditcard','credit card','cc','pin');private
+static$enabled=FALSE;private
+static$firebugDetected;private
+static$ajaxDetected;private
 static$logFile;private
 static$logHandle;private
 static$sendEmails;private
-static$emailHeaders=array('To'=>'','From'=>'noreply@%host%','X-Mailer'=>'Nette Framework','Subject'=>'PHP: An error occurred on the server %host%','Body'=>'[%date%]');public
-static$mailer=array(__CLASS__,'sendEmail');public
-static$emailProbability=0.01;public
-static$keysToHide=array('password','passwd','pass','pwd','creditcard','credit card','cc','pin');private
+static$emailHeaders=array('To'=>'','From'=>'noreply@%host%','X-Mailer'=>'Nette Framework','Subject'=>'PHP: An error occurred on the server %host%','Body'=>'[%date%] %message%');public
+static$mailer=array(__CLASS__,'defaultMailer');public
+static$emailProbability=0.01;private
 static$colophons=array(array(__CLASS__,'getDefaultColophons'));private
 static$keyFilter=array();public
 static$time;const
@@ -92,7 +105,10 @@ new
 LogicException("Cannot instantiate static class ".get_class($this));}public
 static
 function
-dump($var,$return=FALSE){self::$keyFilter=FALSE;$output="<pre class=\"dump\">".self::_dump($var,0)."</pre>\n";if(!self::$html){$output=htmlspecialchars_decode(strip_tags($output),ENT_NOQUOTES);}if($return){return$output;}else{echo$output;return$var;}}private
+init(){self::$time=microtime(TRUE);self::$consoleMode=PHP_SAPI==='cli';self::$productionMode=NULL;self::$firebugDetected=isset($_SERVER['HTTP_USER_AGENT'])&&strpos($_SERVER['HTTP_USER_AGENT'],'FirePHP/');self::$ajaxDetected=isset($_SERVER['HTTP_X_REQUESTED_WITH'])&&$_SERVER['HTTP_X_REQUESTED_WITH']==='XMLHttpRequest';}public
+static
+function
+dump($var,$return=FALSE){if(!$return&&self::$productionMode){return$var;}$output="<pre class=\"dump\">".self::_dump($var,0)."</pre>\n";if(self::$consoleMode){$output=htmlspecialchars_decode(strip_tags($output),ENT_NOQUOTES);}if($return){return$output;}else{echo$output;return$var;}}private
 static
 function
 _dump(&$var,$level){if(is_bool($var)){return"<span>bool</span>(".($var?'TRUE':'FALSE').")\n";}elseif($var===NULL){return"<span>NULL</span>\n";}elseif(is_int($var)){return"<span>int</span>($var)\n";}elseif(is_float($var)){return"<span>float</span>($var)\n";}elseif(is_string($var)){if(self::$maxLen&&strlen($var)>self::$maxLen){$s=htmlSpecialChars(substr($var,0,self::$maxLen),ENT_NOQUOTES).' ... ';}else{$s=htmlSpecialChars($var,ENT_NOQUOTES);}return"<span>string</span>(".strlen($var).") \"$s\"\n";}elseif(is_array($var)){$s="<span>array</span>(".count($var).") {\n";$space=str_repeat('  ',$level);static$marker;if($marker===NULL)$marker=uniqid("\x00",TRUE);if(isset($var[$marker])){$s.="$space  *RECURSION*\n";}elseif($level<self::$maxDepth||!self::$maxDepth){$var[$marker]=0;foreach($var
@@ -100,34 +116,39 @@ as$k=>&$v){if($k===$marker)continue;$s.="$space  ".(is_int($k)?$k:"\"$k\"")." =>
 as$k=>&$v){$m='';if($k[0]==="\x00"){$m=$k[1]==='*'?' <span>protected</span>':' <span>private</span>';$k=substr($k,strrpos($k,"\x00")+1);}$s.="$space  \"$k\"$m => ";if(self::$keyFilter&&is_string($v)&&isset(self::$keyFilter[strtolower($k)])){$s.="<span>string</span>(?) <i>*** hidden ***</i>\n";}else{$s.=self::_dump($v,$level+1);}}array_pop($list);}else{$s.="$space  ...\n";}return$s."$space}\n";}elseif(is_resource($var)){return"<span>resource of type</span>(".get_resource_type($var).")\n";}else{return"<span>unknown type</span>\n";}}public
 static
 function
-timer(){static$time=0;$now=microtime(TRUE);$delta=$now-$time;$time=$now;return$delta;}public
+timer($name=NULL){static$time=array();$now=microtime(TRUE);$delta=isset($time[$name])?$now-$time[$name]:0;$time[$name]=$now;return$delta;}public
 static
 function
-enable($level=E_ALL,$logErrors=NULL,$sendEmails=FALSE){if(version_compare(PHP_VERSION,'5.2.1')===0){throw
+enable($level=NULL,$logFile=NULL,$email=NULL){if(version_compare(PHP_VERSION,'5.2.1')===0){throw
 new
-NotSupportedException(__METHOD__.' is not supported in PHP 5.2.1');}if($logErrors===NULL&&class_exists('Environment')){$logErrors=Environment::isLive();}if(self::$useFirebug===NULL){self::$useFirebug=function_exists('json_encode')&&!$logErrors&&isset($_SERVER['HTTP_USER_AGENT'])&&strpos($_SERVER['HTTP_USER_AGENT'],'FirePHP/');}if($level!==NULL){error_reporting($level);}if(function_exists('ini_set')){ini_set('display_startup_errors',!$logErrors);ini_set('display_errors',!$logErrors);ini_set('html_errors',self::$html);ini_set('log_errors',(bool)$logErrors);}elseif($logErrors){throw
+NotSupportedException(__METHOD__.' is not supported in PHP 5.2.1');}error_reporting($level===NULL?E_ALL|E_STRICT:$level);if(self::$productionMode===NULL){if(class_exists('Environment')){self::$productionMode=Environment::isProduction();}elseif(isset($_SERVER['SERVER_ADDR'])){$oct=explode('.',$_SERVER['SERVER_ADDR']);self::$productionMode=$_SERVER['SERVER_ADDR']!=='::1'&&(count($oct)!==4||($oct[0]!=='10'&&$oct[0]!=='127'&&($oct[0]!=='172'||$oct[1]<16||$oct[1]>31)&&($oct[0]!=='169'||$oct[1]!=='254')&&($oct[0]!=='192'||$oct[1]!=='168')));}else{self::$productionMode=!self::$consoleMode;}}if(self::$productionMode&&$logFile!==FALSE){self::$logFile='php_error.log';if(class_exists('Environment')){if(is_string($logFile)){self::$logFile=Environment::expand($logFile);}else
+try{self::$logFile=Environment::expand('%logDir%/php_error.log');}catch(InvalidStateException$e){}}elseif(is_string($logFile)){self::$logFile=$logFile;}ini_set('error_log',self::$logFile);}if(function_exists('ini_set')){ini_set('display_startup_errors',!self::$productionMode);ini_set('display_errors',!self::$productionMode);ini_set('html_errors',!self::$consoleMode);ini_set('log_errors',(bool)self::$logFile);}elseif(self::$productionMode){throw
 new
-NotSupportedException('Function ini_set() is not enabled.');}if($logErrors){if(is_string($logErrors)){self::$logFile=strpos($logErrors,'%')===FALSE?$logErrors:Environment::expand($logErrors);}else{try{self::$logFile=Environment::expand('%logDir%/php_error.log');}catch(InvalidStateException$e){self::$logFile='php_error.log';}}ini_set('error_log',self::$logFile);}self::$sendEmails=$logErrors&&$sendEmails;if(self::$sendEmails){if(is_string($sendEmails)){self::$emailHeaders['To']=$sendEmails;}elseif(is_array($sendEmails)){self::$emailHeaders=$sendEmails+self::$emailHeaders;}if(mt_rand()/mt_getrandmax()<self::$emailProbability){self::observeErrorLog();}}if(!defined('E_RECOVERABLE_ERROR')){define('E_RECOVERABLE_ERROR',4096);}if(!defined('E_DEPRECATED')){define('E_DEPRECATED',8192);}set_exception_handler(array(__CLASS__,'exceptionHandler'));set_error_handler(array(__CLASS__,'errorHandler'));self::$enabled=TRUE;}public
+NotSupportedException('Function ini_set() is not enabled.');}self::$sendEmails=$logFile&&$email;if(self::$sendEmails){if(is_string($email)){self::$emailHeaders['To']=$email;}elseif(is_array($email)){self::$emailHeaders=$email+self::$emailHeaders;}if(mt_rand()/mt_getrandmax()<self::$emailProbability){$monitorFile=self::$logFile.'.monitor';$saved=@file_get_contents($monitorFile);$actual=(int)@filemtime(self::$logFile);if($saved===FALSE||$actual===0){file_put_contents($monitorFile,$actual);}elseif(is_numeric($saved)&&$saved!=$actual){self::sendEmail('Fatal error probably occured');}}}if(!defined('E_RECOVERABLE_ERROR')){define('E_RECOVERABLE_ERROR',4096);}if(!defined('E_DEPRECATED')){define('E_DEPRECATED',8192);}set_exception_handler(array(__CLASS__,'exceptionHandler'));set_error_handler(array(__CLASS__,'errorHandler'));self::$enabled=TRUE;}public
 static
 function
 isEnabled(){return
 self::$enabled;}public
 static
 function
-exceptionHandler(Exception$exception){if(!headers_sent()){header('HTTP/1.1 500 Internal Server Error');}if(self::$logFile){error_log("PHP Fatal error:  Uncaught $exception");$file=@strftime('%d-%b-%Y %H-%M-%S ',Debug::$time).strstr(number_format(Debug::$time,4,'~',''),'~');$file=dirname(self::$logFile)."/exception $file.html";self::$logHandle=@fopen($file,'x');if(self::$logHandle){ob_start(array(__CLASS__,'writeFile'),1);self::paintBlueScreen($exception);ob_end_flush();fclose(self::$logHandle);}self::observeErrorLog();}elseif(!self::$html||isset($_SERVER['HTTP_X_REQUESTED_WITH'])&&$_SERVER['HTTP_X_REQUESTED_WITH']==='XMLHttpRequest'){if(self::$useFirebug&&!headers_sent()){self::fireLog($exception);}else{echo"$exception\n";foreach(self::$colophons
-as$callback){foreach((array)call_user_func($callback,'bluescreen')as$line)echo
-strip_tags($line)."\n";}}}else{while(ob_get_level()&&@ob_end_clean());self::paintBlueScreen($exception);exit;}}public
+exceptionHandler(Exception$exception){if(!headers_sent()){header('HTTP/1.1 500 Internal Server Error');}self::processException($exception,TRUE);exit;}public
 static
 function
 errorHandler($severity,$message,$file,$line,$context){static$fatals=array(E_ERROR=>1,E_CORE_ERROR=>1,E_COMPILE_ERROR=>1,E_USER_ERROR=>1,E_PARSE=>1,E_RECOVERABLE_ERROR=>1);if(isset($fatals[$severity])){throw
 new
 FatalErrorException($message,0,$severity,$file,$line,$context);}elseif(($severity&error_reporting())!==$severity){return
-NULL;}elseif(self::$useFirebug&&!headers_sent()){$types=array(E_WARNING=>'Warning',E_USER_WARNING=>'Warning',E_NOTICE=>'Notice',E_USER_NOTICE=>'Notice',E_STRICT=>'Strict standards',E_DEPRECATED=>'Deprecated');$type=isset($types[$severity])?$types[$severity]:'Unknown error';$message=strip_tags($message);self::fireLog("$type: $message in $file on line $line",'WARN');return
+NULL;}static$types=array(E_WARNING=>'Warning',E_USER_WARNING=>'Warning',E_NOTICE=>'Notice',E_USER_NOTICE=>'Notice',E_STRICT=>'Strict standards',E_DEPRECATED=>'Deprecated');$type=isset($types[$severity])?$types[$severity]:'Unknown error';if(self::$logFile){if(self::$sendEmails){self::sendEmail("$type: $message in $file on line $line");}return
+FALSE;}elseif(!self::$productionMode&&self::$firebugDetected&&!headers_sent()){$message=strip_tags($message);self::fireLog("$type: $message in $file on line $line",'WARN');return
 NULL;}return
 FALSE;}public
 static
 function
-paintBlueScreen(Exception$exception){$colophons=self::$colophons;function
+processException(Exception$exception,$outputAllowed=FALSE){if(self::$logFile){error_log("PHP Fatal error:  Uncaught $exception");$file=@strftime('%d-%b-%Y %H-%M-%S ',Debug::$time).strstr(number_format(Debug::$time,4,'~',''),'~');$file=dirname(self::$logFile)."/exception $file.html";self::$logHandle=@fopen($file,'x');if(self::$logHandle){ob_start(array(__CLASS__,'writeFile'),1);self::paintBlueScreen($exception);ob_end_flush();fclose(self::$logHandle);}if(self::$sendEmails){self::sendEmail((string)$exception);}}elseif(self::$productionMode){}elseif(self::$consoleMode){if($outputAllowed){echo"$exception\n";foreach(self::$colophons
+as$callback){foreach((array)call_user_func($callback,'bluescreen')as$line)echo
+strip_tags($line)."\n";}}}elseif(self::$firebugDetected&&self::$ajaxDetected&&!headers_sent()){self::fireLog($exception);}elseif($outputAllowed){while(ob_get_level()&&@ob_end_clean());self::paintBlueScreen($exception);}elseif(self::$firebugDetected&&!headers_sent()){self::fireLog($exception);}}public
+static
+function
+paintBlueScreen(Exception$exception){$colophons=self::$colophons;if(!function_exists('_netteDebugPrintCode')){function
 _netteDebugPrintCode($file,$line,$count=15){if(function_exists('ini_set')){ini_set('highlight.comment','#999; font-style: italic');ini_set('highlight.default','#000');ini_set('highlight.html','#06b');ini_set('highlight.keyword','#d24; font-weight: bold');ini_set('highlight.string','#080');}$start=max(1,$line-floor($count/2));$source=explode("\n",@highlight_file($file,TRUE));echo$source[0];$source=explode('<br />',$source[1]);array_unshift($source,NULL);$i=$start;while(--$i>=1){if(preg_match('#.*(</?span[^>]*>)#',$source[$i],$m)){if($m[1]!=='</span>')echo$m[1];break;}}$source=array_slice($source,$start,$count,TRUE);end($source);$numWidth=strlen((string)key($source));foreach($source
 as$n=>$s){$s=str_replace(array("\r","\n"),array('',''),$s);if($n===$line){printf("<span class='highlight'>Line %{$numWidth}s:    %s\n</span>%s",$n,strip_tags($s),preg_replace('#[^>]*(<[^>]+>)[^<]*#','$1',$s));}else{printf("<span class='line'>Line %{$numWidth}s:</span>    %s\n",$n,$s);}}echo'</span></span></code>';}function
 _netteOpenPanel($name,$collaped){static$id;$id++;?>
@@ -142,7 +163,7 @@ _netteClosePanel(){?>
 		</div>
 	</div>
 	<?php
-}if(headers_sent()){echo'</pre></xmp></table>';}?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+}}if(headers_sent()){echo'</pre></xmp></table>';}?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -341,7 +362,8 @@ htmlSpecialChars(basename(dirname($row['file']))),'/<b>',htmlSpecialChars(basena
 
 try{$r=isset($row['class'])?new
 ReflectionMethod($row['class'],$row['function']):new
-ReflectionFunction($row['function']);$params=$r->getParameters();}catch(Exception$e){$params=array();}foreach($row['args']as$k=>$v){echo'<tr><td>',(isset($params[$k])?'$'.$params[$k]->name:"#$k"),'</td>';echo'<td>',self::safeDump($v,isset($params[$k])?$params[$k]->name:NULL),"</td></tr>\n";}?>
+ReflectionFunction($row['function']);$params=$r->getParameters();}catch(Exception$e){$params=array();}foreach($row['args']as$k=>$v){echo'<tr><td>',(isset($params[$k])?'$'.$params[$k]->name:"#$k"),'</td><td>';if(isset($params[$k])&&isset($keyFilter[strtolower($params[$k]->name)])){echo'<i>*** hidden ***</i>';}else{echo
+Debug::dump($v,TRUE);}echo"</td></tr>\n";}?>
 					</table>
 					</div>
 				<?php endif?>
@@ -376,7 +398,7 @@ IDebuggable):?>
 		<?php
 
 foreach($ex->context
-as$k=>$v){echo'<tr><td>$',htmlspecialchars($k),'</td><td>',self::safeDump($v,$k),"</td></tr>\n";}?>
+as$k=>$v){echo'<tr><td>$',htmlspecialchars($k),'</td>';echo'<td>',(isset($keyFilter[strtolower($k)])?'<i>*** hidden ***</i>':Debug::dump($v,TRUE)),"</td></tr>\n";}?>
 		</table>
 		<?php _netteClosePanel()?>
 		<?php endif?>
@@ -395,7 +417,7 @@ $list=get_defined_constants(TRUE);if(!empty($list['user'])):?>
 		<table id="pnl-env-const">
 		<?php
 
-foreach($list['user']as$k=>$v){echo'<tr><td>',htmlspecialchars($k),'</td><td>',self::safeDump($v,$k),"</td></tr>\n";}?>
+foreach($list['user']as$k=>$v){echo'<tr><td>',htmlspecialchars($k),'</td>';echo'<td>',(isset($keyFilter[strtolower($k)])?'<i>*** hidden ***</i>':Debug::dump($v,TRUE)),"</td></tr>\n";}?>
 		</table>
 		<?php endif?>
 
@@ -417,7 +439,7 @@ foreach(get_included_files()as$v){echo'<tr><td>',htmlspecialchars($v),"</td></tr
 		<?php
 
 foreach($_SERVER
-as$k=>$v)echo'<tr><td>',htmlspecialchars($k),'</td><td>',self::dump($v,TRUE),"</td></tr>\n";?>
+as$k=>$v)echo'<tr><td>',htmlspecialchars($k),'</td><td>',Debug::dump($v,TRUE),"</td></tr>\n";?>
 		</table>
 		<?php endif?>
 	<?php _netteClosePanel()?>
@@ -444,7 +466,7 @@ foreach(apache_request_headers()as$k=>$v)echo'<tr><td>',htmlspecialchars($k),'</
 		<table>
 		<?php
 
-foreach($GLOBALS[$name]as$k=>$v)echo'<tr><td>',htmlspecialchars($k),'</td><td>',self::dump($v,TRUE),"</td></tr>\n";?>
+foreach($GLOBALS[$name]as$k=>$v)echo'<tr><td>',htmlspecialchars($k),'</td><td>',Debug::dump($v,TRUE),"</td></tr>\n";?>
 		</table>
 		<?php endif?>
 		<?php endforeach?>
@@ -476,24 +498,21 @@ as$callback):?>
 </html><?php }public
 static
 function
-writeFile($buffer){fwrite(self::$logHandle,$buffer);}private
+writeFile($buffer){fwrite(self::$logHandle,$buffer);}public
 static
 function
-observeErrorLog(){if(!self::$sendEmails)return;$monitorFile=self::$logFile.'.monitor';$saved=@file_get_contents($monitorFile);$actual=(int)@filemtime(self::$logFile);if($saved===FALSE){file_put_contents($monitorFile,$actual);}elseif(is_numeric($saved)&&$saved!=$actual){if(file_put_contents($monitorFile,'e-mail has been sent')){call_user_func(self::$mailer);}}}private
+sendEmail($message){$monitorFile=self::$logFile.'.monitor';$saved=@file_get_contents($monitorFile);if($saved===FALSE||is_numeric($saved)){if(@file_put_contents($monitorFile,'e-mail has been sent')){call_user_func(self::$mailer,$message);}}}private
 static
 function
-sendEmail(){$host=isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:(isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:'');$headers=str_replace(array('%host%','%date%'),array($host,@date('Y-m-d H:i:s',Debug::$time)),self::$emailHeaders);$subject=$headers['Subject'];$to=$headers['To'];$body=$headers['Body'];unset($headers['Subject'],$headers['To'],$headers['Body']);$header='';foreach($headers
-as$key=>$value){$header.="$key: $value\r\n";}$body=str_replace("\r\n","\n",$body);if(PHP_OS!='Linux')$body=str_replace("\n","\r\n",$body);if($to==='debug'){self::dump(array($to,$subject,$body,$header));}else{mail($to,$subject,$body,$header);}}private
+defaultMailer($message){$host=isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:(isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:'');$headers=str_replace(array('%host%','%date%','%message%'),array($host,@date('Y-m-d H:i:s',Debug::$time),$message),self::$emailHeaders);$subject=$headers['Subject'];$to=$headers['To'];$body=$headers['Body'];unset($headers['Subject'],$headers['To'],$headers['Body']);$header='';foreach($headers
+as$key=>$value){$header.="$key: $value\r\n";}$body=str_replace("\r\n","\n",$body);if(PHP_OS!='Linux')$body=str_replace("\n","\r\n",$body);mail($to,$subject,$body,$header);}public
 static
 function
-safeDump($var,$key=NULL){self::$keyFilter=array_change_key_case(array_flip(self::$keysToHide),CASE_LOWER);if($key!==NULL&&isset(self::$keyFilter[strtolower($key)])){return'<i>*** hidden ***</i>';}return"<pre class=\"dump\">".self::_dump($var,0)."</pre>\n";}public
+enableProfiler(){if(!self::$productionMode){register_shutdown_function(array(__CLASS__,'paintProfiler'));}}public
 static
 function
-enableProfiler(){register_shutdown_function(array(__CLASS__,'paintProfiler'));}public
-static
-function
-paintProfiler(){$colophons=self::$colophons;if(self::$useFirebug){foreach(self::$colophons
-as$callback){foreach((array)call_user_func($callback,'profiler')as$line)self::fireLog(strip_tags($line));}}if(!isset($_SERVER['HTTP_X_REQUESTED_WITH'])||$_SERVER['HTTP_X_REQUESTED_WITH']!=='XMLHttpRequest'){?>
+paintProfiler(){$colophons=self::$colophons;if(self::$firebugDetected){self::fireLog('Nette profiler','GROUP_START');foreach(self::$colophons
+as$callback){foreach((array)call_user_func($callback,'profiler')as$line)self::fireLog(strip_tags($line));}self::fireLog(null,'GROUP_END');}if(!self::$ajaxDetected){?>
 </pre></xmp>
 
 <style type="text/css">
@@ -581,7 +600,7 @@ document.getElementById('netteProfiler').onmousedown = function(e) {
 <?php }}public
 static
 function
-addColophon($callback){if(!in_array($callback,self::$colophons,TRUE)&&is_callable($callback)){self::$colophons[]=$callback;}}public
+addColophon($callback){fixCallback($callback);if(!in_array($callback,self::$colophons,TRUE)&&is_callable($callback)){self::$colophons[]=$callback;}}public
 static
 function
 getDefaultColophons($sender){if($sender==='profiler'){$arr[]='Elapsed time: '.sprintf('%0.3f',(microtime(TRUE)-Debug::$time)*1000).' ms';foreach((array)self::$counters
@@ -599,10 +618,11 @@ Exception){$priority='TRACE';$message=array('Class'=>get_class($message),'Messag
 self::fireSend(1,array(array('Type'=>$priority,'Label'=>$label),self::replaceObjects($message)));}private
 static
 function
-fireSend($index,$payload){if(headers_sent())return
-FALSE;header('X-Wf-Protocol-nette: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');header('X-Wf-nette-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0');if($index===1){header('X-Wf-nette-Structure-1: http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1');}elseif($index===2){header('X-Wf-nette-Structure-2: http://meta.firephp.org/Wildfire/Structure/FirePHP/Dump/0.1');}$payload=json_encode($payload);static$counter;foreach(str_split($payload,4990)as$s){$num=++$counter;header("X-Wf-nette-$index-1-n$num: |$s|\\");}header("X-Wf-nette-$index-1-n$num: |$s|");header("X-Wf-nette-Index: n$num");return
+fireSend($index,$payload){if(self::$productionMode)return
+NULL;if(headers_sent())return
+FALSE;header('X-Wf-Protocol-nette: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');header('X-Wf-nette-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0');if($index===1){header('X-Wf-nette-Structure-1: http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1');}elseif($index===2){header('X-Wf-nette-Structure-2: http://meta.firephp.org/Wildfire/Structure/FirePHP/Dump/0.1');}$payload=json_encode($payload);static$counter;foreach(str_split($payload,4990)as$s){$num=++$counter;header("X-Wf-nette-$index-1-n$num: |$s|\\");}header("X-Wf-nette-$index-1-n$num: |$s|");return
 TRUE;}static
 private
 function
 replaceObjects($val){if(is_object($val)){return'object '.get_class($val).'';}elseif(is_array($val)){foreach($val
-as$k=>$v){unset($val[$k]);$val[$k]=self::replaceObjects($v);}}return$val;}}Debug::$html=PHP_SAPI!=='cli';Debug::$time=microtime(TRUE);
+as$k=>$v){unset($val[$k]);$val[$k]=self::replaceObjects($v);}}return$val;}}Debug::init();
