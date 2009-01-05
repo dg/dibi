@@ -653,9 +653,23 @@ class DibiResult extends DibiObject implements IDataSource
 class DibiRow extends ArrayObject
 {
 
+	/**
+	 * @param  array
+	 */
 	public function __construct($arr)
 	{
 		parent::__construct($arr, 2);
+	}
+
+
+
+	/**
+	 * PHP < 5.3 workaround
+	 * @return void
+	 */
+	public function __wakeup()
+	{
+		$this->setFlags(2);
 	}
 
 }
