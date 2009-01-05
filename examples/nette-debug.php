@@ -1,7 +1,7 @@
-<h1>Nette::Debug & dibi example</h1>
+<h1>Nette\Debug & dibi example</h1>
 
 
-<p>Dibi can display and log exceptions via Nette::Debug, part of Nette Framework.</p>
+<p>Dibi can display and log exceptions via Nette\Debug, part of Nette Framework.</p>
 
 <ul>
 	<li>Nette Framework: http://nettephp.com
@@ -13,7 +13,7 @@ require_once 'Nette/Debug.php';
 require_once '../dibi/dibi.php';
 
 
-// enable Nette::Debug
+// enable Nette\Debug
 Debug::enable();
 
 
