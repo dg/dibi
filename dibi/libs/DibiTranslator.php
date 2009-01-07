@@ -208,10 +208,18 @@ final class DibiTranslator extends DibiObject
 				} else foreach ($value as $k => $v) {
 					if (is_string($k)) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
-						$k = $this->delimite($pair[0]);
-						$v = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
-						$op = isset($pair[1]) && $pair[1] === 'l' ? 'IN' : ($v === 'NULL' ? 'IS' : '=');
-						$vx[] = $k . ' ' . $op . ' ' . $v;
+						$k = $this->delimite($pair[0]) . ' ';
+						if (!isset($pair[1])) {
+							$v = $this->formatValue($v, FALSE);
+							$vx[] = $k . ($v === 'NULL' ? 'IS ' : '= ') . $v;
+
+						} elseif ($pair[1] === 'ex') {
+							$vx[] = $k . $this->formatValue($v, 'sql');
+
+						} else {
+							$v = $this->formatValue($v, $pair[1]);
+							$vx[] = $k . ($pair[1] === 'l' ? 'IN ' : ($v === 'NULL' ? 'IS ' : '= ')) . $v;
+						}
 
 					} else {
 						$vx[] = $this->formatValue($v, 'sql');
