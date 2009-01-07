@@ -66,6 +66,7 @@ require_once dirname(__FILE__) . '/libs/DibiObject.php';
 require_once dirname(__FILE__) . '/libs/DibiException.php';
 require_once dirname(__FILE__) . '/libs/DibiConnection.php';
 require_once dirname(__FILE__) . '/libs/DibiResult.php';
+require_once dirname(__FILE__) . '/libs/DibiResultIterator.php';
 require_once dirname(__FILE__) . '/libs/DibiTranslator.php';
 require_once dirname(__FILE__) . '/libs/DibiVariable.php';
 require_once dirname(__FILE__) . '/libs/DibiTableX.php';

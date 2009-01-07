@@ -587,11 +587,11 @@ class DibiResult extends DibiObject implements IDataSource
 	 * Required by the IteratorAggregate interface.
 	 * @param  int  offset
 	 * @param  int  limit
-	 * @return ArrayIterator
+	 * @return DibiResultIterator
 	 */
 	final public function getIterator($offset = NULL, $limit = NULL)
 	{
-		return new ArrayIterator($this->fetchAll($offset, $limit));
+		return new DibiResultIterator($this, $offset, $limit);
 	}
 
 
