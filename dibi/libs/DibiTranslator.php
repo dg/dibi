@@ -205,18 +205,16 @@ final class DibiTranslator extends DibiObject
 				if (empty($value)) {
 					return '1';
 
-				} elseif (!is_string(key($value))) {
-					foreach ($value as $v) {
-						$vx[] = $this->formatValue($v, 'sql');
-					}
-
-				} else {
-					foreach ($value as $k => $v) {
+				} else foreach ($value as $k => $v) {
+					if (is_string($k)) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$k = $this->delimite($pair[0]);
 						$v = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
 						$op = isset($pair[1]) && $pair[1] === 'l' ? 'IN' : ($v === 'NULL' ? 'IS' : '=');
 						$vx[] = $k . ' ' . $op . ' ' . $v;
+
+					} else {
+						$vx[] = $this->formatValue($v, 'sql');
 					}
 				}
 				return implode($operator, $vx);
@@ -256,6 +254,11 @@ final class DibiTranslator extends DibiObject
 					}
 				}
 				return implode(', ', $vx);
+
+			case 'sql':
+				$translator = new self($this->driver);
+				$translator->translate($value);
+				return $translator->sql;
 
 			default:  // value, value, value - all with the same modifier
 				foreach ($value as $v) {
