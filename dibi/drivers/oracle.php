@@ -35,14 +35,11 @@
  */
 class DibiOracleDriver extends DibiObject implements IDibiDriver
 {
-
 	/** @var resource  Connection resource */
 	private $connection;
 
-
 	/** @var resource  Resultset resource */
 	private $resultSet;
-
 
 	/** @var bool */
 	private $autocommit = TRUE;

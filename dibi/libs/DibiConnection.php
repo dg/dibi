@@ -210,10 +210,23 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Returns the connection resource.
+	 * @return IDibiDriver
+	 */
+	final public function getDriver()
+	{
+		return $this->driver;
+	}
+
+
+
+	/**
+	 * Returns the connection resource.
 	 * @return resource
+	 * @deprecated use getDriver()->getResource()
 	 */
 	final public function getResource()
 	{
+		trigger_error('Deprecated: use getDriver()->getResource(...) instead.', E_USER_WARNING);
 		return $this->driver->getResource();
 	}
 
@@ -435,9 +448,11 @@ class DibiConnection extends DibiObject
 	 * @param  string    unescaped string
 	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
 	 * @return string    escaped and quoted string
+	 * @deprecated
 	 */
 	public function escape($value, $type = dibi::FIELD_TEXT)
 	{
+		trigger_error('Deprecated: use getDriver()->escape(...) instead.', E_USER_WARNING);
 		$this->connect(); // MySQL & PDO require connection
 		return $this->driver->escape($value, $type);
 	}
@@ -449,9 +464,11 @@ class DibiConnection extends DibiObject
 	 * @param  string    value
 	 * @param  string    type (dibi::FIELD_BINARY)
 	 * @return string    decoded value
+	 * @deprecated
 	 */
 	public function unescape($value, $type = dibi::FIELD_BINARY)
 	{
+		trigger_error('Deprecated: use getDriver()->unescape(...) instead.', E_USER_WARNING);
 		return $this->driver->unescape($value, $type);
 	}
 
@@ -461,9 +478,11 @@ class DibiConnection extends DibiObject
 	 * Delimites identifier (table's or column's name, etc.).
 	 * @param  string    identifier
 	 * @return string    delimited identifier
+	 * @deprecated
 	 */
 	public function delimite($value)
 	{
+		trigger_error('Deprecated: use getDriver()->escape(...) instead.', E_USER_WARNING);
 		return $this->driver->escape($value, dibi::IDENTIFIER);
 	}
 
@@ -475,9 +494,11 @@ class DibiConnection extends DibiObject
 	 * @param  int $limit
 	 * @param  int $offset
 	 * @return void
+	 * @deprecated
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
+		trigger_error('Deprecated: use getDriver()->applyLimit(...) instead.', E_USER_WARNING);
 		$this->driver->applyLimit($sql, $limit, $offset);
 	}
 

@@ -42,14 +42,11 @@
  */
 class DibiMySqliDriver extends DibiObject implements IDibiDriver
 {
-
 	/** @var mysqli  Connection resource */
 	private $connection;
 
-
 	/** @var mysqli_result  Resultset resource */
 	private $resultSet;
-
 
 	/** @var bool  Is buffered (seekable and countable)? */
 	private $buffered;

@@ -36,14 +36,11 @@
  */
 class DibiPdoDriver extends DibiObject implements IDibiDriver
 {
-
 	/** @var PDO  Connection resource */
 	private $connection;
 
-
 	/** @var PDOStatement  Resultset resource */
 	private $resultSet;
-
 
 	/** @var int|FALSE  Affected rows */
 	private $affectedRows = FALSE;

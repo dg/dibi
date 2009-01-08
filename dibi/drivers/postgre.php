@@ -36,14 +36,11 @@
  */
 class DibiPostgreDriver extends DibiObject implements IDibiDriver
 {
-
 	/** @var resource  Connection resource */
 	private $connection;
 
-
 	/** @var resource  Resultset resource */
 	private $resultSet;
-
 
 	/** @var bool  Escape method */
 	private $escMethod = FALSE;

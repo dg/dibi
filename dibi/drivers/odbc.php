@@ -35,14 +35,11 @@
  */
 class DibiOdbcDriver extends DibiObject implements IDibiDriver
 {
-
 	/** @var resource  Connection resource */
 	private $connection;
 
-
 	/** @var resource  Resultset resource */
 	private $resultSet;
-
 
 	/** @var int  Cursor */
 	private $row = 0;
