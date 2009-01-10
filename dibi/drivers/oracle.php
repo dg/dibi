@@ -275,7 +275,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 */
 	public function rowCount()
 	{
-		return oci_num_rows($this->resultSet);
+		throw new DibiDriverException('Row count is not available for unbuffered queries.');
 	}
 
 
