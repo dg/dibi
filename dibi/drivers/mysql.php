@@ -35,6 +35,7 @@
  *   - 'options' - driver specific constants (MYSQL_*)
  *   - 'sqlmode' - see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - 'lazy' - if TRUE, connection will be established only when required
+ *   - 'resource' - connection resource (optional)
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
@@ -77,30 +78,35 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 		DibiConnection::alias($config, 'host', 'hostname');
 		DibiConnection::alias($config, 'options');
 
-		// default values
-		if (!isset($config['username'])) $config['username'] = ini_get('mysql.default_user');
-		if (!isset($config['password'])) $config['password'] = ini_get('mysql.default_password');
-		if (!isset($config['host'])) {
-			$host = ini_get('mysql.default_host');
-			if ($host) {
-				$config['host'] = $host;
-				$config['port'] = ini_get('mysql.default_port');
-			} else {
-				if (!isset($config['socket'])) $config['socket'] = ini_get('mysql.default_socket');
-				$config['host'] = NULL;
+		if (isset($config['resource'])) {
+			$this->connection = $config['resource'];
+
+		} else {
+			// default values
+			if (!isset($config['username'])) $config['username'] = ini_get('mysql.default_user');
+			if (!isset($config['password'])) $config['password'] = ini_get('mysql.default_password');
+			if (!isset($config['host'])) {
+				$host = ini_get('mysql.default_host');
+				if ($host) {
+					$config['host'] = $host;
+					$config['port'] = ini_get('mysql.default_port');
+				} else {
+					if (!isset($config['socket'])) $config['socket'] = ini_get('mysql.default_socket');
+					$config['host'] = NULL;
+				}
 			}
-		}
 
-		if (empty($config['socket'])) {
-			$host = $config['host'] . (empty($config['port']) ? '' : ':' . $config['port']);
-		} else {
-			$host = ':' . $config['socket'];
-		}
+			if (empty($config['socket'])) {
+				$host = $config['host'] . (empty($config['port']) ? '' : ':' . $config['port']);
+			} else {
+				$host = ':' . $config['socket'];
+			}
 
-		if (empty($config['persistent'])) {
-			$this->connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['options']); // intentionally @
-		} else {
-			$this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['options']); // intentionally @
+			if (empty($config['persistent'])) {
+				$this->connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['options']); // intentionally @
+			} else {
+				$this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['options']); // intentionally @
+			}
 		}
 
 		if (!is_resource($this->connection)) {

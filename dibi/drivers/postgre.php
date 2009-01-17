@@ -29,6 +29,7 @@
  *   - 'charset' - character encoding to set
  *   - 'schema' - the schema search path
  *   - 'lazy' - if TRUE, connection will be established only when required
+ *   - 'resource' - connection resource (optional)
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
@@ -66,23 +67,28 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	 */
 	public function connect(array &$config)
 	{
-		if (isset($config['string'])) {
-			$string = $config['string'];
-		} else {
-			$string = '';
-			foreach (array('host','hostaddr','port','dbname','user','password','connect_timeout','options','sslmode','service') as $key) {
-				if (isset($config[$key])) $string .= $key . '=' . $config[$key] . ' ';
-			}
-		}
+		if (isset($config['resource'])) {
+			$this->connection = $config['resource'];
 
-		DibiDriverException::tryError();
-		if (empty($config['persistent'])) {
-			$this->connection = pg_connect($string, PGSQL_CONNECT_FORCE_NEW);
 		} else {
-			$this->connection = pg_pconnect($string, PGSQL_CONNECT_FORCE_NEW);
-		}
-		if (DibiDriverException::catchError($msg)) {
-			throw new DibiDriverException($msg, 0);
+			if (isset($config['string'])) {
+				$string = $config['string'];
+			} else {
+				$string = '';
+				foreach (array('host','hostaddr','port','dbname','user','password','connect_timeout','options','sslmode','service') as $key) {
+					if (isset($config[$key])) $string .= $key . '=' . $config[$key] . ' ';
+				}
+			}
+
+			DibiDriverException::tryError();
+			if (empty($config['persistent'])) {
+				$this->connection = pg_connect($string, PGSQL_CONNECT_FORCE_NEW);
+			} else {
+				$this->connection = pg_pconnect($string, PGSQL_CONNECT_FORCE_NEW);
+			}
+			if (DibiDriverException::catchError($msg)) {
+				throw new DibiDriverException($msg, 0);
+			}
 		}
 
 		if (!is_resource($this->connection)) {

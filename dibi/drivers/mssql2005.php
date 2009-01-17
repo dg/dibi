@@ -27,6 +27,7 @@
  *   - 'options' - connection info array {@link http://msdn.microsoft.com/en-us/library/cc296161(SQL.90).aspx}
  *   - 'lazy' - if TRUE, connection will be established only when required
  *   - 'charset' - character encoding to set (default is UTF-8)
+ *   - 'resource' - connection resource (optional)
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
@@ -66,7 +67,9 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver
 	{
 		DibiConnection::alias($config, 'host', 'hostname');
 
-		if (isset($config['options'])) {
+		if (isset($config['resource'])) {
+			$this->connection = $config['resource'];
+		} elseif (isset($config['options'])) {
 			$this->connection = sqlsrv_connect($config['host'], $config['options']);
 		} else {
 			$this->connection = sqlsrv_connect($config['host']);

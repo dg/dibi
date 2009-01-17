@@ -28,6 +28,7 @@
  *   - 'password' (or 'pass')
  *   - 'charset' - character encoding to set
  *   - 'lazy' - if TRUE, connection will be established only when required
+ *   - 'resource' - connection resource (optional)
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
@@ -70,7 +71,11 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 		DibiConnection::alias($config, 'database', 'db');
 		DibiConnection::alias($config, 'charset');
 
-		$this->connection = @oci_new_connect($config['username'], $config['password'], $config['database'], $config['charset']); // intentionally @
+		if (isset($config['resource'])) {
+			$this->connection = $config['resource'];
+		} else {
+			$this->connection = @oci_new_connect($config['username'], $config['password'], $config['database'], $config['charset']); // intentionally @
+		}
 
 		if (!$this->connection) {
 			$err = oci_error();

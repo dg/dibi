@@ -28,6 +28,7 @@
  *   - 'password' (or 'pass')
  *   - 'persistent' - try to find a persistent link?
  *   - 'lazy' - if TRUE, connection will be established only when required
+ *   - 'resource' - connection resource (optional)
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
@@ -68,15 +69,19 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 		DibiConnection::alias($config, 'username', 'user');
 		DibiConnection::alias($config, 'password', 'pass');
 
-		// default values
-		if (!isset($config['username'])) $config['username'] = ini_get('odbc.default_user');
-		if (!isset($config['password'])) $config['password'] = ini_get('odbc.default_pw');
-		if (!isset($config['dsn'])) $config['dsn'] = ini_get('odbc.default_db');
-
-		if (empty($config['persistent'])) {
-			$this->connection = @odbc_connect($config['dsn'], $config['username'], $config['password']); // intentionally @
+		if (isset($config['resource'])) {
+			$this->connection = $config['resource'];
 		} else {
-			$this->connection = @odbc_pconnect($config['dsn'], $config['username'], $config['password']); // intentionally @
+			// default values
+			if (!isset($config['username'])) $config['username'] = ini_get('odbc.default_user');
+			if (!isset($config['password'])) $config['password'] = ini_get('odbc.default_pw');
+			if (!isset($config['dsn'])) $config['dsn'] = ini_get('odbc.default_db');
+
+			if (empty($config['persistent'])) {
+				$this->connection = @odbc_connect($config['dsn'], $config['username'], $config['password']); // intentionally @
+			} else {
+				$this->connection = @odbc_pconnect($config['dsn'], $config['username'], $config['password']); // intentionally @
+			}
 		}
 
 		if (!is_resource($this->connection)) {

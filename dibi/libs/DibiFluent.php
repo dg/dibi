@@ -119,7 +119,7 @@ class DibiFluent extends DibiObject
 			if ($arg === TRUE) { // flag
 				$args = array();
 
-			} elseif (is_string($arg) && preg_match('#^[a-z][a-z0-9_.]*$#i', $arg)) { // identifier
+			} elseif (is_string($arg) && preg_match('#^[a-z:_][a-z0-9_.:]*$#i', $arg)) { // identifier
 				$args = array('%n', $arg);
 
 			} elseif ($arg instanceof self) {

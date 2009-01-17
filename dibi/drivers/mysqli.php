@@ -35,6 +35,7 @@
  *   - 'options' - driver specific constants (MYSQLI_*)
  *   - 'sqlmode' - see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - 'lazy' - if TRUE, connection will be established only when required
+ *   - 'resource' - connection resource (optional)
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
@@ -78,27 +79,32 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 		DibiConnection::alias($config, 'options');
 		DibiConnection::alias($config, 'database');
 
-		// default values
-		if (!isset($config['username'])) $config['username'] = ini_get('mysqli.default_user');
-		if (!isset($config['password'])) $config['password'] = ini_get('mysqli.default_pw');
-		if (!isset($config['socket'])) $config['socket'] = ini_get('mysqli.default_socket');
-		if (!isset($config['port'])) $config['port'] = NULL;
-		if (!isset($config['host'])) {
-			$host = ini_get('mysqli.default_host');
-			if ($host) {
-				$config['host'] = $host;
-				$config['port'] = ini_get('mysqli.default_port');
-			} else {
-				$config['host'] = NULL;
-				$config['port'] = NULL;
+		if (isset($config['resource'])) {
+			$this->connection = $config['resource'];
+
+		} else {
+			// default values
+			if (!isset($config['username'])) $config['username'] = ini_get('mysqli.default_user');
+			if (!isset($config['password'])) $config['password'] = ini_get('mysqli.default_pw');
+			if (!isset($config['socket'])) $config['socket'] = ini_get('mysqli.default_socket');
+			if (!isset($config['port'])) $config['port'] = NULL;
+			if (!isset($config['host'])) {
+				$host = ini_get('mysqli.default_host');
+				if ($host) {
+					$config['host'] = $host;
+					$config['port'] = ini_get('mysqli.default_port');
+				} else {
+					$config['host'] = NULL;
+					$config['port'] = NULL;
+				}
 			}
-		}
 
-		$this->connection = mysqli_init();
-		@mysqli_real_connect($this->connection, $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['options']); // intentionally @
+			$this->connection = mysqli_init();
+			@mysqli_real_connect($this->connection, $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['options']); // intentionally @
 
-		if ($errno = mysqli_connect_errno()) {
-			throw new DibiDriverException(mysqli_connect_error(), $errno);
+			if ($errno = mysqli_connect_errno()) {
+				throw new DibiDriverException(mysqli_connect_error(), $errno);
+			}
 		}
 
 		if (isset($config['charset'])) {

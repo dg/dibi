@@ -29,6 +29,7 @@
  *   - 'persistent' - try to find a persistent link?
  *   - 'database' - the database name to select
  *   - 'lazy' - if TRUE, connection will be established only when required
+ *   - 'resource' - connection resource (optional)
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
@@ -67,7 +68,9 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 		DibiConnection::alias($config, 'password', 'pass');
 		DibiConnection::alias($config, 'host', 'hostname');
 
-		if (empty($config['persistent'])) {
+		if (isset($config['resource'])) {
+			$this->connection = $config['resource'];
+		} elseif (empty($config['persistent'])) {
 			$this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE); // intentionally @
 		} else {
 			$this->connection = @mssql_pconnect($config['host'], $config['username'], $config['password']); // intentionally @

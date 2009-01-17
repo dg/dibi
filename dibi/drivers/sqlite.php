@@ -31,6 +31,7 @@
  *   - 'formatDateTime' - how to format datetime in SQL (@see date)
  *   - 'dbcharset' - database character encoding (will be converted to 'charset')
  *   - 'charset' - character encoding to set (default is UTF-8)
+ *   - 'resource' - connection resource (optional)
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
@@ -79,7 +80,9 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 		$this->fmtDateTime = isset($config['formatDateTime']) ? $config['formatDateTime'] : 'U';
 
 		$errorMsg = '';
-		if (empty($config['persistent'])) {
+		if (isset($config['resource'])) {
+			$this->connection = $config['resource'];
+		} elseif (empty($config['persistent'])) {
 			$this->connection = @sqlite_open($config['database'], 0666, $errorMsg); // intentionally @
 		} else {
 			$this->connection = @sqlite_popen($config['database'], 0666, $errorMsg); // intentionally @
