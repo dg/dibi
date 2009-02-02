@@ -104,7 +104,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 		}
 
 		if (isset($config['schema'])) {
-			$this->query('SET search_path TO ' . $config['schema']);
+			$this->query('SET search_path TO "' . $config['schema'] . '"');
 		}
 
 		$this->escMethod = version_compare(PHP_VERSION , '5.2.0', '>=');

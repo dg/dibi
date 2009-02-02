@@ -227,6 +227,17 @@ final class DibiTranslator extends DibiObject
 				}
 				return implode($operator, $vx);
 
+			case 'n':  // identifier names
+				foreach ($value as $k => $v) {
+					if (is_string($k)) {
+						$vx[] = $this->delimite($k) . ' AS ' . $v;
+					} else {
+						$vx[] = $this->delimite($v);
+					}
+				}
+				return implode(', ', $vx);
+
+
 			case 'a': // key=val, key=val, ...
 				foreach ($value as $k => $v) {
 					$pair = explode('%', $k, 2); // split into identifier & modifier

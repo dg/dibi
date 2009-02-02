@@ -41,6 +41,7 @@ class DibiFluent extends DibiObject
 	/** @var array */
 	public static $modifiers = array(
 		'SELECT' => '%n',
+		'FROM' => '%n',
 		'IN' => '%l',
 		'VALUES' => '%l',
 		'SET' => '%a',

@@ -124,7 +124,7 @@ abstract class DibiTableX extends DibiObject
 		if ($this->primary === NULL) {
 			$this->primary = str_replace(
 				array('%p', '%s'),
-				array($this->name, trim($this->name, 's')), // the simplest inflector in the world :-))
+				array($this->name, rtrim($this->name, 's')), // the simplest inflector in the world :-))
 				self::$primaryMask
 			);
 		}
@@ -179,7 +179,7 @@ abstract class DibiTableX extends DibiObject
 	/**
 	 * Inserts or updates rows in a table.
 	 * @param  array|object
-	 * @return int    (new) primary key
+	 * @return void
 	 */
 	public function insertOrUpdate($data)
 	{
