@@ -213,8 +213,8 @@ final class DibiTranslator extends DibiObject
 							$v = $this->formatValue($v, FALSE);
 							$vx[] = $k . ($v === 'NULL' ? 'IS ' : '= ') . $v;
 
-						} elseif ($pair[1] === 'ex') {
-							$vx[] = $k . $this->formatValue($v, 'sql');
+						} elseif ($pair[1] === 'ex') { // TODO: this will be removed
+							$vx[] = $k . $this->formatValue($v, 'ex');
 
 						} else {
 							$v = $this->formatValue($v, $pair[1]);
@@ -222,7 +222,7 @@ final class DibiTranslator extends DibiObject
 						}
 
 					} else {
-						$vx[] = $this->formatValue($v, 'sql');
+						$vx[] = $this->formatValue($v, 'ex');
 					}
 				}
 				return implode(' ' . strtoupper($modifier) . ' ', $vx);
@@ -264,6 +264,10 @@ final class DibiTranslator extends DibiObject
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
 			case 'by': // key ASC, key DESC
+				if (empty($value)) {
+					return '1';
+				}
+
 				foreach ($value as $k => $v) {
 					if (is_string($k)) {
 						$v = (is_string($v) && strncasecmp($v, 'd', 1)) || $v > 0 ? 'ASC' : 'DESC';
@@ -274,6 +278,7 @@ final class DibiTranslator extends DibiObject
 				}
 				return implode(', ', $vx);
 
+			case 'ex':
 			case 'sql':
 				$translator = new self($this->driver);
 				return $translator->translate($value);
@@ -337,7 +342,8 @@ final class DibiTranslator extends DibiObject
 			case 'n':  // identifier name
 				return $this->delimite($value);
 
-			case 'sql':// preserve as SQL
+			case 'ex':
+			case 'sql': // preserve as dibi-SQL  (TODO: leave only %ex)
 				$value = (string) $value;
 				// speed-up - is regexp required?
 				$toSkip = strcspn($value, '`[\'"');
@@ -350,6 +356,9 @@ final class DibiTranslator extends DibiObject
 							substr($value, $toSkip)
 					);
 				}
+
+			case 'SQL': // preserve as real SQL (TODO: rename to %sql)
+				return (string) $value;
 
 			case 'and':
 			case 'or':
@@ -496,7 +505,7 @@ final class DibiTranslator extends DibiObject
 	 */
 	private function delimite($value)
 	{
-		return $this->driver->escape(dibi::substitute($value), dibi::IDENTIFIER);
+		return $value === '*' ? '*' : $this->driver->escape(dibi::substitute($value), dibi::IDENTIFIER);
 	}
 
 

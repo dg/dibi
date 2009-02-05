@@ -38,6 +38,15 @@ class DibiDataSource extends DibiObject implements IDataSource
 	/** @var int */
 	private $count;
 
+	/** @var array */
+	private $cols = array();
+
+	/** @var array */
+	private $sorting = array();
+
+	/** @var array */
+	private $conds = array();
+
 
 
 	/**
@@ -46,14 +55,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 	 */
 	public function __construct($sql, DibiConnection $connection = NULL)
 	{
-		if (strpos($sql, ' ') === FALSE) {
-			// table name
-			$this->sql = $sql;
-		} else {
-			// SQL command
-			$this->sql = '(' . $sql . ') AS [source]';
-		}
-
+		$this->sql = $sql;
 		$this->connection = $connection === NULL ? dibi::getConnection() : $connection;
 	}
 
@@ -63,15 +65,17 @@ class DibiDataSource extends DibiObject implements IDataSource
 	 * @param  int  offset
 	 * @param  int  limit
 	 * @param  array columns
-	 * @return ArrayIterator
+	 * @return DibiResultIterator
 	 */
 	public function getIterator($offset = NULL, $limit = NULL)
 	{
 		return $this->connection->query('
-			SELECT *
-			FROM', $this->sql, '
+			SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
+			FROM (%SQL) AS [t]', $this->sql, '
+			WHERE %and', $this->conds, '
+			ORDER BY %by', $this->sorting, '
 			%ofs %lmt', $offset, $limit
-		);
+		)->getIterator();
 	}
 
 
@@ -82,11 +86,101 @@ class DibiDataSource extends DibiObject implements IDataSource
 	public function count()
 	{
 		if ($this->count === NULL) {
-			$this->count = $this->connection->query('
-				SELECT COUNT(*) FROM', $this->sql
+			$this->count = $this->connection->nativeQuery(
+				'SELECT COUNT(*) FROM (' . $this->sql . ') AS t'
 			)->fetchSingle();
 		}
 		return $this->count;
+	}
+
+
+
+
+	/**
+	 * Returns SQL wrapped as DibiFluent.
+	 * @return DibiFluent
+	 * @throws DibiException
+	 */
+	public function toFluent()
+	{
+		return $this->connection->select('*')->from('(%SQL) AS [t]', $this->__toString());
+	}
+
+
+
+	/**
+	 * @return DibiDataSource
+	 */
+	public function toDataSource()
+	{
+		return new self($this->__toString(), $this->connection);
+	}
+
+
+
+	/**
+	 * Returns SQL query.
+	 * @return string
+	 */
+	final public function __toString()
+	{
+		return $this->connection->sql('
+			SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
+			FROM (%SQL) AS [t]', $this->sql, '
+			WHERE %and', $this->conds, '
+			ORDER BY %by', $this->sorting, '
+		');
+	}
+
+
+
+	/**
+	 */
+	public function select($col, $as = NULL)
+	{
+		if (is_array($col)) {
+			$this->cols = $col;
+		} else {
+			$this->cols[$col] = $as;
+		}
+	}
+
+
+
+	/**
+	 */
+	public function where($cond)
+	{
+		if (is_array($cond)) {
+			// TODO: not consistent with select and orderBy
+			$this->conds[] = $cond;
+		} else {
+			$this->conds[] = func_get_args();
+		}
+	}
+
+
+
+	/**
+	 */
+	public function orderBy($row, $sorting = 'ASC')
+	{
+		if (is_array($row)) {
+			$this->sorting = $row;
+		} else {
+			$this->sorting[$row] = $sorting;
+		}
+	}
+
+
+
+	/**
+	 * Returns the dibi connection.
+	 * @return DibiConnection
+	 */
+	final public function getConnection()
+	{
+		return $this->connection;
 	}
 
 }
