@@ -235,7 +235,7 @@ class DibiConnection extends DibiObject
 	/**
 	 * Generates (translates) and executes SQL query.
 	 * @param  array|mixed      one or more arguments
-	 * @return DibiResult|NULL  result set object (if any)
+	 * @return DibiResult|int   result set object (if any)
 	 * @throws DibiException
 	 */
 	final public function query($args)
@@ -292,7 +292,7 @@ class DibiConnection extends DibiObject
 	/**
 	 * Executes the SQL query.
 	 * @param  string           SQL statement.
-	 * @return DibiResult|NULL  result set object (if any)
+	 * @return DibiResult|int   result set object (if any)
 	 * @throws DibiException
 	 */
 	final public function nativeQuery($sql)
@@ -318,6 +318,8 @@ class DibiConnection extends DibiObject
 
 		if ($res = $this->driver->query($sql)) { // intentionally =
 			$res = new DibiResult($res, $this->config);
+		} else {
+			$res = $this->driver->affectedRows();
 		}
 
 		$time += microtime(TRUE);

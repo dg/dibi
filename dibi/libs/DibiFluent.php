@@ -240,12 +240,14 @@ class DibiFluent extends DibiObject implements Countable, IteratorAggregate
 
 	/**
 	 * Generates and executes SQL query.
-	 * @return DibiResult|NULL  result set object (if any)
+	 * @param  mixed what to return?
+	 * @return DibiResult|int  result set object (if any)
 	 * @throws DibiException
 	 */
-	public function execute()
+	public function execute($return = NULL)
 	{
-		return $this->connection->query($this->_export());
+		$res = $this->connection->query($this->_export());
+		return $return === dibi::IDENTIFIER ? $this->connection->insertId() : $res;
 	}
 
 
