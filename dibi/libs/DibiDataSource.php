@@ -21,11 +21,25 @@
 
 
 /**
+ * Provides an interface between a dataset and data-aware components.
+ * @package dibi
+ * @deprecated
+ */
+interface IDataSource extends Countable, IteratorAggregate
+{
+	//function IteratorAggregate::getIterator();
+	//function Countable::count();
+}
+
+
+
+/**
  * Default implementation of IDataSource for dibi.
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
  * @package    dibi
+ * @deprecated
  */
 class DibiDataSource extends DibiObject implements IDataSource
 {

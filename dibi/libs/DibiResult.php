@@ -40,7 +40,7 @@
  * @copyright  Copyright (c) 2005, 2009 David Grudl
  * @package    dibi
  */
-class DibiResult extends DibiObject implements IDataSource
+class DibiResult extends DibiObject implements Countable, IteratorAggregate
 {
 	/** @var array  IDibiDriver */
 	private $driver;
@@ -636,40 +636,6 @@ class DibiResult extends DibiObject implements IDataSource
 			}
 		}
 		return $this->meta;
-	}
-
-}
-
-
-
-
-/**
- * dibi result-set row
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2009 David Grudl
- * @package    dibi
- */
-class DibiRow extends ArrayObject
-{
-
-	/**
-	 * @param  array
-	 */
-	public function __construct($arr)
-	{
-		parent::__construct($arr, 2);
-	}
-
-
-
-	/**
-	 * PHP < 5.3 workaround
-	 * @return void
-	 */
-	public function __wakeup()
-	{
-		$this->setFlags(2);
 	}
 
 }

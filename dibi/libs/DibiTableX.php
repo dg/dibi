@@ -25,6 +25,7 @@
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
  * @package    dibi
+ * @deprecated
  */
 abstract class DibiTableX extends DibiObject
 {

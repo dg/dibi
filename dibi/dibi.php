@@ -67,6 +67,7 @@ require_once dirname(__FILE__) . '/libs/DibiException.php';
 require_once dirname(__FILE__) . '/libs/DibiConnection.php';
 require_once dirname(__FILE__) . '/libs/DibiResult.php';
 require_once dirname(__FILE__) . '/libs/DibiResultIterator.php';
+require_once dirname(__FILE__) . '/libs/DibiRow.php';
 require_once dirname(__FILE__) . '/libs/DibiTranslator.php';
 require_once dirname(__FILE__) . '/libs/DibiVariable.php';
 require_once dirname(__FILE__) . '/libs/DibiTableX.php';
@@ -116,10 +117,13 @@ class dibi
 	const REVISION = '$WCREV$ released on $WCDATE$';
 	/**#@-*/
 
-	/**
+	/**#@+
 	 * Configuration options
 	 */
 	const RESULT_WITH_TABLES = 'resultWithTables'; // for MySQL
+	const ROW_CLASS = 'rowClass';
+	const ASC = 'ASC', DESC = 'DESC';
+	/**#@-*/
 
 	/** @var DibiConnection[]  Connection registry storage for DibiConnection objects */
 	private static $registry = array();

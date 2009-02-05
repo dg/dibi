@@ -27,18 +27,18 @@
  * @copyright  Copyright (c) 2005, 2009 David Grudl
  * @package    dibi
  */
-class DibiFluent extends DibiObject
+class DibiFluent extends DibiObject implements Countable, IteratorAggregate
 {
 	/** @var array */
 	public static $masks = array(
 		'SELECT' => array('SELECT', 'DISTINCT', 'FROM', 'WHERE', 'GROUP BY',
-			'HAVING', 'ORDER BY', 'LIMIT', 'OFFSET', '%end'),
-		'UPDATE' => array('UPDATE', 'SET', 'WHERE', 'ORDER BY', 'LIMIT', '%end'),
-		'INSERT' => array('INSERT', 'INTO', 'VALUES', 'SELECT', '%end'),
-		'DELETE' => array('DELETE', 'FROM', 'USING', 'WHERE', 'ORDER BY', 'LIMIT', '%end'),
+			'HAVING', 'ORDER BY', 'LIMIT', 'OFFSET'),
+		'UPDATE' => array('UPDATE', 'SET', 'WHERE', 'ORDER BY', 'LIMIT'),
+		'INSERT' => array('INSERT', 'INTO', 'VALUES', 'SELECT'),
+		'DELETE' => array('DELETE', 'FROM', 'USING', 'WHERE', 'ORDER BY', 'LIMIT'),
 	);
 
-	/** @var array */
+	/** @var array  default modifiers for arrays */
 	public static $modifiers = array(
 		'SELECT' => '%n',
 		'FROM' => '%n',
@@ -51,7 +51,7 @@ class DibiFluent extends DibiObject
 		'GROUP BY' => '%by',
 	);
 
-	/** @var array */
+	/** @var array  clauses separators */
 	public static $separators = array(
 		'SELECT' => ',',
 		'FROM' => FALSE,
@@ -258,9 +258,10 @@ class DibiFluent extends DibiObject
 	public function fetch()
 	{
 		if ($this->command === 'SELECT') {
-			$this->clauses['LIMIT'] = array(1);
+			return $this->connection->query($this->_export(NULL, array('%lmt', 1)))->fetch();
+		} else {
+			return $this->connection->query($this->_export())->fetch();
 		}
-		return $this->execute()->fetch();
 	}
 
 
@@ -272,9 +273,10 @@ class DibiFluent extends DibiObject
 	public function fetchSingle()
 	{
 		if ($this->command === 'SELECT') {
-			$this->clauses['LIMIT'] = array(1);
+			return $this->connection->query($this->_export(NULL, array('%lmt', 1)))->fetchSingle();
+		} else {
+			return $this->connection->query($this->_export())->fetchSingle();
 		}
-		return $this->execute()->fetchSingle();
 	}
 
 
@@ -287,7 +289,7 @@ class DibiFluent extends DibiObject
 	 */
 	public function fetchAll($offset = NULL, $limit = NULL)
 	{
-		return $this->execute()->fetchAll($offset, $limit);
+		return $this->connection->query($this->_export(NULL, array('%ofs %lmt', $offset, $limit)))->fetchAll();
 	}
 
 
@@ -302,7 +304,7 @@ class DibiFluent extends DibiObject
 	 */
 	public function fetchAssoc($assoc)
 	{
-		return $this->execute()->fetchAssoc($assoc);
+		return $this->connection->query($this->_export())->fetchAssoc($assoc);
 	}
 
 
@@ -316,7 +318,32 @@ class DibiFluent extends DibiObject
 	 */
 	public function fetchPairs($key = NULL, $value = NULL)
 	{
-		return $this->execute()->fetchPairs($key, $value);
+		return $this->connection->query($this->_export())->fetchPairs($key, $value);
+	}
+
+
+
+	/**
+	 * Required by the IteratorAggregate interface.
+	 * @param  int  offset
+	 * @param  int  limit
+	 * @return DibiResultIterator
+	 */
+	public function getIterator($offset = NULL, $limit = NULL)
+	{
+		return $this->connection->query($this->_export(NULL, array('%ofs %lmt', $offset, $limit)))->getIterator();
+	}
+
+
+
+	/**
+	 * @return int
+	 */
+	public function count()
+	{
+		return (int) $this->connection->query(
+			'SELECT COUNT(*) FROM (%ex', $this->_export(), ') AS [data]'
+		)->fetchSingle();
 	}
 
 
@@ -338,7 +365,7 @@ class DibiFluent extends DibiObject
 	 * @param  string clause name
 	 * @return array
 	 */
-	protected function _export($clause = NULL)
+	protected function _export($clause = NULL, $args = array())
 	{
 		if ($clause === NULL) {
 			$data = $this->clauses;
@@ -352,18 +379,16 @@ class DibiFluent extends DibiObject
 			}
 		}
 
-		$args = array();
 		foreach ($data as $clause => $statement) {
 			if ($statement !== NULL) {
-				if ($clause[0] !== '%') {
-					$args[] = $clause;
-					if ($clause === $this->command) {
-						$args[] = implode(' ', array_keys($this->flags));
-					}
+				$args[] = $clause;
+				if ($clause === $this->command) {
+					$args[] = implode(' ', array_keys($this->flags));
 				}
 				array_splice($args, count($args), 0, $statement);
 			}
 		}
+
 		return $args;
 	}
 
@@ -393,6 +418,17 @@ class DibiFluent extends DibiObject
 	final public function __toString()
 	{
 		return $this->connection->sql($this->_export());
+	}
+
+
+
+	/**
+	 * Returns the dibi connection.
+	 * @return DibiConnection
+	 */
+	final public function getConnection()
+	{
+		return $this->connection;
 	}
 
 }
