@@ -242,12 +242,8 @@ class DibiConnection extends DibiObject
 	{
 		$args = func_get_args();
 		$this->connect();
-		$trans = new DibiTranslator($this->driver);
-		if ($trans->translate($args)) {
-			return $this->nativeQuery($trans->sql);
-		} else {
-			throw new DibiException('SQL translate error: ' . $trans->sql);
-		}
+		$translator = new DibiTranslator($this->driver);
+		return $this->nativeQuery($translator->translate($args));
 	}
 
 
@@ -262,12 +258,8 @@ class DibiConnection extends DibiObject
 	{
 		$args = func_get_args();
 		$this->connect();
-		$trans = new DibiTranslator($this->driver);
-		if ($trans->translate($args)) {
-			return $trans->sql;
-		} else {
-			throw new DibiException('SQL translate error: ' . $trans->sql);
-		}
+		$translator = new DibiTranslator($this->driver);
+		return $translator->translate($args);
 	}
 
 
@@ -281,10 +273,31 @@ class DibiConnection extends DibiObject
 	{
 		$args = func_get_args();
 		$this->connect();
-		$trans = new DibiTranslator($this->driver);
-		$ok = $trans->translate($args);
-		dibi::dump($trans->sql);
-		return $ok;
+		try {
+			$translator = new DibiTranslator($this->driver);
+			dibi::dump($translator->translate($args));
+			return TRUE;
+
+		} catch (DibiException $e) {
+			dibi::dump($e->getSql());
+			return FALSE;
+		}
+	}
+
+
+
+	/**
+	 * Generates (translates) and returns SQL query as DibiDataSource.
+	 * @param  array|mixed      one or more arguments
+	 * @return DibiDataSource
+	 * @throws DibiException
+	 */
+	final public function dataSource($args)
+	{
+		$args = func_get_args();
+		$this->connect();
+		$translator = new DibiTranslator($this->driver);
+		return new DibiDataSource($translator->translate($args), $this);
 	}
 
 

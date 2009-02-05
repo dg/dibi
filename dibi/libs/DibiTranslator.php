@@ -29,9 +29,6 @@
  */
 final class DibiTranslator extends DibiObject
 {
-	/** @var string */
-	public $sql;
-
 	/** @var IDibiDriver */
 	private $driver;
 
@@ -81,7 +78,8 @@ final class DibiTranslator extends DibiObject
 	/**
 	 * Generates SQL.
 	 * @param  array
-	 * @return bool
+	 * @return string
+	 * @throws DibiException
 	 */
 	public function translate(array $args)
 	{
@@ -174,13 +172,16 @@ final class DibiTranslator extends DibiObject
 
 		$sql = implode(' ', $sql);
 
+		if ($this->hasError) {
+			throw new DibiException('SQL translate error', 0, $sql);
+		}
+
 		// apply limit
 		if ($this->limit > -1 || $this->offset > 0) {
 			$this->driver->applyLimit($sql, $this->limit, $this->offset);
 		}
 
-		$this->sql = $sql;
-		return !$this->hasError;
+		return $sql;
 	}
 
 
@@ -197,15 +198,14 @@ final class DibiTranslator extends DibiObject
 		if (is_array($value) || $value instanceof ArrayObject) {
 
 			$vx = $kx = array();
-			$operator = ', ';
 			switch ($modifier) {
 			case 'and':
 			case 'or':  // key=val AND key IS NULL AND ...
-				$operator = ' ' . strtoupper($modifier) . ' ';
 				if (empty($value)) {
 					return '1';
+				}
 
-				} else foreach ($value as $k => $v) {
+				foreach ($value as $k => $v) {
 					if (is_string($k)) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$k = $this->delimite($pair[0]) . ' ';
@@ -225,12 +225,12 @@ final class DibiTranslator extends DibiObject
 						$vx[] = $this->formatValue($v, 'sql');
 					}
 				}
-				return implode($operator, $vx);
+				return implode(' ' . strtoupper($modifier) . ' ', $vx);
 
 			case 'n':  // identifier names
 				foreach ($value as $k => $v) {
 					if (is_string($k)) {
-						$vx[] = $this->delimite($k) . ' AS ' . $v;
+						$vx[] = $this->delimite($k) . (empty($v) ? '' : ' AS ' . $v);
 					} else {
 						$vx[] = $this->delimite($v);
 					}
@@ -244,7 +244,7 @@ final class DibiTranslator extends DibiObject
 					$vx[] = $this->delimite($pair[0]) . '='
 						. $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
 				}
-				return implode($operator, $vx);
+				return implode(', ', $vx);
 
 
 			case 'l': // (val, val, ...)
@@ -276,8 +276,7 @@ final class DibiTranslator extends DibiObject
 
 			case 'sql':
 				$translator = new self($this->driver);
-				$translator->translate($value);
-				return $translator->sql;
+				return $translator->translate($value);
 
 			default:  // value, value, value - all with the same modifier
 				foreach ($value as $v) {
@@ -357,7 +356,6 @@ final class DibiTranslator extends DibiObject
 			case 'a':
 			case 'l':
 			case 'v':
-			case 'by':
 				$this->hasError = TRUE;
 				return '**Unexpected type ' . gettype($value) . '**';
 

@@ -40,7 +40,7 @@
  * @copyright  Copyright (c) 2005, 2009 David Grudl
  * @package    dibi
  */
-class DibiResult extends DibiObject implements Countable, IteratorAggregate
+class DibiResult extends DibiObject implements IDataSource
 {
 	/** @var array  IDibiDriver */
 	private $driver;

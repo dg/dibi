@@ -27,7 +27,7 @@
  * @copyright  Copyright (c) 2005, 2009 David Grudl
  * @package    dibi
  */
-class DibiFluent extends DibiObject implements Countable, IteratorAggregate
+class DibiFluent extends DibiObject implements IDataSource
 {
 	/** @var array */
 	public static $masks = array(
@@ -133,7 +133,7 @@ class DibiFluent extends DibiObject implements Countable, IteratorAggregate
 				} elseif (is_string(key($arg))) { // associative array
 					$args = array('%a', $arg);
 				}
-			}
+			} // case $arg === FALSE is handled below
 		}
 
 		if (array_key_exists($clause, $this->clauses)) {
@@ -409,6 +409,16 @@ class DibiFluent extends DibiObject implements Countable, IteratorAggregate
 		}
 		return strtoupper(preg_replace('#[A-Z]#', ' $0', $s));
 
+	}
+
+
+
+	/**
+	 * @return DibiDataSource
+	 */
+	public function toDataSource()
+	{
+		return new DibiDataSource($this->connection->sql($this->_export()), $this->connection);
 	}
 
 

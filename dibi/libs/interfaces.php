@@ -40,6 +40,20 @@ interface IDibiVariable
 
 
 /**
+ * Provides an interface between a dataset and data-aware components.
+ * @package dibi
+ */
+interface IDataSource extends Countable, IteratorAggregate
+{
+	//function IteratorAggregate::getIterator($offset = NULL, $limit = NULL);
+	//function Countable::count();
+}
+
+
+
+
+
+/**
  * Defines method that must profiler implement.
  * @package dibi
  */

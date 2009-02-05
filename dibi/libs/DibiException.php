@@ -27,31 +27,14 @@
  * @copyright  Copyright (c) 2005, 2009 David Grudl
  * @package    dibi
  */
-class DibiException extends Exception
+class DibiException extends Exception implements /*Nette\*/IDebuggable
 {
-}
-
-
-
-
-/**
- * database server exception.
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2009 David Grudl
- * @package    dibi
- */
-class DibiDriverException extends DibiException implements /*Nette\*/IDebuggable
-{
-	/** @var string */
-	private static $errorMsg;
-
 	/** @var string */
 	private $sql;
 
 
 	/**
-	 * Construct an dibi driver exception.
+	 * Construct an dibi exception.
 	 * @param string  Message describing the exception
 	 * @param int     Some code
 	 * @param  string SQL command
@@ -104,9 +87,27 @@ class DibiDriverException extends DibiException implements /*Nette\*/IDebuggable
 		return $panels;
 	}
 
+}
 
+
+
+
+/**
+ * database server exception.
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2009 David Grudl
+ * @package    dibi
+ */
+class DibiDriverException extends DibiException
+{
 
 	/********************* error catching ****************d*g**/
+
+
+
+	/** @var string */
+	private static $errorMsg;
 
 
 
