@@ -85,7 +85,7 @@ class DibiDatabaseInfo extends DibiObject
 
 
 	/**
-	 * @param string
+	 * @param  string
 	 * @return DibiTableInfo
 	 */
 	public function getTable($name)
@@ -103,7 +103,7 @@ class DibiDatabaseInfo extends DibiObject
 
 
 	/**
-	 * @param string
+	 * @param  string
 	 * @return bool
 	 */
 	public function hasTable($name)
@@ -220,7 +220,7 @@ class DibiTableInfo extends DibiObject
 
 
 	/**
-	 * @param string
+	 * @param  string
 	 * @return DibiColumnInfo
 	 */
 	public function getColumn($name)
@@ -238,7 +238,7 @@ class DibiTableInfo extends DibiObject
 
 
 	/**
-	 * @param string
+	 * @param  string
 	 * @return bool
 	 */
 	public function hasColumn($name)
@@ -551,7 +551,7 @@ class DibiForeignKeyInfo extends DibiObject
 
 
 /**
- * Reflection metadata class for a index or primary key
+ * Reflection metadata class for a index or primary key.
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
@@ -597,7 +597,6 @@ class DibiIndexInfo extends DibiObject
 	{
 		return !empty($this->info['unique']);
 	}
-
 
 
 

@@ -45,7 +45,7 @@ interface IDibiVariable
  */
 interface IDataSource extends Countable, IteratorAggregate
 {
-	//function IteratorAggregate::getIterator($offset = NULL, $limit = NULL);
+	//function IteratorAggregate::getIterator();
 	//function Countable::count();
 }
 

@@ -429,9 +429,9 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Define column type.
-	 * @param string  column
-	 * @param string  type (use constant Dibi::FIELD_*)
-	 * @param string  optional format
+	 * @param  string  column
+	 * @param  string  type (use constant Dibi::FIELD_*)
+	 * @param  string  optional format
 	 * @return void
 	 */
 	final public function setType($col, $type, $format = NULL)
@@ -456,7 +456,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Define multiple columns types.
-	 * @param array
+	 * @param  array
 	 * @return void
 	 * @internal
 	 */
@@ -479,7 +479,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * Converts value to specified type and format
+	 * Converts value to specified type and format.
 	 * @return array  ($type, $format)
 	 */
 	final public function convert($value, $type, $format = NULL)

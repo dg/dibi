@@ -35,6 +35,9 @@ class DibiDataSource extends DibiObject implements IDataSource
 	/** @var string */
 	private $sql;
 
+	/** @var DibiResult */
+	private $result;
+
 	/** @var int */
 	private $count;
 
@@ -47,47 +50,49 @@ class DibiDataSource extends DibiObject implements IDataSource
 	/** @var array */
 	private $conds = array();
 
+	/** @var int */
+	private $offset;
+
+	/** @var int */
+	private $limit;
+
 
 
 	/**
 	 * @param  string  SQL command or table name, as data source
 	 * @param  DibiConnection  connection
 	 */
-	public function __construct($sql, DibiConnection $connection = NULL)
+	public function __construct($sql, DibiConnection $connection)
 	{
-		$this->sql = $sql;
-		$this->connection = $connection === NULL ? dibi::getConnection() : $connection;
+		if (strpos($sql, ' ') === FALSE) {
+			$this->sql = $sql; // table name
+		} else {
+			$this->sql = '(' . $sql . ') AS t'; // SQL command
+		}
+		$this->connection = $connection;
 	}
 
 
 
 	/**
-	 * @param  int  offset
-	 * @param  int  limit
-	 * @param  array columns
 	 * @return DibiResultIterator
 	 */
-	public function getIterator($offset = NULL, $limit = NULL)
+	public function getIterator()
 	{
-		return $this->connection->query('
-			SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
-			FROM (%SQL) AS [t]', $this->sql, '
-			WHERE %and', $this->conds, '
-			ORDER BY %by', $this->sorting, '
-			%ofs %lmt', $offset, $limit
-		)->getIterator();
+		return $this->getResult()->getIterator();
 	}
 
 
 
 	/**
+	 * Returns the number of rows in a given data source.
 	 * @return int
 	 */
 	public function count()
 	{
 		if ($this->count === NULL) {
-			$this->count = $this->connection->nativeQuery(
-				'SELECT COUNT(*) FROM (' . $this->sql . ') AS t'
+			$this->count = (int) $this->connection->nativeQuery(
+				'SELECT COUNT(*) FROM ' . $this->sql
 			)->fetchSingle();
 		}
 		return $this->count;
@@ -95,11 +100,23 @@ class DibiDataSource extends DibiObject implements IDataSource
 
 
 
+	/**
+	 * Returns (and queries) DibiResult.
+	 * @return DibiResult
+	 */
+	public function getResult()
+	{
+		if ($this->result === NULL) {
+			$this->result = $this->connection->nativeQuery($this->__toString());
+		}
+		return $this->result;
+	}
+
+
 
 	/**
-	 * Returns SQL wrapped as DibiFluent.
+	 * Returns this data source wrapped in DibiFluent object.
 	 * @return DibiFluent
-	 * @throws DibiException
 	 */
 	public function toFluent()
 	{
@@ -109,6 +126,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 
 
 	/**
+	 * Returns this data source wrapped in DibiDataSource object.
 	 * @return DibiDataSource
 	 */
 	public function toDataSource()
@@ -126,15 +144,20 @@ class DibiDataSource extends DibiObject implements IDataSource
 	{
 		return $this->connection->sql('
 			SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
-			FROM (%SQL) AS [t]', $this->sql, '
+			FROM %SQL', $this->sql, '
 			WHERE %and', $this->conds, '
 			ORDER BY %by', $this->sorting, '
-		');
+			%ofs %lmt', $this->offset, $this->limit
+		);
 	}
 
 
 
 	/**
+	 * Selects columns to query.
+	 * @param  string|array  column name or array of column names
+	 * @param  string  		 column alias
+	 * @return DibiDataSource  provides a fluent interface
 	 */
 	public function select($col, $as = NULL)
 	{
@@ -143,11 +166,16 @@ class DibiDataSource extends DibiObject implements IDataSource
 		} else {
 			$this->cols[$col] = $as;
 		}
+		$this->result = NULL;
+		return $this;
 	}
 
 
 
 	/**
+	 * Adds conditions to query.
+	 * @param  mixed  conditions
+	 * @return DibiDataSource  provides a fluent interface
 	 */
 	public function where($cond)
 	{
@@ -157,11 +185,17 @@ class DibiDataSource extends DibiObject implements IDataSource
 		} else {
 			$this->conds[] = func_get_args();
 		}
+		$this->result = NULL;
+		return $this;
 	}
 
 
 
 	/**
+	 * Selects columns to order by.
+	 * @param  string|array  column name or array of column names
+	 * @param  string  		 sorting direction
+	 * @return DibiDataSource  provides a fluent interface
 	 */
 	public function orderBy($row, $sorting = 'ASC')
 	{
@@ -170,6 +204,24 @@ class DibiDataSource extends DibiObject implements IDataSource
 		} else {
 			$this->sorting[$row] = $sorting;
 		}
+		$this->result = NULL;
+		return $this;
+	}
+
+
+
+	/**
+	 * Limits number of rows.
+	 * @param  int limit
+	 * @param  int offset
+	 * @return DibiDataSource  provides a fluent interface
+	 */
+	public function applyLimit($limit, $offset = NULL)
+	{
+		$this->limit = $limit;
+		$this->offset = $offset;
+		$this->result = NULL;
+		return $this;
 	}
 
 

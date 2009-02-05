@@ -35,8 +35,8 @@ class DibiException extends Exception implements /*Nette\*/IDebuggable
 
 	/**
 	 * Construct an dibi exception.
-	 * @param string  Message describing the exception
-	 * @param int     Some code
+	 * @param  string  Message describing the exception
+	 * @param  int     Some code
 	 * @param  string SQL command
 	 */
 	public function __construct($message = NULL, $code = 0, $sql = NULL)
@@ -112,7 +112,7 @@ class DibiDriverException extends DibiException
 
 
 	/**
-	 * Starts catching potential errors/warnings
+	 * Starts catching potential errors/warnings.
 	 * @return void
 	 */
 	public static function tryError()
