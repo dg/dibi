@@ -41,6 +41,9 @@ class DibiDataSource extends DibiObject implements IDataSource
 	/** @var int */
 	private $count;
 
+	/** @var int */
+	private $totalCount;
+
 	/** @var array */
 	private $cols = array();
 
@@ -91,11 +94,29 @@ class DibiDataSource extends DibiObject implements IDataSource
 	public function count()
 	{
 		if ($this->count === NULL) {
-			$this->count = (int) $this->connection->nativeQuery(
+			$this->count = $this->conds || $this->offset || $this->limit
+				? (int) $this->connection->nativeQuery(
+					'SELECT COUNT(*) FROM (' . $this->__toString() . ') AS t'
+				)->fetchSingle()
+				: $this->getTotalCount();
+		}
+		return $this->count;
+	}
+
+
+
+	/**
+	 * Returns the number of rows in a given data source.
+	 * @return int
+	 */
+	public function getTotalCount()
+	{
+		if ($this->totalCount === NULL) {
+			$this->totalCount = (int) $this->connection->nativeQuery(
 				'SELECT COUNT(*) FROM ' . $this->sql
 			)->fetchSingle();
 		}
-		return $this->count;
+		return $this->totalCount;
 	}
 
 
@@ -120,7 +141,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 	 */
 	public function toFluent()
 	{
-		return $this->connection->select('*')->from('(%SQL) AS [t]', $this->__toString());
+		return $this->connection->select('*')->from('(%SQL) AS t', $this->__toString());
 	}
 
 
@@ -185,7 +206,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 		} else {
 			$this->conds[] = func_get_args();
 		}
-		$this->result = NULL;
+		$this->result = $this->count = NULL;
 		return $this;
 	}
 
@@ -220,7 +241,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 	{
 		$this->limit = $limit;
 		$this->offset = $offset;
-		$this->result = NULL;
+		$this->result = $this->count = NULL;
 		return $this;
 	}
 

@@ -301,6 +301,19 @@ class dibi
 
 
 	/**
+	 * Generates and returns SQL query as DibiDataSource - Monostate for DibiConnection::test().
+	 * @param  array|mixed      one or more arguments
+	 * @return DibiDataSource
+	 */
+	public static function dataSource($args)
+	{
+		$args = func_get_args();
+		return self::getConnection()->dataSource($args);
+	}
+
+
+
+	/**
 	 * Executes SQL query and fetch result - Monostate for DibiConnection::query() & fetch().
 	 * @param  array|mixed    one or more arguments
 	 * @return DibiRow
