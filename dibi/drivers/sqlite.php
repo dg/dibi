@@ -443,4 +443,37 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 		throw new NotImplementedException;
 	}
 
+
+
+	/********************* user defined functions ****************d*g**/
+
+
+
+	/**
+	 * Registers an user defined function for use in SQL statements.
+	 * @param  string  function name
+	 * @param  mixed   callback
+	 * @param  int     num of arguments
+	 * @return void
+	 */
+	public function registerFunction($name, $callback, $numArgs = -1)
+	{
+		sqlite_create_function($this->connection, $name, $callback, $numArgs);
+	}
+
+
+
+	/**
+	 * Registers an aggregating user defined function for use in SQL statements.
+	 * @param  string  function name
+	 * @param  mixed   callback called for each row of the result set
+	 * @param  mixed   callback called to aggregate the "stepped" data from each row
+	 * @param  int     num of arguments
+	 * @return void
+	 */
+	public function registerAggregateFunction($name, $rowCallback, $agrCallback, $numArgs = -1)
+	{
+		sqlite_create_aggregate($this->connection, $name, $rowCallback, $agrCallback, $numArgs);
+	}
+
 }
