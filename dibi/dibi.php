@@ -131,10 +131,10 @@ class dibi
 	private static $connection;
 
 	/** @var array  Substitutions for identifiers */
-	private static $substs = array();
+	public static $substs = array();
 
 	/** @var callback  Substitution fallback */
-	private static $substFallBack;
+	public static $substFallBack;
 
 	/** @var array  @see addHandler */
 	private static $handlers = array();
@@ -591,22 +591,6 @@ class dibi
 
 
 	/**
-	 * Sets substitution fallback handler.
-	 * @param  callback
-	 * @return void
-	 */
-	public static function setSubstFallback($callback)
-	{
-		if (!is_callable($callback)) {
-			throw new InvalidArgumentException("Invalid callback.");
-		}
-
-		self::$substFallBack = $callback;
-	}
-
-
-
-	/**
 	 * Remove substitution pair.
 	 * @param  mixed from or TRUE
 	 * @return void
@@ -623,39 +607,17 @@ class dibi
 
 
 	/**
-	 * Provides substitution.
-	 * @param  string
-	 * @return string
+	 * Sets substitution fallback handler.
+	 * @param  callback
+	 * @return void
 	 */
-	public static function substitute($value)
+	public static function setSubstFallback($callback)
 	{
-		if (strpos($value, ':') === FALSE) {
-			return $value;
-
-		} else {
-			return preg_replace_callback('#:(.*):#U', array('dibi', 'subCb'), $value);
+		if (!is_callable($callback)) {
+			throw new InvalidArgumentException("Invalid callback.");
 		}
-	}
 
-
-
-	/**
-	 * Substitution callback.
-	 * @param  array
-	 * @return string
-	 */
-	private static function subCb($m)
-	{
-		$m = $m[1];
-		if (isset(self::$substs[$m])) {
-			return self::$substs[$m];
-
-		} elseif (self::$substFallBack) {
-			return self::$substs[$m] = call_user_func(self::$substFallBack, $m);
-
-		} else {
-			return $m;
-		}
+		self::$substFallBack = $callback;
 	}
 
 

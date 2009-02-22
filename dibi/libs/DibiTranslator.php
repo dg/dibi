@@ -123,8 +123,8 @@ final class DibiTranslator extends DibiObject
 						\[(.+?)\]|                   ## 2) [identifier]
 						(\')((?:\'\'|[^\'])*)\'|     ## 3,4) string
 						(")((?:""|[^"])*)"|          ## 5,6) "string"
-						(\'|")                       ## 7) lone-quote
-						%([a-zA-Z]{1,4})(?![a-zA-Z])|## 8) modifier
+						(\'|")|                      ## 7) lone quote
+						%([a-zA-Z]{1,4})(?![a-zA-Z]) ## 8) modifier
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
 					. preg_replace_callback('/(?=`|\[|\'|"|%)(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|%([a-zA-Z]{1,4})(?![a-zA-Z]))/s',
@@ -351,7 +351,7 @@ final class DibiTranslator extends DibiObject
 					return $value;
 				} else {
 					return substr($value, 0, $toSkip)
-					. preg_replace_callback('/(?=`|\[|\'|")(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"(\'|"))/s',
+					. preg_replace_callback('/(?=`|\[|\'|")(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|"))/s',
 							array($this, 'cb'),
 							substr($value, $toSkip)
 					);
@@ -505,8 +505,35 @@ final class DibiTranslator extends DibiObject
 	 */
 	private function delimite($value)
 	{
-		return $value === '*' ? '*' : $this->driver->escape(dibi::substitute($value), dibi::IDENTIFIER);
+		if ($value === '*') {
+			return '*';
+
+		} elseif (strpos($value, ':') !== FALSE) { // provide substitution
+			$value = preg_replace_callback('#:(.*):#U', array(__CLASS__, 'subCb'), $value);
+		}
+
+		return $this->driver->escape($value, dibi::IDENTIFIER);
 	}
 
 
-} // class DibiTranslator
+
+	/**
+	 * Substitution callback.
+	 * @param  array
+	 * @return string
+	 */
+	private static function subCb($m)
+	{
+		$m = $m[1];
+		if (isset(dibi::$substs[$m])) {
+			return dibi::$substs[$m];
+
+		} elseif (dibi::$substFallBack) {
+			return dibi::$substs[$m] = call_user_func(dibi::$substFallBack, $m);
+
+		} else {
+			return $m;
+		}
+	}
+
+}
