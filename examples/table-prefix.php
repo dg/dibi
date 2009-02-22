@@ -16,8 +16,8 @@ dibi::connect(array(
 // create new substitution :blog:  ==>  wp_
 dibi::addSubst('blog', 'wp_');
 
-dibi::test("UPDATE [:blog:items] SET [text]='Hello World'");
-// -> UPDATE [wp_items] SET [text]='Hello World'
+dibi::test("UPDATE :blog:items SET [text]='Hello World'");
+// -> UPDATE wp_items SET [text]='Hello World'
 
 
 

@@ -109,7 +109,7 @@ final class DibiTranslator extends DibiObject
 			// simple string means SQL
 			if (is_string($arg)) {
 				// speed-up - is regexp required?
-				$toSkip = strcspn($arg, '`[\'"%');
+				$toSkip = strcspn($arg, '`[\'":%');
 
 				if (strlen($arg) === $toSkip) { // needn't be translated
 					$sql[] = $arg;
@@ -117,17 +117,18 @@ final class DibiTranslator extends DibiObject
 					$sql[] = substr($arg, 0, $toSkip)
 /*
 					preg_replace_callback('/
-					(?=`|\[|\'|"|%)                ## speed-up
+					(?=[`[\'":%])                    ## speed-up
 					(?:
 						`(.+?)`|                     ## 1) `identifier`
 						\[(.+?)\]|                   ## 2) [identifier]
 						(\')((?:\'\'|[^\'])*)\'|     ## 3,4) string
 						(")((?:""|[^"])*)"|          ## 5,6) "string"
 						(\'|")|                      ## 7) lone quote
-						%([a-zA-Z]{1,4})(?![a-zA-Z]) ## 8) modifier
+						:(\S*?:)|                    ## 8) substitution
+						%([a-zA-Z]{1,4})(?![a-zA-Z]) ## 9) modifier
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
-					. preg_replace_callback('/(?=`|\[|\'|"|%)(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|%([a-zA-Z]{1,4})(?![a-zA-Z]))/s',
+					. preg_replace_callback('/(?=[`[\'":%])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)|%([a-zA-Z]{1,4})(?![a-zA-Z]))/s',
 							array($this, 'cb'),
 							substr($arg, $toSkip)
 					);
@@ -346,14 +347,15 @@ final class DibiTranslator extends DibiObject
 			case 'sql': // preserve as dibi-SQL  (TODO: leave only %ex)
 				$value = (string) $value;
 				// speed-up - is regexp required?
-				$toSkip = strcspn($value, '`[\'"');
+				$toSkip = strcspn($value, '`[\'":');
 				if (strlen($value) === $toSkip) { // needn't be translated
 					return $value;
 				} else {
 					return substr($value, 0, $toSkip)
-					. preg_replace_callback('/(?=`|\[|\'|")(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|"))/s',
-							array($this, 'cb'),
-							substr($value, $toSkip)
+					. preg_replace_callback(
+						'/(?=[`[\'":])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:))/s',
+						array($this, 'cb'),
+						substr($value, $toSkip)
 					);
 				}
 
@@ -411,10 +413,11 @@ final class DibiTranslator extends DibiObject
 		//    [5] => "
 		//    [6] => string
 		//    [7] => lone-quote
-		//    [8] => modifier (when called from self::translate())
+		//    [8] => substitution
+		//    [9] => modifier (when called from self::translate())
 
-		if (!empty($matches[8])) { // modifier
-			$mod = $matches[8];
+		if (!empty($matches[9])) { // modifier
+			$mod = $matches[9];
 			$cursor = & $this->cursor;
 
 			if ($cursor >= count($this->args) && $mod !== 'else' && $mod !== 'end') {
@@ -491,6 +494,10 @@ final class DibiTranslator extends DibiObject
 		if ($matches[7]) { // string quote
 			$this->hasError = TRUE;
 			return '**Alone quote**';
+		}
+
+		if ($matches[8]) { // SQL identifier substitution
+			return $this->subCb(array(1 => substr($matches[8], 0, -1)));
 		}
 
 		die('this should be never executed');
