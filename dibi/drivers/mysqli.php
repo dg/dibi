@@ -163,6 +163,22 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 
 
 	/**
+	 * Retrieves information about the most recently executed query.
+	 * @return array
+	 */
+	public function getInfo()
+	{
+		$res = array();
+		preg_match_all('#(.+?): +(\d+) *#', mysqli_info($this->connection), $matches, PREG_SET_ORDER);
+		foreach ($matches as $m) {
+			$res[$m[1]] = (int) $m[2];
+		}
+		return $res;
+	}
+
+
+
+	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
 	 * @return int|FALSE  number of rows or FALSE on error
 	 */
