@@ -78,103 +78,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 
 
 	/**
-	 * @return DibiResultIterator
-	 */
-	public function getIterator()
-	{
-		return $this->getResult()->getIterator();
-	}
-
-
-
-	/**
-	 * Returns the number of rows in a given data source.
-	 * @return int
-	 */
-	public function count()
-	{
-		if ($this->count === NULL) {
-			$this->count = $this->conds || $this->offset || $this->limit
-				? (int) $this->connection->nativeQuery(
-					'SELECT COUNT(*) FROM (' . $this->__toString() . ') AS t'
-				)->fetchSingle()
-				: $this->getTotalCount();
-		}
-		return $this->count;
-	}
-
-
-
-	/**
-	 * Returns the number of rows in a given data source.
-	 * @return int
-	 */
-	public function getTotalCount()
-	{
-		if ($this->totalCount === NULL) {
-			$this->totalCount = (int) $this->connection->nativeQuery(
-				'SELECT COUNT(*) FROM ' . $this->sql
-			)->fetchSingle();
-		}
-		return $this->totalCount;
-	}
-
-
-
-	/**
-	 * Returns (and queries) DibiResult.
-	 * @return DibiResult
-	 */
-	public function getResult()
-	{
-		if ($this->result === NULL) {
-			$this->result = $this->connection->nativeQuery($this->__toString());
-		}
-		return $this->result;
-	}
-
-
-
-	/**
-	 * Returns this data source wrapped in DibiFluent object.
-	 * @return DibiFluent
-	 */
-	public function toFluent()
-	{
-		return $this->connection->select('*')->from('(%SQL) AS t', $this->__toString());
-	}
-
-
-
-	/**
-	 * Returns this data source wrapped in DibiDataSource object.
-	 * @return DibiDataSource
-	 */
-	public function toDataSource()
-	{
-		return new self($this->__toString(), $this->connection);
-	}
-
-
-
-	/**
-	 * Returns SQL query.
-	 * @return string
-	 */
-	final public function __toString()
-	{
-		return $this->connection->sql('
-			SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
-			FROM %SQL', $this->sql, '
-			WHERE %and', $this->conds, '
-			ORDER BY %by', $this->sorting, '
-			%ofs %lmt', $this->offset, $this->limit
-		);
-	}
-
-
-
-	/**
 	 * Selects columns to query.
 	 * @param  string|array  column name or array of column names
 	 * @param  string  		 column alias
@@ -254,6 +157,173 @@ class DibiDataSource extends DibiObject implements IDataSource
 	final public function getConnection()
 	{
 		return $this->connection;
+	}
+
+
+
+	/********************* executing ****************d*g**/
+
+
+
+	/**
+	 * Returns (and queries) DibiResult.
+	 * @return DibiResult
+	 */
+	public function getResult()
+	{
+		if ($this->result === NULL) {
+			$this->result = $this->connection->nativeQuery($this->__toString());
+		}
+		return $this->result;
+	}
+
+
+
+	/**
+	 * @return DibiResultIterator
+	 */
+	public function getIterator()
+	{
+		return $this->getResult()->getIterator();
+	}
+
+
+
+	/**
+	 * Generates, executes SQL query and fetches the single row.
+	 * @return DibiRow|FALSE  array on success, FALSE if no next record
+	 */
+	public function fetch()
+	{
+		return $this->getResult()->fetch();
+	}
+
+
+
+	/**
+	 * Like fetch(), but returns only first field.
+	 * @return mixed  value on success, FALSE if no next record
+	 */
+	public function fetchSingle()
+	{
+		return $this->getResult()->fetchSingle();
+	}
+
+
+
+	/**
+	 * Fetches all records from table.
+	 * @return array
+	 */
+	public function fetchAll()
+	{
+		return $this->getResult()->fetchAll();
+	}
+
+
+
+	/**
+	 * Fetches all records from table and returns associative tree.
+	 * @param  string  associative descriptor
+	 * @return array
+	 */
+	public function fetchAssoc($assoc)
+	{
+		return $this->getResult()->fetchAssoc($assoc);
+	}
+
+
+
+	/**
+	 * Fetches all records from table like $key => $value pairs.
+	 * @param  string  associative key
+	 * @param  string  value
+	 * @return array
+	 */
+	public function fetchPairs($key = NULL, $value = NULL)
+	{
+		return $this->getResult()->fetchPairs($key, $value);
+	}
+
+
+
+	/********************* exporting ****************d*g**/
+
+
+
+	/**
+	 * Returns this data source wrapped in DibiFluent object.
+	 * @return DibiFluent
+	 */
+	public function toFluent()
+	{
+		return $this->connection->select('*')->from('(%SQL) AS t', $this->__toString());
+	}
+
+
+
+	/**
+	 * Returns this data source wrapped in DibiDataSource object.
+	 * @return DibiDataSource
+	 */
+	public function toDataSource()
+	{
+		return new self($this->__toString(), $this->connection);
+	}
+
+
+
+	/**
+	 * Returns SQL query.
+	 * @return string
+	 */
+	final public function __toString()
+	{
+		return $this->connection->sql('
+			SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
+			FROM %SQL', $this->sql, '
+			WHERE %and', $this->conds, '
+			ORDER BY %by', $this->sorting, '
+			%ofs %lmt', $this->offset, $this->limit
+		);
+	}
+
+
+
+	/********************* counting ****************d*g**/
+
+
+
+	/**
+	 * Returns the number of rows in a given data source.
+	 * @return int
+	 */
+	public function count()
+	{
+		if ($this->count === NULL) {
+			$this->count = $this->conds || $this->offset || $this->limit
+				? (int) $this->connection->nativeQuery(
+					'SELECT COUNT(*) FROM (' . $this->__toString() . ') AS t'
+				)->fetchSingle()
+				: $this->getTotalCount();
+		}
+		return $this->count;
+	}
+
+
+
+	/**
+	 * Returns the number of rows in a given data source.
+	 * @return int
+	 */
+	public function getTotalCount()
+	{
+		if ($this->totalCount === NULL) {
+			$this->totalCount = (int) $this->connection->nativeQuery(
+				'SELECT COUNT(*) FROM ' . $this->sql
+			)->fetchSingle();
+		}
+		return $this->totalCount;
 	}
 
 }

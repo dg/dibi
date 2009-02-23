@@ -239,6 +239,21 @@ class DibiFluent extends DibiObject implements IDataSource
 
 
 	/**
+	 * Returns the dibi connection.
+	 * @return DibiConnection
+	 */
+	final public function getConnection()
+	{
+		return $this->connection;
+	}
+
+
+
+	/********************* executing ****************d*g**/
+
+
+
+	/**
 	 * Generates and executes SQL query.
 	 * @param  mixed what to return?
 	 * @return DibiResult|int  result set object (if any)
@@ -255,7 +270,6 @@ class DibiFluent extends DibiObject implements IDataSource
 	/**
 	 * Generates, executes SQL query and fetches the single row.
 	 * @return DibiRow|FALSE  array on success, FALSE if no next record
-	 * @throws DibiException
 	 */
 	public function fetch()
 	{
@@ -298,11 +312,8 @@ class DibiFluent extends DibiObject implements IDataSource
 
 	/**
 	 * Fetches all records from table and returns associative tree.
-	 * Associative descriptor:  assoc1,#,assoc2,=,assoc3,@
-	 * builds a tree:           $data[assoc1][index][assoc2]['assoc3']->value = {record}
 	 * @param  string  associative descriptor
 	 * @return array
-	 * @throws InvalidArgumentException
 	 */
 	public function fetchAssoc($assoc)
 	{
@@ -316,7 +327,6 @@ class DibiFluent extends DibiObject implements IDataSource
 	 * @param  string  associative key
 	 * @param  string  value
 	 * @return array
-	 * @throws InvalidArgumentException
 	 */
 	public function fetchPairs($key = NULL, $value = NULL)
 	{
@@ -339,6 +349,18 @@ class DibiFluent extends DibiObject implements IDataSource
 
 
 	/**
+	 * Generates and prints SQL query or it's part.
+	 * @param  string clause name
+	 * @return bool
+	 */
+	public function test($clause = NULL)
+	{
+		return $this->connection->test($this->_export($clause));
+	}
+
+
+
+	/**
 	 * @return int
 	 */
 	public function count()
@@ -350,14 +372,27 @@ class DibiFluent extends DibiObject implements IDataSource
 
 
 
+	/********************* exporting ****************d*g**/
+
+
+
 	/**
-	 * Generates and prints SQL query or it's part.
-	 * @param  string clause name
-	 * @return bool
+	 * @return DibiDataSource
 	 */
-	public function test($clause = NULL)
+	public function toDataSource()
 	{
-		return $this->connection->test($this->_export($clause));
+		return new DibiDataSource($this->connection->sql($this->_export()), $this->connection);
+	}
+
+
+
+	/**
+	 * Returns SQL query.
+	 * @return string
+	 */
+	final public function __toString()
+	{
+		return $this->connection->sql($this->_export());
 	}
 
 
@@ -409,38 +444,6 @@ class DibiFluent extends DibiObject implements IDataSource
 		}
 		return strtoupper(preg_replace('#[A-Z]#', ' $0', $s));
 
-	}
-
-
-
-	/**
-	 * @return DibiDataSource
-	 */
-	public function toDataSource()
-	{
-		return new DibiDataSource($this->connection->sql($this->_export()), $this->connection);
-	}
-
-
-
-	/**
-	 * Returns SQL query.
-	 * @return string
-	 */
-	final public function __toString()
-	{
-		return $this->connection->sql($this->_export());
-	}
-
-
-
-	/**
-	 * Returns the dibi connection.
-	 * @return DibiConnection
-	 */
-	final public function getConnection()
-	{
-		return $this->connection;
 	}
 
 }
