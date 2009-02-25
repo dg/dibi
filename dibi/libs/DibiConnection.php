@@ -98,6 +98,12 @@ class DibiConnection extends DibiObject
 			$this->setProfiler(new $class);
 		}
 
+		if (!empty($config['substitutes'])) {
+			foreach ($config['substitutes'] as $key => $value) {
+				dibi::addSubst($key, $value);
+			}
+		}
+
 		if (empty($config['lazy'])) {
 			$this->connect();
 		}

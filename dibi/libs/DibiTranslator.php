@@ -142,6 +142,10 @@ final class DibiTranslator extends DibiObject
 				continue;
 			}
 
+			if ($arg instanceof ArrayObject) {
+				$arg = (array) $arg;
+			}
+
 			if (is_array($arg)) {
 				if (is_string(key($arg))) {
 					// associative array -> autoselect between SET or VALUES & LIST
@@ -196,8 +200,11 @@ final class DibiTranslator extends DibiObject
 	public function formatValue($value, $modifier)
 	{
 		// array processing (with or without modifier)
-		if (is_array($value) || $value instanceof ArrayObject) {
+		if ($value instanceof ArrayObject) {
+			$value = (array) $value;
+		}
 
+		if (is_array($value)) {
 			$vx = $kx = array();
 			switch ($modifier) {
 			case 'and':
