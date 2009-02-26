@@ -370,27 +370,52 @@ class dibi
 
 	/**
 	 * Gets the number of affected rows.
-	 * Monostate for DibiConnection::affectedRows()
+	 * Monostate for DibiConnection::getAffectedRows()
+	 * @return int  number of rows
+	 * @throws DibiException
+	 */
+	public static function getAffectedRows()
+	{
+		return self::getConnection()->getAffectedRows();
+	}
+
+
+
+	/**
+	 * Gets the number of affected rows. Alias for getAffectedRows().
 	 * @return int  number of rows
 	 * @throws DibiException
 	 */
 	public static function affectedRows()
 	{
-		return self::getConnection()->affectedRows();
+		return self::getConnection()->getAffectedRows();
 	}
 
 
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * Monostate for DibiConnection::insertId()
+	 * Monostate for DibiConnection::getInsertId()
+	 * @param  string     optional sequence name
+	 * @return int
+	 * @throws DibiException
+	 */
+	public static function getInsertId($sequence=NULL)
+	{
+		return self::getConnection()->getInsertId($sequence);
+	}
+
+
+
+	/**
+	 * Retrieves the ID generated for an AUTO_INCREMENT column. Alias for getInsertId().
 	 * @param  string     optional sequence name
 	 * @return int
 	 * @throws DibiException
 	 */
 	public static function insertId($sequence=NULL)
 	{
-		return self::getConnection()->insertId($sequence);
+		return self::getConnection()->getInsertId($sequence);
 	}
 
 

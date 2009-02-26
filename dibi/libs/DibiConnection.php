@@ -338,7 +338,7 @@ class DibiConnection extends DibiObject
 		if ($res = $this->driver->query($sql)) { // intentionally =
 			$res = new DibiResult($res, $this->config);
 		} else {
-			$res = $this->driver->affectedRows();
+			$res = $this->driver->getAffectedRows();
 		}
 
 		$time += microtime(TRUE);
@@ -358,11 +358,23 @@ class DibiConnection extends DibiObject
 	 * @return int  number of rows
 	 * @throws DibiException
 	 */
-	public function affectedRows()
+	public function getAffectedRows()
 	{
-		$rows = $this->driver->affectedRows();
+		$rows = $this->driver->getAffectedRows();
 		if (!is_int($rows) || $rows < 0) throw new DibiException('Cannot retrieve number of affected rows.');
 		return $rows;
+	}
+
+
+
+	/**
+	 * Gets the number of affected rows. Alias for getAffectedRows().
+	 * @return int  number of rows
+	 * @throws DibiException
+	 */
+	public function affectedRows()
+	{
+		return $this->getAffectedRows();
 	}
 
 
@@ -373,11 +385,24 @@ class DibiConnection extends DibiObject
 	 * @return int
 	 * @throws DibiException
 	 */
-	public function insertId($sequence = NULL)
+	public function getInsertId($sequence = NULL)
 	{
-		$id = $this->driver->insertId($sequence);
+		$id = $this->driver->getInsertId($sequence);
 		if ($id < 1) throw new DibiException('Cannot retrieve last generated ID.');
 		return (int) $id;
+	}
+
+
+
+	/**
+	 * Retrieves the ID generated for an AUTO_INCREMENT column. Alias for getInsertId().
+	 * @param  string     optional sequence name
+	 * @return int
+	 * @throws DibiException
+	 */
+	public function insertId($sequence = NULL)
+	{
+		return $this->getInsertId($sequence);
 	}
 
 

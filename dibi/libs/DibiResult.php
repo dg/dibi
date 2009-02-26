@@ -116,9 +116,20 @@ class DibiResult extends DibiObject implements IDataSource
 	 * Returns the number of rows in a result set.
 	 * @return int
 	 */
+	final public function getRowCount()
+	{
+		return $this->getDriver()->getRowCount();
+	}
+
+
+
+	/**
+	 * Returns the number of rows in a result set. Alias for getRowCount().
+	 * @return int
+	 */
 	final public function rowCount()
 	{
-		return $this->getDriver()->rowCount();
+		return $this->getDriver()->getRowCount();
 	}
 
 
@@ -602,7 +613,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function count()
 	{
-		return $this->rowCount();
+		return $this->getRowCount();
 	}
 
 

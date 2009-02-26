@@ -126,7 +126,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
 	 * @return int|FALSE  number of rows or FALSE on error
 	 */
-	public function affectedRows()
+	public function getAffectedRows()
 	{
 		throw new NotImplementedException;
 	}
@@ -137,7 +137,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @return int|FALSE  int on success or FALSE on failure
 	 */
-	public function insertId($sequence)
+	public function getInsertId($sequence)
 	{
 		throw new NotSupportedException('Oracle does not support autoincrementing.');
 	}
@@ -148,7 +148,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 * Begins a transaction (if supported).
 	 * @param  string  optinal savepoint name
 	 * @return void
-	 * @throws DibiDriverException
 	 */
 	public function begin($savepoint = NULL)
 	{
@@ -278,9 +277,9 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 * Returns the number of rows in a result set.
 	 * @return int
 	 */
-	public function rowCount()
+	public function getRowCount()
 	{
-		throw new DibiDriverException('Row count is not available for unbuffered queries.');
+		throw new NotSupportedException('Row count is not available for unbuffered queries.');
 	}
 
 
@@ -302,7 +301,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
 	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
-	 * @throws DibiException
 	 */
 	public function seek($row)
 	{

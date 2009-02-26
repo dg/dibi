@@ -147,7 +147,7 @@ interface IDibiDriver
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
 	 * @return int|FALSE  number of rows or FALSE on error
 	 */
-	function affectedRows();
+	function getAffectedRows();
 
 
 
@@ -155,7 +155,7 @@ interface IDibiDriver
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @return int|FALSE  int on success or FALSE on failure
 	 */
-	function insertId($sequence);
+	function getInsertId($sequence);
 
 
 
@@ -242,7 +242,7 @@ interface IDibiDriver
 	 * Returns the number of rows in a result set.
 	 * @return int
 	 */
-	function rowCount();
+	function getRowCount();
 
 
 

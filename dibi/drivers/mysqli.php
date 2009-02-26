@@ -182,7 +182,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
 	 * @return int|FALSE  number of rows or FALSE on error
 	 */
-	public function affectedRows()
+	public function getAffectedRows()
 	{
 		return mysqli_affected_rows($this->connection);
 	}
@@ -193,7 +193,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @return int|FALSE  int on success or FALSE on failure
 	 */
-	public function insertId($sequence)
+	public function getInsertId($sequence)
 	{
 		return mysqli_insert_id($this->connection);
 	}
@@ -328,7 +328,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 * Returns the number of rows in a result set.
 	 * @return int
 	 */
-	public function rowCount()
+	public function getRowCount()
 	{
 		if (!$this->buffered) {
 			throw new DibiDriverException('Row count is not available for unbuffered queries.');

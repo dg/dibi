@@ -262,7 +262,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	public function execute($return = NULL)
 	{
 		$res = $this->connection->query($this->_export());
-		return $return === dibi::IDENTIFIER ? $this->connection->insertId() : $res;
+		return $return === dibi::IDENTIFIER ? $this->connection->getInsertId() : $res;
 	}
 
 
