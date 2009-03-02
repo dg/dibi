@@ -535,7 +535,7 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		$cols = array();
 		foreach ($this->getMeta() as $info) {
-			$cols[] = new DibiColumnInfo($this->driver, $info);
+			$cols[] = new DibiColumnInfo($this->getDriver(), $info);
 		}
 		return $cols;
 	}
@@ -626,7 +626,7 @@ class DibiResult extends DibiObject implements IDataSource
 	private function getDriver()
 	{
 		if ($this->driver === NULL) {
-			throw new InvalidStateException('Resultset was released from memory.');
+			throw new InvalidStateException('Result-set was released from memory.');
 		}
 
 		return $this->driver;

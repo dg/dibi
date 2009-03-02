@@ -247,6 +247,17 @@ class DibiDataSource extends DibiObject implements IDataSource
 
 
 
+	/**
+	 * Discards the internal cache.
+	 * @return void
+	 */
+	public function release()
+	{
+		$this->result = $this->count = NULL;
+	}
+
+
+
 	/********************* exporting ****************d*g**/
 
 
