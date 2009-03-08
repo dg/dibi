@@ -134,7 +134,7 @@ class dibi
 	public static $substs = array();
 
 	/** @var callback  Substitution fallback */
-	public static $substFallBack;
+	public static $substFallBack = array(__CLASS__, 'defaultSubstFallback');
 
 	/** @var array  @see addHandler */
 	private static $handlers = array();
@@ -643,6 +643,18 @@ class dibi
 		}
 
 		self::$substFallBack = $callback;
+	}
+
+
+
+	/**
+	 * Default substitution fallback handler.
+	 * @param  string
+	 * @return mixed
+	 */
+	public static function defaultSubstFallback($expr)
+	{
+		throw new InvalidStateException("Missing substitution for '$expr' expression.");
 	}
 
 

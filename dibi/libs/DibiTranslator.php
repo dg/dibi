@@ -121,14 +121,14 @@ final class DibiTranslator extends DibiObject
 					(?:
 						`(.+?)`|                     ## 1) `identifier`
 						\[(.+?)\]|                   ## 2) [identifier]
-						(\')((?:\'\'|[^\'])*)\'|     ## 3,4) string
+						(\')((?:\'\'|[^\'])*)\'|     ## 3,4) 'string'
 						(")((?:""|[^"])*)"|          ## 5,6) "string"
 						(\'|")|                      ## 7) lone quote
-						:(\S*?:)|                    ## 8) substitution
-						%([a-zA-Z]{1,4})(?![a-zA-Z]) ## 9) modifier
+						:(\S*?:)([a-zA-Z0-9._]?)|    ## 8,9) substitution
+						%([a-zA-Z]{1,4})(?![a-zA-Z]) ## 10) modifier
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
-					. preg_replace_callback('/(?=[`[\'":%])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)|%([a-zA-Z]{1,4})(?![a-zA-Z]))/s',
+					. preg_replace_callback('/(?=[`[\'":%])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z]{1,4})(?![a-zA-Z]))/s',
 							array($this, 'cb'),
 							substr($arg, $toSkip)
 					);
@@ -357,7 +357,7 @@ final class DibiTranslator extends DibiObject
 				} else {
 					return substr($value, 0, $toSkip)
 					. preg_replace_callback(
-						'/(?=[`[\'":])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:))/s',
+						'/(?=[`[\'":])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/s',
 						array($this, 'cb'),
 						substr($value, $toSkip)
 					);
@@ -418,10 +418,11 @@ final class DibiTranslator extends DibiObject
 		//    [6] => string
 		//    [7] => lone-quote
 		//    [8] => substitution
-		//    [9] => modifier (when called from self::translate())
+		//    [9] => substitution flag
+		//    [10] => modifier (when called from self::translate())
 
-		if (!empty($matches[9])) { // modifier
-			$mod = $matches[9];
+		if (!empty($matches[10])) { // modifier
+			$mod = $matches[10];
 			$cursor = & $this->cursor;
 
 			if ($cursor >= count($this->args) && $mod !== 'else' && $mod !== 'end') {
@@ -501,7 +502,9 @@ final class DibiTranslator extends DibiObject
 		}
 
 		if ($matches[8]) { // SQL identifier substitution
-			return $this->subCb(array(1 => substr($matches[8], 0, -1)));
+			$m = substr($matches[8], 0, -1);
+			$m = isset(dibi::$substs[$m]) ? dibi::$substs[$m] : call_user_func(dibi::$substFallBack, $m);
+			return $matches[9] == '' ? $this->formatValue($m, FALSE) : $m . $matches[9]; // value or identifier
 		}
 
 		die('this should be never executed');
@@ -536,15 +539,7 @@ final class DibiTranslator extends DibiObject
 	private static function subCb($m)
 	{
 		$m = $m[1];
-		if (isset(dibi::$substs[$m])) {
-			return dibi::$substs[$m];
-
-		} elseif (dibi::$substFallBack) {
-			return dibi::$substs[$m] = call_user_func(dibi::$substFallBack, $m);
-
-		} else {
-			return $m;
-		}
+		return isset(dibi::$substs[$m]) ? dibi::$substs[$m] : call_user_func(dibi::$substFallBack, $m);
 	}
 
 }

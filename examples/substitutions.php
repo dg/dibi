@@ -36,10 +36,14 @@ dibi::test("UPDATE [database.::table] SET [text]='Hello World'");
 // create substitution fallback
 function substFallBack($expr)
 {
-	return 'the_' . $expr;
+	if (defined($expr)) {
+		return constant($expr);
+	} else {
+		return 'the_' . $expr;
+	}
 }
 
 dibi::setSubstFallBack('substFallBack');
 
-dibi::test("UPDATE [:account:user] SET [name]='John Doe'");
-// -> UPDATE [the_accountuser] SET [name]='John Doe'
+dibi::test("UPDATE [:account:user] SET [name]='John Doe', [active]=:true:");
+// -> UPDATE [the_accountuser] SET [name]='John Doe', [active]=1
