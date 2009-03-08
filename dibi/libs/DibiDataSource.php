@@ -294,7 +294,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 			SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
 			FROM %SQL', $this->sql, '
 			WHERE %and', $this->conds, '
-			ORDER BY %by', $this->sorting, '
+			%ex', $this->sorting ? array('ORDER BY %by', $this->sorting) : NULL, '
 			%ofs %lmt', $this->offset, $this->limit
 		);
 	}

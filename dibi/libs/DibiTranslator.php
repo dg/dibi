@@ -272,10 +272,6 @@ final class DibiTranslator extends DibiObject
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
 			case 'by': // key ASC, key DESC
-				if (empty($value)) {
-					return $this->driver->escape(TRUE, 'b');
-				}
-
 				foreach ($value as $k => $v) {
 					if (is_string($k)) {
 						$v = (is_string($v) && strncasecmp($v, 'd', 1)) || $v > 0 ? 'ASC' : 'DESC';
@@ -302,17 +298,13 @@ final class DibiTranslator extends DibiObject
 
 		// with modifier procession
 		if ($modifier) {
-			if ($value === NULL) {
-				return 'NULL';
-			}
-
 			if ($value instanceof IDibiVariable) {
 				return $value->toSql($this, $modifier);
 
 			} elseif ($value instanceof DateTime) {
 				$value = $value->format('U');
 
-			} elseif (!is_scalar($value)) {  // array is already processed
+			} elseif ($value !== NULL && !is_scalar($value)) {  // array is already processed
 				$this->hasError = TRUE;
 				return '**Unexpected type ' . gettype($value) . '**';
 			}
@@ -321,7 +313,7 @@ final class DibiTranslator extends DibiObject
 			case 's':  // string
 			case 'bin':// binary
 			case 'b':  // boolean
-				return $this->driver->escape($value, $modifier);
+				return $value === NULL ? 'NULL' : $this->driver->escape($value, $modifier);
 
 			case 'sn': // string or NULL
 				return $value == '' ? 'NULL' : $this->driver->escape($value, dibi::FIELD_TEXT); // notice two equal signs
@@ -331,20 +323,25 @@ final class DibiTranslator extends DibiObject
 				// support for long numbers - keep them unchanged
 				if (is_string($value) && preg_match('#[+-]?\d+(e\d+)?$#A', $value)) {
 					return $value;
+				} else {
+					return $value === NULL ? 'NULL' : (string) (int) ($value + 0);
 				}
-				return (string) (int) ($value + 0);
 
 			case 'f':  // float
 				// support for extreme numbers - keep them unchanged
 				if (is_string($value) && is_numeric($value) && strpos($value, 'x') === FALSE) {
 					return $value; // something like -9E-005 is accepted by SQL, HEX values are not
+				} else {
+					return $value === NULL ? 'NULL' : rtrim(rtrim(number_format($value, 5, '.', ''), '0'), '.');
 				}
-				return rtrim(rtrim(number_format($value, 5, '.', ''), '0'), '.');
 
 			case 'd':  // date
 			case 't':  // datetime
-				$value = is_numeric($value) ? (int) $value : strtotime($value);
-				return $this->driver->escape($value, $modifier);
+				if ($value === NULL) {
+					return 'NULL';
+				} else {
+					return $this->driver->escape(is_numeric($value) ? (int) $value : strtotime($value), $modifier);
+				}
 
 			case 'by':
 			case 'n':  // identifier name
