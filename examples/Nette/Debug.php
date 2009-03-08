@@ -54,13 +54,13 @@ json_encode($val){if(is_array($val)&&(!$val||array_keys($val)===range(0,count($v
 as$k=>$v){$tmp[]=json_encode((string)$k).':'.json_encode($v);}return'{'.implode(',',$tmp).'}';}if(is_string($val)){$val=str_replace(array("\\","\x00"),array("\\\\","\\u0000"),$val);return'"'.addcslashes($val,"\x8\x9\xA\xC\xD/\"").'"';}if(is_int($val)||is_float($val)){return
 rtrim(rtrim(number_format($val,5,'.',''),'0'),'.');}if(is_bool($val)){return$val?'true':'false';}return'null';}}if(version_compare(PHP_VERSION,'5.2.2','<')){function
 fixCallback(&$callback){if(is_string($callback)&&strpos($callback,':')){$callback=explode('::',$callback);}if(is_array($callback)&&is_string($callback[0])&&$a=strrpos($callback[0],'\\')){$callback[0]=substr($callback[0],$a+1);}}}else{function
-fixCallback(&$callback){if(is_string($callback)&&$a=strrpos($callback,'\\')){$callback=substr($callback,$a+1);}elseif(is_array($callback)&&is_string($callback[0])&&$a=strrpos($callback[0],'\\')){$callback[0]=substr($callback[0],$a+1);}}}if(version_compare(PHP_VERSION,'5.3.0','<')){function
-fixNamespace(&$class){if($a=strrpos($class,'\\')){$class=substr($class,$a+1);}}}else{function
-fixNamespace($foo){}}final
+fixCallback(&$callback){if(is_string($callback)&&$a=strrpos($callback,'\\')){$callback=substr($callback,$a+1);}elseif(is_array($callback)&&is_string($callback[0])&&$a=strrpos($callback[0],'\\')){$callback[0]=substr($callback[0],$a+1);}}}function
+fixNamespace(&$class){if($a=strrpos($class,'\\')){$class=substr($class,$a+1);}}final
 class
 Framework{const
+NAME='Nette Framework';const
 VERSION='0.8';const
-REVISION='180 released on 2008/12/29 13:18:24';final
+REVISION='223 released on 2009/03/08 06:04:31';final
 public
 function
 __construct(){throw
@@ -83,6 +83,7 @@ static$maxDepth=3;public
 static$maxLen=150;public
 static$keysToHide=array('password','passwd','pass','pwd','creditcard','credit card','cc','pin');private
 static$enabled=FALSE;private
+static$enabledProfiler=FALSE;private
 static$firebugDetected;private
 static$ajaxDetected;private
 static$logFile;private
@@ -145,18 +146,19 @@ static
 function
 processException(Exception$exception,$outputAllowed=FALSE){if(self::$logFile){error_log("PHP Fatal error:  Uncaught $exception");$file=@strftime('%d-%b-%Y %H-%M-%S ',Debug::$time).strstr(number_format(Debug::$time,4,'~',''),'~');$file=dirname(self::$logFile)."/exception $file.html";self::$logHandle=@fopen($file,'x');if(self::$logHandle){ob_start(array(__CLASS__,'writeFile'),1);self::paintBlueScreen($exception);ob_end_flush();fclose(self::$logHandle);}if(self::$sendEmails){self::sendEmail((string)$exception);}}elseif(self::$productionMode){}elseif(self::$consoleMode){if($outputAllowed){echo"$exception\n";foreach(self::$colophons
 as$callback){foreach((array)call_user_func($callback,'bluescreen')as$line)echo
-strip_tags($line)."\n";}}}elseif(self::$firebugDetected&&self::$ajaxDetected&&!headers_sent()){self::fireLog($exception);}elseif($outputAllowed){while(ob_get_level()&&@ob_end_clean());self::paintBlueScreen($exception);}elseif(self::$firebugDetected&&!headers_sent()){self::fireLog($exception);}}public
+strip_tags($line)."\n";}}}elseif(self::$firebugDetected&&self::$ajaxDetected&&!headers_sent()){self::fireLog($exception);}elseif($outputAllowed){self::paintBlueScreen($exception);}elseif(self::$firebugDetected&&!headers_sent()){self::fireLog($exception);}}public
 static
 function
-paintBlueScreen(Exception$exception){$colophons=self::$colophons;if(!function_exists('_netteDebugPrintCode')){function
+paintBlueScreen(Exception$exception){$internals=array();foreach(array('Object','ObjectMixin')as$class){if(class_exists($class,FALSE)){$rc=new
+ReflectionClass($class);$internals[$rc->getFileName()]=TRUE;}}$colophons=self::$colophons;if(!function_exists('_netteDebugPrintCode')){function
 _netteDebugPrintCode($file,$line,$count=15){if(function_exists('ini_set')){ini_set('highlight.comment','#999; font-style: italic');ini_set('highlight.default','#000');ini_set('highlight.html','#06b');ini_set('highlight.keyword','#d24; font-weight: bold');ini_set('highlight.string','#080');}$start=max(1,$line-floor($count/2));$source=explode("\n",@highlight_file($file,TRUE));echo$source[0];$source=explode('<br />',$source[1]);array_unshift($source,NULL);$i=$start;while(--$i>=1){if(preg_match('#.*(</?span[^>]*>)#',$source[$i],$m)){if($m[1]!=='</span>')echo$m[1];break;}}$source=array_slice($source,$start,$count,TRUE);end($source);$numWidth=strlen((string)key($source));foreach($source
 as$n=>$s){$s=str_replace(array("\r","\n"),array('',''),$s);if($n===$line){printf("<span class='highlight'>Line %{$numWidth}s:    %s\n</span>%s",$n,strip_tags($s),preg_replace('#[^>]*(<[^>]+>)[^<]*#','$1',$s));}else{printf("<span class='line'>Line %{$numWidth}s:</span>    %s\n",$n,$s);}}echo'</span></span></code>';}function
-_netteOpenPanel($name,$collaped){static$id;$id++;?>
+_netteOpenPanel($name,$collapsed){static$id;$id++;?>
 	<div class="panel">
 		<h2><a href="#" onclick="return !toggle(this, 'pnl<?php echo$id?>')"><?php echo
-htmlSpecialChars($name)?> <span><?php echo$collaped?'&#x25b6;':'&#x25bc;'?></span></a></h2>
+htmlSpecialChars($name)?> <span><?php echo$collapsed?'&#x25b6;':'&#x25bc;'?></span></a></h2>
 
-		<div id="pnl<?php echo$id?>" class="<?php echo$collaped?'collapsed ':''?>inner">
+		<div id="pnl<?php echo$id?>" class="<?php echo$collapsed?'collapsed ':''?>inner">
 	<?php
 }function
 _netteClosePanel(){?>
@@ -176,91 +178,108 @@ htmlspecialchars(get_class($exception))?></title>
 	<style type="text/css">
 	/* <![CDATA[ */
 		body {
-			font: 78%/1.5 Verdana, sans-serif;
-			background: white;
-			color: #333;
 			margin: 0 0 2em;
 			padding: 0;
 		}
 
-		h1 {
-			font-weight: normal !important;
-			font-size: 18pt;
+		#netteBluescreen {
+			font: 9pt/1.5 Verdana, sans-serif;
+			background: white;
+			color: #333;
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			z-index: 23178;
+			text-align: left;
+		}
+
+		#netteBluescreenIcon {
+			position: absolute;
+			right: .5em;
+			top: .5em;
+			z-index: 23179;
+			color: black;
+			text-decoration: none;
+		}
+
+		#netteBluescreen h1 {
+			font: 18pt/1.5 Verdana, sans-serif !important;
 			margin: .6em 0;
 		}
 
-		h2 {
-			font-family: sans-serif;
-			font-weight: normal;
-			font-size: 14pt;
+		#netteBluescreen h2 {
+			font: 14pt/1.5 sans-serif !important;
 			color: #888;
 			margin: .6em 0;
 		}
 
-		a {
+		#netteBluescreen a {
 			text-decoration: none;
 			color: #4197E3;
 		}
 
-		a span {
+		#netteBluescreen a span {
 			color: #999;
 		}
 
-		h3 {
-			font-size: 110%;
-			font-weight: bold;
+		#netteBluescreen h3 {
+			font: bold 10pt/1.5 Verdana, sans-serif !important;
 			margin: 1em 0;
+			padding: 0;
 		}
 
-		p { margin: .8em 0 }
-
-		pre, code, table {
-			font-family: Consolas, monospace;
+		#netteBluescreen p {
+			margin: .8em 0
 		}
 
-		pre, table {
+		#netteBluescreen pre, #netteBluescreen code, #netteBluescreen table {
+			font: 9pt/1.5 Consolas, monospace !important;
+		}
+
+		#netteBluescreen pre, #netteBluescreen table {
 			background: #ffffcc;
 			padding: .4em .7em;
 			border: 1px dotted silver;
 		}
 
-		table pre {
+		#netteBluescreen table pre {
 			padding: 0;
 			margin: 0;
 			border: none;
-			font-size: 100%;
 		}
 
-		pre.dump span {
+		#netteBluescreen pre.dump span {
 			color: #c16549;
 		}
 
-		div.panel {
+		#netteBluescreen div.panel {
 			border-bottom: 1px solid #eee;
 			padding: 1px 2em;
 		}
 
-		div.inner {
+		#netteBluescreen div.inner {
 			padding: 0.1em 1em 1em;
 			background: #f5f5f5;
 		}
 
-		table {
+		#netteBluescreen table {
 			border-collapse: collapse;
 			width: 100%;
 		}
 
-		td, th {
+		#netteBluescreen td, #netteBluescreen th {
 			vertical-align: top;
 			padding: 2px 3px;
 			border: 1px solid #eeeebb;
 		}
 
-		ul {
-			font-size: 80%;
+		#netteBluescreen ul {
+			font: 7pt/1.5 Verdana, sans-serif !important;
+			padding: 1em 2em 50px;
 		}
 
-		.highlight, #error {
+		#netteBluescreen .highlight, #netteBluescreenError {
 			background: red;
 			color: white;
 			font-weight: bold;
@@ -268,7 +287,7 @@ htmlspecialchars(get_class($exception))?></title>
 			display: block;
 		}
 
-		.line {
+		#netteBluescreen .line {
 			color: #9e9e7e;
 			font-weight: normal;
 			font-style: normal;
@@ -300,200 +319,207 @@ htmlspecialchars(get_class($exception))?></title>
 
 
 <body>
-	<div id="error" class="panel">
-		<h1><?php echo
-htmlspecialchars(get_class($exception)),($exception->getCode()?' #'.$exception->getCode():'')?></h1>
-
-		<p><?php echo
-htmlspecialchars($exception->getMessage())?></p>
+	<div>
+		<a id="netteBluescreenIcon" href="#" onclick="return !toggle(this, 'netteBluescreen')"><span>&#x25bc;</span></a>
 	</div>
 
+	<div id="netteBluescreen">
+		<div id="netteBluescreenError" class="panel">
+			<h1><?php echo
+htmlspecialchars(get_class($exception)),($exception->getCode()?' #'.$exception->getCode():'')?></h1>
+
+			<p><?php echo
+htmlspecialchars($exception->getMessage())?></p>
+		</div>
 
 
-	<?php $ex=$exception;$level=0;?>
-	<?php do{?>
 
-		<?php if($level++):?>
-			<?php _netteOpenPanel('Caused by',TRUE)?>
-			<div class="panel">
-				<h1><?php echo
+		<?php $ex=$exception;$level=0;?>
+		<?php do{?>
+
+			<?php if($level++):?>
+				<?php _netteOpenPanel('Caused by',TRUE)?>
+				<div class="panel">
+					<h1><?php echo
 htmlspecialchars(get_class($ex)),($ex->getCode()?' #'.$ex->getCode():'')?></h1>
 
-				<p><?php echo
+					<p><?php echo
 htmlspecialchars($ex->getMessage())?></p>
-			</div>
-		<?php endif?>
+				</div>
+			<?php endif?>
 
-		<?php if(is_file($ex->getFile())):?>
-		<?php _netteOpenPanel('Source file',FALSE)?>
-			<p><strong>File:</strong> <?php echo
+			<?php $collapsed=isset($internals[$ex->getFile()]);?>
+			<?php if(is_file($ex->getFile())):?>
+			<?php _netteOpenPanel('Source file',$collapsed)?>
+				<p><strong>File:</strong> <?php echo
 htmlspecialchars($ex->getFile())?> &nbsp; <strong>Line:</strong> <?php echo$ex->getLine()?></p>
-			<pre><?php _netteDebugPrintCode($ex->getFile(),$ex->getLine())?></pre>
-		<?php _netteClosePanel()?>
-		<?php endif?>
+				<pre><?php _netteDebugPrintCode($ex->getFile(),$ex->getLine())?></pre>
+			<?php _netteClosePanel()?>
+			<?php endif?>
 
 
 
-		<?php _netteOpenPanel('Call stack',FALSE)?>
-			<ol>
-				<?php foreach($ex->getTrace()as$key=>$row):?>
-				<li><p>
+			<?php _netteOpenPanel('Call stack',FALSE)?>
+				<ol>
+					<?php foreach($ex->getTrace()as$key=>$row):?>
+					<li><p>
 
-				<?php if(isset($row['file'])):?>
-					<span title="<?php echo
+					<?php if(isset($row['file'])):?>
+						<span title="<?php echo
 htmlSpecialChars($row['file'])?>"><?php echo
 htmlSpecialChars(basename(dirname($row['file']))),'/<b>',htmlSpecialChars(basename($row['file'])),'</b></span> (',$row['line'],')'?>
-				<?php else:?>
-					&lt;PHP inner-code&gt;
-				<?php endif?>
+					<?php else:?>
+						&lt;PHP inner-code&gt;
+					<?php endif?>
 
-				<?php if(isset($row['file'])&&is_file($row['file'])):?><a href="#" onclick="return !toggle(this, 'src<?php echo"$level-$key"?>')">source <span>&#x25b6;</span></a> &nbsp; <?php endif?>
+					<?php if(isset($row['file'])&&is_file($row['file'])):?><a href="#" onclick="return !toggle(this, 'src<?php echo"$level-$key"?>')">source <span>&#x25b6;</span></a> &nbsp; <?php endif?>
 
-				<?php if(isset($row['class']))echo$row['class'].$row['type']?>
-				<?php echo$row['function']?>
+					<?php if(isset($row['class']))echo$row['class'].$row['type']?>
+					<?php echo$row['function']?>
 
-				(<?php if(!empty($row['args'])):?><a href="#" onclick="return !toggle(this, 'args<?php echo"$level-$key"?>')">arguments <span>&#x25b6;</span></a><?php endif?>)
-				</p>
+					(<?php if(!empty($row['args'])):?><a href="#" onclick="return !toggle(this, 'args<?php echo"$level-$key"?>')">arguments <span>&#x25b6;</span></a><?php endif?>)
+					</p>
 
-				<?php if(!empty($row['args'])):?>
-					<div class="collapsed" id="args<?php echo"$level-$key"?>">
-					<table>
-					<?php
+					<?php if(!empty($row['args'])):?>
+						<div class="collapsed" id="args<?php echo"$level-$key"?>">
+						<table>
+						<?php
 
 try{$r=isset($row['class'])?new
 ReflectionMethod($row['class'],$row['function']):new
 ReflectionFunction($row['function']);$params=$r->getParameters();}catch(Exception$e){$params=array();}foreach($row['args']as$k=>$v){echo'<tr><td>',(isset($params[$k])?'$'.$params[$k]->name:"#$k"),'</td><td>';if(isset($params[$k])&&isset($keyFilter[strtolower($params[$k]->name)])){echo'<i>*** hidden ***</i>';}else{echo
 Debug::dump($v,TRUE);}echo"</td></tr>\n";}?>
-					</table>
-					</div>
-				<?php endif?>
+						</table>
+						</div>
+					<?php endif?>
 
 
-				<?php if(isset($row['file'])&&is_file($row['file'])):?>
-					<pre class="collapsed" id="src<?php echo"$level-$key"?>"><?php _netteDebugPrintCode($row['file'],$row['line'])?></pre>
-				<?php endif?>
+					<?php if(isset($row['file'])&&is_file($row['file'])):?>
+						<pre <?php if(!$collapsed||isset($internals[$row['file']]))echo'class="collapsed"';else$collapsed=FALSE?> id="src<?php echo"$level-$key"?>"><?php _netteDebugPrintCode($row['file'],$row['line'])?></pre>
+					<?php endif?>
 
-				</li>
-				<?php endforeach?>
-			</ol>
-		<?php _netteClosePanel()?>
+					</li>
+					<?php endforeach?>
+
+					<?php if(!isset($row)):?>
+					<li><i>empty</i></li>
+					<?php endif?>
+				</ol>
+			<?php _netteClosePanel()?>
 
 
 
-		<?php if($ex
+			<?php if($ex
 instanceof
 IDebuggable):?>
-		<?php foreach($ex->getPanels()as$name=>$panel):?>
-		<?php _netteOpenPanel($name,empty($panel['expanded']))?>
-			<?php echo$panel['content']?>
-		<?php _netteClosePanel()?>
-		<?php endforeach?>
-		<?php endif?>
+			<?php foreach($ex->getPanels()as$name=>$panel):?>
+			<?php _netteOpenPanel($name,empty($panel['expanded']))?>
+				<?php echo$panel['content']?>
+			<?php _netteClosePanel()?>
+			<?php endforeach?>
+			<?php endif?>
 
 
 
-		<?php if(isset($ex->context)&&is_array($ex->context)):?>
-		<?php _netteOpenPanel('Variables',TRUE)?>
-		<table>
-		<?php
+			<?php if(isset($ex->context)&&is_array($ex->context)):?>
+			<?php _netteOpenPanel('Variables',TRUE)?>
+			<table>
+			<?php
 
 foreach($ex->context
 as$k=>$v){echo'<tr><td>$',htmlspecialchars($k),'</td>';echo'<td>',(isset($keyFilter[strtolower($k)])?'<i>*** hidden ***</i>':Debug::dump($v,TRUE)),"</td></tr>\n";}?>
-		</table>
-		<?php _netteClosePanel()?>
-		<?php endif?>
+			</table>
+			<?php _netteClosePanel()?>
+			<?php endif?>
 
-	<?php }while((method_exists($ex,'getPrevious')&&$ex=$ex->getPrevious())||(isset($ex->previous)&&$ex=$ex->previous));?>
-	<?php while(--$level)_netteClosePanel()?>
-
-
+		<?php }while((method_exists($ex,'getPrevious')&&$ex=$ex->getPrevious())||(isset($ex->previous)&&$ex=$ex->previous));?>
+		<?php while(--$level)_netteClosePanel()?>
 
 
 
-	<?php _netteOpenPanel('Environment',TRUE)?>
-		<?php
+		<?php _netteOpenPanel('Environment',TRUE)?>
+			<?php
 $list=get_defined_constants(TRUE);if(!empty($list['user'])):?>
-		<h3><a href="#" onclick="return !toggle(this, 'pnl-env-const')">Constants <span>&#x25bc;</span></a></h3>
-		<table id="pnl-env-const">
-		<?php
+			<h3><a href="#" onclick="return !toggle(this, 'pnl-env-const')">Constants <span>&#x25bc;</span></a></h3>
+			<table id="pnl-env-const">
+			<?php
 
 foreach($list['user']as$k=>$v){echo'<tr><td>',htmlspecialchars($k),'</td>';echo'<td>',(isset($keyFilter[strtolower($k)])?'<i>*** hidden ***</i>':Debug::dump($v,TRUE)),"</td></tr>\n";}?>
-		</table>
-		<?php endif?>
+			</table>
+			<?php endif?>
 
 
-		<h3><a href="#" onclick="return !toggle(this, 'pnl-env-files')">Included files <span>&#x25b6;</span></a> (<?php echo
+			<h3><a href="#" onclick="return !toggle(this, 'pnl-env-files')">Included files <span>&#x25b6;</span></a> (<?php echo
 count(get_included_files())?>)</h3>
-		<table id="pnl-env-files" class="collapsed">
-		<?php
+			<table id="pnl-env-files" class="collapsed">
+			<?php
 
 foreach(get_included_files()as$v){echo'<tr><td>',htmlspecialchars($v),"</td></tr>\n";}?>
-		</table>
+			</table>
 
 
-		<h3>$_SERVER</h3>
-		<?php if(empty($_SERVER)):?>
-		<p><i>empty</i></p>
-		<?php else:?>
-		<table>
-		<?php
+			<h3>$_SERVER</h3>
+			<?php if(empty($_SERVER)):?>
+			<p><i>empty</i></p>
+			<?php else:?>
+			<table>
+			<?php
 
 foreach($_SERVER
 as$k=>$v)echo'<tr><td>',htmlspecialchars($k),'</td><td>',Debug::dump($v,TRUE),"</td></tr>\n";?>
-		</table>
-		<?php endif?>
-	<?php _netteClosePanel()?>
+			</table>
+			<?php endif?>
+		<?php _netteClosePanel()?>
 
 
 
-
-	<?php _netteOpenPanel('HTTP request',TRUE)?>
-		<?php if(function_exists('apache_request_headers')):?>
-		<h3>Headers</h3>
-		<table>
-		<?php
+		<?php _netteOpenPanel('HTTP request',TRUE)?>
+			<?php if(function_exists('apache_request_headers')):?>
+			<h3>Headers</h3>
+			<table>
+			<?php
 
 foreach(apache_request_headers()as$k=>$v)echo'<tr><td>',htmlspecialchars($k),'</td><td>',htmlspecialchars($v),"</td></tr>\n";?>
-		</table>
-		<?php endif?>
+			</table>
+			<?php endif?>
 
 
-		<?php foreach(array('_GET','_POST','_COOKIE')as$name):?>
-		<h3>$<?php echo$name?></h3>
-		<?php if(empty($GLOBALS[$name])):?>
-		<p><i>empty</i></p>
-		<?php else:?>
-		<table>
-		<?php
+			<?php foreach(array('_GET','_POST','_COOKIE')as$name):?>
+			<h3>$<?php echo$name?></h3>
+			<?php if(empty($GLOBALS[$name])):?>
+			<p><i>empty</i></p>
+			<?php else:?>
+			<table>
+			<?php
 
 foreach($GLOBALS[$name]as$k=>$v)echo'<tr><td>',htmlspecialchars($k),'</td><td>',Debug::dump($v,TRUE),"</td></tr>\n";?>
-		</table>
-		<?php endif?>
-		<?php endforeach?>
-	<?php _netteClosePanel()?>
+			</table>
+			<?php endif?>
+			<?php endforeach?>
+		<?php _netteClosePanel()?>
 
 
 
-	<?php _netteOpenPanel('HTTP response',TRUE)?>
-		<h3>Headers</h3>
-		<?php if(headers_list()):?>
-		<pre><?php
+		<?php _netteOpenPanel('HTTP response',TRUE)?>
+			<h3>Headers</h3>
+			<?php if(headers_list()):?>
+			<pre><?php
 
 foreach(headers_list()as$s)echo
 htmlspecialchars($s),'<br>';?></pre>
-		<?php else:?>
-		<p><i>no headers</i></p>
-		<?php endif?>
-	<?php _netteClosePanel()?>
+			<?php else:?>
+			<p><i>no headers</i></p>
+			<?php endif?>
+		<?php _netteClosePanel()?>
 
 
-	<ul>
-		<?php foreach($colophons
+		<ul>
+			<?php foreach($colophons
 as$callback):?>
-		<?php foreach((array)call_user_func($callback,'bluescreen')as$line):?><li><?php echo$line,"\n"?></li><?php endforeach?>
-		<?php endforeach?>
-	</ul>
-
+			<?php foreach((array)call_user_func($callback,'bluescreen')as$line):?><li><?php echo$line,"\n"?></li><?php endforeach?>
+			<?php endforeach?>
+		</ul>
+	</div>
 </body>
 </html><?php }public
 static
@@ -508,11 +534,14 @@ defaultMailer($message){$host=isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']
 as$key=>$value){$header.="$key: $value\r\n";}$body=str_replace("\r\n","\n",$body);if(PHP_OS!='Linux')$body=str_replace("\n","\r\n",$body);mail($to,$subject,$body,$header);}public
 static
 function
-enableProfiler(){if(!self::$productionMode){register_shutdown_function(array(__CLASS__,'paintProfiler'));}}public
+enableProfiler(){self::$enabledProfiler=TRUE;register_shutdown_function(array(__CLASS__,'paintProfiler'));}public
 static
 function
-paintProfiler(){$colophons=self::$colophons;if(self::$firebugDetected){self::fireLog('Nette profiler','GROUP_START');foreach(self::$colophons
-as$callback){foreach((array)call_user_func($callback,'profiler')as$line)self::fireLog(strip_tags($line));}self::fireLog(null,'GROUP_END');}if(!self::$ajaxDetected){?>
+disableProfiler(){self::$enabledProfiler=FALSE;}public
+static
+function
+paintProfiler(){if(!self::$enabledProfiler||self::$productionMode){return;}self::$enabledProfiler=FALSE;if(self::$firebugDetected){self::fireLog('Nette profiler','GROUP_START');foreach(self::$colophons
+as$callback){foreach((array)call_user_func($callback,'profiler')as$line)self::fireLog(strip_tags($line));}self::fireLog(null,'GROUP_END');}if(!self::$ajaxDetected){$colophons=self::$colophons;?>
 </pre></xmp>
 
 <style type="text/css">
@@ -521,6 +550,7 @@ as$callback){foreach((array)call_user_func($callback,'profiler')as$line)self::fi
 		position: absolute;
 		right: 5px;
 		bottom: 5px;
+		z-index: 23178;
 	}
 
 	#netteProfiler {
@@ -614,8 +644,8 @@ static
 function
 fireLog($message,$priority=self::LOG,$label=NULL){if($message
 instanceof
-Exception){$priority='TRACE';$message=array('Class'=>get_class($message),'Message'=>$message->getMessage(),'File'=>$message->getFile(),'Line'=>$message->getLine(),'Trace'=>self::replaceObjects($message->getTrace()));}elseif($priority==='GROUP_START'){$label=$message;$message=NULL;}return
-self::fireSend(1,array(array('Type'=>$priority,'Label'=>$label),self::replaceObjects($message)));}private
+Exception){$priority='TRACE';$message=array('Class'=>get_class($message),'Message'=>$message->getMessage(),'File'=>$message->getFile(),'Line'=>$message->getLine(),'Trace'=>$message->getTrace());}elseif($priority==='GROUP_START'){$label=$message;$message=NULL;}return
+self::fireSend(1,self::replaceObjects(array(array('Type'=>$priority,'Label'=>$label),$message)));}private
 static
 function
 fireSend($index,$payload){if(self::$productionMode)return
@@ -624,5 +654,6 @@ FALSE;header('X-Wf-Protocol-nette: http://meta.wildfirehq.org/Protocol/JsonStrea
 TRUE;}static
 private
 function
-replaceObjects($val){if(is_object($val)){return'object '.get_class($val).'';}elseif(is_array($val)){foreach($val
+replaceObjects($val){if(is_object($val)){return'object '.get_class($val).'';}elseif(is_string($val)){return
+iconv('UTF-8','UTF-8//IGNORE',$val);}elseif(is_array($val)){foreach($val
 as$k=>$v){unset($val[$k]);$val[$k]=self::replaceObjects($v);}}return$val;}}Debug::init();
