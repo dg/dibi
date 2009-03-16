@@ -293,7 +293,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 		return $this->connection->sql('
 			SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
 			FROM %SQL', $this->sql, '
-			WHERE %and', $this->conds, '
+			%ex', $this->conds ? array('WHERE %and', $this->conds) : NULL, '
 			%ex', $this->sorting ? array('ORDER BY %by', $this->sorting) : NULL, '
 			%ofs %lmt', $this->offset, $this->limit
 		);

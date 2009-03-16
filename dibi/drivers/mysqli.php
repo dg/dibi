@@ -265,8 +265,10 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	{
 		switch ($type) {
 		case dibi::FIELD_TEXT:
-		case dibi::FIELD_BINARY:
 			return "'" . mysqli_real_escape_string($this->connection, $value) . "'";
+
+		case dibi::FIELD_BINARY:
+			return "_binary'" . mysqli_real_escape_string($this->connection, $value) . "'";
 
 		case dibi::IDENTIFIER:
 			$value = str_replace('`', '``', $value);
