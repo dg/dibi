@@ -476,17 +476,17 @@ class DibiColumnInfo extends DibiObject
 	public static function detectType($type)
 	{
 		static $patterns = array(
-			'BYTE|COUNTER|SERIAL|INT|LONG' => dibi::FIELD_INTEGER,
-			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => dibi::FIELD_FLOAT,
-			'^TIME$' => dibi::FIELD_TIME,
-			'TIME' => dibi::FIELD_DATETIME, // DATETIME, TIMESTAMP
-			'YEAR|DATE' => dibi::FIELD_DATE,
-			'BYTEA|BLOB|BIN' => dibi::FIELD_BINARY,
-			'BOOL|BIT' => dibi::FIELD_BOOL,
+			'BYTE|COUNTER|SERIAL|INT|LONG' => dibi::INTEGER,
+			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => dibi::FLOAT,
+			'^TIME$' => dibi::TIME,
+			'TIME' => dibi::DATETIME, // DATETIME, TIMESTAMP
+			'YEAR|DATE' => dibi::DATE,
+			'BYTEA|BLOB|BIN' => dibi::BINARY,
+			'BOOL|BIT' => dibi::BOOL,
 		);
 
 		if (!isset(self::$types[$type])) {
-			self::$types[$type] = dibi::FIELD_TEXT;
+			self::$types[$type] = dibi::TEXT;
 			foreach ($patterns as $s => $val) {
 				if (preg_match("#$s#i", $type)) {
 					return self::$types[$type] = $val;

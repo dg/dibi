@@ -257,30 +257,30 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	/**
 	 * Encodes data for use in an SQL statement.
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
+	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    encoded value
 	 * @throws InvalidArgumentException
 	 */
 	public function escape($value, $type)
 	{
 		switch ($type) {
-		case dibi::FIELD_TEXT:
+		case dibi::TEXT:
 			return "'" . mysqli_real_escape_string($this->connection, $value) . "'";
 
-		case dibi::FIELD_BINARY:
+		case dibi::BINARY:
 			return "_binary'" . mysqli_real_escape_string($this->connection, $value) . "'";
 
 		case dibi::IDENTIFIER:
 			$value = str_replace('`', '``', $value);
 			return '`' . str_replace('.', '`.`', $value) . '`';
 
-		case dibi::FIELD_BOOL:
+		case dibi::BOOL:
 			return $value ? 1 : 0;
 
-		case dibi::FIELD_DATE:
+		case dibi::DATE:
 			return date("'Y-m-d'", $value);
 
-		case dibi::FIELD_DATETIME:
+		case dibi::DATETIME:
 			return date("'Y-m-d H:i:s'", $value);
 
 		default:
@@ -293,7 +293,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	/**
 	 * Decodes data from result set.
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_BINARY)
+	 * @param  string    type (dibi::BINARY)
 	 * @return string    decoded value
 	 * @throws InvalidArgumentException
 	 */
@@ -461,7 +461,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getColumns($table)
 	{
-		/*$table = $this->escape($table, dibi::FIELD_TEXT);
+		/*$table = $this->escape($table, dibi::TEXT);
 		$this->query("
 			SELECT *
 			FROM INFORMATION_SCHEMA.COLUMNS
@@ -494,7 +494,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getIndexes($table)
 	{
-		/*$table = $this->escape($table, dibi::FIELD_TEXT);
+		/*$table = $this->escape($table, dibi::TEXT);
 		$this->query("
 			SELECT *
 			FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE

@@ -316,7 +316,7 @@ final class DibiTranslator extends DibiObject
 				return $value === NULL ? 'NULL' : $this->driver->escape($value, $modifier);
 
 			case 'sn': // string or NULL
-				return $value == '' ? 'NULL' : $this->driver->escape($value, dibi::FIELD_TEXT); // notice two equal signs
+				return $value == '' ? 'NULL' : $this->driver->escape($value, dibi::TEXT); // notice two equal signs
 
 			case 'i':  // signed int
 			case 'u':  // unsigned int, ignored
@@ -383,13 +383,13 @@ final class DibiTranslator extends DibiObject
 
 		// without modifier procession
 		if (is_string($value))
-			return $this->driver->escape($value, dibi::FIELD_TEXT);
+			return $this->driver->escape($value, dibi::TEXT);
 
 		if (is_int($value) || is_float($value))
 			return rtrim(rtrim(number_format($value, 5, '.', ''), '0'), '.');
 
 		if (is_bool($value))
-			return $this->driver->escape($value, dibi::FIELD_BOOL);
+			return $this->driver->escape($value, dibi::BOOL);
 
 		if ($value === NULL)
 			return 'NULL';
@@ -491,10 +491,10 @@ final class DibiTranslator extends DibiObject
 			return $this->delimite($matches[2]);
 
 		if ($matches[3])  // SQL strings: '...'
-			return $this->driver->escape( str_replace("''", "'", $matches[4]), dibi::FIELD_TEXT);
+			return $this->driver->escape( str_replace("''", "'", $matches[4]), dibi::TEXT);
 
 		if ($matches[5])  // SQL strings: "..."
-			return $this->driver->escape( str_replace('""', '"', $matches[6]), dibi::FIELD_TEXT);
+			return $this->driver->escape( str_replace('""', '"', $matches[6]), dibi::TEXT);
 
 		if ($matches[7]) { // string quote
 			$this->hasError = TRUE;

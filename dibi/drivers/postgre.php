@@ -233,21 +233,21 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	/**
 	 * Encodes data for use in an SQL statement.
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
+	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    encoded value
 	 * @throws InvalidArgumentException
 	 */
 	public function escape($value, $type)
 	{
 		switch ($type) {
-		case dibi::FIELD_TEXT:
+		case dibi::TEXT:
 			if ($this->escMethod) {
 				return "'" . pg_escape_string($this->connection, $value) . "'";
 			} else {
 				return "'" . pg_escape_string($value) . "'";
 			}
 
-		case dibi::FIELD_BINARY:
+		case dibi::BINARY:
 			if ($this->escMethod) {
 				return "'" . pg_escape_bytea($this->connection, $value) . "'";
 			} else {
@@ -264,13 +264,13 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 				return substr($value, 0, $a) . '."' . str_replace('"', '""', substr($value, $a + 1)) . '"';
 			}
 
-		case dibi::FIELD_BOOL:
+		case dibi::BOOL:
 			return $value ? 'TRUE' : 'FALSE';
 
-		case dibi::FIELD_DATE:
+		case dibi::DATE:
 			return date("'Y-m-d'", $value);
 
-		case dibi::FIELD_DATETIME:
+		case dibi::DATETIME:
 			return date("'Y-m-d H:i:s'", $value);
 
 		default:
@@ -283,14 +283,14 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	/**
 	 * Decodes data from result set.
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_BINARY)
+	 * @param  string    type (dibi::BINARY)
 	 * @return string    decoded value
 	 * @throws InvalidArgumentException
 	 */
 	public function unescape($value, $type)
 	{
 		switch ($type) {
-		case dibi::FIELD_BINARY:
+		case dibi::BINARY:
 			return pg_unescape_bytea($value);
 
 		default:
@@ -438,7 +438,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getColumns($table)
 	{
-		$_table = $this->escape($table, dibi::FIELD_TEXT);
+		$_table = $this->escape($table, dibi::TEXT);
 		$this->query("
 			SELECT indkey
 			FROM pg_class
@@ -480,7 +480,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getIndexes($table)
 	{
-		$_table = $this->escape($table, dibi::FIELD_TEXT);
+		$_table = $this->escape($table, dibi::TEXT);
 		$this->query("
 			SELECT ordinal_position, column_name
 			FROM information_schema.columns

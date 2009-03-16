@@ -204,7 +204,7 @@ interface IDibiDriver
 	/**
 	 * Encodes data for use in an SQL statement.
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
+	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    encoded value
 	 * @throws InvalidArgumentException
 	 */
@@ -215,7 +215,7 @@ interface IDibiDriver
 	/**
 	 * Decodes data from result set.
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_BINARY)
+	 * @param  string    type (dibi::BINARY)
 	 * @return string    decoded value
 	 * @throws InvalidArgumentException
 	 */

@@ -92,22 +92,31 @@ require_once dirname(__FILE__) . '/libs/DibiProfiler.php';
 class dibi
 {
 	/**#@+
-	 * dibi column type
+	 * dibi data type
 	 */
-	const FIELD_TEXT =     's'; // as 'string'
-	const FIELD_BINARY =   'bin';
-	const FIELD_BOOL =     'b';
-	const FIELD_INTEGER =  'i';
-	const FIELD_FLOAT =    'f';
-	const FIELD_DATE =     'd';
-	const FIELD_DATETIME = 't';
-	const FIELD_TIME =     't';
+	const TEXT =       's'; // as 'string'
+	const BINARY =     'bin';
+	const BOOL =       'b';
+	const INTEGER =    'i';
+	const FLOAT =      'f';
+	const DATE =       'd';
+	const DATETIME =   't';
+	const TIME =       't';
+	const IDENTIFIER = 'n';
 	/**#@-*/
 
-	/**
-	 * Identifier type
+	/**#@+
+	 * @deprecated column types
 	 */
-	const IDENTIFIER =     'n';
+	const FIELD_TEXT = self::TEXT;
+	const FIELD_BINARY = self::BINARY;
+	const FIELD_BOOL = self::BOOL;
+	const FIELD_INTEGER = self::INTEGER;
+	const FIELD_FLOAT = self::FLOAT;
+	const FIELD_DATE = self::DATE;
+	const FIELD_DATETIME = self::DATETIME;
+	const FIELD_TIME = self::TIME;
+	/**#@-*/
 
 	/**#@+
 	 * dibi version
@@ -579,7 +588,7 @@ class dibi
 		} else {
 			$time = strtotime($time); // try convert to timestamp
 		}
-		return new DibiVariable($time, dibi::FIELD_DATETIME);
+		return new DibiVariable($time, dibi::DATETIME);
 	}
 
 
@@ -592,7 +601,7 @@ class dibi
 	public static function date($date = NULL)
 	{
 		$var = self::datetime($date);
-		$var->modifier = dibi::FIELD_DATE;
+		$var->modifier = dibi::DATE;
 		return $var;
 	}
 

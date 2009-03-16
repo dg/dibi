@@ -441,7 +441,7 @@ class DibiResult extends DibiObject implements IDataSource
 	/**
 	 * Define column type.
 	 * @param  string  column
-	 * @param  string  type (use constant Dibi::FIELD_*)
+	 * @param  string  type (use constant Dibi::*)
 	 * @param  string  optional format
 	 * @return void
 	 */
@@ -500,24 +500,24 @@ class DibiResult extends DibiObject implements IDataSource
 		}
 
 		switch ($type) {
-		case dibi::FIELD_TEXT:
+		case dibi::TEXT:
 			return (string) $value;
 
-		case dibi::FIELD_BINARY:
+		case dibi::BINARY:
 			return $this->getDriver()->unescape($value, $type);
 
-		case dibi::FIELD_INTEGER:
+		case dibi::INTEGER:
 			return (int) $value;
 
-		case dibi::FIELD_FLOAT:
+		case dibi::FLOAT:
 			return (float) $value;
 
-		case dibi::FIELD_DATE:
-		case dibi::FIELD_DATETIME:
+		case dibi::DATE:
+		case dibi::DATETIME:
 			$value = is_numeric($value) ? (int) $value : strtotime($value);
 			return $format === NULL ? $value : date($format, $value);
 
-		case dibi::FIELD_BOOL:
+		case dibi::BOOL:
 			return ((bool) $value) && $value !== 'f' && $value !== 'F';
 
 		default:

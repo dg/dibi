@@ -492,11 +492,11 @@ class DibiConnection extends DibiObject
 	/**
 	 * Encodes data for use in an SQL statement.
 	 * @param  string    unescaped string
-	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
+	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    escaped and quoted string
 	 * @deprecated
 	 */
-	public function escape($value, $type = dibi::FIELD_TEXT)
+	public function escape($value, $type = dibi::TEXT)
 	{
 		trigger_error('Deprecated: use getDriver()->escape(...) instead.', E_USER_WARNING);
 		$this->connect(); // MySQL & PDO require connection
@@ -508,11 +508,11 @@ class DibiConnection extends DibiObject
 	/**
 	 * Decodes data from result set.
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_BINARY)
+	 * @param  string    type (dibi::BINARY)
 	 * @return string    decoded value
 	 * @deprecated
 	 */
-	public function unescape($value, $type = dibi::FIELD_BINARY)
+	public function unescape($value, $type = dibi::BINARY)
 	{
 		trigger_error('Deprecated: use getDriver()->unescape(...) instead.', E_USER_WARNING);
 		return $this->driver->unescape($value, $type);

@@ -220,18 +220,18 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	/**
 	 * Encodes data for use in an SQL statement.
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
+	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    encoded value
 	 * @throws InvalidArgumentException
 	 */
 	public function escape($value, $type)
 	{
 		switch ($type) {
-		case dibi::FIELD_TEXT:
-		case dibi::FIELD_BINARY:
+		case dibi::TEXT:
+		case dibi::BINARY:
 			return "'" . sqlite_escape_string($value) . "'";
 
-		/*case dibi::FIELD_BINARY: // SQLite 3
+		/*case dibi::BINARY: // SQLite 3
 			static $hex = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
 			$value = (string) $value;
 			$len = strlen($value);
@@ -244,13 +244,13 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 		case dibi::IDENTIFIER:
 			return '[' . str_replace('.', '].[', strtr($value, '[]', '  ')) . ']';
 
-		case dibi::FIELD_BOOL:
+		case dibi::BOOL:
 			return $value ? 1 : 0;
 
-		case dibi::FIELD_DATE:
+		case dibi::DATE:
 			return date($this->fmtDate, $value);
 
-		case dibi::FIELD_DATETIME:
+		case dibi::DATETIME:
 			return date($this->fmtDateTime, $value);
 
 		default:
@@ -263,7 +263,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	/**
 	 * Decodes data from result set.
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_BINARY)
+	 * @param  string    type (dibi::BINARY)
 	 * @return string    decoded value
 	 * @throws InvalidArgumentException
 	 */

@@ -273,17 +273,17 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 	/**
 	 * Encodes data for use in an SQL statement.
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_TEXT, dibi::FIELD_BOOL, ...)
+	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    encoded value
 	 * @throws InvalidArgumentException
 	 */
 	public function escape($value, $type)
 	{
 		switch ($type) {
-		case dibi::FIELD_TEXT:
+		case dibi::TEXT:
 			return "'" . mysql_real_escape_string($value, $this->connection) . "'";
 
-		case dibi::FIELD_BINARY:
+		case dibi::BINARY:
 			return "_binary'" . mysql_real_escape_string($value, $this->connection) . "'";
 
 		case dibi::IDENTIFIER:
@@ -291,13 +291,13 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 			$value = str_replace('`', '``', $value);
 			return '`' . str_replace('.', '`.`', $value) . '`';
 
-		case dibi::FIELD_BOOL:
+		case dibi::BOOL:
 			return $value ? 1 : 0;
 
-		case dibi::FIELD_DATE:
+		case dibi::DATE:
 			return date("'Y-m-d'", $value);
 
-		case dibi::FIELD_DATETIME:
+		case dibi::DATETIME:
 			return date("'Y-m-d H:i:s'", $value);
 
 		default:
@@ -310,7 +310,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 	/**
 	 * Decodes data from result set.
 	 * @param  string    value
-	 * @param  string    type (dibi::FIELD_BINARY)
+	 * @param  string    type (dibi::BINARY)
 	 * @return string    decoded value
 	 * @throws InvalidArgumentException
 	 */
