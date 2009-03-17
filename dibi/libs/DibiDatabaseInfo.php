@@ -476,12 +476,12 @@ class DibiColumnInfo extends DibiObject
 	public static function detectType($type)
 	{
 		static $patterns = array(
+			'BYTEA|BLOB|BIN' => dibi::BINARY,
 			'BYTE|COUNTER|SERIAL|INT|LONG' => dibi::INTEGER,
 			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => dibi::FLOAT,
 			'^TIME$' => dibi::TIME,
 			'TIME' => dibi::DATETIME, // DATETIME, TIMESTAMP
 			'YEAR|DATE' => dibi::DATE,
-			'BYTEA|BLOB|BIN' => dibi::BINARY,
 			'BOOL|BIT' => dibi::BOOL,
 		);
 

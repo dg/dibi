@@ -232,14 +232,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 			return "'" . sqlite_escape_string($value) . "'";
 
 		/*case dibi::BINARY: // SQLite 3
-			static $hex = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
-			$value = (string) $value;
-			$len = strlen($value);
-			$res = "X'";
-			for ($i = 0; $i < $len; $i++) {
-				$res .= $hex[ord($value[$i]) >> 4] . $hex[ord($value[$i]) & 15];
-			}
-			return $res . "'";*/
+			return "X'" . bin2hex((string) $value) . "'";*/
 
 		case dibi::IDENTIFIER:
 			return '[' . str_replace('.', '].[', strtr($value, '[]', '  ')) . ']';
