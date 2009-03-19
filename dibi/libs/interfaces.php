@@ -202,7 +202,7 @@ interface IDibiDriver
 
 
 	/**
-	 * Encodes data for use in an SQL statement.
+	 * Encodes data for use in a SQL statement.
 	 * @param  string    value
 	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    encoded value

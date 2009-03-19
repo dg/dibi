@@ -224,7 +224,7 @@ abstract class DibiObject
 		$class = get_class($this);
 
 		if ($name === '') {
-			throw new /*\*/MemberAccessException("Cannot read an class '$class' property without name.");
+			throw new /*\*/MemberAccessException("Cannot read a class '$class' property without name.");
 		}
 
 		// property getter support
@@ -262,7 +262,7 @@ abstract class DibiObject
 		$class = get_class($this);
 
 		if ($name === '') {
-			throw new /*\*/MemberAccessException("Cannot assign to an class '$class' property without name.");
+			throw new /*\*/MemberAccessException("Cannot assign to a class '$class' property without name.");
 		}
 
 		// property setter support
@@ -307,7 +307,7 @@ abstract class DibiObject
 	public function __unset($name)
 	{
 		$class = get_class($this);
-		throw new /*\*/MemberAccessException("Cannot unset an property $class::\$$name.");
+		throw new /*\*/MemberAccessException("Cannot unset the property $class::\$$name.");
 	}
 
 

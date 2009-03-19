@@ -490,7 +490,7 @@ class DibiConnection extends DibiObject
 
 
 	/**
-	 * Encodes data for use in an SQL statement.
+	 * Encodes data for use in a SQL statement.
 	 * @param  string    unescaped string
 	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    escaped and quoted string

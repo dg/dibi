@@ -34,7 +34,7 @@ class DibiException extends Exception implements /*Nette\*/IDebuggable
 
 
 	/**
-	 * Construct an dibi exception.
+	 * Construct a dibi exception.
 	 * @param  string  Message describing the exception
 	 * @param  int     Some code
 	 * @param  string SQL command
