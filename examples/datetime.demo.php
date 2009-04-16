@@ -4,8 +4,6 @@
 require_once 'Nette/Debug.php';
 require_once '../dibi/dibi.php';
 
-
-// required since PHP 5.1.0
 date_default_timezone_set('Europe/Prague');
 
 

@@ -260,7 +260,7 @@ final class DibiTranslator extends DibiObject
 					$pair = explode('%', $k, 2); // split into identifier & modifier
 					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : FALSE);
 				}
-				return '(' . implode(', ', $vx) . ')';
+				return '(' . ($vx ? implode(', ', $vx) : 'NULL') . ')';
 
 
 			case 'v': // (key, key, ...) VALUES (val, val, ...)
@@ -291,7 +291,7 @@ final class DibiTranslator extends DibiObject
 				foreach ($value as $v) {
 					$vx[] = $this->formatValue($v, $modifier);
 				}
-				return implode(', ', $vx);
+				return $vx ? implode(', ', $vx) : 'NULL';
 			}
 		}
 

@@ -122,16 +122,12 @@ interface IDibiDriver
 	 */
 	function connect(array &$config);
 
-
-
 	/**
 	 * Disconnects from a database.
 	 * @return void
 	 * @throws DibiException
 	 */
 	function disconnect();
-
-
 
 	/**
 	 * Internal: Executes the SQL query.
@@ -141,23 +137,17 @@ interface IDibiDriver
 	 */
 	function query($sql);
 
-
-
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
 	 * @return int|FALSE  number of rows or FALSE on error
 	 */
 	function getAffectedRows();
 
-
-
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @return int|FALSE  int on success or FALSE on failure
 	 */
 	function getInsertId($sequence);
-
-
 
 	/**
 	 * Begins a transaction (if supported).
@@ -167,8 +157,6 @@ interface IDibiDriver
 	 */
 	function begin($savepoint = NULL);
 
-
-
 	/**
 	 * Commits statements in a transaction.
 	 * @param  string  optinal savepoint name
@@ -177,8 +165,6 @@ interface IDibiDriver
 	 */
 	function commit($savepoint = NULL);
 
-
-
 	/**
 	 * Rollback changes in a transaction.
 	 * @param  string  optinal savepoint name
@@ -186,8 +172,6 @@ interface IDibiDriver
 	 * @throws DibiDriverException
 	 */
 	function rollback($savepoint = NULL);
-
-
 
 	/**
 	 * Returns the connection resource.
@@ -210,8 +194,6 @@ interface IDibiDriver
 	 */
 	function escape($value, $type);
 
-
-
 	/**
 	 * Decodes data from result set.
 	 * @param  string    value
@@ -220,8 +202,6 @@ interface IDibiDriver
 	 * @throws InvalidArgumentException
 	 */
 	function unescape($value, $type);
-
-
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
@@ -244,8 +224,6 @@ interface IDibiDriver
 	 */
 	function getRowCount();
 
-
-
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
@@ -253,8 +231,6 @@ interface IDibiDriver
 	 * @throws DibiException
 	 */
 	function seek($row);
-
-
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
@@ -264,8 +240,6 @@ interface IDibiDriver
 	 */
 	function fetch($type);
 
-
-
 	/**
 	 * Frees the resources allocated for this result set.
 	 * @param  resource  result set resource
@@ -273,16 +247,12 @@ interface IDibiDriver
 	 */
 	function free();
 
-
-
 	/**
 	 * Returns metadata for all columns in a result set.
 	 * @return array
 	 * @throws DibiException
 	 */
 	function getColumnsMeta();
-
-
 
 	/**
 	 * Returns the result set resource.
@@ -302,8 +272,6 @@ interface IDibiDriver
 	 */
 	function getTables();
 
-
-
 	/**
 	 * Returns metadata for all columns in a table.
 	 * @param  string
@@ -311,16 +279,12 @@ interface IDibiDriver
 	 */
 	function getColumns($table);
 
-
-
 	/**
 	 * Returns metadata for all indexes in a table.
 	 * @param  string
 	 * @return array
 	 */
 	function getIndexes($table);
-
-
 
 	/**
 	 * Returns metadata for all foreign keys in a table.

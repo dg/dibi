@@ -26,6 +26,7 @@ if (version_compare(PHP_VERSION, '5.1.0', '<')) {
 	throw new Exception('dibi needs PHP 5.1.0 or newer.');
 }
 
+@set_magic_quotes_runtime(FALSE); // intentionally @
 
 
 
@@ -525,7 +526,7 @@ class dibi
 	public static function select($args)
 	{
 		$args = func_get_args();
-		return self::getConnection()->command()->__call('select', $args);
+		return call_user_func_array(array(self::getConnection(), 'select'), $args);
 	}
 
 
@@ -648,7 +649,8 @@ class dibi
 	public static function setSubstFallback($callback)
 	{
 		if (!is_callable($callback)) {
-			throw new InvalidArgumentException("Invalid callback.");
+			$able = is_callable($callback, TRUE, $textual);
+			throw new InvalidArgumentException("Handler '$textual' is not " . ($able ? 'callable.' : 'valid PHP callback.'));
 		}
 
 		self::$substFallBack = $callback;

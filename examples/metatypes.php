@@ -5,6 +5,8 @@
 require_once 'Nette/Debug.php';
 require_once '../dibi/dibi.php';
 
+date_default_timezone_set('Europe/Prague');
+
 
 dibi::connect(array(
 	'driver'   => 'sqlite',
