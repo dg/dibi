@@ -108,11 +108,17 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 		if (($event & $this->filter) === 0) return;
 
 		if ($event & self::QUERY) {
+			try {
+				$count = $res instanceof DibiResult ? count($res) : '-';
+			} catch (Exception $e) {
+				$count = '?';
+			}
+
 			if ($this->useFirebug && !headers_sent()) {
 				self::$table[] = array(
 					sprintf('%0.3f', dibi::$elapsedTime * 1000),
 					trim($sql),
-					$res instanceof DibiResult ? count($res) : '-',
+					$count,
 					$connection->getConfig('driver') . '/' . $connection->getConfig('name')
 				);
 
@@ -138,7 +144,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 			if ($this->file) {
 				$this->writeFile(
 					"OK: " . $sql
-					. ($res instanceof DibiResult ? ";\n-- rows: " . count($res) : '')
+					. ($res instanceof DibiResult ? ";\n-- rows: " . $count : '')
 					. "\n-- takes: " . sprintf('%0.3f', dibi::$elapsedTime * 1000) . ' ms'
 					. "\n-- driver: " . $connection->getConfig('driver') . '/' . $connection->getConfig('name')
 					. "\n-- " . date('Y-m-d H:i:s')

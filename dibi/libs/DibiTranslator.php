@@ -210,7 +210,7 @@ final class DibiTranslator extends DibiObject
 			case 'and':
 			case 'or':  // key=val AND key IS NULL AND ...
 				if (empty($value)) {
-					return $this->driver->escape(TRUE, 'b');
+					return '1=1';
 				}
 
 				foreach ($value as $k => $v) {

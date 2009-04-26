@@ -70,7 +70,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 		if (strpos($sql, ' ') === FALSE) {
 			$this->sql = $sql; // table name
 		} else {
-			$this->sql = '(' . $sql . ') AS t'; // SQL command
+			$this->sql = '(' . $sql . ') t'; // SQL command
 		}
 		$this->connection = $connection;
 	}

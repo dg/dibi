@@ -263,8 +263,13 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
-		if ($limit < 0 && $offset < 1) return;
-		$sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+		if ($offset > 0) {
+			// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
+			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS __rnum FROM (' . $sql . ') t ' . ($limit >= 0 ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '') . ') WHERE __rnum > '. (int) $offset;
+
+		} elseif ($limit >= 0) {
+			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
+		}
 	}
 
 
@@ -363,7 +368,18 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getTables()
 	{
-		throw new NotImplementedException;
+		$this->query('SELECT * FROM cat');
+		$res = array();
+		while ($row = $this->fetch(FALSE)) {
+			if ($row[1] === 'TABLE' || $row[1] === 'VIEW') {
+				$res[] = array(
+					'name' => $row[0],
+					'view' => $row[1] === 'VIEW',
+				);
+			}
+		}
+		$this->free();
+		return $res;
 	}
 
 
