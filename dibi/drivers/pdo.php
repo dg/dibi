@@ -320,8 +320,15 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 
 		case 'sqlite':
 		case 'sqlite2':
-		case 'oci':
 			$sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+			break;
+
+		case 'oci':
+			if ($offset > 0) {
+				$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t ' . ($limit >= 0 ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '') . ') WHERE "__rnum" > '. (int) $offset;
+			} elseif ($limit >= 0) {
+				$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
+			}
 			break;
 
 		case 'odbc':

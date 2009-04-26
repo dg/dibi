@@ -265,7 +265,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	{
 		if ($offset > 0) {
 			// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
-			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS __rnum FROM (' . $sql . ') t ' . ($limit >= 0 ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '') . ') WHERE __rnum > '. (int) $offset;
+			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t ' . ($limit >= 0 ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '') . ') WHERE "__rnum" > '. (int) $offset;
 
 		} elseif ($limit >= 0) {
 			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
