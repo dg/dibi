@@ -25,8 +25,8 @@ http://dibiphp.com
 
 
 
-Dibi.compact
-------------
+Dibi.minified
+-------------
 
 This is shrinked single-file version of whole Dibi, useful when you don't
 want to modify library, but just use it.
