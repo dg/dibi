@@ -117,7 +117,7 @@ final class DibiTranslator extends DibiObject
 					$sql[] = substr($arg, 0, $toSkip)
 /*
 					preg_replace_callback('/
-					(?=[`[\'":%])                    ## speed-up
+					(?=[`[\'":%?])                    ## speed-up
 					(?:
 						`(.+?)`|                     ## 1) `identifier`
 						\[(.+?)\]|                   ## 2) [identifier]
@@ -126,9 +126,10 @@ final class DibiTranslator extends DibiObject
 						(\'|")|                      ## 7) lone quote
 						:(\S*?:)([a-zA-Z0-9._]?)|    ## 8,9) substitution
 						%([a-zA-Z]{1,4})(?![a-zA-Z]) ## 10) modifier
+						(\?)                         ## 11) placeholder
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
-					. preg_replace_callback('/(?=[`[\'":%])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z]{1,4})(?![a-zA-Z]))/s',
+					. preg_replace_callback('/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z]{1,4})(?![a-zA-Z])|(\?))/s',
 							array($this, 'cb'),
 							substr($arg, $toSkip)
 					);
@@ -397,6 +398,9 @@ final class DibiTranslator extends DibiObject
 		if ($value instanceof IDibiVariable)
 			return $value->toSql($this, NULL);
 
+		if ($value instanceof DateTime)
+			return $value = $value->format('U');
+
 		$this->hasError = TRUE;
 		return '**Unexpected ' . gettype($value) . '**';
 	}
@@ -420,6 +424,20 @@ final class DibiTranslator extends DibiObject
 		//    [8] => substitution
 		//    [9] => substitution flag
 		//    [10] => modifier (when called from self::translate())
+		//    [11] => placeholder (when called from self::translate())
+
+
+		if (!empty($matches[11])) { // placeholder
+			$cursor = & $this->cursor;
+
+			if ($cursor >= count($this->args)) {
+				$this->hasError = TRUE;
+				return "**Extra placeholder**";
+			}
+
+			$cursor++;
+			return $this->formatValue($this->args[$cursor - 1], FALSE);
+		}
 
 		if (!empty($matches[10])) { // modifier
 			$mod = $matches[10];
