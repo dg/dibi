@@ -151,7 +151,7 @@ class DibiResult extends DibiObject implements IDataSource
 	/**
 	 * Qualifiy each column name with the table name?
 	 * @param  bool
-	 * @return void
+	 * @return DibiResult  provides a fluent interface
 	 * @throws DibiException
 	 */
 	final public function setWithTables($val)
@@ -172,6 +172,7 @@ class DibiResult extends DibiObject implements IDataSource
 		} else {
 			$this->withTables = FALSE;
 		}
+		return $this;
 	}
 
 
@@ -190,11 +191,12 @@ class DibiResult extends DibiObject implements IDataSource
 	/**
 	 * Set fetched object class. This class should extend the DibiRow class.
 	 * @param  string
-	 * @return void
+	 * @return DibiResult  provides a fluent interface
 	 */
 	public function setRowClass($class)
 	{
 		$this->class = $class;
+		return $this;
 	}
 
 
