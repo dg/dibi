@@ -253,7 +253,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 	 */
 	public function release()
 	{
-		$this->result = $this->count = NULL;
+		$this->result = $this->count = $this->totalCount = NULL;
 	}
 
 
