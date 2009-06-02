@@ -251,7 +251,7 @@ final class DibiTranslator extends DibiObject
 				foreach ($value as $k => $v) {
 					$pair = explode('%', $k, 2); // split into identifier & modifier
 					$vx[] = $this->delimite($pair[0]) . '='
-						. $this->formatValue($v, isset($pair[1]) ? $pair[1] : is_array($v) ? 'ex' : FALSE);
+						. $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
 				}
 				return implode(', ', $vx);
 
@@ -259,7 +259,7 @@ final class DibiTranslator extends DibiObject
 			case 'l': // (val, val, ...)
 				foreach ($value as $k => $v) {
 					$pair = explode('%', $k, 2); // split into identifier & modifier
-					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : is_array($v) ? 'ex' : FALSE);
+					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
 				}
 				return '(' . ($vx ? implode(', ', $vx) : 'NULL') . ')';
 
@@ -268,7 +268,7 @@ final class DibiTranslator extends DibiObject
 				foreach ($value as $k => $v) {
 					$pair = explode('%', $k, 2); // split into identifier & modifier
 					$kx[] = $this->delimite($pair[0]);
-					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : is_array($v) ? 'ex' : FALSE);
+					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
 				}
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
