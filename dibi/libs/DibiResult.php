@@ -493,7 +493,10 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Converts value to specified type and format.
-	 * @return array  ($type, $format)
+	 * @param  mixed  value
+	 * @param  int    type
+	 * @param  string format
+	 * @return mixed
 	 */
 	final public function convert($value, $type, $format = NULL)
 	{

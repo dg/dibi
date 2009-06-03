@@ -319,6 +319,10 @@ final class DibiTranslator extends DibiObject
 			case 'sn': // string or NULL
 				return $value == '' ? 'NULL' : $this->driver->escape($value, dibi::TEXT); // notice two equal signs
 
+			case 'in': // signed int or NULL
+				if ($value == '') $value = NULL;
+				// intentionally break omitted
+
 			case 'i':  // signed int
 			case 'u':  // unsigned int, ignored
 				// support for long numbers - keep them unchanged
