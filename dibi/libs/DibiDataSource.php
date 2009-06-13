@@ -62,13 +62,13 @@ class DibiDataSource extends DibiObject implements IDataSource
 
 
 	/**
-	 * @param  string  SQL command or table name, as data source
+	 * @param  string  SQL command or table or view name, as data source
 	 * @param  DibiConnection  connection
 	 */
 	public function __construct($sql, DibiConnection $connection)
 	{
 		if (strpos($sql, ' ') === FALSE) {
-			$this->sql = $sql; // table name
+			$this->sql = $connection->getDriver()->escape($sql, dibi::IDENTIFIER); // table name
 		} else {
 			$this->sql = '(' . $sql . ') t'; // SQL command
 		}
