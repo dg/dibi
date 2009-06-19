@@ -536,7 +536,7 @@ class dibi
 	 * @param  array
 	 * @return DibiFluent
 	 */
-	public static function update($table, array $args)
+	public static function update($table, $args)
 	{
 		return self::getConnection()->update($table, $args);
 	}
@@ -548,7 +548,7 @@ class dibi
 	 * @param  array
 	 * @return DibiFluent
 	 */
-	public static function insert($table, array $args)
+	public static function insert($table, $args)
 	{
 		return self::getConnection()->insert($table, $args);
 	}

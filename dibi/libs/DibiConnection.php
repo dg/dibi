@@ -581,8 +581,11 @@ class DibiConnection extends DibiObject
 	 * @param  array
 	 * @return DibiFluent
 	 */
-	public function update($table, array $args)
+	public function update($table, $args)
 	{
+		if (!(is_array($args) || $args instanceof ArrayObject)) {
+			throw new InvalidArgumentException('Arguments must be array or ArrayObject.');
+		}
 		return $this->command()->update('%n', $table)->set($args);
 	}
 
@@ -593,8 +596,13 @@ class DibiConnection extends DibiObject
 	 * @param  array
 	 * @return DibiFluent
 	 */
-	public function insert($table, array $args)
+	public function insert($table, $args)
 	{
+		if ($args instanceof ArrayObject) {
+			$args = (array) $args;
+		} elseif (!is_array($args)) {
+			throw new InvalidArgumentException('Arguments must be array or ArrayObject.');
+		}
 		return $this->command()->insert()
 			->into('%n', $table, '(%n)', array_keys($args))->values('%l', array_values($args));
 	}
