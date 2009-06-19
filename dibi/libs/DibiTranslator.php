@@ -234,7 +234,7 @@ final class DibiTranslator extends DibiObject
 						$vx[] = $this->formatValue($v, 'ex');
 					}
 				}
-				return implode(' ' . strtoupper($modifier) . ' ', $vx);
+				return '(' . implode(') ' . strtoupper($modifier) . ' (', $vx) . ')';
 
 			case 'n':  // identifier names
 				foreach ($value as $k => $v) {

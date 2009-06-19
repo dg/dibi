@@ -693,7 +693,7 @@ class dibi
 			static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|LIKE|TRUE|FALSE';
 
 			// insert new lines
-			$sql = ' ' . $sql;
+			$sql = " $sql ";
 			$sql = preg_replace("#(?<=[\\s,(])($keywords1)(?=[\\s,)])#i", "\n\$1", $sql);
 
 			// reduce spaces
