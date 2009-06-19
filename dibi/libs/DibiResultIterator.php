@@ -43,7 +43,7 @@
  * @copyright  Copyright (c) 2005, 2009 David Grudl
  * @package    dibi
  */
-class DibiResultIterator implements Iterator
+class DibiResultIterator implements Iterator, Countable
 {
 	/** @var DibiResult */
 	private $result;
@@ -132,5 +132,15 @@ class DibiResultIterator implements Iterator
 		return !empty($this->row) && ($this->limit < 0 || $this->pointer < $this->limit);
 	}
 
+
+
+	/**
+	 * Required by the Countable interface.
+	 * @return int
+	 */
+	public function count()
+	{
+		return $this->result->getRowCount();
+	}
 
 }
