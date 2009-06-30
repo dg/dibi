@@ -178,7 +178,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Begins a transaction (if supported).
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
@@ -191,7 +191,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Commits statements in a transaction.
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
@@ -204,7 +204,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Rollback changes in a transaction.
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */

@@ -432,7 +432,7 @@ class dibi
 
 	/**
 	 * Begins a transaction - Monostate for DibiConnection::begin().
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 * @throws DibiException
 	 */
@@ -445,7 +445,7 @@ class dibi
 
 	/**
 	 * Commits statements in a transaction - Monostate for DibiConnection::commit($savepoint = NULL).
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 * @throws DibiException
 	 */
@@ -458,7 +458,7 @@ class dibi
 
 	/**
 	 * Rollback changes in a transaction - Monostate for DibiConnection::rollback().
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 * @throws DibiException
 	 */

@@ -409,7 +409,7 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Begins a transaction (if supported).
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 */
 	public function begin($savepoint = NULL)
@@ -436,7 +436,7 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Commits statements in a transaction.
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 */
 	public function commit($savepoint = NULL)
@@ -458,7 +458,7 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Rollback changes in a transaction.
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 */
 	public function rollback($savepoint = NULL)

@@ -151,7 +151,7 @@ interface IDibiDriver
 
 	/**
 	 * Begins a transaction (if supported).
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
@@ -159,7 +159,7 @@ interface IDibiDriver
 
 	/**
 	 * Commits statements in a transaction.
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
@@ -167,7 +167,7 @@ interface IDibiDriver
 
 	/**
 	 * Rollback changes in a transaction.
-	 * @param  string  optinal savepoint name
+	 * @param  string  optional savepoint name
 	 * @return void
 	 * @throws DibiDriverException
 	 */
