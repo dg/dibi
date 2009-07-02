@@ -29,6 +29,12 @@
  */
 class DibiProfiler extends DibiObject implements IDibiProfiler
 {
+	/** maximum number of rows */
+	const FIREBUG_MAX_ROWS = 30;
+
+	/** maximum SQL length */
+	const FIREBUG_MAX_LENGTH = 500;
+
 	/** @var string  Name of the file where SQL errors should be logged */
 	private $file;
 
@@ -104,6 +110,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 		}
 
 		list($connection, $event, $sql) = $this->tickets[$ticket];
+		$sql = trim($sql);
 
 		if (($event & $this->filter) === 0) return;
 
@@ -115,12 +122,14 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 			}
 
 			if ($this->useFirebug && !headers_sent()) {
-				self::$table[] = array(
-					sprintf('%0.3f', dibi::$elapsedTime * 1000),
-					trim($sql),
-					$count,
-					$connection->getConfig('driver') . '/' . $connection->getConfig('name')
-				);
+				if (count(self::$table) < self::FIREBUG_MAX_ROWS) {
+					self::$table[] = array(
+						sprintf('%0.3f', dibi::$elapsedTime * 1000),
+						strlen($sql) > self::FIREBUG_MAX_LENGTH ? substr($sql, 0, self::FIREBUG_MAX_LENGTH) . '...' : $sql,
+						$count,
+						$connection->getConfig('driver') . '/' . $connection->getConfig('name')
+					);
+				}
 
 				header('X-Wf-Protocol-dibi: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');
 				header('X-Wf-dibi-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0');
