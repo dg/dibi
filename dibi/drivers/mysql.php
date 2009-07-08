@@ -320,6 +320,9 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 	 */
 	public function unescape($value, $type)
 	{
+		if ($type === dibi::BINARY) {
+			return $value;
+		}
 		throw new InvalidArgumentException('Unsupported type.');
 	}
 

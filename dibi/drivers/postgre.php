@@ -289,13 +289,10 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 	 */
 	public function unescape($value, $type)
 	{
-		switch ($type) {
-		case dibi::BINARY:
+		if ($type === dibi::BINARY) {
 			return pg_unescape_bytea($value);
-
-		default:
-			throw new InvalidArgumentException('Unsupported type.');
 		}
+		throw new InvalidArgumentException('Unsupported type.');
 	}
 
 
