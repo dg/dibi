@@ -272,6 +272,19 @@ final class DibiTranslator extends DibiObject
 				}
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
+			case 'm': // (key, key, ...) VALUES (val, val, ...), (val, val, ...), ...
+				foreach ($value as $k => $v) {
+					$pair = explode('%', $k, 2); // split into identifier & modifier
+					$kx[] = $this->delimite($pair[0]);
+					foreach ($v as $k2 => $v2) {
+						$vx[$k2][] = $this->formatValue($v2, isset($pair[1]) ? $pair[1] : (is_array($v2) ? 'ex' : FALSE));
+					}
+				}
+				foreach ($vx as $k => $v) {
+					$vx[$k] = '(' . ($v ? implode(', ', $v) : 'NULL') . ')';
+				}
+				return '(' . implode(', ', $kx) . ') VALUES ' . implode(', ', $vx);
+
 			case 'by': // key ASC, key DESC
 				foreach ($value as $k => $v) {
 					if (is_string($k)) {
