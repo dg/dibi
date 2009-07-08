@@ -274,6 +274,20 @@ final class DibiTranslator extends DibiObject
 
 			case 'm': // (key, key, ...) VALUES (val, val, ...), (val, val, ...), ...
 				foreach ($value as $k => $v) {
+					if (is_array($v)) {
+						if (isset($proto)) {
+							if ($proto !== array_keys($v)) {
+								$this->hasError = TRUE;
+								return '**Multi-insert array "' . $k . '" is different.**';
+							}
+						} else {
+							$proto = array_keys($v);
+						}
+					} else {
+						$this->hasError = TRUE;
+						return '**Unexpected type ' . gettype($v) . '**';
+					}
+
 					$pair = explode('%', $k, 2); // split into identifier & modifier
 					$kx[] = $this->delimite($pair[0]);
 					foreach ($v as $k2 => $v2) {
