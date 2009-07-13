@@ -66,9 +66,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 	 */
 	public function connect(array &$config)
 	{
-		DibiConnection::alias($config, 'username', 'user');
-		DibiConnection::alias($config, 'password', 'pass');
-
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
 		} else {

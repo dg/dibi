@@ -66,8 +66,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 	 */
 	public function connect(array &$config)
 	{
-		DibiConnection::alias($config, 'username', 'user');
-		DibiConnection::alias($config, 'password', 'pass');
 		DibiConnection::alias($config, 'dsn');
 		DibiConnection::alias($config, 'resource', 'pdo');
 		DibiConnection::alias($config, 'options');

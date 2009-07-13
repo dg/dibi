@@ -66,9 +66,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 */
 	public function connect(array &$config)
 	{
-		DibiConnection::alias($config, 'username', 'user');
-		DibiConnection::alias($config, 'password', 'pass');
-		DibiConnection::alias($config, 'database', 'db');
 		DibiConnection::alias($config, 'charset');
 
 		if (isset($config['resource'])) {

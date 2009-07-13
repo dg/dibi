@@ -65,8 +65,6 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver
 	 */
 	public function connect(array &$config)
 	{
-		DibiConnection::alias($config, 'host', 'hostname');
-
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
 		} elseif (isset($config['options'])) {

@@ -77,9 +77,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 */
 	public function connect(array &$config)
 	{
-		DibiConnection::alias($config, 'username', 'user');
-		DibiConnection::alias($config, 'password', 'pass');
-		DibiConnection::alias($config, 'host', 'hostname');
 		DibiConnection::alias($config, 'options');
 		DibiConnection::alias($config, 'database');
 

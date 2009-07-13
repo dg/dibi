@@ -69,6 +69,10 @@ class DibiConnection extends DibiObject
 			throw new InvalidArgumentException('Configuration must be array, string or ArrayObject.');
 		}
 
+		self::alias($config, 'username', 'user');
+		self::alias($config, 'password', 'pass');
+		self::alias($config, 'host', 'hostname');
+
 		if (!isset($config['driver'])) {
 			$config['driver'] = dibi::$defaultDriver;
 		}
