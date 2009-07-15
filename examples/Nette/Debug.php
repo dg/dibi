@@ -62,7 +62,8 @@ class
 Framework{const
 NAME='Nette Framework';const
 VERSION='0.9';const
-REVISION='375 released on 2009/06/26 10:12:40';final
+REVISION='424 released on 2009/07/15 12:03:47';const
+PACKAGE='PHP 5.2';final
 public
 function
 __construct(){throw
@@ -81,7 +82,8 @@ static$productionMode;public
 static$consoleMode;public
 static$time;private
 static$firebugDetected;private
-static$ajaxDetected;public
+static$ajaxDetected;private
+static$consoleData;public
 static$maxDepth=3;public
 static$maxLen=150;public
 static$showLocation=FALSE;const
@@ -114,13 +116,134 @@ new
 LogicException("Cannot instantiate static class ".get_class($this));}public
 static
 function
-init(){self::$time=microtime(TRUE);self::$consoleMode=PHP_SAPI==='cli';self::$productionMode=self::DETECT;self::$firebugDetected=isset($_SERVER['HTTP_USER_AGENT'])&&strpos($_SERVER['HTTP_USER_AGENT'],'FirePHP/');self::$ajaxDetected=isset($_SERVER['HTTP_X_REQUESTED_WITH'])&&$_SERVER['HTTP_X_REQUESTED_WITH']==='XMLHttpRequest';}public
+init(){self::$time=microtime(TRUE);self::$consoleMode=PHP_SAPI==='cli';self::$productionMode=self::DETECT;self::$firebugDetected=isset($_SERVER['HTTP_USER_AGENT'])&&strpos($_SERVER['HTTP_USER_AGENT'],'FirePHP/');self::$ajaxDetected=isset($_SERVER['HTTP_X_REQUESTED_WITH'])&&$_SERVER['HTTP_X_REQUESTED_WITH']==='XMLHttpRequest';register_shutdown_function(array(__CLASS__,'shutdownHandler'));}public
 static
 function
-dump($var,$return=FALSE){if(!$return&&self::$productionMode){return$var;}$output="<pre class=\"dump\">".self::_dump($var,0)."</pre>\n";if(self::$showLocation){$trace=debug_backtrace();if(isset($trace[0]['file'],$trace[0]['line'])){$output=substr_replace($output,' <small>'.htmlspecialchars("in file {$trace[0]['file']} on line {$trace[0]['line']}",ENT_NOQUOTES).'</small>',-8,0);}}if(self::$consoleMode){$output=htmlspecialchars_decode(strip_tags($output),ENT_NOQUOTES);}if($return){return$output;}else{echo$output;return$var;}}public
-static
-function
-consoleDump($var,$title=NULL){if(!self::$productionMode){if(!function_exists('_netteDumpCb2')){function
+shutdownHandler(){static$types=array(E_ERROR=>1,E_CORE_ERROR=>1,E_COMPILE_ERROR=>1,E_PARSE=>1);$error=error_get_last();if(isset($types[$error['type']])){if(!headers_sent()){header('HTTP/1.1 500 Internal Server Error');}if(ini_get('html_errors')){$error['message']=html_entity_decode(strip_tags($error['message']));}self::processException(new
+FatalErrorException($error['message'],0,$error['type'],$error['file'],$error['line'],NULL),TRUE);}if(self::$productionMode){return;}foreach(headers_list()as$header){if(strncasecmp($header,'Content-Type:',13)===0){if(substr($header,14,9)==='text/html'){break;}return;}}if(self::$enabledProfiler){if(self::$firebugDetected){self::fireLog('Nette profiler',self::GROUP_START);foreach(self::$colophons
+as$callback){foreach((array)call_user_func($callback,'profiler')as$line)self::fireLog(strip_tags($line));}self::fireLog(NULL,self::GROUP_END);}if(!self::$ajaxDetected){$colophons=self::$colophons;?>
+
+<style type="text/css">
+/* <![CDATA[ */
+	#netteProfilerContainer {
+		position: fixed;
+		_position: absolute;
+		right: 5px;
+		bottom: 5px;
+		z-index: 23178;
+	}
+
+	#netteProfiler {
+		font: normal normal 11px/1.4 Consolas, Arial;
+		position: relative;
+		padding: 1px;
+		color: black;
+		background: #EEE;
+		border: 1px dotted gray;
+		cursor: move;
+		opacity: .70;
+		=filter: alpha(opacity=70);
+	}
+
+	#netteProfiler * {
+		color: inherit;
+		background: inherit;
+		text-align: inherit;
+	}
+
+	#netteProfilerIcon {
+		position: absolute;
+		right: 0;
+		top: 0;
+		line-height: 1;
+		padding: 4px;
+		color: black;
+		text-decoration: none;
+	}
+
+	#netteProfiler:hover {
+		opacity: 1;
+		=filter: none;
+	}
+
+	#netteProfiler ul {
+		margin: 0;
+		padding: 0;
+		width: 350px;
+	}
+
+	#netteProfiler li {
+		margin: 0;
+		padding: 1px;
+		text-align: left;
+		list-style: none;
+	}
+
+	#netteProfiler span[title] {
+		border-bottom: 1px dotted gray;
+		cursor: help;
+	}
+
+	#netteProfiler strong {
+		color: red;
+	}
+/* ]]> */
+</style>
+
+
+<div id="netteProfilerContainer">
+<div id="netteProfiler">
+	<a id="netteProfilerIcon" href="#"><abbr>&#x25bc;</abbr></a
+	><ul>
+	<?php foreach($colophons
+as$callback):?>
+	<?php foreach((array)call_user_func($callback,'profiler')as$line):?><li><?php echo$line,"\n"?></li><?php endforeach?>
+	<?php endforeach?>
+	</ul>
+</div>
+</div>
+
+
+<script type="text/javascript">
+/* <![CDATA[ */
+document.getElementById('netteProfiler').onmousedown = function(e) {
+	e = e || event;
+	this.posX = parseInt(this.style.left + '0');
+	this.posY = parseInt(this.style.top + '0');
+	this.mouseX = e.clientX;
+	this.mouseY = e.clientY;
+
+	var thisObj = this;
+
+	document.documentElement.onmousemove = function(e) {
+		e = e || event;
+		thisObj.style.left = (e.clientX - thisObj.mouseX + thisObj.posX) + "px";
+		thisObj.style.top = (e.clientY - thisObj.mouseY + thisObj.posY) + "px";
+		return false;
+	};
+
+	document.documentElement.onmouseup = function(e) {
+		document.documentElement.onmousemove = null;
+		document.documentElement.onmouseup = null;
+		return false;
+	};
+};
+
+document.getElementById('netteProfilerIcon').onclick = function(e) {
+	var arrow = this.getElementsByTagName('abbr')[0];
+	var panel = this.nextSibling;
+	var collapsed = panel.currentStyle ? panel.currentStyle.display == 'none' : getComputedStyle(panel, null).display == 'none';
+
+	arrow.innerHTML = collapsed ? String.fromCharCode(0x25bc) : 'Profiler ' + String.fromCharCode(0x25ba);
+	panel.style.display = collapsed ? 'block' : 'none';
+	arrow.parentNode.style.position = collapsed ? 'absolute' : 'static';
+	return false;
+}
+
+document.body.appendChild(document.getElementById('netteProfilerContainer'));
+/* ]]> */
+</script>
+<?php }}if(self::$consoleData){$payload=self::$consoleData;if(!function_exists('_netteDumpCb2')){function
 _netteDumpCb2($m){return"$m[1]<a href='#' onclick='return !netteToggle(this)'>$m[2]($m[3]) ".($m[3]<7?'<abbr>&#x25bc;</abbr> </a><code>':'<abbr>&#x25ba;</abbr> </a><code class="collapsed">');}}ob_start();?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
@@ -253,14 +376,16 @@ _netteDumpCb2($m){return"$m[1]<a href='#' onclick='return !netteToggle(this)'>$m
 <?php $document=ob_get_clean()?>
 
 <?php ob_start()?>
-	<?php if(isset($title)):?>
+<?php foreach($payload
+as$item):?>
+	<?php if($item['title']):?>
 	<h2><?php echo
-htmlspecialchars($title)?></h2>
+htmlspecialchars($item['title'])?></h2>
 	<?php endif?>
 
 	<table>
 	<?php $i=0?>
-	<?php foreach((is_array($var)?$var:array(''=>$var))as$key=>$val):?>
+	<?php foreach((is_array($item['var'])?$item['var']:array(''=>$item['var']))as$key=>$val):?>
 	<tr class="<?php echo$i++%
 2?'odd':'even'?>">
 		<th><?php echo
@@ -270,6 +395,7 @@ preg_replace_callback('#(<pre class="dump">|\s+)?(.*)\((\d+)\) <code>#','_netteD
 	</tr>
 	<?php endforeach?>
 	</table>
+<?php endforeach?>
 <?php $body=ob_get_clean()?>
 
 <script type="text/javascript">
@@ -279,12 +405,23 @@ if (typeof _netteConsole === 'undefined') {
 	_netteConsole.document.write(<?php echo
 json_encode(preg_replace('#\s+#',' ',$document))?>);
 	_netteConsole.document.close();
+	_netteConsole.document.onkeyup = function(e) {
+		e = e || _netteConsole.event;
+		if (e.keyCode == 27) _netteConsole.close();
+	}
+	_netteConsole.document.body.focus();
 }
 _netteConsole.document.body.innerHTML = _netteConsole.document.body.innerHTML + <?php echo
 json_encode($body)?>;
 /* ]]> */
 </script>
-<?php }}private
+<?php }}public
+static
+function
+dump($var,$return=FALSE){if(!$return&&self::$productionMode){return$var;}$output="<pre class=\"dump\">".self::_dump($var,0)."</pre>\n";if(self::$showLocation){$trace=debug_backtrace();if(isset($trace[0]['file'],$trace[0]['line'])){$output=substr_replace($output,' <small>'.htmlspecialchars("in file {$trace[0]['file']} on line {$trace[0]['line']}",ENT_NOQUOTES).'</small>',-8,0);}}if(self::$consoleMode){$output=htmlspecialchars_decode(strip_tags($output),ENT_NOQUOTES);}if($return){return$output;}else{echo$output;return$var;}}public
+static
+function
+consoleDump($var,$title=NULL){if(!self::$productionMode){self::$consoleData[]=array('title'=>$title,'var'=>$var);}return$var;}private
 static
 function
 _dump(&$var,$level){if(is_bool($var)){return"<span>bool</span>(".($var?'TRUE':'FALSE').")\n";}elseif($var===NULL){return"<span>NULL</span>\n";}elseif(is_int($var)){return"<span>int</span>($var)\n";}elseif(is_float($var)){return"<span>float</span>($var)\n";}elseif(is_string($var)){if(self::$maxLen&&strlen($var)>self::$maxLen){$s=htmlSpecialChars(substr($var,0,self::$maxLen),ENT_NOQUOTES).' ... ';}else{$s=htmlSpecialChars($var,ENT_NOQUOTES);}return"<span>string</span>(".strlen($var).") \"$s\"\n";}elseif(is_array($var)){$s="<span>array</span>(".count($var).") ";$space=str_repeat($space1='   ',$level);static$marker;if($marker===NULL)$marker=uniqid("\x00",TRUE);if(empty($var)){}elseif(isset($var[$marker])){$s.="{\n$space$space1*RECURSION*\n$space}";}elseif($level<self::$maxDepth||!self::$maxDepth){$s.="<code>{\n";$var[$marker]=0;foreach($var
@@ -296,9 +433,9 @@ timer($name=NULL){static$time=array();$now=microtime(TRUE);$delta=isset($time[$n
 static
 function
 enable($mode=NULL,$logFile=NULL,$email=NULL){error_reporting(E_ALL|E_STRICT);if(is_bool($mode)){self::$productionMode=$mode;}if(self::$productionMode===self::DETECT){if(class_exists('Environment')){self::$productionMode=Environment::isProduction();}elseif(isset($_SERVER['SERVER_ADDR'])||isset($_SERVER['LOCAL_ADDR'])){$addr=isset($_SERVER['SERVER_ADDR'])?$_SERVER['SERVER_ADDR']:$_SERVER['LOCAL_ADDR'];$oct=explode('.',$addr);self::$productionMode=$addr!=='::1'&&(count($oct)!==4||($oct[0]!=='10'&&$oct[0]!=='127'&&($oct[0]!=='172'||$oct[1]<16||$oct[1]>31)&&($oct[0]!=='169'||$oct[1]!=='254')&&($oct[0]!=='192'||$oct[1]!=='168')));}else{self::$productionMode=!self::$consoleMode;}}if(self::$productionMode&&$logFile!==FALSE){self::$logFile='log/php_error.log';if(class_exists('Environment')){if(is_string($logFile)){self::$logFile=Environment::expand($logFile);}else
-try{self::$logFile=Environment::expand('%logDir%/php_error.log');}catch(InvalidStateException$e){}}elseif(is_string($logFile)){self::$logFile=$logFile;}ini_set('error_log',self::$logFile);}if(function_exists('ini_set')){ini_set('display_errors',!self::$productionMode);ini_set('html_errors',!self::$consoleMode);ini_set('log_errors',(bool)self::$logFile);}elseif(ini_get('log_errors')!=(bool)self::$logFile||(ini_get('display_errors')!=!self::$productionMode&&ini_get('display_errors')!==(self::$productionMode?'stderr':'stdout'))){throw
+try{self::$logFile=Environment::expand('%logDir%/php_error.log');}catch(InvalidStateException$e){}}elseif(is_string($logFile)){self::$logFile=$logFile;}ini_set('error_log',self::$logFile);}if(function_exists('ini_set')){ini_set('display_errors',!self::$productionMode);ini_set('html_errors',!self::$logFile&&!self::$consoleMode);ini_set('log_errors',(bool)self::$logFile);}elseif(ini_get('log_errors')!=(bool)self::$logFile||(ini_get('display_errors')!=!self::$productionMode&&ini_get('display_errors')!==(self::$productionMode?'stderr':'stdout'))){throw
 new
-NotSupportedException('Function ini_set() must be enabled.');}self::$sendEmails=self::$logFile&&$email;if(self::$sendEmails){if(is_string($email)){self::$emailHeaders['To']=$email;}elseif(is_array($email)){self::$emailHeaders=$email+self::$emailHeaders;}}if(!defined('E_DEPRECATED')){define('E_DEPRECATED',8192);}if(!defined('E_USER_DEPRECATED')){define('E_USER_DEPRECATED',16384);}set_exception_handler(array(__CLASS__,'exceptionHandler'));set_error_handler(array(__CLASS__,'errorHandler'));register_shutdown_function(array(__CLASS__,'shutdownHandler'));self::$enabled=TRUE;}public
+NotSupportedException('Function ini_set() must be enabled.');}self::$sendEmails=self::$logFile&&$email;if(self::$sendEmails){if(is_string($email)){self::$emailHeaders['To']=$email;}elseif(is_array($email)){self::$emailHeaders=$email+self::$emailHeaders;}}if(!defined('E_DEPRECATED')){define('E_DEPRECATED',8192);}if(!defined('E_USER_DEPRECATED')){define('E_USER_DEPRECATED',16384);}set_exception_handler(array(__CLASS__,'exceptionHandler'));set_error_handler(array(__CLASS__,'errorHandler'));self::$enabled=TRUE;}public
 static
 function
 isEnabled(){return
@@ -318,19 +455,15 @@ NULL;}return
 FALSE;}public
 static
 function
-shutdownHandler(){static$types=array(E_ERROR=>1,E_CORE_ERROR=>1,E_COMPILE_ERROR=>1,E_PARSE=>1);$error=error_get_last();if(isset($types[$error['type']])){if(!headers_sent()){header('HTTP/1.1 500 Internal Server Error');}if(ini_get('html_errors')){$error['message']=html_entity_decode(strip_tags($error['message']));}self::processException(new
-FatalErrorException($error['message'],0,$error['type'],$error['file'],$error['line'],NULL),TRUE);}}public
-static
-function
 processException(Exception$exception,$outputAllowed=FALSE){if(self::$logFile){error_log("PHP Fatal error:  Uncaught $exception");$file=@strftime('%d-%b-%Y %H-%M-%S ',Debug::$time).strstr(number_format(Debug::$time,4,'~',''),'~');$file=dirname(self::$logFile)."/exception $file.html";self::$logHandle=@fopen($file,'x');if(self::$logHandle){ob_start(array(__CLASS__,'writeFile'),1);self::paintBlueScreen($exception);ob_end_flush();fclose(self::$logHandle);}if(self::$sendEmails){self::sendEmail((string)$exception);}}elseif(self::$productionMode){}elseif(self::$consoleMode){if($outputAllowed){echo"$exception\n";foreach(self::$colophons
 as$callback){foreach((array)call_user_func($callback,'bluescreen')as$line)echo
-strip_tags($line)."\n";}}}elseif(self::$firebugDetected&&self::$ajaxDetected&&!headers_sent()){self::fireLog($exception,self::EXCEPTION);}elseif($outputAllowed){self::paintBlueScreen($exception);}elseif(self::$firebugDetected&&!headers_sent()){self::fireLog($exception,self::EXCEPTION);}foreach(self::$onFatalError
+strip_tags($line)."\n";}}}elseif(self::$firebugDetected&&self::$ajaxDetected&&!headers_sent()){self::fireLog($exception,self::EXCEPTION);}elseif($outputAllowed){if(!headers_sent()){@ob_end_clean();while(ob_get_level()&&@ob_end_clean());header('Content-Encoding:',TRUE);}self::paintBlueScreen($exception);}elseif(self::$firebugDetected&&!headers_sent()){self::fireLog($exception,self::EXCEPTION);}foreach(self::$onFatalError
 as$handler){fixCallback($handler);call_user_func($handler,$exception);}}public
 static
 function
 paintBlueScreen(Exception$exception){$internals=array();foreach(array('Object','ObjectMixin')as$class){if(class_exists($class,FALSE)){$rc=new
 ReflectionClass($class);$internals[$rc->getFileName()]=TRUE;}}$colophons=self::$colophons;if(!function_exists('_netteDebugPrintCode')){function
-_netteDebugPrintCode($file,$line,$count=15){if(function_exists('ini_set')){ini_set('highlight.comment','#999; font-style: italic');ini_set('highlight.default','#000');ini_set('highlight.html','#06b');ini_set('highlight.keyword','#d24; font-weight: bold');ini_set('highlight.string','#080');}$start=max(1,$line-floor($count/2));$source=explode("\n",@highlight_file($file,TRUE));$spans=1;echo$source[0];$source=explode('<br />',$source[1]);array_unshift($source,NULL);$i=$start;while(--$i>=1){if(preg_match('#.*(</?span[^>]*>)#',$source[$i],$m)){if($m[1]!=='</span>'){$spans++;echo$m[1];}break;}}$source=array_slice($source,$start,$count,TRUE);end($source);$numWidth=strlen((string)key($source));foreach($source
+_netteDebugPrintCode($file,$line,$count=15){if(function_exists('ini_set')){ini_set('highlight.comment','#999; font-style: italic');ini_set('highlight.default','#000');ini_set('highlight.html','#06b');ini_set('highlight.keyword','#d24; font-weight: bold');ini_set('highlight.string','#080');}$start=max(1,$line-floor($count/2));$source=@file_get_contents($file);if(!$source)return;$source=explode("\n",highlight_string($source,TRUE));$spans=1;echo$source[0];$source=explode('<br />',$source[1]);array_unshift($source,NULL);$i=$start;while(--$i>=1){if(preg_match('#.*(</?span[^>]*>)#',$source[$i],$m)){if($m[1]!=='</span>'){$spans++;echo$m[1];}break;}}$source=array_slice($source,$start,$count,TRUE);end($source);$numWidth=strlen((string)key($source));foreach($source
 as$n=>$s){$spans+=substr_count($s,'<span')-substr_count($s,'</span');$s=str_replace(array("\r","\n"),array('',''),$s);if($n===$line){printf("<span class='highlight'>Line %{$numWidth}s:    %s\n</span>%s",$n,strip_tags($s),preg_replace('#[^>]*(<[^>]+>)[^<]*#','$1',$s));}else{printf("<span class='line'>Line %{$numWidth}s:</span>    %s\n",$n,$s);}}echo
 str_repeat('</span>',$spans),'</code>';}function
 _netteDump($var){return
@@ -750,136 +883,10 @@ defaultMailer($message){$host=isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']
 as$key=>$value){$header.="$key: $value\r\n";}$body=str_replace("\r\n","\n",$body);if(PHP_OS!='Linux')$body=str_replace("\n","\r\n",$body);mail($to,$subject,$body,$header);}public
 static
 function
-enableProfiler(){self::$enabledProfiler=TRUE;register_shutdown_function(array(__CLASS__,'paintProfiler'));}public
+enableProfiler(){self::$enabledProfiler=TRUE;}public
 static
 function
 disableProfiler(){self::$enabledProfiler=FALSE;}public
-static
-function
-paintProfiler(){if(!self::$enabledProfiler||self::$productionMode){return;}foreach(headers_list()as$header){if(strncasecmp($header,'Content-Type:',13)===0){if(substr($header,14,9)==='text/html'){break;}return;}}self::$enabledProfiler=FALSE;if(self::$firebugDetected){self::fireLog('Nette profiler',self::GROUP_START);foreach(self::$colophons
-as$callback){foreach((array)call_user_func($callback,'profiler')as$line)self::fireLog(strip_tags($line));}self::fireLog(NULL,self::GROUP_END);}if(!self::$ajaxDetected){$colophons=self::$colophons;?>
-
-<style type="text/css">
-/* <![CDATA[ */
-	#netteProfilerContainer {
-		position: fixed;
-		_position: absolute;
-		right: 5px;
-		bottom: 5px;
-		z-index: 23178;
-	}
-
-	#netteProfiler {
-		font: normal normal 11px/1.4 Consolas, Arial;
-		position: relative;
-		padding: 1px;
-		color: black;
-		background: #EEE;
-		border: 1px dotted gray;
-		cursor: move;
-		opacity: .70;
-		=filter: alpha(opacity=70);
-	}
-
-	#netteProfiler * {
-		color: inherit;
-		background: inherit;
-		text-align: inherit;
-	}
-
-	#netteProfilerIcon {
-		position: absolute;
-		right: 0;
-		top: 0;
-		line-height: 1;
-		padding: 4px;
-		color: black;
-		text-decoration: none;
-	}
-
-	#netteProfiler:hover {
-		opacity: 1;
-		=filter: none;
-	}
-
-	#netteProfiler ul {
-		margin: 0;
-		padding: 0;
-		width: 350px;
-	}
-
-	#netteProfiler li {
-		margin: 0;
-		padding: 1px;
-		text-align: left;
-		list-style: none;
-	}
-
-	#netteProfiler span[title] {
-		border-bottom: 1px dotted gray;
-		cursor: help;
-	}
-
-	#netteProfiler strong {
-		color: red;
-	}
-/* ]]> */
-</style>
-
-
-<div id="netteProfilerContainer">
-<div id="netteProfiler">
-	<a id="netteProfilerIcon" href="#"><abbr>&#x25bc;</abbr></a
-	><ul>
-	<?php foreach($colophons
-as$callback):?>
-	<?php foreach((array)call_user_func($callback,'profiler')as$line):?><li><?php echo$line,"\n"?></li><?php endforeach?>
-	<?php endforeach?>
-	</ul>
-</div>
-</div>
-
-
-<script type="text/javascript">
-/* <![CDATA[ */
-document.getElementById('netteProfiler').onmousedown = function(e) {
-	e = e || event;
-	this.posX = parseInt(this.style.left + '0');
-	this.posY = parseInt(this.style.top + '0');
-	this.mouseX = e.clientX;
-	this.mouseY = e.clientY;
-
-	var thisObj = this;
-
-	document.documentElement.onmousemove = function(e) {
-		e = e || event;
-		thisObj.style.left = (e.clientX - thisObj.mouseX + thisObj.posX) + "px";
-		thisObj.style.top = (e.clientY - thisObj.mouseY + thisObj.posY) + "px";
-		return false;
-	};
-
-	document.documentElement.onmouseup = function(e) {
-		document.documentElement.onmousemove = null;
-		document.documentElement.onmouseup = null;
-		return false;
-	};
-};
-
-document.getElementById('netteProfilerIcon').onclick = function(e) {
-	var arrow = this.getElementsByTagName('abbr')[0];
-	var panel = this.nextSibling;
-	var collapsed = panel.currentStyle ? panel.currentStyle.display == 'none' : getComputedStyle(panel, null).display == 'none';
-
-	arrow.innerHTML = collapsed ? String.fromCharCode(0x25bc) : 'Profiler ' + String.fromCharCode(0x25ba);
-	panel.style.display = collapsed ? 'block' : 'none';
-	arrow.parentNode.style.position = collapsed ? 'absolute' : 'static';
-	return false;
-}
-
-document.body.appendChild(document.getElementById('netteProfilerContainer'));
-/* ]]> */
-</script>
-<?php }}public
 static
 function
 addColophon($callback){fixCallback($callback);if(!is_callable($callback)){$able=is_callable($callback,TRUE,$textual);throw
@@ -892,8 +899,7 @@ as$name=>$value){if(is_array($value))$value=implode(', ',$value);$arr[]=htmlSpec
 ReflectionExtension($ext);$exclude=array_merge($exclude,$ref->getClassNames());}$classes=array_diff(get_declared_classes(),$exclude);$intf=array_diff(get_declared_interfaces(),$exclude);$func=get_defined_functions();$func=(array)@$func['user'];$consts=get_defined_constants(TRUE);$consts=array_keys((array)@$consts['user']);foreach(array('classes','intf','func','consts')as$item){$s.='<span '.($$item?'title="'.implode(", ",$$item).'"':'').'>'.count($$item).' '.$item.'</span>, ';}$arr[]=$s;}if($sender==='bluescreen'){$arr[]='Report generated at '.@date('Y/m/d H:i:s',Debug::$time);if(isset($_SERVER['HTTP_HOST'],$_SERVER['REQUEST_URI'])){$url=(isset($_SERVER['HTTPS'])&&strcasecmp($_SERVER['HTTPS'],'off')?'https://':'http://').htmlSpecialChars($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);$arr[]='<a href="'.$url.'">'.$url.'</a>';}$arr[]='PHP '.htmlSpecialChars(PHP_VERSION);if(isset($_SERVER['SERVER_SOFTWARE']))$arr[]=htmlSpecialChars($_SERVER['SERVER_SOFTWARE']);$arr[]=htmlSpecialChars(Framework::NAME.' '.Framework::VERSION).' <i>(revision '.htmlSpecialChars(Framework::REVISION).')</i>';}return$arr;}public
 static
 function
-fireDump($var,$key){return
-self::fireSend(2,array((string)$key=>$var));}public
+fireDump($var,$key){self::fireSend(2,array((string)$key=>$var));return$var;}public
 static
 function
 fireLog($message,$priority=self::LOG,$label=NULL){if($message
