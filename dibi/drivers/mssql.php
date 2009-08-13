@@ -214,7 +214,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 			return '[' . str_replace('.', '].[', $value) . ']';
 
 		case dibi::BOOL:
-			return $value ? -1 : 0;
+			return $value ? 1 : 0;
 
 		case dibi::DATE:
 			return date("'Y-m-d'", $value);

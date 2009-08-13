@@ -261,7 +261,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver
 			return $value;
 
 		case dibi::BOOL:
-			return $value ? -1 : 0;
+			return $value ? 1 : 0;
 
 		case dibi::DATE:
 			return date("'Y-m-d'", $value);
