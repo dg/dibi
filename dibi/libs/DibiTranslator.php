@@ -236,12 +236,13 @@ final class DibiTranslator extends DibiObject
 				}
 				return '(' . implode(') ' . strtoupper($modifier) . ' (', $vx) . ')';
 
-			case 'n':  // identifier names
+			case 'n':  // key, key, ... identifier names
 				foreach ($value as $k => $v) {
+					$pair = explode('%', $k, 2); // split into identifier & modifier
 					if (is_string($k)) {
-						$vx[] = $this->delimite($k) . (empty($v) ? '' : ' AS ' . $v);
+						$vx[] = $this->delimite($pair[0]) . (empty($v) ? '' : ' AS ' . $v);
 					} else {
-						$vx[] = $this->delimite($v);
+						$vx[] = $this->delimite($pair[0]);
 					}
 				}
 				return implode(', ', $vx);

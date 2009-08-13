@@ -608,7 +608,7 @@ class DibiConnection extends DibiObject
 			throw new InvalidArgumentException('Arguments must be array or ArrayObject.');
 		}
 		return $this->command()->insert()
-			->into('%n', $table, '(%n)', array_keys($args))->values('%l', array_values($args));
+			->into('%n', $table, '(%n)', array_keys($args))->values('%l', $args);
 	}
 
 
