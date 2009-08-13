@@ -14,7 +14,6 @@
  * @link       http://nettephp.com
  * @category   Nette
  * @package    Nette
- * @version    $Id$
  */
 
 if(version_compare(PHP_VERSION,'5.2.0','<')){throw

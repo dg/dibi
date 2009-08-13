@@ -15,7 +15,6 @@
  * @license    http://dibiphp.com/license  dibi license
  * @link       http://dibiphp.com
  * @package    dibi
- * @version    $Id$
  */
 
 

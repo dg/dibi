@@ -15,7 +15,6 @@
  * @license    http://dibiphp.com/license  dibi license
  * @link       http://dibiphp.com
  * @package    dibi
- * @version    $Id: DibiResult.php 175 2009-01-05 00:03:27Z david@grudl.com $
  */
 
 
