@@ -238,10 +238,10 @@ final class DibiTranslator extends DibiObject
 
 			case 'n':  // key, key, ... identifier names
 				foreach ($value as $k => $v) {
-					$pair = explode('%', $k, 2); // split into identifier & modifier
 					if (is_string($k)) {
-						$vx[] = $this->delimite($pair[0]) . (empty($v) ? '' : ' AS ' . $v);
+						$vx[] = $this->delimite($k) . (empty($v) ? '' : ' AS ' . $v);
 					} else {
+						$pair = explode('%', $v, 2); // split into identifier & modifier
 						$vx[] = $this->delimite($pair[0]);
 					}
 				}
