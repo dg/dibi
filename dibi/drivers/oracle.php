@@ -25,8 +25,10 @@
  *   - 'database' (or 'db') - the name of the local Oracle instance or the name of the entry in tnsnames.ora
  *   - 'username' (or 'user')
  *   - 'password' (or 'pass')
- *   - 'charset' - character encoding to set
  *   - 'lazy' - if TRUE, connection will be established only when required
+ *   - 'formatDate' - how to format date in SQL (@see date)
+ *   - 'formatDateTime' - how to format datetime in SQL (@see date)
+ *   - 'charset' - character encoding to set
  *   - 'resource' - connection resource (optional)
  *
  * @author     David Grudl
@@ -43,6 +45,9 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 
 	/** @var bool */
 	private $autocommit = TRUE;
+
+	/** @var string  Date and datetime format */
+	private $fmtDate, $fmtDateTime;
 
 
 
@@ -66,6 +71,8 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	public function connect(array &$config)
 	{
 		DibiConnection::alias($config, 'charset');
+		$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
+		$this->fmtDateTime = isset($config['formatDateTime']) ? $config['formatDateTime'] : 'U';
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
@@ -203,7 +210,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  string    value
+	 * @param  mixed     value
 	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    encoded value
 	 * @throws InvalidArgumentException
@@ -224,10 +231,10 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 			return $value ? 1 : 0;
 
 		case dibi::DATE:
-			return date("U", $value);
+			return date($this->fmtDate, $value);
 
 		case dibi::DATETIME:
-			return date("U", $value);
+			return date($this->fmtDateTime, $value);
 
 		default:
 			throw new InvalidArgumentException('Unsupported type.');
