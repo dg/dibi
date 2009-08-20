@@ -582,11 +582,8 @@ class dibi
 		} elseif (is_numeric($time)) {
 			$time = (int) $time; // timestamp
 
-		} elseif ($time instanceof DateTime) {
-			$time = $time->format('U');
-
-		} else {
-			$time = strtotime($time); // try convert to timestamp
+		} elseif (is_string($time)) {
+			$time = class_exists('DateTime', FALSE) ? new DateTime($time) : strtotime($time); // DateTime is since PHP 5.2
 		}
 		return new DibiVariable($time, dibi::DATETIME);
 	}

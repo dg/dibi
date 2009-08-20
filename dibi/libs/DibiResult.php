@@ -500,7 +500,7 @@ class DibiResult extends DibiObject implements IDataSource
 	final public function convert($value, $type, $format = NULL)
 	{
 		if ($value === NULL || $value === FALSE) {
-			return $value;
+			return NULL;
 		}
 
 		switch ($type) {
@@ -518,8 +518,25 @@ class DibiResult extends DibiObject implements IDataSource
 
 		case dibi::DATE:
 		case dibi::DATETIME:
-			$value = is_numeric($value) ? (int) $value : strtotime($value);
-			return $format === NULL ? $value : date($format, $value);
+			if ($value == NULL) { // intentionally ==
+				return NULL;
+
+			} elseif ($format === NULL) { // return timestamp (default)
+				return is_numeric($value) ? (int) $value : strtotime($value);
+
+			} elseif ($format === TRUE) { // return DateTime object
+				return new DateTime(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
+
+			} elseif (is_numeric($value)) { // single timestamp
+				return date($format, $value);
+
+			} elseif (class_exists('DateTime', FALSE)) { // since PHP 5.2
+				$value = new DateTime($value);
+				return $value ? $value->format($format) : NULL;
+
+			} else {
+				return date($format, strtotime($value));
+			}
 
 		case dibi::BOOL:
 			return ((bool) $value) && $value !== 'f' && $value !== 'F';

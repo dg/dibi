@@ -372,7 +372,13 @@ final class DibiTranslator extends DibiObject
 				if ($value === NULL) {
 					return 'NULL';
 				} else {
-					return $this->driver->escape(is_numeric($value) ? (int) $value : strtotime($value), $modifier);
+					if (is_numeric($value)) {
+						$value = (int) $value; // timestamp
+
+					} elseif (is_string($value)) {
+						$value = class_exists('DateTime', FALSE) ? new DateTime($value) : strtotime($value);
+					}
+					return $this->driver->escape($value, $modifier);
 				}
 
 			case 'by':

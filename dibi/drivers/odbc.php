@@ -203,7 +203,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  string    value
+	 * @param  mixed     value
 	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    encoded value
 	 * @throws InvalidArgumentException
@@ -223,10 +223,10 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 			return $value ? 1 : 0;
 
 		case dibi::DATE:
-			return date("#m/d/Y#", $value);
+			return $value instanceof DateTime ? $value->format("#m/d/Y#") : date("#m/d/Y#", $value);
 
 		case dibi::DATETIME:
-			return date("#m/d/Y H:i:s#", $value);
+			return $value instanceof DateTime ? $value->format("#m/d/Y H:i:s#") : date("#m/d/Y H:i:s#", $value);
 
 		default:
 			throw new InvalidArgumentException('Unsupported type.');

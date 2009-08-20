@@ -42,18 +42,30 @@ class DibiRow extends ArrayObject
 	/**
 	 * Converts value to date-time format.
 	 * @param  string key
-	 * @param  string format
+	 * @param  string format (TRUE means DateTime object)
 	 * @return mixed
 	 */
 	public function asDate($key, $format = NULL)
 	{
-		$value = $this[$key];
-		if ($value === NULL || $value === FALSE) {
-			return $value;
+		$time = $this[$key];
+		if ($time == NULL) { // intentionally ==
+			return NULL;
+
+		} elseif ($format === NULL) { // return timestamp (default)
+			return is_numeric($time) ? (int) $time : strtotime($time);
+
+		} elseif ($format === TRUE) { // return DateTime object
+			return new DateTime(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
+
+		} elseif (is_numeric($time)) { // single timestamp
+			return date($format, $time);
+
+		} elseif (class_exists('DateTime', FALSE)) { // since PHP 5.2
+			$time = new DateTime($time);
+			return $time ? $time->format($format) : NULL;
 
 		} else {
-			$value = is_numeric($value) ? (int) $value : strtotime($value);
-			return $format === NULL ? $value : date($format, $value);
+			return date($format, strtotime($time));
 		}
 	}
 
