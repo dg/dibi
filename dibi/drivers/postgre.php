@@ -74,6 +74,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 				$string = $config['string'];
 			} else {
 				$string = '';
+				DibiConnection::alias($config, 'user', 'username');
 				foreach (array('host','hostaddr','port','dbname','user','password','connect_timeout','options','sslmode','service') as $key) {
 					if (isset($config[$key])) $string .= $key . '=' . $config[$key] . ' ';
 				}
