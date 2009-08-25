@@ -329,10 +329,7 @@ final class DibiTranslator extends DibiObject
 			if ($value instanceof IDibiVariable) {
 				return $value->toSql($this, $modifier);
 
-			} elseif ($value instanceof DateTime) {
-				$value = $value->format('U');
-
-			} elseif ($value !== NULL && !is_scalar($value)) {  // array is already processed
+			} elseif ($value !== NULL && !is_scalar($value) && !($value instanceof DateTime)) {  // array is already processed
 				$this->hasError = TRUE;
 				return '**Unexpected type ' . gettype($value) . '**';
 			}
@@ -436,7 +433,7 @@ final class DibiTranslator extends DibiObject
 			return $value->toSql($this, NULL);
 
 		if ($value instanceof DateTime)
-			return $value = $value->format('U');
+			return $this->driver->escape($value, dibi::DATETIME);
 
 		$this->hasError = TRUE;
 		return '**Unexpected ' . gettype($value) . '**';
