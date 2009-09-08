@@ -467,7 +467,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getColumns($table)
 	{
-		$this->query("SHOW COLUMNS FROM `$table`");
+		$this->query("SHOW FULL COLUMNS FROM `$table`");
 		$res = array();
 		while ($row = $this->fetch(TRUE)) {
 			$type = explode('(', $row['Type']);
@@ -479,6 +479,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 				'nullable' => $row['Null'] === 'YES',
 				'default' => $row['Default'],
 				'autoincrement' => $row['Extra'] === 'auto_increment',
+				'vendor' => $row,
 			);
 		}
 		$this->free();
