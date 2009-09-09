@@ -460,7 +460,6 @@ class DibiColumnInfo extends DibiObject
 	{
 		$this->driver = $driver;
 		$this->info = $info;
-		$this->type = self::detectType($this->info['nativetype']);
 	}
 
 
@@ -513,6 +512,9 @@ class DibiColumnInfo extends DibiObject
 	 */
 	public function getType()
 	{
+		if ($this->type === NULL) {
+			$this->type = self::detectType($this->info['nativetype']);
+		}
 		return $this->type;
 	}
 
