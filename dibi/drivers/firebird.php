@@ -822,6 +822,7 @@ class DibiProcedureException extends DibiException
 	}
 
 
+
 	/**
 	 * Gets the exception severity.
 	 * @return string

@@ -99,6 +99,40 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
+	 * Frees the resources allocated for this result set.
+	 * @return void
+	 */
+	final public function free()
+	{
+		if ($this->driver !== NULL) {
+			$this->driver->free();
+			$this->driver = $this->meta = NULL;
+		}
+	}
+
+
+
+	/**
+	 * Safe access to property $driver.
+	 * @return IDibiDriver
+	 * @throws InvalidStateException
+	 */
+	private function getDriver()
+	{
+		if ($this->driver === NULL) {
+			throw new InvalidStateException('Result-set was released from memory.');
+		}
+
+		return $this->driver;
+	}
+
+
+
+	/********************* rows ****************d*g**/
+
+
+
+	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
 	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
@@ -107,6 +141,17 @@ class DibiResult extends DibiObject implements IDataSource
 	final public function seek($row)
 	{
 		return ($row !== 0 || $this->fetched) ? (bool) $this->getDriver()->seek($row) : TRUE;
+	}
+
+
+
+	/**
+	 * Required by the Countable interface.
+	 * @return int
+	 */
+	final public function count()
+	{
+		return $this->getDriver()->getRowCount();
 	}
 
 
@@ -124,7 +169,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Returns the number of rows in a result set. Alias for getRowCount().
-	 * @return int
+	 * @deprecated
 	 */
 	final public function rowCount()
 	{
@@ -134,56 +179,19 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * Frees the resources allocated for this result set.
-	 * @return void
+	 * Required by the IteratorAggregate interface.
+	 * @param  int  offset
+	 * @param  int  limit
+	 * @return DibiResultIterator
 	 */
-	final public function free()
+	final public function getIterator($offset = NULL, $limit = NULL)
 	{
-		if ($this->driver !== NULL) {
-			$this->driver->free();
-			$this->driver = NULL;
-		}
+		return new DibiResultIterator($this, $offset, $limit);
 	}
 
 
 
-	/**
-	 * Qualifiy each column name with the table name?
-	 * @param  bool
-	 * @return DibiResult  provides a fluent interface
-	 * @throws DibiException
-	 */
-	final public function setWithTables($val)
-	{
-		if ($val) {
-			$cols = array();
-			foreach ($this->getMeta() as $info) {
-				$name = $info['fullname'];
-				if (isset($cols[$name])) {
-					$fix = 1;
-					while (isset($cols[$name . '#' . $fix])) $fix++;
-					$name .= '#' . $fix;
-				}
-				$cols[$name] = TRUE;
-			}
-			$this->withTables = array_keys($cols);
-
-		} else {
-			$this->withTables = FALSE;
-		}
-		return $this;
-	}
-
-
-
-	/**
-	 * Qualifiy each key with the table name?
-	 * @return bool
-	 */
-	final public function getWithTables()
-	{
-		return (bool) $this->withTables;
-	}
+	/********************* fetching rows ****************d*g**/
 
 
 
@@ -439,6 +447,50 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 
+	/********************* meta info ****************d*g**/
+
+
+
+	/**
+	 * Qualifiy each column name with the table name?
+	 * @param  bool
+	 * @return DibiResult  provides a fluent interface
+	 * @throws DibiException
+	 */
+	final public function setWithTables($val)
+	{
+		if ($val) {
+			$cols = array();
+			foreach ($this->getMeta() as $info) {
+				$name = $info['fullname'];
+				if (isset($cols[$name])) {
+					$fix = 1;
+					while (isset($cols[$name . '#' . $fix])) $fix++;
+					$name .= '#' . $fix;
+				}
+				$cols[$name] = TRUE;
+			}
+			$this->withTables = array_keys($cols);
+
+		} else {
+			$this->withTables = FALSE;
+		}
+		return $this;
+	}
+
+
+
+	/**
+	 * Qualifiy each key with the table name?
+	 * @return bool
+	 */
+	final public function getWithTables()
+	{
+		return (bool) $this->withTables;
+	}
+
+
+
 	/**
 	 * Define column type.
 	 * @param  string  column
@@ -549,6 +601,23 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
+	 * Meta lazy initialization.
+	 * @return array
+	 */
+	private function getMeta()
+	{
+		if ($this->meta === NULL) {
+			$this->meta = $this->getDriver()->getColumnsMeta();
+			foreach ($this->meta as & $row) {
+				$row['type'] = DibiColumnInfo::detectType($row['nativetype']);
+			}
+		}
+		return $this->meta;
+	}
+
+
+
+	/**
 	 * Gets an array of meta informations about columns.
 	 * @return array of DibiColumnInfo
 	 */
@@ -575,6 +644,10 @@ class DibiResult extends DibiObject implements IDataSource
 		}
 		return $cols;
 	}
+
+
+
+	/********************* misc tools ****************d*g**/
 
 
 
@@ -611,63 +684,6 @@ class DibiResult extends DibiObject implements IDataSource
 		} else {
 			echo "</tbody>\n</table>\n";
 		}
-	}
-
-
-
-	/**
-	 * Required by the IteratorAggregate interface.
-	 * @param  int  offset
-	 * @param  int  limit
-	 * @return DibiResultIterator
-	 */
-	final public function getIterator($offset = NULL, $limit = NULL)
-	{
-		return new DibiResultIterator($this, $offset, $limit);
-	}
-
-
-
-	/**
-	 * Required by the Countable interface.
-	 * @return int
-	 */
-	final public function count()
-	{
-		return $this->getRowCount();
-	}
-
-
-
-	/**
-	 * Safe access to property $driver.
-	 * @return IDibiDriver
-	 * @throws InvalidStateException
-	 */
-	private function getDriver()
-	{
-		if ($this->driver === NULL) {
-			throw new InvalidStateException('Result-set was released from memory.');
-		}
-
-		return $this->driver;
-	}
-
-
-
-	/**
-	 * Meta lazy initialization.
-	 * @return array
-	 */
-	private function getMeta()
-	{
-		if ($this->meta === NULL) {
-			$this->meta = $this->getDriver()->getColumnsMeta();
-			foreach ($this->meta as & $row) {
-				$row['type'] = DibiColumnInfo::detectType($row['nativetype']);
-			}
-		}
-		return $this->meta;
 	}
 
 }
