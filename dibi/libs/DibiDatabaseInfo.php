@@ -332,7 +332,109 @@ class DibiTableInfo extends DibiObject
 
 
 /**
- * Reflection metadata class for a table column.
+ * Reflection metadata class for a result set.
+ *
+ * @author     David Grudl
+ * @copyright  Copyright (c) 2005, 2009 David Grudl
+ * @package    dibi
+ */
+class DibiResultInfo extends DibiObject
+{
+	/** @var IDibiDriver */
+	private $driver;
+
+	/** @var array */
+	private $columns;
+
+	/** @var array */
+	private $names;
+
+
+
+	public function __construct(IDibiDriver $driver)
+	{
+		$this->driver = $driver;
+	}
+
+
+
+	/**
+	 * @return array of DibiColumnInfo
+	 */
+	public function getColumns()
+	{
+		$this->initColumns();
+		return array_values($this->columns);
+	}
+
+
+
+	/**
+	 * @param  bool
+	 * @return array of string
+	 */
+	public function getColumnNames($fullNames = FALSE)
+	{
+		$this->initColumns();
+		$res = array();
+		foreach ($this->columns as $column) {
+			$res[] = $fullNames ? $column->getFullName() : $column->getName();
+		}
+		return $res;
+	}
+
+
+
+	/**
+	 * @param  string
+	 * @return DibiColumnInfo
+	 */
+	public function getColumn($name)
+	{
+		$this->initColumns();
+		$l = strtolower($name);
+		if (isset($this->names[$l])) {
+			return $this->names[$l];
+
+		} else {
+			throw new DibiException("Result set has no column '$name'.");
+		}
+	}
+
+
+
+	/**
+	 * @param  string
+	 * @return bool
+	 */
+	public function hasColumn($name)
+	{
+		$this->initColumns();
+		return isset($this->names[strtolower($name)]);
+	}
+
+
+
+	/**
+	 * @return void
+	 */
+	protected function initColumns()
+	{
+		if ($this->columns === NULL) {
+			$this->columns = array();
+			foreach ($this->driver->getColumnsMeta() as $info) {
+				$this->columns[] = $this->names[$info['name']] = new DibiColumnInfo($this->driver, $info);
+			}
+		}
+	}
+
+}
+
+
+
+
+/**
+ * Reflection metadata class for a table or result set column.
  *
  * @author     David Grudl
  * @copyright  Copyright (c) 2005, 2009 David Grudl
@@ -369,6 +471,16 @@ class DibiColumnInfo extends DibiObject
 	public function getName()
 	{
 		return $this->info['name'];
+	}
+
+
+
+	/**
+	 * @return string
+	 */
+	public function getFullName()
+	{
+		return $this->info['fullname'];
 	}
 
 
@@ -472,7 +584,7 @@ class DibiColumnInfo extends DibiObject
 	 * @param  string
 	 * @return string
 	 */
-	public static function detectType($type)
+	private static function detectType($type)
 	{
 		static $patterns = array(
 			'BYTEA|BLOB|BIN' => dibi::BINARY,

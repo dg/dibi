@@ -47,7 +47,7 @@ class DibiResult extends DibiObject implements IDataSource
 	/** @var array  Translate table */
 	private $xlat;
 
-	/** @var array  Cache for $driver->getColumnsMeta() */
+	/** @var DibiResultInfo */
 	private $meta;
 
 	/** @var bool  Already fetched? Used for allowance for first seek(0) */
@@ -461,8 +461,8 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		if ($val) {
 			$cols = array();
-			foreach ($this->getMeta() as $info) {
-				$name = $info['fullname'];
+			foreach ($this->getInfo()->getColumns() as $col) {
+				$name = $col->getFullname();
 				if (isset($cols[$name])) {
 					$fix = 1;
 					while (isset($cols[$name . '#' . $fix])) $fix++;
@@ -511,8 +511,8 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function detectTypes()
 	{
-		foreach ($this->getMeta() as $info) {
-			$this->xlat[$info['name']] = array('type' => $info['type'], 'format' => NULL);
+		foreach ($this->getInfo()->getColumns() as $col) {
+			$this->xlat[$col->getName()] = array('type' => $col->getType(), 'format' => NULL);
 		}
 	}
 
@@ -601,16 +601,13 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * Meta lazy initialization.
-	 * @return array
+	 * Returns a meta information about the current result set.
+	 * @return DibiResultInfo
 	 */
-	private function getMeta()
+	public function getInfo()
 	{
 		if ($this->meta === NULL) {
-			$this->meta = $this->getDriver()->getColumnsMeta();
-			foreach ($this->meta as & $row) {
-				$row['type'] = DibiColumnInfo::detectType($row['nativetype']);
-			}
+			$this->meta = new DibiResultInfo($this->getDriver());
 		}
 		return $this->meta;
 	}
@@ -618,31 +615,21 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * Gets an array of meta informations about columns.
-	 * @return array of DibiColumnInfo
+	 * @deprecated
 	 */
 	final public function getColumns()
 	{
-		$cols = array();
-		foreach ($this->getMeta() as $info) {
-			$cols[] = new DibiColumnInfo($this->getDriver(), $info);
-		}
-		return $cols;
+		return $this->getInfo()->getColumns();
 	}
 
 
 
 	/**
-	 * @param  bool
-	 * @return array of string
+	 * @deprecated
 	 */
-	public function getColumnNames($withTables = FALSE)
+	public function getColumnNames($fullNames = FALSE)
 	{
-		$cols = array();
-		foreach ($this->getMeta() as $info) {
-			$cols[] = $info[$withTables ? 'fullname' : 'name'];
-		}
-		return $cols;
+		return $this->getInfo()->getColumnNames($fullNames);
 	}
 
 
