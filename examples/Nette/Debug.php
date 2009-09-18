@@ -61,7 +61,7 @@ class
 Framework{const
 NAME='Nette Framework';const
 VERSION='0.9';const
-REVISION='424 released on 2009/07/15 12:03:47';const
+REVISION='650d722 released on 2009-09-17';const
 PACKAGE='PHP 5.2';final
 public
 function
@@ -135,7 +135,7 @@ as$callback){foreach((array)call_user_func($callback,'profiler')as$line)self::fi
 	#netteProfiler {
 		font: normal normal 11px/1.4 Consolas, Arial;
 		position: relative;
-		padding: 1px;
+		padding: 3px;
 		color: black;
 		background: #EEE;
 		border: 1px dotted gray;
@@ -155,7 +155,7 @@ as$callback){foreach((array)call_user_func($callback,'profiler')as$line)self::fi
 		right: 0;
 		top: 0;
 		line-height: 1;
-		padding: 4px;
+		padding: 2px;
 		color: black;
 		text-decoration: none;
 	}
@@ -224,6 +224,7 @@ document.getElementById('netteProfiler').onmousedown = function(e) {
 	document.documentElement.onmouseup = function(e) {
 		document.documentElement.onmousemove = null;
 		document.documentElement.onmouseup = null;
+		document.cookie = 'netteProfilerPosition=' + thisObj.style.left + ':' + thisObj.style.top + '; path=/';
 		return false;
 	};
 };
@@ -236,10 +237,22 @@ document.getElementById('netteProfilerIcon').onclick = function(e) {
 	arrow.innerHTML = collapsed ? String.fromCharCode(0x25bc) : 'Profiler ' + String.fromCharCode(0x25ba);
 	panel.style.display = collapsed ? 'block' : 'none';
 	arrow.parentNode.style.position = collapsed ? 'absolute' : 'static';
+
+	document.cookie = 'netteProfilerVisible=' + collapsed*1 + '; path=/';
 	return false;
 }
 
 document.body.appendChild(document.getElementById('netteProfilerContainer'));
+
+if (document.cookie.indexOf('netteProfilerVisible=0') > -1) {
+	document.getElementById('netteProfilerIcon').onclick();
+}
+
+var _nettePos = document.cookie.match(/netteProfilerPosition=([0-9-]+px):([0-9-]+px)/);
+if (_nettePos) {
+	document.getElementById('netteProfiler').style.left = _nettePos[1];
+	document.getElementById('netteProfiler').style.top = _nettePos[2];
+}
 /* ]]> */
 </script>
 <?php }}if(self::$consoleData){$payload=self::$consoleData;if(!function_exists('_netteDumpCb2')){function
@@ -402,7 +415,7 @@ preg_replace_callback('#(<pre class="dump">|\s+)?(.*)\((\d+)\) <code>#','_netteD
 if (typeof _netteConsole === 'undefined') {
 	_netteConsole = window.open('','_netteConsole','width=700,height=700,resizable,scrollbars=yes');
 	_netteConsole.document.write(<?php echo
-json_encode(preg_replace('#\s+#',' ',$document))?>);
+json_encode(preg_replace('#[ \t\r\n]+#',' ',$document))?>);
 	_netteConsole.document.close();
 	_netteConsole.document.onkeyup = function(e) {
 		e = e || _netteConsole.event;
@@ -423,9 +436,9 @@ function
 consoleDump($var,$title=NULL){if(!self::$productionMode){self::$consoleData[]=array('title'=>$title,'var'=>$var);}return$var;}private
 static
 function
-_dump(&$var,$level){if(is_bool($var)){return"<span>bool</span>(".($var?'TRUE':'FALSE').")\n";}elseif($var===NULL){return"<span>NULL</span>\n";}elseif(is_int($var)){return"<span>int</span>($var)\n";}elseif(is_float($var)){return"<span>float</span>($var)\n";}elseif(is_string($var)){if(self::$maxLen&&strlen($var)>self::$maxLen){$s=htmlSpecialChars(substr($var,0,self::$maxLen),ENT_NOQUOTES).' ... ';}else{$s=htmlSpecialChars($var,ENT_NOQUOTES);}return"<span>string</span>(".strlen($var).") \"$s\"\n";}elseif(is_array($var)){$s="<span>array</span>(".count($var).") ";$space=str_repeat($space1='   ',$level);static$marker;if($marker===NULL)$marker=uniqid("\x00",TRUE);if(empty($var)){}elseif(isset($var[$marker])){$s.="{\n$space$space1*RECURSION*\n$space}";}elseif($level<self::$maxDepth||!self::$maxDepth){$s.="<code>{\n";$var[$marker]=0;foreach($var
-as$k=>&$v){if($k===$marker)continue;$s.="$space$space1".(is_int($k)?$k:"\"$k\"")." => ".self::_dump($v,$level+1);}unset($var[$marker]);$s.="$space}</code>";}else{$s.="{\n$space$space1...\n$space}";}return$s."\n";}elseif(is_object($var)){$arr=(array)$var;$s="<span>object</span>(".get_class($var).") (".count($arr).") ";$space=str_repeat($space1='   ',$level);static$list=array();if(empty($arr)){$s.="{}";}elseif(in_array($var,$list,TRUE)){$s.="{\n$space$space1*RECURSION*\n$space}";}elseif($level<self::$maxDepth||!self::$maxDepth){$s.="<code>{\n";$list[]=$var;foreach($arr
-as$k=>&$v){$m='';if($k[0]==="\x00"){$m=$k[1]==='*'?' <span>protected</span>':' <span>private</span>';$k=substr($k,strrpos($k,"\x00")+1);}$s.="$space$space1\"$k\"$m => ".self::_dump($v,$level+1);}array_pop($list);$s.="$space}</code>";}else{$s.="{\n$space$space1...\n$space}";}return$s."\n";}elseif(is_resource($var)){return"<span>resource of type</span>(".get_resource_type($var).")\n";}else{return"<span>unknown type</span>\n";}}public
+_dump(&$var,$level){static$tableUtf,$tableBin,$re='#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{10FFFF}]#u';if($tableUtf===NULL){foreach(range("\x00","\xFF")as$ch){if(ord($ch)<32&&strpos("\r\n\t",$ch)===FALSE)$tableUtf[$ch]=$tableBin[$ch]='\\x'.str_pad(dechex(ord($ch)),2,'0',STR_PAD_LEFT);elseif(ord($ch)<127)$tableUtf[$ch]=$tableBin[$ch]=$ch;else{$tableUtf[$ch]=$ch;$tableBin[$ch]='\\x'.dechex(ord($ch));}}$tableUtf['\\x']=$tableBin['\\x']='\\\\x';}if(is_bool($var)){return"<span>bool</span>(".($var?'TRUE':'FALSE').")\n";}elseif($var===NULL){return"<span>NULL</span>\n";}elseif(is_int($var)){return"<span>int</span>($var)\n";}elseif(is_float($var)){return"<span>float</span>($var)\n";}elseif(is_string($var)){if(self::$maxLen&&strlen($var)>self::$maxLen){$s=htmlSpecialChars(substr($var,0,self::$maxLen),ENT_NOQUOTES).' ... ';}else{$s=htmlSpecialChars($var,ENT_NOQUOTES);}$s=strtr($s,preg_match($re,$s)||preg_last_error()?$tableBin:$tableUtf);return"<span>string</span>(".strlen($var).") \"$s\"\n";}elseif(is_array($var)){$s="<span>array</span>(".count($var).") ";$space=str_repeat($space1='   ',$level);static$marker;if($marker===NULL)$marker=uniqid("\x00",TRUE);if(empty($var)){}elseif(isset($var[$marker])){$s.="{\n$space$space1*RECURSION*\n$space}";}elseif($level<self::$maxDepth||!self::$maxDepth){$s.="<code>{\n";$var[$marker]=0;foreach($var
+as$k=>&$v){if($k===$marker)continue;$k=is_int($k)?$k:'"'.strtr($k,preg_match($re,$k)||preg_last_error()?$tableBin:$tableUtf).'"';$s.="$space$space1$k => ".self::_dump($v,$level+1);}unset($var[$marker]);$s.="$space}</code>";}else{$s.="{\n$space$space1...\n$space}";}return$s."\n";}elseif(is_object($var)){$arr=(array)$var;$s="<span>object</span>(".get_class($var).") (".count($arr).") ";$space=str_repeat($space1='   ',$level);static$list=array();if(empty($arr)){$s.="{}";}elseif(in_array($var,$list,TRUE)){$s.="{\n$space$space1*RECURSION*\n$space}";}elseif($level<self::$maxDepth||!self::$maxDepth){$s.="<code>{\n";$list[]=$var;foreach($arr
+as$k=>&$v){$m='';if($k[0]==="\x00"){$m=$k[1]==='*'?' <span>protected</span>':' <span>private</span>';$k=substr($k,strrpos($k,"\x00")+1);}$k=strtr($k,preg_match($re,$k)||preg_last_error()?$tableBin:$tableUtf);$s.="$space$space1\"$k\"$m => ".self::_dump($v,$level+1);}array_pop($list);$s.="$space}</code>";}else{$s.="{\n$space$space1...\n$space}";}return$s."\n";}elseif(is_resource($var)){return"<span>resource of type</span>(".get_resource_type($var).")\n";}else{return"<span>unknown type</span>\n";}}public
 static
 function
 timer($name=NULL){static$time=array();$now=microtime(TRUE);$delta=isset($time[$name])?$now-$time[$name]:0;$time[$name]=$now;return$delta;}public
@@ -447,7 +460,7 @@ function
 errorHandler($severity,$message,$file,$line,$context){if($severity===E_RECOVERABLE_ERROR||$severity===E_USER_ERROR){throw
 new
 FatalErrorException($message,0,$severity,$file,$line,$context);}elseif(($severity&error_reporting())!==$severity){return
-NULL;}elseif(self::$strictMode){self::processException(new
+NULL;}elseif(self::$strictMode){if(!headers_sent()){header('HTTP/1.1 500 Internal Server Error');}self::processException(new
 FatalErrorException($message,0,$severity,$file,$line,$context),TRUE);exit;}static$types=array(E_WARNING=>'Warning',E_USER_WARNING=>'Warning',E_NOTICE=>'Notice',E_USER_NOTICE=>'Notice',E_STRICT=>'Strict standards',E_DEPRECATED=>'Deprecated',E_USER_DEPRECATED=>'Deprecated');$type=isset($types[$severity])?$types[$severity]:'Unknown error';if(self::$logFile){if(self::$sendEmails){self::sendEmail("$type: $message in $file on line $line");}return
 FALSE;}elseif(!self::$productionMode&&self::$firebugDetected&&!headers_sent()){$message=strip_tags($message);self::fireLog("$type: $message in $file on line $line",self::ERROR);return
 NULL;}return
@@ -456,12 +469,12 @@ static
 function
 processException(Exception$exception,$outputAllowed=FALSE){if(self::$logFile){error_log("PHP Fatal error:  Uncaught $exception");$file=@strftime('%d-%b-%Y %H-%M-%S ',Debug::$time).strstr(number_format(Debug::$time,4,'~',''),'~');$file=dirname(self::$logFile)."/exception $file.html";self::$logHandle=@fopen($file,'x');if(self::$logHandle){ob_start(array(__CLASS__,'writeFile'),1);self::paintBlueScreen($exception);ob_end_flush();fclose(self::$logHandle);}if(self::$sendEmails){self::sendEmail((string)$exception);}}elseif(self::$productionMode){}elseif(self::$consoleMode){if($outputAllowed){echo"$exception\n";foreach(self::$colophons
 as$callback){foreach((array)call_user_func($callback,'bluescreen')as$line)echo
-strip_tags($line)."\n";}}}elseif(self::$firebugDetected&&self::$ajaxDetected&&!headers_sent()){self::fireLog($exception,self::EXCEPTION);}elseif($outputAllowed){if(!headers_sent()){@ob_end_clean();while(ob_get_level()&&@ob_end_clean());header('Content-Encoding:',TRUE);}self::paintBlueScreen($exception);}elseif(self::$firebugDetected&&!headers_sent()){self::fireLog($exception,self::EXCEPTION);}foreach(self::$onFatalError
+strip_tags($line)."\n";}}}elseif(self::$firebugDetected&&self::$ajaxDetected&&!headers_sent()){self::fireLog($exception,self::EXCEPTION);}elseif($outputAllowed){if(!headers_sent()){@ob_end_clean();while(ob_get_level()&&@ob_end_clean());header('Content-Encoding: identity',TRUE);}self::paintBlueScreen($exception);}elseif(self::$firebugDetected&&!headers_sent()){self::fireLog($exception,self::EXCEPTION);}foreach(self::$onFatalError
 as$handler){fixCallback($handler);call_user_func($handler,$exception);}}public
 static
 function
 paintBlueScreen(Exception$exception){$internals=array();foreach(array('Object','ObjectMixin')as$class){if(class_exists($class,FALSE)){$rc=new
-ReflectionClass($class);$internals[$rc->getFileName()]=TRUE;}}$colophons=self::$colophons;if(!function_exists('_netteDebugPrintCode')){function
+ReflectionClass($class);$internals[$rc->getFileName()]=TRUE;}}if(class_exists('Environment',FALSE)){$application=Environment::getServiceLocator()->hasService('Nette\Application\Application',TRUE)?Environment::getServiceLocator()->getService('Nette\Application\Application'):NULL;}$colophons=self::$colophons;if(!function_exists('_netteDebugPrintCode')){function
 _netteDebugPrintCode($file,$line,$count=15){if(function_exists('ini_set')){ini_set('highlight.comment','#999; font-style: italic');ini_set('highlight.default','#000');ini_set('highlight.html','#06b');ini_set('highlight.keyword','#d24; font-weight: bold');ini_set('highlight.string','#080');}$start=max(1,$line-floor($count/2));$source=@file_get_contents($file);if(!$source)return;$source=explode("\n",highlight_string($source,TRUE));$spans=1;echo$source[0];$source=explode('<br />',$source[1]);array_unshift($source,NULL);$i=$start;while(--$i>=1){if(preg_match('#.*(</?span[^>]*>)#',$source[$i],$m)){if($m[1]!=='</span>'){$spans++;echo$m[1];}break;}}$source=array_slice($source,$start,$count,TRUE);end($source);$numWidth=strlen((string)key($source));foreach($source
 as$n=>$s){$spans+=substr_count($s,'<span')-substr_count($s,'</span');$s=str_replace(array("\r","\n"),array('',''),$s);if($n===$line){printf("<span class='highlight'>Line %{$numWidth}s:    %s\n</span>%s",$n,strip_tags($s),preg_replace('#[^>]*(<[^>]+>)[^<]*#','$1',$s));}else{printf("<span class='line'>Line %{$numWidth}s:</span>    %s\n",$n,$s);}}echo
 str_repeat('</span>',$spans),'</code>';}function
@@ -490,7 +503,7 @@ FatalErrorException&&isset($errorTypes[$exception->getSeverity()]))?$errorTypes[
 	<meta name="generator" content="Nette Framework">
 
 	<title><?php echo
-htmlspecialchars($title)?></title>
+htmlspecialchars($title)?></title><!-- <?php echo$exception->getMessage(),($exception->getCode()?' #'.$exception->getCode():'')?> -->
 
 	<style type="text/css">
 	/* <![CDATA[ */
@@ -780,6 +793,22 @@ as$k=>$v){echo'<tr><th>$',htmlspecialchars($k),'</th><td>',_netteDump($v),"</td>
 
 
 
+
+		<?php if(!empty($application)):?>
+		<?php _netteOpenPanel('Nette Application',TRUE)?>
+			<h3>Requests</h3>
+			<?php echo
+_netteDump($application->getRequests())?>
+
+			<h3>Presenter</h3>
+			<?php echo
+_netteDump($application->getPresenter())?>
+		<?php _netteClosePanel()?>
+		<?php endif?>
+
+
+
+
 		<?php _netteOpenPanel('Environment',TRUE)?>
 			<?php
 $list=get_defined_constants(TRUE);if(!empty($list['user'])):?>
@@ -813,6 +842,7 @@ as$k=>$v)echo'<tr'.($rn++%2?' class="odd"':'').'><th>',htmlspecialchars($k),'</t
 			</table>
 			<?php endif?>
 		<?php _netteClosePanel()?>
+
 
 
 
