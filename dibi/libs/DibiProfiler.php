@@ -60,22 +60,24 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 
 	/**
 	 * @param  string  filename
-	 * @return void
+	 * @return DibiProfiler  provides a fluent interface
 	 */
 	public function setFile($file)
 	{
 		$this->file = $file;
+		return $this;
 	}
 
 
 
 	/**
 	 * @param  int
-	 * @return void
+	 * @return DibiProfiler  provides a fluent interface
 	 */
 	public function setFilter($filter)
 	{
 		$this->filter = (int) $filter;
+		return $this;
 	}
 
 

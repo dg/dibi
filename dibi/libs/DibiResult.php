@@ -485,11 +485,12 @@ class DibiResult extends DibiObject implements IDataSource
 	 * @param  string  column
 	 * @param  string  type (use constant Dibi::*)
 	 * @param  string  optional format
-	 * @return void
+	 * @return DibiResult  provides a fluent interface
 	 */
 	final public function setType($col, $type, $format = NULL)
 	{
 		$this->xlat[$col] = array('type' => $type, 'format' => $format);
+		return $this;
 	}
 
 
@@ -510,12 +511,13 @@ class DibiResult extends DibiObject implements IDataSource
 	/**
 	 * Define multiple columns types.
 	 * @param  array
-	 * @return void
+	 * @return DibiResult  provides a fluent interface
 	 * @internal
 	 */
 	final public function setTypes(array $types)
 	{
 		$this->xlat = $types;
+		return $this;
 	}
 
 
