@@ -287,7 +287,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 	 * Returns SQL query.
 	 * @return string
 	 */
-	final public function __toString()
+	public function __toString()
 	{
 		return $this->connection->sql('
 			SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
