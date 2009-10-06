@@ -330,7 +330,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 		// make associative tree
 		do {
-			$arr = (array) $row;
 			$x = & $data;
 
 			// iterative deepening
@@ -340,7 +339,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 				} elseif ($as === '=') { // "record" node
 					if ($x === NULL) {
-						$x = $arr;
+						$x = (array) $row;
 						$x = & $x[ $assoc[$i+1] ];
 						$x = NULL; // prepare child node
 					} else {
@@ -358,13 +357,13 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 				} else { // associative-array node
-					$x = & $x[ $arr[ $as ] ];
+					$x = & $x[$row->$as];
 				}
 			}
 
 			if ($x === NULL) { // build leaf
 				if ($leaf === '=') {
-					$x = $arr;
+					$x = (array) $row;
 				} else {
 					$x = $row;
 				}
