@@ -81,14 +81,14 @@ INNER JOIN [orders] USING ([product_id])
 INNER JOIN [customers] USING ([customer_id])
 ');
 
-$assoc = $res->fetchAssoc('customers.name,products.title'); // key
+$assoc = $res->fetchAssoc('customers.name|products.title'); // key
 Debug::dump($assoc);
 echo '<hr>';
 
-$assoc = $res->fetchAssoc('customers.name,#,products.title'); // key
+$assoc = $res->fetchAssoc('customers.name[]products.title'); // key
 Debug::dump($assoc);
 echo '<hr>';
 
-$assoc = $res->fetchAssoc('customers.name,=,products.title'); // key
+$assoc = $res->fetchAssoc('customers.name->products.title'); // key
 Debug::dump($assoc);
 echo '<hr>';
