@@ -333,7 +333,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver
 	public function fetch($assoc)
 	{
 		DibiDriverException::tryError();
-		$result = $assoc ? ibase_fetch_assoc($this->resultSet) : ibase_fetch_row($this->resultSet); // intentionally @
+		$result = $assoc ? ibase_fetch_assoc($this->resultSet, IBASE_TEXT) : ibase_fetch_row($this->resultSet, IBASE_TEXT); // intentionally @
 
 		if (DibiDriverException::catchError($msg)) {
 			if (ibase_errcode() == self::ERROR_EXCEPTION_THROWN) {
