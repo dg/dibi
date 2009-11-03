@@ -476,6 +476,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 				'table' => $table,
 				'nativetype' => strtoupper($type[0]),
 				'size' => isset($type[1]) ? (int) $type[1] : NULL,
+				'unsigned' => (bool) strstr('unsigned', $row['Type']),
 				'nullable' => $row['Null'] === 'YES',
 				'default' => $row['Default'],
 				'autoincrement' => $row['Extra'] === 'auto_increment',

@@ -532,6 +532,16 @@ class DibiColumnInfo extends DibiObject
 	/**
 	 * @return bool
 	 */
+	public function isUnsigned()
+	{
+		return isset($this->info['unsigned']) ? (bool) $this->info['unsigned'] : NULL;
+	}
+
+
+
+    /**
+	 * @return bool
+	 */
 	public function isNullable()
 	{
 		return isset($this->info['nullable']) ? (bool) $this->info['nullable'] : NULL;
