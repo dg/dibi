@@ -417,26 +417,28 @@ final class DibiTranslator extends DibiObject
 
 
 		// without modifier procession
-		if (is_string($value))
+		if (is_string($value)) {
 			return $this->driver->escape($value, dibi::TEXT);
 
-		if (is_int($value) || is_float($value))
+		} elseif (is_int($value) || is_float($value)) {
 			return rtrim(rtrim(number_format($value, 5, '.', ''), '0'), '.');
 
-		if (is_bool($value))
+		} elseif (is_bool($value)) {
 			return $this->driver->escape($value, dibi::BOOL);
 
-		if ($value === NULL)
+		} elseif ($value === NULL) {
 			return 'NULL';
 
-		if ($value instanceof IDibiVariable)
+		} elseif ($value instanceof IDibiVariable) {
 			return $value->toSql($this, NULL);
 
-		if ($value instanceof DateTime)
+		} elseif ($value instanceof DateTime) {
 			return $this->driver->escape($value, dibi::DATETIME);
 
-		$this->hasError = TRUE;
-		return '**Unexpected ' . gettype($value) . '**';
+		} else {	
+			$this->hasError = TRUE;
+			return '**Unexpected ' . gettype($value) . '**';
+		}
 	}
 
 

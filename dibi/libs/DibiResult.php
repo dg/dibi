@@ -638,7 +638,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 			} elseif (class_exists('DateTime', FALSE)) { // since PHP 5.2
 				$value = new DateTime($value);
-				return $value ? $value->format($format) : NULL;
+				return $value->format($format);
 
 			} else {
 				return date($format, strtotime($value));

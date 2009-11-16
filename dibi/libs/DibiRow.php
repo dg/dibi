@@ -62,7 +62,7 @@ class DibiRow extends ArrayObject
 
 		} elseif (class_exists('DateTime', FALSE)) { // since PHP 5.2
 			$time = new DateTime($time);
-			return $time ? $time->format($format) : NULL;
+			return $time->format($format);
 
 		} else {
 			return date($format, strtotime($time));
