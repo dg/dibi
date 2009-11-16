@@ -20,25 +20,6 @@
 
 
 /**
- * Interface for user variable, used for generating SQL.
- * @package dibi
- */
-interface IDibiVariable
-{
-	/**
-	 * Format for SQL.
-	 * @param  DibiTranslator
-	 * @param  string  optional modifier
-	 * @return string  SQL code
-	 */
-	function toSql(DibiTranslator $translator, $modifier);
-}
-
-
-
-
-
-/**
  * Provides an interface between a dataset and data-aware components.
  * @package dibi
  */

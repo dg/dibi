@@ -21,8 +21,8 @@
 /**
  * Check PHP configuration.
  */
-if (version_compare(PHP_VERSION, '5.1.0', '<')) {
-	throw new Exception('dibi needs PHP 5.1.0 or newer.');
+if (version_compare(PHP_VERSION, '5.2.0', '<')) {
+	throw new Exception('dibi needs PHP 5.2.0 or newer.');
 }
 
 @set_magic_quotes_runtime(FALSE); // intentionally @
@@ -60,6 +60,21 @@ if (!interface_exists(/*Nette\*/'IDebuggable', FALSE)) {
 	require_once dirname(__FILE__) . '/Nette/IDebuggable.php';
 }
 
+
+
+/**
+ * Back-compatibility
+ */
+class DibiVariable extends DateTime
+{
+	function __construct($val)
+	{
+		parent::__construct($val);
+	}
+}
+
+
+
 // dibi libraries
 require_once dirname(__FILE__) . '/libs/interfaces.php';
 require_once dirname(__FILE__) . '/libs/DibiObject.php';
@@ -69,7 +84,6 @@ require_once dirname(__FILE__) . '/libs/DibiResult.php';
 require_once dirname(__FILE__) . '/libs/DibiResultIterator.php';
 require_once dirname(__FILE__) . '/libs/DibiRow.php';
 require_once dirname(__FILE__) . '/libs/DibiTranslator.php';
-require_once dirname(__FILE__) . '/libs/DibiVariable.php';
 require_once dirname(__FILE__) . '/libs/DibiDataSource.php';
 require_once dirname(__FILE__) . '/libs/DibiFluent.php';
 require_once dirname(__FILE__) . '/libs/DibiDatabaseInfo.php';
@@ -570,36 +584,21 @@ class dibi
 
 
 	/**
-	 * Pseudotype for timestamp representation.
-	 * @param  mixed  datetime
-	 * @return DibiVariable
+     * @deprecated
 	 */
 	public static function datetime($time = NULL)
 	{
-		if ($time === NULL) {
-			$time = time(); // current time
-
-		} elseif (is_numeric($time)) {
-			$time = (int) $time; // timestamp
-
-		} elseif (is_string($time)) {
-			$time = class_exists('DateTime', FALSE) ? new DateTime($time) : strtotime($time); // DateTime is since PHP 5.2
-		}
-		return new DibiVariable($time, dibi::DATETIME);
+		return new DateTime(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
 	}
 
 
 
 	/**
-	 * Pseudotype for date representation.
-	 * @param  mixed  date
-	 * @return DibiVariable
+     * @deprecated
 	 */
 	public static function date($date = NULL)
 	{
-		$var = self::datetime($date);
-		$var->modifier = dibi::DATE;
-		return $var;
+		return new DateTime(is_numeric($date) ? date('Y-m-d', $date) : $date);
 	}
 
 

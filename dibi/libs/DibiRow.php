@@ -60,12 +60,9 @@ class DibiRow extends ArrayObject
 		} elseif (is_numeric($time)) { // single timestamp
 			return date($format, $time);
 
-		} elseif (class_exists('DateTime', FALSE)) { // since PHP 5.2
+		} else {
 			$time = new DateTime($time);
 			return $time->format($format);
-
-		} else {
-			return date($format, strtotime($time));
 		}
 	}
 

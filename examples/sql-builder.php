@@ -33,7 +33,7 @@ $array = array(
 	'title'   => 'Super Product',
 	'price'   => 12,
 	'brand'   => NULL,
-	'created' => dibi::datetime(),
+	'created' => new DateTime,
 );
 dibi::test("INSERT INTO [products]", $array, $array, $array);
 // -> INSERT INTO [products] ([title], [price], [brand], [created]) VALUES ('Super Product', ...) , (...) , (...)

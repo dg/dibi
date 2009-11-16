@@ -326,10 +326,7 @@ final class DibiTranslator extends DibiObject
 
 		// with modifier procession
 		if ($modifier) {
-			if ($value instanceof IDibiVariable) {
-				return $value->toSql($this, $modifier);
-
-			} elseif ($value !== NULL && !is_scalar($value) && !($value instanceof DateTime)) {  // array is already processed
+			if ($value !== NULL && !is_scalar($value) && !($value instanceof DateTime)) {  // array is already processed
 				$this->hasError = TRUE;
 				return '**Unexpected type ' . gettype($value) . '**';
 			}
@@ -373,7 +370,7 @@ final class DibiTranslator extends DibiObject
 						$value = (int) $value; // timestamp
 
 					} elseif (is_string($value)) {
-						$value = class_exists('DateTime', FALSE) ? new DateTime($value) : strtotime($value);
+						$value = new DateTime($value);
 					}
 					return $this->driver->escape($value, $modifier);
 				}
@@ -428,9 +425,6 @@ final class DibiTranslator extends DibiObject
 
 		} elseif ($value === NULL) {
 			return 'NULL';
-
-		} elseif ($value instanceof IDibiVariable) {
-			return $value->toSql($this, NULL);
 
 		} elseif ($value instanceof DateTime) {
 			return $this->driver->escape($value, dibi::DATETIME);

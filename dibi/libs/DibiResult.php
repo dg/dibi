@@ -636,12 +636,9 @@ class DibiResult extends DibiObject implements IDataSource
 			} elseif (is_numeric($value)) { // single timestamp
 				return date($format, $value);
 
-			} elseif (class_exists('DateTime', FALSE)) { // since PHP 5.2
+			} else {
 				$value = new DateTime($value);
 				return $value->format($format);
-
-			} else {
-				return date($format, strtotime($value));
 			}
 
 		case dibi::BOOL:
