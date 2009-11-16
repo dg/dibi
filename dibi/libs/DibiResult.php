@@ -624,7 +624,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 		case dibi::DATE:
 		case dibi::DATETIME:
-			if ($value == NULL) { // intentionally ==
+			if ((int) $value === 0) { // '', NULL, FALSE, '0000-00-00', ...
 				return NULL;
 
 			} elseif ($format === NULL) { // return timestamp (default)

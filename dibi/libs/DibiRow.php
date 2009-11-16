@@ -48,7 +48,7 @@ class DibiRow extends ArrayObject
 	public function asDate($key, $format = NULL)
 	{
 		$time = $this[$key];
-		if ($time == NULL) { // intentionally ==
+		if ((int) $time === 0) { // '', NULL, FALSE, '0000-00-00', ...
 			return NULL;
 
 		} elseif ($format === NULL) { // return timestamp (default)
