@@ -107,7 +107,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 */
 	public function query($sql)
 	{
-
 		$this->resultSet = oci_parse($this->connection, $sql);
 		if ($this->resultSet) {
 			oci_execute($this->resultSet, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
@@ -142,7 +141,9 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getInsertId($sequence)
 	{
-		throw new NotSupportedException('Oracle does not support autoincrementing.');
+		$this->query("SELECT $sequence.CURRVAL AS ID FROM DUAL");
+		$row = $this->fetch(TRUE);
+		return isset($row['ID']) : (int) $row['ID'] : FALSE;
 	}
 
 
