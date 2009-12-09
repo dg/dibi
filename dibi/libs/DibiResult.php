@@ -340,7 +340,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 				} elseif ($as === '=') { // "value" node
 					$x = $row->{$assoc[$i+1]};
-					break;
+					continue 2;
 
 				} elseif ($as === '->') { // "object" node
 					if ($x === NULL) {
