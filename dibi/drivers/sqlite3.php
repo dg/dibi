@@ -19,12 +19,10 @@
 
 
 /**
- * The dibi driver for SQLite database.
+ * The dibi driver for SQLite3 database.
  *
  * Connection options:
- *   - 'database' (or 'file') - the filename of the SQLite database
- *   - 'persistent' - try to find a persistent link?
- *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
+ *   - 'database' (or 'file') - the filename of the SQLite3 database
  *   - 'lazy' - if TRUE, connection will be established only when required
  *   - 'formatDate' - how to format date in SQL (@see date)
  *   - 'formatDateTime' - how to format datetime in SQL (@see date)
@@ -36,16 +34,13 @@
  * @copyright  Copyright (c) 2005, 2009 David Grudl
  * @package    dibi
  */
-class DibiSqliteDriver extends DibiObject implements IDibiDriver
+class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 {
-	/** @var resource  Connection resource */
+	/** @var SQLite3  Connection resource */
 	private $connection;
 
-	/** @var resource  Resultset resource */
+	/** @var SQLite3Result  Resultset resource */
 	private $resultSet;
-
-	/** @var bool  Is buffered (seekable and countable)? */
-	private $buffered;
 
 	/** @var string  Date and datetime format */
 	private $fmtDate, $fmtDateTime;
@@ -60,8 +55,8 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function __construct()
 	{
-		if (!extension_loaded('sqlite')) {
-			throw new DibiDriverException("PHP extension 'sqlite' is not loaded.");
+		if (!extension_loaded('sqlite3')) {
+			throw new DibiDriverException("PHP extension 'sqlite3' is not loaded.");
 		}
 	}
 
@@ -78,20 +73,14 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 		$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
 		$this->fmtDateTime = isset($config['formatDateTime']) ? $config['formatDateTime'] : 'U';
 
-		$errorMsg = '';
-		if (isset($config['resource'])) {
+		if (isset($config['resource']) && $config['resource'] instanceof SQLite3) {
 			$this->connection = $config['resource'];
-		} elseif (empty($config['persistent'])) {
-			$this->connection = @sqlite_open($config['database'], 0666, $errorMsg); // intentionally @
-		} else {
-			$this->connection = @sqlite_popen($config['database'], 0666, $errorMsg); // intentionally @
-		}
+		} else try {
+			$this->connection = new SQLite3($config['database']);
 
-		if (!$this->connection) {
-			throw new DibiDriverException($errorMsg);
+		} catch (Exception $e) {
+			throw new DibiDriverException($e->getMessage(), $e->getCode());
 		}
-
-		$this->buffered = empty($config['unbuffered']);
 
 		$this->dbcharset = empty($config['dbcharset']) ? 'UTF-8' : $config['dbcharset'];
 		$this->charset = empty($config['charset']) ? 'UTF-8' : $config['charset'];
@@ -108,7 +97,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function disconnect()
 	{
-		sqlite_close($this->connection);
+		$this->connection->close();
 	}
 
 
@@ -125,17 +114,12 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 			$sql = iconv($this->charset, $this->dbcharset . '//IGNORE', $sql);
 		}
 
-		DibiDriverException::tryError();
-		if ($this->buffered) {
-			$this->resultSet = sqlite_query($this->connection, $sql);
-		} else {
-			$this->resultSet = sqlite_unbuffered_query($this->connection, $sql);
-		}
-		if (DibiDriverException::catchError($msg)) {
-			throw new DibiDriverException($msg, sqlite_last_error($this->connection), $sql);
+		$this->resultSet = @$this->connection->query($sql); // intentionally @
+		if ($this->connection->lastErrorCode()) {
+			throw new DibiDriverException($this->connection->lastErrorMsg(), $this->connection->lastErrorCode(), $sql);
 		}
 
-		return is_resource($this->resultSet) ? clone $this : NULL;
+		return $this->resultSet instanceof SQLite3Result ? clone $this : NULL;
 	}
 
 
@@ -146,7 +130,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getAffectedRows()
 	{
-		return sqlite_changes($this->connection);
+		return $this->connection->changes();
 	}
 
 
@@ -157,7 +141,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getInsertId($sequence)
 	{
-		return sqlite_last_insert_rowid($this->connection);
+		return $this->connection->lastInsertRowID();
 	}
 
 
@@ -227,8 +211,10 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	{
 		switch ($type) {
 		case dibi::TEXT:
+			return "'" . $this->connection->escapeString($value) . "'";
+
 		case dibi::BINARY:
-			return "'" . sqlite_escape_string($value) . "'";
+			return "X'" . bin2hex((string) $value) . "'";
 
 		case dibi::IDENTIFIER:
 			return '[' . str_replace('.', '].[', strtr($value, '[]', '  ')) . ']';
@@ -291,10 +277,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getRowCount()
 	{
-		if (!$this->buffered) {
-			throw new DibiDriverException('Row count is not available for unbuffered queries.');
-		}
-		return sqlite_num_rows($this->resultSet);
+		throw new NotSupportedException('Row count is not available for unbuffered queries.');
 	}
 
 
@@ -307,7 +290,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function fetch($assoc)
 	{
-		$row = sqlite_fetch_array($this->resultSet, $assoc ? SQLITE_ASSOC : SQLITE_NUM);
+		$row = $this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM);
 		$charset = $this->charset === NULL ? NULL : $this->charset . '//TRANSLIT';
 		if ($row && ($assoc || $charset)) {
 			$tmp = array();
@@ -332,10 +315,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function seek($row)
 	{
-		if (!$this->buffered) {
-			throw new DibiDriverException('Cannot seek an unbuffered result set.');
-		}
-		return sqlite_seek($this->resultSet, $row);
+		throw new DibiDriverException('Cannot seek an unbuffered result set.');
 	}
 
 
@@ -357,16 +337,15 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getColumnsMeta()
 	{
-		$count = sqlite_num_fields($this->resultSet);
+		$count = $this->resultSet->numColumns();
 		$res = array();
+		static $types = array(SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', or SQLITE3_NULL => 'null');
 		for ($i = 0; $i < $count; $i++) {
-			$name = str_replace(array('[', ']'), '', sqlite_field_name($this->resultSet, $i));
-			$pair = explode('.', $name);
 			$res[] = array(
-				'name'  => isset($pair[1]) ? $pair[1] : $pair[0],
-				'table' => isset($pair[1]) ? $pair[0] : NULL,
-				'fullname' => $name,
-				'nativetype' => NULL,
+				'name'  => $this->resultSet->columnName($i),
+				'table' => NULL,
+				'fullname' => $this->resultSet->columnName($i),
+				'nativetype' => $types[$this->resultSet->columnType($i)],
 			);
 		}
 		return $res;
@@ -460,7 +439,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function registerFunction($name, $callback, $numArgs = -1)
 	{
-		sqlite_create_function($this->connection, $name, $callback, $numArgs);
+		$this->connection->createFunction($name, $callback, $numArgs);
 	}
 
 
@@ -475,7 +454,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function registerAggregateFunction($name, $rowCallback, $agrCallback, $numArgs = -1)
 	{
-		sqlite_create_aggregate($this->connection, $name, $rowCallback, $agrCallback, $numArgs);
+		$this->connection->createAggregate($name, $rowCallback, $agrCallback, $numArgs);
 	}
 
 }
