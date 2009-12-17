@@ -584,7 +584,7 @@ class dibi
 
 
 	/**
-     * @deprecated
+	 * @deprecated
 	 */
 	public static function datetime($time = NULL)
 	{
@@ -594,7 +594,7 @@ class dibi
 
 
 	/**
-     * @deprecated
+	 * @deprecated
 	 */
 	public static function date($date = NULL)
 	{

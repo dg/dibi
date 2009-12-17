@@ -429,7 +429,7 @@ final class DibiTranslator extends DibiObject
 		} elseif ($value instanceof DateTime) {
 			return $this->driver->escape($value, dibi::DATETIME);
 
-		} else {	
+		} else {
 			$this->hasError = TRUE;
 			return '**Unexpected ' . gettype($value) . '**';
 		}
