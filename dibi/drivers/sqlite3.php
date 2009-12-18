@@ -87,6 +87,12 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 		if (strcasecmp($this->dbcharset, $this->charset) === 0) {
 			$this->dbcharset = $this->charset = NULL;
 		}
+
+		// enable foreign keys support (defaultly disabled; if disabled then foreign key constraints are not enforced)
+		$version = SQLite3::version();
+		if ($version['versionNumber'] >= '3006019') {
+			$this->query("PRAGMA foreign_keys = ON");
+		}
 	}
 
 
@@ -154,7 +160,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 	 */
 	public function begin($savepoint = NULL)
 	{
-		$this->query('BEGIN');
+		$this->query($savepoint ? "SAVEPOINT $savepoint" : 'BEGIN');
 	}
 
 
@@ -167,7 +173,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 	 */
 	public function commit($savepoint = NULL)
 	{
-		$this->query('COMMIT');
+		$this->query($savepoint ? "RELEASE SAVEPOINT $savepoint" : 'COMMIT');
 	}
 
 
@@ -180,7 +186,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 	 */
 	public function rollback($savepoint = NULL)
 	{
-		$this->query('ROLLBACK');
+		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT $savepoint" : 'ROLLBACK');
 	}
 
 
@@ -274,6 +280,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 	/**
 	 * Returns the number of rows in a result set.
 	 * @return int
+	 * @throws NotSupportedException
 	 */
 	public function getRowCount()
 	{
@@ -311,11 +318,11 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
 	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
-	 * @throws DibiException
+	 * @throws NotSupportedException
 	 */
 	public function seek($row)
 	{
-		throw new DibiDriverException('Cannot seek an unbuffered result set.');
+		throw new NotSupportedException('Cannot seek an unbuffered result set.');
 	}
 
 
@@ -397,7 +404,35 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 	 */
 	public function getColumns($table)
 	{
-		throw new NotImplementedException;
+		$this->query("
+			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = '$table'
+			UNION ALL
+			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = '$table'"
+		);
+		$meta = $this->fetch(TRUE);
+		$this->free();
+
+		$this->query("PRAGMA table_info([$table])");
+		$res = array();
+		while ($row = $this->fetch(TRUE)) {
+			$column = $row['name'];
+			$pattern = "/(\"$column\"|\[$column\]|$column)\s+[^,]+\s+PRIMARY\s+KEY\s+AUTOINCREMENT/Ui";
+			$type = explode('(', $row['type']);
+
+			$res[] = array(
+				'name' => $column,
+				'table' => $table,
+				'fullname' => "$table.$column",
+				'nativetype' => strtoupper($type[0]),
+				'size' => isset($type[1]) ? (int) $type[1] : NULL,
+				'nullable' => $row['notnull'] == '0',
+				'default' => $row['dflt_value'],
+				'autoincrement' => (bool) preg_match($pattern, $meta['sql']),
+				'vendor' => $row,
+			);
+		}
+		$this->free();
+		return $res;
 	}
 
 
@@ -409,7 +444,36 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 	 */
 	public function getIndexes($table)
 	{
-		throw new NotImplementedException;
+		$this->query("PRAGMA index_list([$table])");
+		$res = array();
+		while ($row = $this->fetch(TRUE)) {
+			$res[$row['name']]['name'] = $row['name'];
+			$res[$row['name']]['unique'] = (bool) $row['unique'];
+		}
+		$this->free();
+
+		foreach ($res as $index => $values) {
+			$this->query("PRAGMA index_info([$index])");
+			while ($row = $this->fetch(TRUE)) {
+				$res[$index]['columns'][$row['seqno']] = $row['name'];
+			}
+		}
+		$this->free();
+
+		$columns = $this->getColumns($table);
+		foreach ($res as $index => $values) {
+			$column = $res[$index]['columns'][0];
+			$primary = FALSE;
+			foreach ($columns as $info) {
+				if ($column == $info['name']) {
+					$primary = $info['vendor']['pk'];
+					break;
+				}
+			}
+			$res[$index]['primary'] = (bool) $primary;
+		}
+
+		return array_values($res);
 	}
 
 
@@ -421,7 +485,22 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new NotImplementedException;
+		$this->query("PRAGMA foreign_key_list([$table])");
+		$res = array();
+		while ($row = $this->fetch(TRUE)) {
+			$res[$row['id']]['name'] = $row['id']; // foreign key name
+			$res[$row['id']]['local'][$row['seq']] = $row['from']; // local columns
+			$res[$row['id']]['table'] = $row['table']; // referenced table
+			$res[$row['id']]['foreign'][$row['seq']] = $row['to']; // referenced columns
+			$res[$row['id']]['onDelete'] = $row['on_delete'];
+			$res[$row['id']]['onUpdate'] = $row['on_update'];
+
+			if ($res[$row['id']]['foreign'][0] == NULL) {
+				$res[$row['id']]['foreign'] = NULL;
+			}
+		}
+		$this->free();
+		return array_values($res);
 	}
 
 
