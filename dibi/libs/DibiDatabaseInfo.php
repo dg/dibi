@@ -4,14 +4,7 @@
  * dibi - tiny'n'smart database abstraction layer
  * ----------------------------------------------
  *
- * Copyright (c) 2005, 2009 David Grudl (http://davidgrudl.com)
- *
- * This source file is subject to the "dibi license" that is bundled
- * with this package in the file license.txt.
- *
- * For more information please see http://dibiphp.com
- *
- * @copyright  Copyright (c) 2005, 2009 David Grudl
+ * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @license    http://dibiphp.com/license  dibi license
  * @link       http://dibiphp.com
  * @package    dibi
@@ -22,8 +15,7 @@
 /**
  * Reflection metadata class for a database.
  *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2009 David Grudl
+ * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
 class DibiDatabaseInfo extends DibiObject
@@ -134,8 +126,7 @@ class DibiDatabaseInfo extends DibiObject
 /**
  * Reflection metadata class for a database table.
  *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2009 David Grudl
+ * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
 class DibiTableInfo extends DibiObject
@@ -334,8 +325,7 @@ class DibiTableInfo extends DibiObject
 /**
  * Reflection metadata class for a result set.
  *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2009 David Grudl
+ * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
 class DibiResultInfo extends DibiObject
@@ -436,8 +426,7 @@ class DibiResultInfo extends DibiObject
 /**
  * Reflection metadata class for a table or result set column.
  *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2009 David Grudl
+ * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
 class DibiColumnInfo extends DibiObject
@@ -618,8 +607,7 @@ class DibiColumnInfo extends DibiObject
 /**
  * Reflection metadata class for a foreign key.
  *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2009 David Grudl
+ * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  * @todo
  */
@@ -667,8 +655,7 @@ class DibiForeignKeyInfo extends DibiObject
 /**
  * Reflection metadata class for a index or primary key.
  *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2009 David Grudl
+ * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
 class DibiIndexInfo extends DibiObject

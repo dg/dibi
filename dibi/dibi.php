@@ -4,14 +4,14 @@
  * dibi - tiny'n'smart database abstraction layer
  * ----------------------------------------------
  *
- * Copyright (c) 2005, 2009 David Grudl (http://davidgrudl.com)
+ * Copyright (c) 2005, 2010 David Grudl (http://davidgrudl.com)
  *
  * This source file is subject to the "dibi license" that is bundled
- * with this package in the file license.txt.
+ * with this package in the file license.txt, and/or GPL license.
  *
  * For more information please see http://dibiphp.com
  *
- * @copyright  Copyright (c) 2005, 2009 David Grudl
+ * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @license    http://dibiphp.com/license  dibi license
  * @link       http://dibiphp.com
  * @package    dibi
@@ -99,8 +99,7 @@ require_once dirname(__FILE__) . '/libs/DibiProfiler.php';
  * This class is static container class for creating DB objects and
  * store connections info.
  *
- * @author     David Grudl
- * @copyright  Copyright (c) 2005, 2009 David Grudl
+ * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
 class dibi
