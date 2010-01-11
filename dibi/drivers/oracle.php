@@ -135,7 +135,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 	{
 		$this->query("SELECT $sequence.CURRVAL AS ID FROM DUAL");
 		$row = $this->fetch(TRUE);
-		return isset($row['ID']) : (int) $row['ID'] : FALSE;
+		return isset($row['ID']) ? (int) $row['ID'] : FALSE;
 	}
 
 

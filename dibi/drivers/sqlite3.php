@@ -349,7 +349,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 	{
 		$count = $this->resultSet->numColumns();
 		$res = array();
-		static $types = array(SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', or SQLITE3_NULL => 'null');
+		static $types = array(SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null');
 		for ($i = 0; $i < $count; $i++) {
 			$res[] = array(
 				'name'  => $this->resultSet->columnName($i),
