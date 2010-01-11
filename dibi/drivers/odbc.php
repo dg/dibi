@@ -179,6 +179,17 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 
 
 	/**
+	 * Is in transaction?
+	 * @return bool
+	 */
+	public function inTransaction()
+	{
+		return (bool) odbc_autocommit($this->connection);
+	}
+
+
+
+	/**
 	 * Returns the connection resource.
 	 * @return mixed
 	 */

@@ -156,7 +156,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver
 	public function getInsertId($sequence)
 	{
 		return ibase_gen_id($sequence, 0, $this->connection);
-		//throw new NotSupportedException('Firebird/InterBase does not support autoincrementing.');
 	}
 
 
@@ -216,6 +215,17 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver
 		}
 
 		$this->inTransaction = FALSE;
+	}
+
+
+
+	/**
+	 * Is in transaction?
+	 * @return bool
+	 */
+	public function inTransaction()
+	{
+		return $this->inTransaction;
 	}
 
 

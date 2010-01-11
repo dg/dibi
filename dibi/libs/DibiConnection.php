@@ -452,11 +452,13 @@ class DibiConnection extends DibiObject
 
 
 	/**
-	 * @deprecated
+	 * Is in transaction?
+	 * @return bool
 	 */
 	public function inTransaction()
 	{
-		trigger_error('Deprecated: use "SELECT @@autocommit" query instead.', E_USER_WARNING);
+		$this->connect();
+		return $this->driver->inTransaction();
 	}
 
 
