@@ -60,12 +60,16 @@ if (!interface_exists(/*Nette\*/'IDebuggable', FALSE)) {
 	require_once dirname(__FILE__) . '/Nette/IDebuggable.php';
 }
 
+if (!class_exists('DateTime53', FALSE)) {
+	require_once dirname(__FILE__) . '/Nette/DateTime53.php';
+}
+
 
 
 /**
  * Back-compatibility
  */
-class DibiVariable extends DateTime
+class DibiVariable extends DateTime53
 {
 	function __construct($val)
 	{
@@ -587,7 +591,7 @@ class dibi
 	 */
 	public static function datetime($time = NULL)
 	{
-		return new DateTime(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
+		return new DateTime53(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
 	}
 
 
@@ -597,7 +601,7 @@ class dibi
 	 */
 	public static function date($date = NULL)
 	{
-		return new DateTime(is_numeric($date) ? date('Y-m-d', $date) : $date);
+		return new DateTime53(is_numeric($date) ? date('Y-m-d', $date) : $date);
 	}
 
 

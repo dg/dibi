@@ -623,13 +623,13 @@ class DibiResult extends DibiObject implements IDataSource
 				return is_numeric($value) ? (int) $value : strtotime($value);
 
 			} elseif ($format === TRUE) { // return DateTime object
-				return new DateTime(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
+				return new DateTime53(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
 
 			} elseif (is_numeric($value)) { // single timestamp
 				return date($format, $value);
 
 			} else {
-				$value = new DateTime($value);
+				$value = new DateTime53($value);
 				return $value->format($format);
 			}
 

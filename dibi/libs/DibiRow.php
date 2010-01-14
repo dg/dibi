@@ -47,13 +47,13 @@ class DibiRow extends ArrayObject
 			return is_numeric($time) ? (int) $time : strtotime($time);
 
 		} elseif ($format === TRUE) { // return DateTime object
-			return new DateTime(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
+			return new DateTime53(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
 
 		} elseif (is_numeric($time)) { // single timestamp
 			return date($format, $time);
 
 		} else {
-			$time = new DateTime($time);
+			$time = new DateTime53($time);
 			return $time->format($format);
 		}
 	}
