@@ -112,10 +112,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 				$ok = @mysql_set_charset($config['charset'], $this->connection); // intentionally @
 			}
 			if (!$ok) {
-				$ok = @mysql_query("SET NAMES '$config[charset]'", $this->connection); // intentionally @
-				if (!$ok) {
-					throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection));
-				}
+				$this->query("SET NAMES '$config[charset]'");
 			}
 		}
 
@@ -126,9 +123,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 		}
 
 		if (isset($config['sqlmode'])) {
-			if (!@mysql_query("SET sql_mode='$config[sqlmode]'", $this->connection)) { // intentionally @
-				throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection));
-			}
+			$this->query("SET sql_mode='$config[sqlmode]'");
 		}
 
 		$this->buffered = empty($config['unbuffered']);
