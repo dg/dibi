@@ -20,6 +20,8 @@
  */
 class DibiFluent extends DibiObject implements IDataSource
 {
+	const REMOVE = FALSE;
+
 	/** @var array */
 	public static $masks = array(
 		'SELECT' => array('SELECT', 'DISTINCT', 'FROM', 'WHERE', 'GROUP BY',
@@ -132,14 +134,14 @@ class DibiFluent extends DibiObject implements IDataSource
 			$this->cursor = & $this->clauses[$clause];
 
 			// TODO: really delete?
-			if ($args === array(FALSE)) {
+			if ($args === array(self::REMOVE)) {
 				$this->cursor = NULL;
 				return $this;
 			}
 
 			if (isset(self::$separators[$clause])) {
 				$sep = self::$separators[$clause];
-				if ($sep === FALSE) {
+				if ($sep === FALSE) { // means: replace
 					$this->cursor = array();
 
 				} elseif (!empty($this->cursor)) {
@@ -149,7 +151,7 @@ class DibiFluent extends DibiObject implements IDataSource
 
 		} else {
 			// append to currect flow
-			if ($args === array(FALSE)) {
+			if ($args === array(self::REMOVE)) {
 				return $this;
 			}
 
