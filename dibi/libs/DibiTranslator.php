@@ -332,10 +332,12 @@ final class DibiTranslator extends DibiObject
 			case 'b':  // boolean
 				return $value === NULL ? 'NULL' : $this->driver->escape($value, $modifier);
 
-			case 'sn': // string or NULL
+			case 'sN': // string or NULL
+			case 'sn':
 				return $value == '' ? 'NULL' : $this->driver->escape($value, dibi::TEXT); // notice two equal signs
 
-			case 'in': // signed int or NULL
+			case 'iN': // signed int or NULL
+			case 'in': // deprecated
 				if ($value == '') $value = NULL;
 				// intentionally break omitted
 
