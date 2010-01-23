@@ -126,6 +126,8 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 			$this->query("SET sql_mode='$config[sqlmode]'");
 		}
 
+		$this->query("SET time_zone='" . date('P') . "'");
+
 		$this->buffered = empty($config['unbuffered']);
 	}
 
