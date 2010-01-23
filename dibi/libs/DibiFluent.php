@@ -175,13 +175,27 @@ class DibiFluent extends DibiObject implements IDataSource
 	{
 		$this->cursor = & $this->clauses[self::_formatClause($clause)];
 
-		if ($remove) {
+		if ($remove) { // deprecated, use removeClause
+			trigger_error(__METHOD__ . '(..., TRUE) is deprecated; use removeClause() instead.', E_USER_NOTICE);
 			$this->cursor = NULL;
 
 		} elseif ($this->cursor === NULL) {
 			$this->cursor = array();
 		}
 
+		return $this;
+	}
+
+
+
+	/**
+	 * Removes a clause.
+	 * @param  string clause name
+	 * @return DibiFluent  provides a fluent interface
+	 */
+	public function removeClause($clause)
+	{
+		$this->clauses[self::_formatClause($clause)] = NULL;
 		return $this;
 	}
 
