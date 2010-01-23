@@ -359,7 +359,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getRowCount()
 	{
-		throw new NotSupportedException('Row count is not available for unbuffered queries.');
+		return $this->resultSet->rowCount();
 	}
 
 
