@@ -426,7 +426,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver
 		");
 		$res = pg_fetch_all($this->resultSet);
 		$this->free();
-		return $res;
+		return $res ? $res : array();
 	}
 
 
