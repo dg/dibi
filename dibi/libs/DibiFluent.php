@@ -33,7 +33,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	public static $modifiers = array(
 		'SELECT' => '%n',
 		'FROM' => '%n',
-		'IN' => '%l',
+		'IN' => '%in',
 		'VALUES' => '%l',
 		'SET' => '%a',
 		'WHERE' => '%and',

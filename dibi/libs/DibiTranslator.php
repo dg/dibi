@@ -218,7 +218,7 @@ final class DibiTranslator extends DibiObject
 
 						} else {
 							$v = $this->formatValue($v, $pair[1]);
-							$vx[] = $k . ($pair[1] === 'l' ? 'IN ' : ($v === 'NULL' ? 'IS ' : '= ')) . $v;
+							$vx[] = $k . ($pair[1] === 'l' || $pair[1] === 'in' ? 'IN ' : ($v === 'NULL' ? 'IS ' : '= ')) . $v;
 						}
 
 					} else {
@@ -248,12 +248,13 @@ final class DibiTranslator extends DibiObject
 				return implode(', ', $vx);
 
 
+			case 'in':// replaces scalar %in modifier!
 			case 'l': // (val, val, ...)
 				foreach ($value as $k => $v) {
 					$pair = explode('%', $k, 2); // split into identifier & modifier
 					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
 				}
-				return '(' . ($vx ? implode(', ', $vx) : 'NULL') . ')';
+				return '(' . (($vx || $modifier === 'l') ? implode(', ', $vx) : 'NULL') . ')';
 
 
 			case 'v': // (key, key, ...) VALUES (val, val, ...)
@@ -287,7 +288,7 @@ final class DibiTranslator extends DibiObject
 					}
 				}
 				foreach ($vx as $k => $v) {
-					$vx[$k] = '(' . ($v ? implode(', ', $v) : 'NULL') . ')';
+					$vx[$k] = '(' . implode(', ', $v) . ')';
 				}
 				return '(' . implode(', ', $kx) . ') VALUES ' . implode(', ', $vx);
 
@@ -313,7 +314,7 @@ final class DibiTranslator extends DibiObject
 				foreach ($value as $v) {
 					$vx[] = $this->formatValue($v, $modifier);
 				}
-				return $vx ? implode(', ', $vx) : 'NULL';
+				return implode(', ', $vx);
 			}
 		}
 
