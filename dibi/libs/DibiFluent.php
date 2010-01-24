@@ -453,6 +453,17 @@ class DibiFluent extends DibiObject implements IDataSource
 
 	}
 
+
+
+	public function __clone()
+	{
+		// remove references
+		foreach ($this->clauses as $clause => $val) {
+			$this->clauses[$clause] = & $val;
+		}
+		$this->cursor = & $foo;
+	}
+
 }
 
 
