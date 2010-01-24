@@ -449,7 +449,7 @@ class DibiFluent extends DibiObject implements IDataSource
 			$s .= 'By';
 			trigger_error("Did you mean '$s'?", E_USER_NOTICE);
 		}
-		return strtoupper(preg_replace('#[A-Z]#', ' $0', $s));
+		return strtoupper(preg_replace('#[a-z](?=[A-Z])#', '$0 ', $s));
 
 	}
 
