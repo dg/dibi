@@ -32,30 +32,31 @@ class DibiRow extends ArrayObject
 
 
 	/**
-	 * Converts value to date-time format.
+	 * Converts value to DateTime object.
 	 * @param  string key
-	 * @param  string format (TRUE means DateTime object)
-	 * @return mixed
+	 * @return DateTime
 	 */
-	public function asDate($key, $format = NULL)
+	public function asDateTime($key)
 	{
 		$time = $this[$key];
-		if ((int) $time === 0) { // '', NULL, FALSE, '0000-00-00', ...
-			return NULL;
+		return (int) $time === 0 // '', NULL, FALSE, '0000-00-00', ...
+			? NULL
+			: new DateTime53(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
+	}
 
-		} elseif ($format === NULL) { // return timestamp (default)
-			return is_numeric($time) ? (int) $time : strtotime($time);
 
-		} elseif ($format === TRUE) { // return DateTime object
-			return new DateTime53(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
 
-		} elseif (is_numeric($time)) { // single timestamp
-			return date($format, $time);
-
-		} else {
-			$time = new DateTime53($time);
-			return $time->format($format);
-		}
+	/**
+	 * Converts value to UNIX timestamp.
+	 * @param  string key
+	 * @return int
+	 */
+	public function asTimestamp($key)
+	{
+		$time = $this[$key];
+		return (int) $time === 0 // '', NULL, FALSE, '0000-00-00', ...
+			? NULL
+			: (is_numeric($time) ? (int) $time : strtotime($time));
 	}
 
 
@@ -85,6 +86,20 @@ class DibiRow extends ArrayObject
 	public function __wakeup()
 	{
 		$this->setFlags(2);
+	}
+
+
+
+	/** @deprecated */
+	public function asDate($key, $format = NULL)
+	{
+		if ($format === NULL) {
+			return $this->asTimestamp($key);
+		} elseif ($format === TRUE) {
+			return $this->asDateTime($key);
+		} else {
+			return $this->asDateTime($key)->format($format);
+		}
 	}
 
 }
