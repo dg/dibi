@@ -460,6 +460,7 @@ class DibiFluent extends DibiObject implements IDataSource
 		// remove references
 		foreach ($this->clauses as $clause => $val) {
 			$this->clauses[$clause] = & $val;
+			unset($val);
 		}
 		$this->cursor = & $foo;
 	}
