@@ -421,7 +421,35 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getColumns($table)
 	{
-		throw new NotImplementedException;
+		$this->query("
+			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = '$table'
+			UNION ALL
+			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = '$table'"
+		);
+		$meta = $this->fetch(TRUE);
+		$this->free();
+
+		$this->query("PRAGMA table_info([$table])");
+		$res = array();
+		while ($row = $this->fetch(TRUE)) {
+			$column = $row['name'];
+			$pattern = "/(\"$column\"|\[$column\]|$column)\s+[^,]+\s+PRIMARY\s+KEY\s+AUTOINCREMENT/Ui";
+			$type = explode('(', $row['type']);
+
+			$res[] = array(
+				'name' => $column,
+				'table' => $table,
+				'fullname' => "$table.$column",
+				'nativetype' => strtoupper($type[0]),
+				'size' => isset($type[1]) ? (int) $type[1] : NULL,
+				'nullable' => $row['notnull'] == '0',
+				'default' => $row['dflt_value'],
+				'autoincrement' => (bool) preg_match($pattern, $meta['sql']),
+				'vendor' => $row,
+			);
+		}
+		$this->free();
+		return $res;
 	}
 
 
@@ -433,7 +461,36 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getIndexes($table)
 	{
-		throw new NotImplementedException;
+		$this->query("PRAGMA index_list([$table])");
+		$res = array();
+		while ($row = $this->fetch(TRUE)) {
+			$res[$row['name']]['name'] = $row['name'];
+			$res[$row['name']]['unique'] = (bool) $row['unique'];
+		}
+		$this->free();
+
+		foreach ($res as $index => $values) {
+			$this->query("PRAGMA index_info([$index])");
+			while ($row = $this->fetch(TRUE)) {
+				$res[$index]['columns'][$row['seqno']] = $row['name'];
+			}
+		}
+		$this->free();
+
+		$columns = $this->getColumns($table);
+		foreach ($res as $index => $values) {
+			$column = $res[$index]['columns'][0];
+			$primary = FALSE;
+			foreach ($columns as $info) {
+				if ($column == $info['name']) {
+					$primary = $info['vendor']['pk'];
+					break;
+				}
+			}
+			$res[$index]['primary'] = (bool) $primary;
+		}
+
+		return array_values($res);
 	}
 
 
@@ -445,7 +502,8 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new NotImplementedException;
+		// @see http://www.sqlite.org/foreignkeys.html
+		throw new NotSupportedException;
 	}
 
 
