@@ -34,14 +34,17 @@ class DibiRow extends ArrayObject
 	/**
 	 * Converts value to DateTime object.
 	 * @param  string key
+	 * @param  string format
 	 * @return DateTime
 	 */
-	public function asDateTime($key)
+	public function asDateTime($key, $format = NULL)
 	{
 		$time = $this[$key];
-		return (int) $time === 0 // '', NULL, FALSE, '0000-00-00', ...
-			? NULL
-			: new DateTime53(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
+		if ((int) $time === 0) { // '', NULL, FALSE, '0000-00-00', ...
+			return NULL;
+		}
+		$dt = new DateTime53(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
+		return $format === NULL ? $dt : $dt->format($format);
 	}
 
 
@@ -95,10 +98,8 @@ class DibiRow extends ArrayObject
 	{
 		if ($format === NULL) {
 			return $this->asTimestamp($key);
-		} elseif ($format === TRUE) {
-			return $this->asDateTime($key);
 		} else {
-			return $this->asDateTime($key)->format($format);
+			return $this->asDateTime($key, $format === TRUE ? NULL : $format);
 		}
 	}
 
