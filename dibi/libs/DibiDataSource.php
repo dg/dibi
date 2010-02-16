@@ -58,7 +58,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 	 */
 	public function __construct($sql, DibiConnection $connection)
 	{
-		if (strpos($sql, ' ') === FALSE) {
+		if (strpbrk($sql, " \t\r\n") === FALSE) {
 			$this->sql = $connection->getDriver()->escape($sql, dibi::IDENTIFIER); // table name
 		} else {
 			$this->sql = '(' . $sql . ') t'; // SQL command
