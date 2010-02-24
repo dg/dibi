@@ -48,6 +48,9 @@ class DibiResult extends DibiObject implements IDataSource
 	/** @var string  returned object class */
 	private $rowClass = 'DibiRow';
 
+	/** @var string  date-time format */
+	private $dateFormat = 'U';
+
 
 
 	/**
@@ -60,6 +63,10 @@ class DibiResult extends DibiObject implements IDataSource
 
 		if (!empty($config[dibi::RESULT_DETECT_TYPES])) {
 			$this->detectTypes();
+		}
+
+		if (!empty($config[dibi::RESULT_DATE_TIME])) {
+			$this->dateFormat = is_string($config[dibi::RESULT_DATE_TIME]) ? $config[dibi::RESULT_DATE_TIME] : '';
 		}
 	}
 
@@ -213,7 +220,7 @@ class DibiResult extends DibiObject implements IDataSource
 		if ($this->types !== NULL) {
 			foreach ($this->types as $col => $type) {
 				if (isset($row[$col])) {
-					$row[$col] = $this->convert($row[$col], $type['type'], $type['format']);
+					$row[$col] = $this->convert($row[$col], $type);
 				}
 			}
 		}
@@ -237,8 +244,7 @@ class DibiResult extends DibiObject implements IDataSource
 		// types-converting?
 		$key = key($row);
 		if (isset($this->types[$key])) {
-			$type = $this->types[$key];
-			return $this->convert($value, $type['type'], $type['format']);
+			return $this->convert($value, $this->types[$key]);
 		}
 
 		return $value;
@@ -489,12 +495,11 @@ class DibiResult extends DibiObject implements IDataSource
 	 * Define column type.
 	 * @param  string  column
 	 * @param  string  type (use constant Dibi::*)
-	 * @param  string  optional format
 	 * @return DibiResult  provides a fluent interface
 	 */
-	final public function setType($col, $type, $format = NULL)
+	final public function setType($col, $type)
 	{
-		$this->types[$col] = array('type' => $type, 'format' => $format);
+		$this->types[$col] = $type;
 		return $this;
 	}
 
@@ -507,7 +512,7 @@ class DibiResult extends DibiObject implements IDataSource
 	final public function detectTypes()
 	{
 		foreach ($this->getInfo()->getColumns() as $col) {
-			$this->types[$col->getName()] = array('type' => $col->getType(), 'format' => NULL);
+			$this->types[$col->getName()] = $col->getType();
 		}
 	}
 
@@ -529,7 +534,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Returns column type.
-	 * @return array  ($type, $format)
+	 * @return string
 	 */
 	final public function getType($col)
 	{
@@ -542,10 +547,9 @@ class DibiResult extends DibiObject implements IDataSource
 	 * Converts value to specified type and format.
 	 * @param  mixed  value
 	 * @param  int    type
-	 * @param  string format
 	 * @return mixed
 	 */
-	final public function convert($value, $type, $format = NULL)
+	final public function convert($value, $type)
 	{
 		if ($value === NULL || $value === FALSE) {
 			return NULL;
@@ -569,18 +573,18 @@ class DibiResult extends DibiObject implements IDataSource
 			if ((int) $value === 0) { // '', NULL, FALSE, '0000-00-00', ...
 				return NULL;
 
-			} elseif ($format === NULL) { // return timestamp (default)
+			} elseif ($this->dateFormat === 'U') { // return timestamp (default)
 				return is_numeric($value) ? (int) $value : strtotime($value);
 
-			} elseif ($format === TRUE) { // return DateTime object
+			} elseif ($this->dateFormat === '') { // return DateTime object
 				return new DateTime53(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
 
 			} elseif (is_numeric($value)) { // single timestamp
-				return date($format, $value);
+				return date($this->dateFormat, $value);
 
 			} else {
 				$value = new DateTime53($value);
-				return $value->format($format);
+				return $value->format($this->dateFormat);
 			}
 
 		case dibi::BOOL:

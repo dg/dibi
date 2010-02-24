@@ -146,6 +146,7 @@ class dibi
 	 * Configuration options
 	 */
 	const RESULT_DETECT_TYPES = 'resultDetectTypes';
+	const RESULT_DATE_TIME = 'resultDateTime';
 	const ASC = 'ASC', DESC = 'DESC';
 	/**#@-*/
 
