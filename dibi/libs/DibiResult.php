@@ -549,7 +549,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 * @param  int    type
 	 * @return mixed
 	 */
-	final public function convert($value, $type)
+	protected function convert($value, $type)
 	{
 		if ($value === NULL || $value === FALSE) {
 			return NULL;
