@@ -145,7 +145,6 @@ class dibi
 	/**#@+
 	 * Configuration options
 	 */
-	const RESULT_WITH_TABLES = 'resultWithTables'; // for MySQL
 	const ROW_CLASS = 'rowClass';
 	const ASC = 'ASC', DESC = 'DESC';
 	/**#@-*/

@@ -42,9 +42,6 @@ class DibiResult extends DibiObject implements IDataSource
 	/** @var DibiResultInfo */
 	private $meta;
 
-	/** @var array  user keys */
-	private $keys;
-
 	/** @var bool  Already fetched? Used for allowance for first seek(0) */
 	private $fetched = FALSE;
 
@@ -60,10 +57,6 @@ class DibiResult extends DibiObject implements IDataSource
 	public function __construct($driver, $config)
 	{
 		$this->driver = $driver;
-
-		if (!empty($config[dibi::RESULT_WITH_TABLES])) {
-			$this->setWithTables(TRUE);
-		}
 	}
 
 
@@ -207,15 +200,8 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function fetch()
 	{
-		if ($this->keys === NULL) {
-			$row = $this->getDriver()->fetch(TRUE);
-			if (!is_array($row)) return FALSE;
-
-		} else {
-			$row = $this->getDriver()->fetch(FALSE);
-			if (!is_array($row)) return FALSE;
-			$row = array_combine($this->keys, $row);
-		}
+		$row = $this->getDriver()->fetch(TRUE);
+		if (!is_array($row)) return FALSE;
 
 		$this->fetched = TRUE;
 
@@ -492,46 +478,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/********************* meta info ****************d*g**/
-
-
-
-	/**
-	 * Qualifiy each column name with the table name?
-	 * @param  bool
-	 * @return DibiResult  provides a fluent interface
-	 * @throws DibiException
-	 */
-	final public function setWithTables($val)
-	{
-		if ($val) {
-			$cols = array();
-			foreach ($this->getInfo()->getColumns() as $col) {
-				$name = $col->getFullname();
-				if (isset($cols[$name])) {
-					$fix = 1;
-					while (isset($cols[$name . '#' . $fix])) $fix++;
-					$name .= '#' . $fix;
-				}
-				$cols[$name] = TRUE;
-			}
-			$this->keys = array_keys($cols);
-
-		} else {
-			$this->keys = NULL;
-		}
-		return $this;
-	}
-
-
-
-	/**
-	 * Qualifiy each key with the table name?
-	 * @return bool
-	 */
-	final public function getWithTables()
-	{
-		return (bool) $this->keys;
-	}
 
 
 
