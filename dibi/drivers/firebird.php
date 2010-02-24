@@ -7,7 +7,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @license    http://dibiphp.com/license  dibi license
  * @link       http://dibiphp.com
- * @package    dibi
+ * @package    dibi\drivers
  */
 
 
@@ -25,7 +25,7 @@
  *
  * @author     Tomáš Kraina, Roman Sklenář
  * @copyright  Copyright (c) 2010
- * @package    dibi
+ * @package    dibi\drivers
  */
 class DibiFirebirdDriver extends DibiObject implements IDibiDriver
 {
@@ -804,7 +804,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver
  *
  * @author     Roman Sklenář
  * @copyright  Copyright (c) 2010
- * @package    dibi
+ * @package    dibi\drivers
  */
 class DibiProcedureException extends DibiException
 {

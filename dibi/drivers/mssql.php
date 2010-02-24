@@ -7,7 +7,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @license    http://dibiphp.com/license  dibi license
  * @link       http://dibiphp.com
- * @package    dibi
+ * @package    dibi\drivers
  */
 
 
@@ -24,7 +24,7 @@
  *   - 'resource' - connection resource (optional)
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
- * @package    dibi
+ * @package    dibi\drivers
  */
 class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 {

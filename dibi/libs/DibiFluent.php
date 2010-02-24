@@ -466,12 +466,3 @@ class DibiFluent extends DibiObject implements IDataSource
 	}
 
 }
-
-
-// PHP < 5.2 compatibility
-if (!function_exists('array_fill_keys')) {
-	function array_fill_keys($keys, $value)
-	{
-		return array_combine($keys, array_fill(0, count($keys), $value));
-	}
-}

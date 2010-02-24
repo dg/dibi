@@ -7,7 +7,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @license    http://dibiphp.com/license  dibi license
  * @link       http://dibiphp.com
- * @package    dibi
+ * @package    dibi\drivers
  */
 
 
@@ -23,7 +23,7 @@
  *   - 'lazy' - if TRUE, connection will be established only when required
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
- * @package    dibi
+ * @package    dibi\drivers
  */
 class DibiPdoDriver extends DibiObject implements IDibiDriver
 {

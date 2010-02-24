@@ -33,26 +33,32 @@ if (version_compare(PHP_VERSION, '5.2.0', '<')) {
  * Compatibility with Nette
  */
 if (!class_exists('NotImplementedException', FALSE)) {
+	/** @package exceptions */
 	class NotImplementedException extends LogicException {}
 }
 
 if (!class_exists('NotSupportedException', FALSE)) {
+	/** @package exceptions */
 	class NotSupportedException extends LogicException {}
 }
 
 if (!class_exists('MemberAccessException', FALSE)) {
+	/** @package exceptions */
 	class MemberAccessException extends LogicException {}
 }
 
 if (!class_exists('InvalidStateException', FALSE)) {
+	/** @package exceptions */
 	class InvalidStateException extends RuntimeException {}
 }
 
 if (!class_exists('IOException', FALSE)) {
+	/** @package exceptions */
 	class IOException extends RuntimeException {}
 }
 
 if (!class_exists('FileNotFoundException', FALSE)) {
+	/** @package exceptions */
 	class FileNotFoundException extends IOException {}
 }
 
@@ -67,7 +73,7 @@ if (!class_exists('DateTime53', FALSE)) {
 
 
 /**
- * Back-compatibility
+ * @deprecated
  */
 class DibiVariable extends DateTime53
 {
