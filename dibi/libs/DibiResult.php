@@ -57,6 +57,10 @@ class DibiResult extends DibiObject implements IDataSource
 	public function __construct($driver, $config)
 	{
 		$this->driver = $driver;
+
+		if (!empty($config[dibi::RESULT_DETECT_TYPES])) {
+			$this->detectTypes();
+		}
 	}
 
 

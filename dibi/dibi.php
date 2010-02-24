@@ -145,7 +145,7 @@ class dibi
 	/**#@+
 	 * Configuration options
 	 */
-	const ROW_CLASS = 'rowClass';
+	const RESULT_DETECT_TYPES = 'resultDetectTypes';
 	const ASC = 'ASC', DESC = 'DESC';
 	/**#@-*/
 
