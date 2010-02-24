@@ -49,7 +49,7 @@ class DibiResult extends DibiObject implements IDataSource
 	private $rowClass = 'DibiRow';
 
 	/** @var string  date-time format */
-	private $dateFormat = 'U';
+	private $dateFormat = '';
 
 
 
@@ -573,13 +573,13 @@ class DibiResult extends DibiObject implements IDataSource
 			if ((int) $value === 0) { // '', NULL, FALSE, '0000-00-00', ...
 				return NULL;
 
-			} elseif ($this->dateFormat === 'U') { // return timestamp (default)
-				return is_numeric($value) ? (int) $value : strtotime($value);
-
-			} elseif ($this->dateFormat === '') { // return DateTime object
+			} elseif ($this->dateFormat === '') { // return DateTime object (default)
 				return new DateTime53(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
 
-			} elseif (is_numeric($value)) { // single timestamp
+			} elseif ($this->dateFormat === 'U') { // return timestamp
+				return is_numeric($value) ? (int) $value : strtotime($value);
+
+			} elseif (is_numeric($value)) { // formatted date
 				return date($this->dateFormat, $value);
 
 			} else {
