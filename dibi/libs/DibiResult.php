@@ -37,19 +37,19 @@ class DibiResult extends DibiObject implements IDataSource
 	private $driver;
 
 	/** @var array  Translate table */
-	private $xlat;
+	private $types;
 
 	/** @var DibiResultInfo */
 	private $meta;
 
+	/** @var array  user keys */
+	private $keys;
+
 	/** @var bool  Already fetched? Used for allowance for first seek(0) */
 	private $fetched = FALSE;
 
-	/** @var array|FALSE  Qualifiy each column name with the table name? */
-	private $withTables = FALSE;
-
 	/** @var string  returned object class */
-	private $class = 'DibiRow';
+	private $rowClass = 'DibiRow';
 
 
 
@@ -183,7 +183,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	public function setRowClass($class)
 	{
-		$this->class = $class;
+		$this->rowClass = $class;
 		return $this;
 	}
 
@@ -195,7 +195,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	public function getRowClass()
 	{
-		return $this->class;
+		return $this->rowClass;
 	}
 
 
@@ -207,28 +207,28 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function fetch()
 	{
-		if ($this->withTables === FALSE) {
+		if ($this->keys === NULL) {
 			$row = $this->getDriver()->fetch(TRUE);
 			if (!is_array($row)) return FALSE;
 
 		} else {
 			$row = $this->getDriver()->fetch(FALSE);
 			if (!is_array($row)) return FALSE;
-			$row = array_combine($this->withTables, $row);
+			$row = array_combine($this->keys, $row);
 		}
 
 		$this->fetched = TRUE;
 
 		// types-converting?
-		if ($this->xlat !== NULL) {
-			foreach ($this->xlat as $col => $type) {
+		if ($this->types !== NULL) {
+			foreach ($this->types as $col => $type) {
 				if (isset($row[$col])) {
 					$row[$col] = $this->convert($row[$col], $type['type'], $type['format']);
 				}
 			}
 		}
 
-		return new $this->class($row);
+		return new $this->rowClass($row);
 	}
 
 
@@ -246,8 +246,8 @@ class DibiResult extends DibiObject implements IDataSource
 
 		// types-converting?
 		$key = key($row);
-		if (isset($this->xlat[$key])) {
-			$type = $this->xlat[$key];
+		if (isset($this->types[$key])) {
+			$type = $this->types[$key];
 			return $this->convert($value, $type['type'], $type['format']);
 		}
 
@@ -514,10 +514,10 @@ class DibiResult extends DibiObject implements IDataSource
 				}
 				$cols[$name] = TRUE;
 			}
-			$this->withTables = array_keys($cols);
+			$this->keys = array_keys($cols);
 
 		} else {
-			$this->withTables = FALSE;
+			$this->keys = NULL;
 		}
 		return $this;
 	}
@@ -530,7 +530,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function getWithTables()
 	{
-		return (bool) $this->withTables;
+		return (bool) $this->keys;
 	}
 
 
@@ -544,7 +544,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function setType($col, $type, $format = NULL)
 	{
-		$this->xlat[$col] = array('type' => $type, 'format' => $format);
+		$this->types[$col] = array('type' => $type, 'format' => $format);
 		return $this;
 	}
 
@@ -557,7 +557,7 @@ class DibiResult extends DibiObject implements IDataSource
 	final public function detectTypes()
 	{
 		foreach ($this->getInfo()->getColumns() as $col) {
-			$this->xlat[$col->getName()] = array('type' => $col->getType(), 'format' => NULL);
+			$this->types[$col->getName()] = array('type' => $col->getType(), 'format' => NULL);
 		}
 	}
 
@@ -571,7 +571,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function setTypes(array $types)
 	{
-		$this->xlat = $types;
+		$this->types = $types;
 		return $this;
 	}
 
@@ -583,7 +583,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function getType($col)
 	{
-		return isset($this->xlat[$col]) ? $this->xlat[$col] : NULL;
+		return isset($this->types[$col]) ? $this->types[$col] : NULL;
 	}
 
 
