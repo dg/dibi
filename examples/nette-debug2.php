@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <h1>Nette\Debug & dibi example 2</h1>
 
 
@@ -25,4 +27,4 @@ dibi::connect(array(
 
 
 // throws error
-Debug::consoleDump( dibi::fetchAll('SELECT * FROM [customers] WHERE [customer_id] < %i', 38), '[customers]' );
+Debug::barDump( dibi::fetchAll('SELECT * FROM [customers] WHERE [customer_id] < %i', 38), '[customers]' );

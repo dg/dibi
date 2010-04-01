@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <h1>Nette\Debug & dibi example</h1>
 
 

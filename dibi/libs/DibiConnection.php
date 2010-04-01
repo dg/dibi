@@ -42,10 +42,6 @@ class DibiConnection extends DibiObject
 	 */
 	public function __construct($config, $name = NULL)
 	{
-		if (class_exists(/*Nette\*/'Debug', FALSE)) {
-			/*Nette\*/Debug::addColophon(array('dibi', 'getColophon'));
-		}
-
 		// DSN string
 		if (is_string($config)) {
 			parse_str($config, $config);

@@ -62,8 +62,8 @@ if (!class_exists('FileNotFoundException', FALSE)) {
 	class FileNotFoundException extends IOException {}
 }
 
-if (!interface_exists(/*Nette\*/'IDebuggable', FALSE)) {
-	require_once dirname(__FILE__) . '/Nette/IDebuggable.php';
+if (!interface_exists(/*Nette\*/'IDebugPanel', FALSE)) {
+	require_once dirname(__FILE__) . '/Nette/IDebugPanel.php';
 }
 
 if (!class_exists('DateTime53', FALSE)) {
@@ -735,25 +735,6 @@ class dibi
 
 		if (!empty($matches[4])) // other keywords
 			return '<strong style="color:green">' . $matches[4] . '</strong>';
-	}
-
-
-
-	/**
-	 * Returns brief descriptions.
-	 * @return string
-	 * @return array
-	 */
-	public static function getColophon($sender = NULL)
-	{
-		$arr = array(
-			'Number of SQL queries: ' . dibi::$numOfQueries
-			. (dibi::$totalTime === NULL ? '' : ', elapsed time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms'),
-		);
-		if ($sender === 'bluescreen') {
-			$arr[] = 'dibi ' . dibi::VERSION . ' (revision ' . dibi::REVISION . ')';
-		}
-		return $arr;
 	}
 
 }

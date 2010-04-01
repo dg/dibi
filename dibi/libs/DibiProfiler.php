@@ -18,13 +18,13 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
-class DibiProfiler extends DibiObject implements IDibiProfiler
+class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebugPanel
 {
 	/** maximum number of rows */
-	const FIREBUG_MAX_ROWS = 30;
+	const MAX_ROWS = 30;
 
 	/** maximum SQL length */
-	const FIREBUG_MAX_LENGTH = 500;
+	const MAX_LENGTH = 500;
 
 	/** @var string  Name of the file where SQL errors should be logged */
 	private $file;
@@ -45,6 +45,10 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 
 	public function __construct()
 	{
+		if (class_exists(/*Nette\*/'Debug', FALSE) && is_callable('Debug::addPanel')) {
+			/*Nette\*/Debug::addPanel($this);
+		}
+
 		$this->useFirebug = isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'FirePHP/');
 	}
 
@@ -114,28 +118,27 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 				$count = '?';
 			}
 
-			if ($this->useFirebug && !headers_sent()) {
-				if (count(self::$table) < self::FIREBUG_MAX_ROWS) {
-					self::$table[] = array(
-						sprintf('%0.3f', dibi::$elapsedTime * 1000),
-						strlen($sql) > self::FIREBUG_MAX_LENGTH ? substr($sql, 0, self::FIREBUG_MAX_LENGTH) . '...' : $sql,
-						$count,
-						$connection->getConfig('driver') . '/' . $connection->getConfig('name')
-					);
-				}
+			if (count(self::$table) < self::MAX_ROWS) {
+				self::$table[] = array(
+					sprintf('%0.3f', dibi::$elapsedTime * 1000),
+					strlen($sql) > self::MAX_LENGTH ? substr($sql, 0, self::MAX_LENGTH) . '...' : $sql,
+					$count,
+					$connection->getConfig('driver') . '/' . $connection->getConfig('name')
+				);
+			}
 
+			if ($this->useFirebug && !headers_sent()) {
 				header('X-Wf-Protocol-dibi: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');
 				header('X-Wf-dibi-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0');
 				header('X-Wf-dibi-Structure-1: http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1');
 
-				$payload = array(
+				$payload = json_encode(array(
 					array(
 						'Type' => 'TABLE',
 						'Label' => 'dibi profiler (' . dibi::$numOfQueries . ' SQL queries took ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms)',
 					),
 					self::$table,
-				);
-				$payload = json_encode($payload);
+				));
 				foreach (str_split($payload, 4990) as $num => $s) {
 					$num++;
 					header("X-Wf-dibi-1-1-d$num: |$s|\\"); // protocol-, structure-, plugin-, message-index
@@ -196,6 +199,60 @@ class DibiProfiler extends DibiObject implements IDibiProfiler
 		flock($handle, LOCK_EX);
 		fwrite($handle, $message);
 		fclose($handle);
+	}
+
+
+
+	/********************* interface Nette\IDebugPanel ****************d*g**/
+
+
+
+	/**
+	 * Returns HTML code for custom tab.
+	 * @return mixed
+	 */
+    public function getTab()
+    {
+		return '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEYSURBVBgZBcHPio5hGAfg6/2+R980k6wmJgsJ5U/ZOAqbSc2GnXOwUg7BESgLUeIQ1GSjLFnMwsKGGg1qxJRmPM97/1zXFAAAAEADdlfZzr26miup2svnelq7d2aYgt3rebl585wN6+K3I1/9fJe7O/uIePP2SypJkiRJ0vMhr55FLCA3zgIAOK9uQ4MS361ZOSX+OrTvkgINSjS/HIvhjxNNFGgQsbSmabohKDNoUGLohsls6BaiQIMSs2FYmnXdUsygQYmumy3Nhi6igwalDEOJEjPKP7CA2aFNK8Bkyy3fdNCg7r9/fW3jgpVJbDmy5+PB2IYp4MXFelQ7izPrhkPHB+P5/PjhD5gCgCenx+VR/dODEwD+A3T7nqbxwf1HAAAAAElFTkSuQmCC">'
+			. dibi::$numOfQueries . ' queries';
+    }
+
+
+
+	/**
+	 * Returns HTML code for custom panel.
+	 * @return mixed
+	 */
+	public function getPanel()
+	{
+		if (!dibi::$numOfQueries) return;
+
+		$content = '<h1>SQL queries: ' . dibi::$numOfQueries . (dibi::$totalTime === NULL ? '' : ', elapsed time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms') . '</h1>';
+		if (self::$table) {
+			$content .= '<table>';
+			foreach (self::$table as $i => $row) {
+				if ($i === 0) {
+					$content .= "<tr><th>$row[0]</th><th>$row[1]</th><th>$row[2]</th><th>$row[3]</th></tr>";
+				} else {
+					$content .= "<tr ".($i%2 ? 'class="nette-alt"':'')."><td>$row[0]</td>	<td>$row[1]</td><td>$row[2]</td><td>$row[3]</td></tr>";
+				}
+			}
+			$content .= '</table>';
+		} else {
+			$content .= '<p>no query</p>';
+		}
+		return $content;
+	}
+
+
+
+	/**
+	 * Returns panel ID.
+	 * @return string
+	 */
+	public function getId()
+	{
+		return get_class($this);
 	}
 
 }
