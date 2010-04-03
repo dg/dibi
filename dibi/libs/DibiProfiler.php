@@ -36,10 +36,10 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 	private $filter = self::ALL;
 
 	/** @var array */
-	public $tickets = array();
+	public static $tickets = array();
 
 	/** @var array */
-	public static $table = array(array('Time', 'SQL Statement', 'Rows', 'Connection'));
+	public static $fireTable = array(array('Time', 'SQL Statement', 'Rows', 'Connection'));
 
 
 
@@ -87,9 +87,11 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 	 */
 	public function before(DibiConnection $connection, $event, $sql = NULL)
 	{
-		$this->tickets[] = array($connection, $event, $sql);
-		end($this->tickets);
-		return key($this->tickets);
+		if ($event & self::QUERY) dibi::$numOfQueries++;
+		dibi::$elapsedTime = FALSE;
+		self::$tickets[] = array($connection, $event, trim($sql), -microtime(TRUE), NULL);
+		end(self::$tickets);
+		return key(self::$tickets);
 	}
 
 
@@ -102,25 +104,29 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 	 */
 	public function after($ticket, $res = NULL)
 	{
-		if (!isset($this->tickets[$ticket])) {
+		if (!isset(self::$tickets[$ticket])) {
 			throw new InvalidArgumentException('Bad ticket number.');
 		}
 
-		list($connection, $event, $sql) = $this->tickets[$ticket];
-		$sql = trim($sql);
+		$ticket = & self::$tickets[$ticket];
+		$ticket[3] += microtime(TRUE);
+		list($connection, $event, $sql, $time) = $ticket;
+
+		dibi::$elapsedTime = $time;
+		dibi::$totalTime += $time;
 
 		if (($event & $this->filter) === 0) return;
 
 		if ($event & self::QUERY) {
 			try {
-				$count = $res instanceof DibiResult ? count($res) : '-';
+				$ticket[4] = $count = $res instanceof DibiResult ? count($res) : '-';
 			} catch (Exception $e) {
 				$count = '?';
 			}
 
-			if (count(self::$table) < self::$maxQueries) {
-				self::$table[] = array(
-					sprintf('%0.3f', dibi::$elapsedTime * 1000),
+			if (count(self::$fireTable) < self::$maxQueries) {
+				self::$fireTable[] = array(
+					sprintf('%0.3f', $time * 1000),
 					strlen($sql) > self::$maxLength ? substr($sql, 0, self::$maxLength) . '...' : $sql,
 					$count,
 					$connection->getConfig('driver') . '/' . $connection->getConfig('name')
@@ -136,7 +142,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 							'Type' => 'TABLE',
 							'Label' => 'dibi profiler (' . dibi::$numOfQueries . ' SQL queries took ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms)',
 						),
-						self::$table,
+						self::$fireTable,
 					));
 					foreach (str_split($payload, 4990) as $num => $s) {
 						$num++;
@@ -150,7 +156,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 				$this->writeFile(
 					"OK: " . $sql
 					. ($res instanceof DibiResult ? ";\n-- rows: " . $count : '')
-					. "\n-- takes: " . sprintf('%0.3f', dibi::$elapsedTime * 1000) . ' ms'
+					. "\n-- takes: " . sprintf('%0.3f', $time * 1000) . ' ms'
 					. "\n-- driver: " . $connection->getConfig('driver') . '/' . $connection->getConfig('name')
 					. "\n-- " . date('Y-m-d H:i:s')
 					. "\n\n"

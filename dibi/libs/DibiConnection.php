@@ -314,21 +314,13 @@ class DibiConnection extends DibiObject
 			}
 			$ticket = $this->profiler->before($this, $event, $sql);
 		}
-		// TODO: move to profiler?
-		dibi::$numOfQueries++;
-		dibi::$sql = $sql;
-		dibi::$elapsedTime = FALSE;
-		$time = -microtime(TRUE);
 
+		dibi::$sql = $sql;
 		if ($res = $this->driver->query($sql)) { // intentionally =
 			$res = new DibiResult($res, $this->config);
 		} else {
 			$res = $this->driver->getAffectedRows();
 		}
-
-		$time += microtime(TRUE);
-		dibi::$elapsedTime = $time;
-		dibi::$totalTime += $time;
 
 		if (isset($ticket)) {
 			$this->profiler->after($ticket, $res);
