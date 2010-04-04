@@ -67,10 +67,10 @@ class DibiException extends Exception implements /*Nette\*/IDebugPanel
 	 * Returns HTML code for custom tab.
 	 * @return mixed
 	 */
-    public function getTab()
-    {
+	public function getTab()
+	{
 		return 'SQL';
-    }
+	}
 
 
 

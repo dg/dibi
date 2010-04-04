@@ -705,7 +705,7 @@ class dibi
 
 			$sql = wordwrap($sql, 100);
 			$sql = htmlSpecialChars($sql);
-			$sql = preg_replace("#\n{2,}#", "\n", $sql);
+			$sql = preg_replace("#([ \t]*\r?\n){2,}#", "\n", $sql);
 
 			// syntax highlight
 			$sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is", array('dibi', 'highlightCallback'), $sql);

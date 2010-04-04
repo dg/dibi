@@ -89,7 +89,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 	{
 		if ($event & self::QUERY) dibi::$numOfQueries++;
 		dibi::$elapsedTime = FALSE;
-		self::$tickets[] = array($connection, $event, trim($sql), -microtime(TRUE), NULL);
+		self::$tickets[] = array($connection, $event, trim($sql), -microtime(TRUE), NULL, NULL);
 		end(self::$tickets);
 		return key(self::$tickets);
 	}
@@ -131,6 +131,13 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 					$count,
 					$connection->getConfig('driver') . '/' . $connection->getConfig('name')
 				);
+
+				if ($event === self::SELECT) {
+					try {
+						$ticket[5] = dibi::dump($connection->setProfiler(NULL)->nativeQuery('EXPLAIN ' . $sql), TRUE);
+					} catch (DibiException $e) {}
+					$connection->setProfiler($this);
+				}
 
 				if ($this->useFirebug && !headers_sent()) {
 					header('X-Wf-Protocol-dibi: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');
@@ -217,11 +224,11 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 	 * Returns HTML code for custom tab.
 	 * @return mixed
 	 */
-    public function getTab()
-    {
+	public function getTab()
+	{
 		return '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEYSURBVBgZBcHPio5hGAfg6/2+R980k6wmJgsJ5U/ZOAqbSc2GnXOwUg7BESgLUeIQ1GSjLFnMwsKGGg1qxJRmPM97/1zXFAAAAEADdlfZzr26miup2svnelq7d2aYgt3rebl585wN6+K3I1/9fJe7O/uIePP2SypJkiRJ0vMhr55FLCA3zgIAOK9uQ4MS361ZOSX+OrTvkgINSjS/HIvhjxNNFGgQsbSmabohKDNoUGLohsls6BaiQIMSs2FYmnXdUsygQYmumy3Nhi6igwalDEOJEjPKP7CA2aFNK8Bkyy3fdNCg7r9/fW3jgpVJbDmy5+PB2IYp4MXFelQ7izPrhkPHB+P5/PjhD5gCgCenx+VR/dODEwD+A3T7nqbxwf1HAAAAAElFTkSuQmCC">'
 			. dibi::$numOfQueries . ' queries';
-    }
+	}
 
 
 
@@ -233,14 +240,34 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 	{
 		if (!dibi::$numOfQueries) return;
 
-		$content = '<h1>SQL queries: ' . dibi::$numOfQueries . (dibi::$totalTime === NULL ? '' : ', elapsed time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms') . '</h1>';
-		$content .= '<table class="nette-inner">';
-		foreach (self::$table as $i => $row) {
-			if ($i === 0) {
-				$content .= "<tr><th>$row[0]</th><th>$row[1]</th><th>$row[2]</th><th>$row[3]</th></tr>";
-			} else {
-				$content .= "<tr ".($i%2 ? 'class="nette-alt"':'')."><td>$row[0]</td><td><code>$row[1]</code></td><td>$row[2]</td><td>$row[3]</td></tr>";
-			}
+		$content = "
+<h1>SQL queries: " . dibi::$numOfQueries . (dibi::$totalTime === NULL ? '' : ', elapsed time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms') . "</h1>
+
+<style>
+	#nette-debug-DibiProfiler td.dibi-sql { background: white }
+	#nette-debug-DibiProfiler .nette-alt td.dibi-sql { background: #F5F5F5 }
+	#nette-debug-DibiProfiler .dibi-sql div { display: none; margin-top: 10px; max-height: 150px; overflow:auto }
+</style>
+
+<table class='nette-inner'>
+<tr>
+	<th>Time</th><th>SQL Statement</th><th>Rows</th><th>Connection</th>
+</tr>
+";
+		$i = 0; $classes = array('class="nette-alt"', '');
+		foreach (self::$tickets as $ticket) {
+			list($connection, $event, $sql, $time, $count, $explain) = $ticket;
+			if (!($event & self::QUERY)) continue;
+			$content .= "
+<tr {$classes[++$i%2]}>
+	<td>" . sprintf('%0.3f', $time * 1000) . "
+	<br><a href='#' class='nette-toggler' rel='#nette-debug-DibiProfiler-row-$i'>explain&nbsp;&#x25ba;</a></td>
+	<td class='dibi-sql'>" . dibi::dump(strlen($sql) > self::$maxLength ? substr($sql, 0, self::$maxLength) . '...' : $sql, TRUE) . "
+	<div id='nette-debug-DibiProfiler-row-$i'>{$explain}</div></td>
+	<td>{$count}</td>
+	<td>" . htmlSpecialChars($connection->getConfig('driver') . '/' . $connection->getConfig('name')) . "</td>
+</tr>
+";
 		}
 		$content .= '</table>';
 		return $content;
