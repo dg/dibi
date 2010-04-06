@@ -80,7 +80,7 @@ class DibiException extends Exception implements /*Nette\*/IDebugPanel
 	 */
 	public function getPanel()
 	{
-		return dibi::dump($this->sql, TRUE);
+		return $this->sql ? dibi::dump($this->sql, TRUE) : NULL;
 	}
 
 

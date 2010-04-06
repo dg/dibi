@@ -45,7 +45,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 
 	public function __construct()
 	{
-		if (class_exists(/*Nette\*/'Debug', FALSE) && is_callable('Debug::addPanel')) {
+		if (class_exists(/*Nette\*/'Debug', FALSE) && is_callable(/*Nette\*/'Debug::addPanel')) {
 			/*Nette\*/Debug::addPanel($this);
 		}
 
@@ -241,7 +241,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 		if (!dibi::$numOfQueries) return;
 
 		$content = "
-<h1>SQL queries: " . dibi::$numOfQueries . (dibi::$totalTime === NULL ? '' : ', elapsed time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms') . "</h1>
+<h1>Queries: " . dibi::$numOfQueries . (dibi::$totalTime === NULL ? '' : ', time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms') . "</h1>
 
 <style>
 	#nette-debug-DibiProfiler td.dibi-sql { background: white }
@@ -249,7 +249,8 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 	#nette-debug-DibiProfiler .dibi-sql div { display: none; margin-top: 10px; max-height: 150px; overflow:auto }
 </style>
 
-<table class='nette-inner'>
+<div class='nette-inner'>
+<table>
 <tr>
 	<th>Time</th><th>SQL Statement</th><th>Rows</th><th>Connection</th>
 </tr>
@@ -269,7 +270,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 </tr>
 ";
 		}
-		$content .= '</table>';
+		$content .= '</table></div>';
 		return $content;
 	}
 
