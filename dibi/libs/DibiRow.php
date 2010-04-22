@@ -18,15 +18,12 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
-class DibiRow extends ArrayObject
+class DibiRow implements ArrayAccess, IteratorAggregate
 {
 
-	/**
-	 * @param  array
-	 */
-	public function __construct($arr)
+	function __construct($arr)
 	{
-		parent::__construct($arr, 2);
+		foreach ($arr as $k => $v) $this->$k = $v;
 	}
 
 
@@ -82,17 +79,6 @@ class DibiRow extends ArrayObject
 
 
 
-	/**
-	 * PHP < 5.3 workaround
-	 * @return void
-	 */
-	public function __wakeup()
-	{
-		$this->setFlags(2);
-	}
-
-
-
 	/** @deprecated */
 	public function asDate($key, $format = NULL)
 	{
@@ -101,6 +87,45 @@ class DibiRow extends ArrayObject
 		} else {
 			return $this->asDateTime($key, $format === TRUE ? NULL : $format);
 		}
+	}
+
+
+
+	/********************* interfaces ArrayAccess & IteratorAggregate ****************d*g**/
+
+
+
+	final public function getIterator()
+	{
+		return new ArrayIterator($this);
+	}
+
+
+
+	final public function offsetSet($nm, $val)
+	{
+		$this->$nm = $val;
+	}
+
+
+
+	final public function offsetGet($nm)
+	{
+		return $this->$nm;
+	}
+
+
+
+	final public function offsetExists($nm)
+	{
+		return isset($this->$nm);
+	}
+
+
+
+	final public function offsetUnset($nm)
+	{
+		unset($this->$nm);
 	}
 
 }
