@@ -17,6 +17,10 @@
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
+ *
+ * @property-read string $command
+ * @property-read DibiConnection $connection
+ * @property-read DibiResultIterator $iterator
  */
 class DibiFluent extends DibiObject implements IDataSource
 {

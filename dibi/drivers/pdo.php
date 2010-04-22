@@ -417,7 +417,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 			// PHP < 5.2.3 compatibility
 			// @see: http://php.net/manual/en/pdostatement.getcolumnmeta.php#pdostatement.getcolumnmeta.changelog
 			$row['table'] = isset($row['table']) ? $row['table'] : NULL;
-			
+
 			$res[] = array(
 				'name' => $row['name'],
 				'table' => $row['table'],

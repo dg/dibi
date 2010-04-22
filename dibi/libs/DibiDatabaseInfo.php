@@ -17,6 +17,10 @@
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
+ *
+ * @property-read string $name
+ * @property-read array $tables
+ * @property-read array $tableNames
  */
 class DibiDatabaseInfo extends DibiObject
 {
@@ -128,6 +132,14 @@ class DibiDatabaseInfo extends DibiObject
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
+ *
+ * @property-read string $name
+ * @property-read bool $view
+ * @property-read array $columns
+ * @property-read array $columnNames
+ * @property-read array $foreignKeys
+ * @property-read array $indexes
+ * @property-read DibiIndexInfo $primaryKey
  */
 class DibiTableInfo extends DibiObject
 {
@@ -327,6 +339,9 @@ class DibiTableInfo extends DibiObject
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
+ *
+ * @property-read array $columns
+ * @property-read array $columnNames
  */
 class DibiResultInfo extends DibiObject
 {
@@ -428,6 +443,17 @@ class DibiResultInfo extends DibiObject
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
+ *
+ * @property-read string $name
+ * @property-read string $fullName
+ * @property-read DibiTableInfo $table
+ * @property-read string $type
+ * @property-read mixed $nativeType
+ * @property-read int $size
+ * @property-read bool $unsigned
+ * @property-read bool $nullable
+ * @property-read bool $autoIncrement
+ * @property-read mixed $default
  */
 class DibiColumnInfo extends DibiObject
 {
@@ -539,7 +565,7 @@ class DibiColumnInfo extends DibiObject
 
 
 
-    /**
+	/**
 	 * @return bool
 	 */
 	public function isNullable()
@@ -620,6 +646,9 @@ class DibiColumnInfo extends DibiObject
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  * @todo
+ *
+ * @property-read string $name
+ * @property-read array $references
  */
 class DibiForeignKeyInfo extends DibiObject
 {
@@ -667,6 +696,11 @@ class DibiForeignKeyInfo extends DibiObject
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
+ *
+ * @property-read string $name
+ * @property-read array $columns
+ * @property-read bool $unique
+ * @property-read bool $primary
  */
 class DibiIndexInfo extends DibiObject
 {

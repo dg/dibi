@@ -30,6 +30,13 @@
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
+ *
+ * @property-read mixed $resource
+ * @property-read IDibiDriver $driver
+ * @property-read int $rowCount
+ * @property-read DibiResultIterator $iterator
+ * @property string $rowClass
+ * @property-read DibiResultInfo $info
  */
 class DibiResult extends DibiObject implements IDataSource
 {
