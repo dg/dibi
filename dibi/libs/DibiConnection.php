@@ -54,8 +54,8 @@ class DibiConnection extends DibiObject
 		if (is_string($config)) {
 			parse_str($config, $config);
 
-		} elseif ($config instanceof ArrayObject) {
-			$config = (array) $config;
+		} elseif ($config instanceof Traversable) {
+			$config = iterator_to_array($config);
 
 		} elseif (!is_array($config)) {
 			throw new InvalidArgumentException('Configuration must be array, string or ArrayObject.');
