@@ -21,6 +21,15 @@
  * @property-read string $command
  * @property-read DibiConnection $connection
  * @property-read DibiResultIterator $iterator
+ * @method DibiFluent select($field)
+ * @method DibiFluent distinct()
+ * @method DibiFluent from($table)
+ * @method DibiFluent where($cond)
+ * @method DibiFluent groupBy($field)
+ * @method DibiFluent having($cond)
+ * @method DibiFluent orderBy($field)
+ * @method DibiFluent limit(int $limit)
+ * @method DibiFluent offset(int $offset)
  */
 class DibiFluent extends DibiObject implements IDataSource
 {
