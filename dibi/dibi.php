@@ -204,8 +204,8 @@ class dibi
 
 	/**
 	 * Creates a new DibiConnection object and connects it to specified database.
-	 * @param  array|string|ArrayObject connection parameters
-	 * @param  string       connection name
+	 * @param  mixed   connection parameters
+	 * @param  string  connection name
 	 * @return DibiConnection
 	 * @throws DibiException
 	 */

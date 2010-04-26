@@ -132,7 +132,7 @@ class DibiFluent extends DibiObject implements IDataSource
 			} elseif ($arg instanceof self) {
 				$args = array_merge(array('('), $arg->_export(), array(')'));
 
-			} elseif (is_array($arg) || $arg instanceof ArrayObject) { // any array
+			} elseif (is_array($arg) || $arg instanceof Traversable) { // any array
 				if (isset(self::$modifiers[$clause])) {
 					$args = array(self::$modifiers[$clause], $arg);
 

@@ -44,8 +44,8 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Creates object and (optionally) connects to a database.
-	 * @param  array|string|ArrayObject connection parameters
-	 * @param  string       connection name
+	 * @param  mixed   connection parameters
+	 * @param  string  connection name
 	 * @throws DibiException
 	 */
 	public function __construct($config, $name = NULL)
@@ -58,7 +58,7 @@ class DibiConnection extends DibiObject
 			$config = iterator_to_array($config);
 
 		} elseif (!is_array($config)) {
-			throw new InvalidArgumentException('Configuration must be array, string or ArrayObject.');
+			throw new InvalidArgumentException('Configuration must be array, string or object.');
 		}
 
 		self::alias($config, 'username', 'user');
@@ -553,8 +553,8 @@ class DibiConnection extends DibiObject
 	 */
 	public function update($table, $args)
 	{
-		if (!(is_array($args) || $args instanceof ArrayObject)) {
-			throw new InvalidArgumentException('Arguments must be array or ArrayObject.');
+		if (!(is_array($args) || $args instanceof Traversable)) {
+			throw new InvalidArgumentException('Arguments must be array or Traversable.');
 		}
 		return $this->command()->update('%n', $table)->set($args);
 	}
@@ -568,10 +568,10 @@ class DibiConnection extends DibiObject
 	 */
 	public function insert($table, $args)
 	{
-		if ($args instanceof ArrayObject) {
-			$args = (array) $args;
+		if ($args instanceof Traversable) {
+			$args = iterator_to_array($args);
 		} elseif (!is_array($args)) {
-			throw new InvalidArgumentException('Arguments must be array or ArrayObject.');
+			throw new InvalidArgumentException('Arguments must be array or Traversable.');
 		}
 		return $this->command()->insert()
 			->into('%n', $table, '(%n)', array_keys($args))->values('%l', $args);

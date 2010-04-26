@@ -134,8 +134,8 @@ final class DibiTranslator extends DibiObject
 				continue;
 			}
 
-			if ($arg instanceof ArrayObject) {
-				$arg = (array) $arg;
+			if ($arg instanceof Traversable) {
+				$arg = iterator_to_array($arg);
 			}
 
 			if (is_array($arg)) {
@@ -192,8 +192,8 @@ final class DibiTranslator extends DibiObject
 	public function formatValue($value, $modifier)
 	{
 		// array processing (with or without modifier)
-		if ($value instanceof ArrayObject) {
-			$value = (array) $value;
+		if ($value instanceof Traversable) {
+			$value = iterator_to_array($value);
 		}
 
 		if (is_array($value)) {
