@@ -18,12 +18,19 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
-class DibiRow implements ArrayAccess, IteratorAggregate
+class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 {
 
-	function __construct($arr)
+	public function __construct($arr)
 	{
 		foreach ($arr as $k => $v) $this->$k = $v;
+	}
+
+
+
+	public function toArray()
+	{
+		return (array) $this;
 	}
 
 
@@ -91,7 +98,14 @@ class DibiRow implements ArrayAccess, IteratorAggregate
 
 
 
-	/********************* interfaces ArrayAccess & IteratorAggregate ****************d*g**/
+	/********************* interfaces ArrayAccess, Countable & IteratorAggregate ****************d*g**/
+
+
+
+	final public function count()
+	{
+		return count((array) $this);
+	}
 
 
 

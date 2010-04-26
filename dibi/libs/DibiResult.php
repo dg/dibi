@@ -398,7 +398,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 				} elseif ($as === '=') { // "record" node
 					if ($x === NULL) {
-						$x = (array) $row;
+						$x = $row->toArray();
 						$x = & $x[ $assoc[$i+1] ];
 						$x = NULL; // prepare child node
 					} else {
@@ -422,7 +422,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 			if ($x === NULL) { // build leaf
 				if ($leaf === '=') {
-					$x = (array) $row;
+					$x = $row->toArray();
 				} else {
 					$x = $row;
 				}
@@ -457,7 +457,7 @@ class DibiResult extends DibiObject implements IDataSource
 			}
 
 			// autodetect
-			$tmp = array_keys((array) $row);
+			$tmp = array_keys($row->toArray());
 			$key = $tmp[0];
 			if (count($row) < 2) { // indexed-array
 				do {
