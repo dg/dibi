@@ -107,7 +107,7 @@ final class DibiTranslator extends DibiObject
 				} else {
 					$sql[] = substr($arg, 0, $toSkip)
 /*
-					preg_replace_callback('/
+					. preg_replace_callback('/
 					(?=[`[\'":%?])                    ## speed-up
 					(?:
 						`(.+?)`|                     ## 1) `identifier`
@@ -115,8 +115,8 @@ final class DibiTranslator extends DibiObject
 						(\')((?:\'\'|[^\'])*)\'|     ## 3,4) 'string'
 						(")((?:""|[^"])*)"|          ## 5,6) "string"
 						(\'|")|                      ## 7) lone quote
-						:(\S*?:)([a-zA-Z0-9._]?)|    ## 8,9) substitution
-						%([a-zA-Z]{1,4})(?![a-zA-Z]) ## 10) modifier
+						:(\S*?:)([a-zA-Z0-9._]?)|    ## 8,9) :substitution:
+						%([a-zA-Z]{1,4})(?![a-zA-Z])|## 10) modifier
 						(\?)                         ## 11) placeholder
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
@@ -344,7 +344,7 @@ final class DibiTranslator extends DibiObject
 			case 'i':  // signed int
 			case 'u':  // unsigned int, ignored
 				// support for long numbers - keep them unchanged
-				if (is_string($value) && preg_match('#[+-]?\d+(e\d+)?$#A', $value)) {
+				if (is_string($value) && preg_match('#[+-]?\d++(e\d+)?$#A', $value)) {
 					return $value;
 				} else {
 					return $value === NULL ? 'NULL' : (string) (int) ($value + 0);
@@ -568,7 +568,7 @@ final class DibiTranslator extends DibiObject
 			return '*';
 
 		} elseif (strpos($value, ':') !== FALSE) { // provide substitution
-			$value = preg_replace_callback('#:(.*):#U', array(__CLASS__, 'subCb'), $value);
+			$value = preg_replace_callback('#:([^:\s]*):#', array(__CLASS__, 'subCb'), $value);
 		}
 
 		return $this->driver->escape($value, dibi::IDENTIFIER);
