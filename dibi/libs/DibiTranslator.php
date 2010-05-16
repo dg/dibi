@@ -124,7 +124,7 @@ final class DibiTranslator extends DibiObject
 							array($this, 'cb'),
 							substr($arg, $toSkip)
 					);
-
+					if (preg_last_error()) throw new PcreException;
 				}
 				continue;
 			}
@@ -381,16 +381,16 @@ final class DibiTranslator extends DibiObject
 				$value = (string) $value;
 				// speed-up - is regexp required?
 				$toSkip = strcspn($value, '`[\'":');
-				if (strlen($value) === $toSkip) { // needn't be translated
-					return $value;
-				} else {
-					return substr($value, 0, $toSkip)
+				if (strlen($value) !== $toSkip) {
+					$value = substr($value, 0, $toSkip)
 					. preg_replace_callback(
 						'/(?=[`[\'":])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/s',
 						array($this, 'cb'),
 						substr($value, $toSkip)
 					);
+					if (preg_last_error()) throw new PcreException;
 				}
+				return $value;
 
 			case 'SQL': // preserve as real SQL (TODO: rename to %sql)
 				return (string) $value;

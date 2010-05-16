@@ -175,6 +175,8 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 	{
 		$res = array();
 		preg_match_all('#(.+?): +(\d+) *#', mysql_info($this->connection), $matches, PREG_SET_ORDER);
+		if (preg_last_error()) throw new PcreException;
+
 		foreach ($matches as $m) {
 			$res[$m[1]] = (int) $m[2];
 		}
