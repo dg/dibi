@@ -96,7 +96,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 		$this->resultSet = @mssql_query($sql, $this->connection); // intentionally @
 
 		if ($this->resultSet === FALSE) {
-			throw new DibiDriverException('Query error', 0, $sql);
+			throw new DibiDriverException(mssql_get_last_message(), 0, $sql);
 		}
 
 		return is_resource($this->resultSet) ? clone $this : NULL;
