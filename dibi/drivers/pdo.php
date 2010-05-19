@@ -198,17 +198,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 
 
 	/**
-	 * Is in transaction?
-	 * @return bool
-	 */
-	public function inTransaction()
-	{
-		return (bool) $this->connection->getAttribute(PDO::ATTR_AUTOCOMMIT);
-	}
-
-
-
-	/**
 	 * Returns the connection resource.
 	 * @return PDO
 	 */

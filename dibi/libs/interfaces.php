@@ -146,12 +146,6 @@ interface IDibiDriver
 	function rollback($savepoint = NULL);
 
 	/**
-	 * Is in transaction?
-	 * @return bool
-	 */
-	function inTransaction();
-
-	/**
 	 * Returns the connection resource.
 	 * @return mixed
 	 */

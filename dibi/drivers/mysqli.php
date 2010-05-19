@@ -231,18 +231,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 
 
 	/**
-	 * Is in transaction?
-	 * @return bool
-	 */
-	public function inTransaction()
-	{
-		$row = mysqli_fetch_row(mysqli_query($this->connection, 'SELECT @@autocommit'));
-		return (bool) $row[0];
-	}
-
-
-
-	/**
 	 * Returns the connection resource.
 	 * @return mysqli
 	 */

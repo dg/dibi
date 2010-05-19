@@ -447,18 +447,6 @@ class DibiConnection extends DibiObject
 
 
 	/**
-	 * Is in transaction?
-	 * @return bool
-	 */
-	public function inTransaction()
-	{
-		$this->connect();
-		return $this->driver->inTransaction();
-	}
-
-
-
-	/**
 	 * Encodes data for use in a SQL statement.
 	 * @param  string    unescaped string
 	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
