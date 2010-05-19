@@ -242,25 +242,19 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 		case dibi::IDENTIFIER:
 			switch ($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME)) {
 			case 'mysql':
-				$value = str_replace('`', '``', $value);
-				return '`' . str_replace('.', '`.`', $value) . '`';
+				return '`' . str_replace('`', '``', $value) . '`';
 
 			case 'pgsql':
-				$a = strrpos($value, '.');
-				if ($a === FALSE) {
-					return '"' . str_replace('"', '""', $value) . '"';
-				} else {
-					return substr($value, 0, $a) . '."' . str_replace('"', '""', substr($value, $a + 1)) . '"';
-				}
+				return '"' . str_replace('"', '""', $value) . '"';
 
 			case 'sqlite':
 			case 'sqlite2':
-				$value = strtr($value, '[]', '  ');
+				return '[' . strtr($value, '[]', '  ') . ']';
+
 			case 'odbc':
 			case 'oci': // TODO: not tested
 			case 'mssql':
-				$value = str_replace(array('[', ']'), array('[[', ']]'), $value);
-				return '[' . str_replace('.', '].[', $value) . ']';
+				return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
 			default:
 				return $value;

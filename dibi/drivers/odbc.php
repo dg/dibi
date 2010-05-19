@@ -219,8 +219,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver
 			return "'" . str_replace("'", "''", $value) . "'";
 
 		case dibi::IDENTIFIER:
-			$value = str_replace(array('[', ']'), array('[[', ']]'), $value);
-			return '[' . str_replace('.', '].[', $value) . ']';
+			return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
 		case dibi::BOOL:
 			return $value ? 1 : 0;

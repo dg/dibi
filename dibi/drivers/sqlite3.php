@@ -226,7 +226,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 			return "X'" . bin2hex((string) $value) . "'";
 
 		case dibi::IDENTIFIER:
-			return '[' . str_replace('.', '].[', strtr($value, '[]', '  ')) . ']';
+			return '[' . strtr($value, '[]', '  ') . ']';
 
 		case dibi::BOOL:
 			return $value ? 1 : 0;

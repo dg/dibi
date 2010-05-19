@@ -564,14 +564,15 @@ final class DibiTranslator extends DibiObject
 	 */
 	private function delimite($value)
 	{
-		if ($value === '*') {
-			return '*';
-
-		} elseif (strpos($value, ':') !== FALSE) { // provide substitution
+		if (strpos($value, ':') !== FALSE) { // provide substitution
 			$value = preg_replace_callback('#:([^:\s]*):#', array(__CLASS__, 'subCb'), $value);
 		}
 
-		return $this->driver->escape($value, dibi::IDENTIFIER);
+		$parts = explode('.', $value);
+		foreach ($parts as & $value) {
+			$value = $value === '*' ? '*' : $this->driver->escape($value, dibi::IDENTIFIER);
+		}
+		return implode('.', $parts);
 	}
 
 

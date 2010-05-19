@@ -212,8 +212,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 
 		case dibi::IDENTIFIER:
 			// @see http://msdn.microsoft.com/en-us/library/ms176027.aspx
-			$value = str_replace(array('[', ']'), array('[[', ']]'), $value);
-			return '[' . str_replace('.', '].[', $value) . ']';
+			return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
 		case dibi::BOOL:
 			return $value ? 1 : 0;
