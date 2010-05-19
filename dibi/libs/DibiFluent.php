@@ -72,6 +72,14 @@ class DibiFluent extends DibiObject implements IDataSource
 		'INTO' => FALSE,
 	);
 
+	/** @var array  clauses */
+	public static $clauseSwitches = array(
+		'JOIN' => 'FROM',
+		'INNER JOIN' => 'FROM',
+		'LEFT JOIN' => 'FROM',
+		'RIGHT JOIN' => 'FROM',
+	);
+
 	/** @var DibiConnection */
 	private $connection;
 
@@ -117,6 +125,11 @@ class DibiFluent extends DibiObject implements IDataSource
 			$this->cursor = & $this->clauses[$clause];
 			$this->cursor = array();
 			$this->command = $clause;
+		}
+
+        // auto-switch to a clause
+		if (isset(self::$clauseSwitches[$clause])) {
+			$this->cursor = & $this->clauses[self::$clauseSwitches[$clause]];
 		}
 
 		// special types or argument
