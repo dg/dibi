@@ -57,9 +57,9 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 	 */
 	public function connect(array &$config)
 	{
-		DibiConnection::alias($config, 'dsn');
+		$foo = & $config['dsn'];
+		$foo = & $config['options'];
 		DibiConnection::alias($config, 'resource', 'pdo');
-		DibiConnection::alias($config, 'options');
 
 		if ($config['resource'] instanceof PDO) {
 			$this->connection = $config['resource'];

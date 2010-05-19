@@ -68,8 +68,8 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver
 	 */
 	public function connect(array &$config)
 	{
-		DibiConnection::alias($config, 'options');
-		DibiConnection::alias($config, 'database');
+		$foo = & $config['options'];
+		$foo = & $config['database'];
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];

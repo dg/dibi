@@ -193,15 +193,14 @@ class DibiConnection extends DibiObject
 	 * @param  string alias key
 	 * @return void
 	 */
-	public static function alias(&$config, $key, $alias=NULL)
+	public static function alias(&$config, $key, $alias)
 	{
-		if (isset($config[$key])) return;
+		$foo = & $config;
+		foreach (explode('|', $key) as $key) $foo = & $foo[$key];
 
-		if ($alias !== NULL && isset($config[$alias])) {
-			$config[$key] = $config[$alias];
+		if (!isset($foo) && isset($config[$alias])) {
+			$foo = $config[$alias];
 			unset($config[$alias]);
-		} else {
-			$config[$key] = NULL;
 		}
 	}
 
