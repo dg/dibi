@@ -128,6 +128,25 @@ echo "</p>\n";
 
 
 
+// connects to MS SQL 2005
+echo '<p>Connecting to MS SQL 2005: ';
+try {
+	dibi::connect(array(
+		'driver'   => 'mssql2005',
+		'host'     => '(local)',
+		'username' => 'Administrator',
+		'password' => 'xxx',
+		'database' => 'main',
+	));
+	echo 'OK';
+
+} catch (DibiException $e) {
+	echo get_class($e), ': ', $e->getMessage(), "\n";
+}
+echo "</p>\n";
+
+
+
 // connects to Oracle
 echo '<p>Connecting to Oracle: ';
 try {
