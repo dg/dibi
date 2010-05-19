@@ -15,6 +15,10 @@
 /**
  * dibi basic logger & profiler (experimental).
  *
+ * Profiler options:
+ *   - 'explain' - explain SELECT queries?
+ *   - 'filter' - which queries to log?
+ *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
@@ -32,6 +36,9 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 	/** @var bool  log to firebug? */
 	public $useFirebug;
 
+	/** @var bool  explain queries? */
+	public $explainQuery = TRUE;
+
 	/** @var int */
 	private $filter = self::ALL;
 
@@ -43,13 +50,21 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 
 
 
-	public function __construct()
+	public function __construct(array $config)
 	{
 		if (class_exists(/*Nette\*/'Debug', FALSE) && is_callable(/*Nette\*/'Debug::addPanel')) {
 			/*Nette\*/Debug::addPanel($this);
 		}
 
 		$this->useFirebug = isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'FirePHP/');
+
+		if (isset($config['filter'])) {
+			$this->setFilter($config['filter']);
+		}
+
+		if (isset($config['explain'])) {
+			$this->explainQuery = (bool) $config['explain'];
+		}
 	}
 
 
@@ -132,7 +147,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 					$connection->getConfig('driver') . '/' . $connection->getConfig('name')
 				);
 
-				if ($event === self::SELECT) {
+				if ($this->explainQuery && $event === self::SELECT) {
 					try {
 						$ticket[5] = dibi::dump($connection->setProfiler(NULL)->nativeQuery('EXPLAIN ' . $sql), TRUE);
 					} catch (DibiException $e) {}
@@ -261,10 +276,10 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 			if (!($event & self::QUERY)) continue;
 			$content .= "
 <tr {$classes[++$i%2]}>
-	<td>" . sprintf('%0.3f', $time * 1000) . "
-	<br><a href='#' class='nette-toggler' rel='#nette-debug-DibiProfiler-row-$i'>explain&nbsp;&#x25ba;</a></td>
-	<td class='dibi-sql'>" . dibi::dump(strlen($sql) > self::$maxLength ? substr($sql, 0, self::$maxLength) . '...' : $sql, TRUE) . "
-	<div id='nette-debug-DibiProfiler-row-$i'>{$explain}</div></td>
+	<td>" . sprintf('%0.3f', $time * 1000) . ($explain ? "
+	<br><a href='#' class='nette-toggler' rel='#nette-debug-DibiProfiler-row-$i'>explain&nbsp;&#x25ba;</a>" : '') . "</td>
+	<td class='dibi-sql'>" . dibi::dump(strlen($sql) > self::$maxLength ? substr($sql, 0, self::$maxLength) . '...' : $sql, TRUE) . ($explain ? "
+	<div id='nette-debug-DibiProfiler-row-$i'>{$explain}</div>" : '') . "</td>
 	<td>{$count}</td>
 	<td>" . htmlSpecialChars($connection->getConfig('driver') . '/' . $connection->getConfig('name')) . "</td>
 </tr>

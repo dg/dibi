@@ -89,15 +89,20 @@ class DibiConnection extends DibiObject
 		$this->config = $config;
 		$this->driver = new $class;
 
-		if (!empty($config['profiler'])) {
-			$class = $config['profiler'];
-			if (is_numeric($class) || is_bool($class)) {
-				$class = 'DibiProfiler';
-			}
+        // profiler
+		$profilerCfg = & $config['profiler'];
+		if (is_numeric($profilerCfg) || is_bool($profilerCfg)) { // back compatibility
+			$profilerCfg = array('run' => (bool) $profilerCfg);
+		} elseif (is_string($profilerCfg)) {
+			$profilerCfg = array('run' => TRUE, 'class' => $profilerCfg);
+		}
+
+		if (!empty($profilerCfg['run'])) {
+			$class = isset($profilerCfg['class']) ? $profilerCfg['class'] : 'DibiProfiler';
 			if (!class_exists($class)) {
 				throw new DibiException("Unable to create instance of dibi profiler '$class'.");
 			}
-			$this->setProfiler(new $class);
+			$this->setProfiler(new $class($profilerCfg));
 		}
 
 		if (!empty($config['substitutes'])) {
