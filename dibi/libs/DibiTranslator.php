@@ -355,7 +355,7 @@ final class DibiTranslator extends DibiObject
 				if (is_string($value) && is_numeric($value) && strpos($value, 'x') === FALSE) {
 					return $value; // something like -9E-005 is accepted by SQL, HEX values are not
 				} else {
-					return $value === NULL ? 'NULL' : rtrim(rtrim(number_format($value, 5, '.', ''), '0'), '.');
+					return $value === NULL ? 'NULL' : rtrim(rtrim(number_format($value + 0, 5, '.', ''), '0'), '.');
 				}
 
 			case 'd':  // date
