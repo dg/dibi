@@ -55,7 +55,11 @@ class DibiConnection extends DibiObject
 			parse_str($config, $config);
 
 		} elseif ($config instanceof Traversable) {
-			$config = iterator_to_array($config);
+			$tmp = array();
+			foreach ($config as $key => $val) {
+				$tmp[$key] = $val instanceof Traversable ? iterator_to_array($val) : $val;
+			}
+			$config = $tmp;
 
 		} elseif (!is_array($config)) {
 			throw new InvalidArgumentException('Configuration must be array, string or object.');
@@ -64,6 +68,8 @@ class DibiConnection extends DibiObject
 		self::alias($config, 'username', 'user');
 		self::alias($config, 'password', 'pass');
 		self::alias($config, 'host', 'hostname');
+		self::alias($config, 'result|detectTypes', 'resultDetectTypes'); // back compatibility
+		self::alias($config, 'result|formatDateTime', 'resultDateTime');
 
 		if (!isset($config['driver'])) {
 			$config['driver'] = dibi::$defaultDriver;
@@ -324,7 +330,7 @@ class DibiConnection extends DibiObject
 
 		dibi::$sql = $sql;
 		if ($res = $this->driver->query($sql)) { // intentionally =
-			$res = new DibiResult($res, $this->config);
+			$res = new DibiResult($res, $this->config['result']);
 		} else {
 			$res = $this->driver->getAffectedRows();
 		}

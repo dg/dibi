@@ -28,6 +28,10 @@
  * unset($result);
  * </code>
  *
+ * Result options:
+ *   - 'detectTypes' - whether call automatically detectTypes()
+ *   - 'formatDateTime' - how to format datetime
+ *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  *
@@ -68,12 +72,12 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		$this->driver = $driver;
 
-		if (!empty($config[dibi::RESULT_DETECT_TYPES])) {
+		if (!empty($config['detectTypes'])) {
 			$this->detectTypes();
 		}
 
-		if (!empty($config[dibi::RESULT_DATE_TIME])) {
-			$this->dateFormat = is_string($config[dibi::RESULT_DATE_TIME]) ? $config[dibi::RESULT_DATE_TIME] : '';
+		if (!empty($config['formatDateTime'])) {
+			$this->dateFormat = is_string($config['formatDateTime']) ? $config['formatDateTime'] : '';
 		}
 	}
 

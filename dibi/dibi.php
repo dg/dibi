@@ -167,13 +167,7 @@ class dibi
 	const REVISION = '$WCREV$ released on $WCDATE$';
 	/**#@-*/
 
-	/**#@+
-	 * Configuration options
-	 */
-	const RESULT_DETECT_TYPES = 'resultDetectTypes';
-	const RESULT_DATE_TIME = 'resultDateTime';
 	const ASC = 'ASC', DESC = 'DESC';
-	/**#@-*/
 
 	/** @var DibiConnection[]  Connection registry storage for DibiConnection objects */
 	private static $registry = array();
