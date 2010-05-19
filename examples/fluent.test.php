@@ -1,4 +1,4 @@
-<h1>dibi dump example</h1>
+<h1>dibi fluent example</h1>
 <?php
 
 require_once 'Nette/Debug.php';
