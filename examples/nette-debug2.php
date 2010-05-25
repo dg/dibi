@@ -6,7 +6,7 @@
 <p>Dibi can dump variables via Nette\Debug, part of Nette Framework.</p>
 
 <ul>
-	<li>Nette Framework: http://nettephp.com
+	<li>Nette Framework: http://nette.org
 </ul>
 
 <?php

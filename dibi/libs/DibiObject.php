@@ -15,7 +15,7 @@
 /**
  * DibiObject is the ultimate ancestor of all instantiable classes.
  *
- * DibiObject is copy of Nette\Object from Nette Framework (http://nettephp.com).
+ * DibiObject is copy of Nette\Object from Nette Framework (http://nette.org).
  *
  * It defines some handful methods and enhances object core of PHP:
  *   - access to undeclared members throws exceptions

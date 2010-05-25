@@ -7,11 +7,11 @@
  * This source file is subject to the "Nette license" that is bundled
  * with this package in the file license.txt, and/or GPL license.
  *
- * For more information please see http://nettephp.com
+ * For more information please see http://nette.org
  *
  * @copyright  Copyright (c) 2004, 2010 David Grudl
- * @license    http://nettephp.com/license  Nette license
- * @link       http://nettephp.com
+ * @license    http://nette.org/license  Nette license
+ * @link       http://nette.org
  * @category   Nette
  * @package    Nette
  */
@@ -105,7 +105,7 @@ as$panel){$panels[]=array('id'=>preg_replace('#[^a-z0-9]+#i','-',$panel->getId()
 
 
 <script id="nette-debug-script">/*<![CDATA[*//*
-    http://nettephp.com/license  Nette license
+    http://nette.org/license  Nette license
 */
 var Nette=Nette||{};
 (function(){Nette.Class=function(a){var b=a.constructor||function(){},c;delete a.constructor;if(a.Extends){var d=function(){this.constructor=b};d.prototype=a.Extends.prototype;b.prototype=new d;delete a.Extends}if(a.Static){for(c in a.Static)b[c]=a.Static[c];delete a.Static}for(c in a)b.prototype[c]=a[c];return b};Nette.Q=Nette.Class({Static:{factory:function(a){return new Nette.Q(a)},implement:function(a){var b,c=Nette.Q.implement,d=Nette.Q.prototype;for(b in a){c[b]=a[b];d[b]=function(f){return function(){return this.each(c[f],
