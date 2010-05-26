@@ -127,7 +127,7 @@ class DibiFluent extends DibiObject implements IDataSource
 			$this->command = $clause;
 		}
 
-        // auto-switch to a clause
+		// auto-switch to a clause
 		if (isset(self::$clauseSwitches[$clause])) {
 			$this->cursor = & $this->clauses[self::$clauseSwitches[$clause]];
 		}

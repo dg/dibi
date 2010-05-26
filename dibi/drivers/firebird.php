@@ -27,7 +27,7 @@
  * @copyright  Copyright (c) 2010
  * @package    dibi\drivers
  */
-class DibiFirebirdDriver extends DibiObject implements IDibiDriver
+class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiReflector
 {
 	const ERROR_EXCEPTION_THROWN = -836;
 
@@ -400,7 +400,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver
 
 
 
-	/********************* reflection ********************/
+	/********************* IDibiReflector ********************/
 
 
 

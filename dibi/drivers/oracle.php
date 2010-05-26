@@ -27,7 +27,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers
  */
-class DibiOracleDriver extends DibiObject implements IDibiDriver
+class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiReflector
 {
 	/** @var resource  Connection resource */
 	private $connection;
@@ -356,7 +356,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver
 
 
 
-	/********************* reflection ****************d*g**/
+	/********************* IDibiReflector ****************d*g**/
 
 
 

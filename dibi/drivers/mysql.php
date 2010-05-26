@@ -32,7 +32,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers
  */
-class DibiMySqlDriver extends DibiObject implements IDibiDriver
+class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiReflector
 {
 	const ERROR_ACCESS_DENIED = 1045;
 	const ERROR_DUPLICATE_ENTRY = 1062;
@@ -426,7 +426,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver
 
 
 
-	/********************* reflection ****************d*g**/
+	/********************* IDibiReflector ****************d*g**/
 
 
 

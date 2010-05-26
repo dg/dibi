@@ -26,7 +26,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers
  */
-class DibiSqlite3Driver extends DibiObject implements IDibiDriver
+class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiReflector
 {
 	/** @var SQLite3  Connection resource */
 	private $connection;
@@ -363,7 +363,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver
 
 
 
-	/********************* reflection ****************d*g**/
+	/********************* IDibiReflector ****************d*g**/
 
 
 

@@ -89,7 +89,7 @@ class DibiConnection extends DibiObject
 		$this->config = $config;
 		$this->driver = new $class;
 
-        // profiler
+		// profiler
 		$profilerCfg = & $config['profiler'];
 		if (is_numeric($profilerCfg) || is_bool($profilerCfg)) { // back compatibility
 			$profilerCfg = array('run' => (bool) $profilerCfg);
@@ -717,6 +717,9 @@ class DibiConnection extends DibiObject
 	 */
 	public function getDatabaseInfo()
 	{
+		if (!($this->driver instanceof IDibiReflector)) {
+			throw new NotSupportedException('Driver '. get_class($this->driver) . ' has not reflection capabilities.');
+		}
 		$this->connect();
 		return new DibiDatabaseInfo($this->driver, isset($this->config['database']) ? $this->config['database'] : NULL);
 	}
