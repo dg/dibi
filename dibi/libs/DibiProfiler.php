@@ -148,10 +148,12 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 				);
 
 				if ($this->explainQuery && $event === self::SELECT) {
+					$tmpSql = dibi::$sql;
 					try {
 						$ticket[5] = dibi::dump($connection->setProfiler(NULL)->nativeQuery('EXPLAIN ' . $sql), TRUE);
 					} catch (DibiException $e) {}
 					$connection->setProfiler($this);
+					dibi::$sql = $tmpSql;
 				}
 
 				if ($this->useFirebug && !headers_sent()) {
