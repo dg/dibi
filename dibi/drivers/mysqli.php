@@ -71,6 +71,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiReflector
 		$foo = & $config['options'];
 		$foo = & $config['database'];
 
+		mysqli_report(MYSQLI_REPORT_OFF);
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
 
