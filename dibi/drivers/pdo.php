@@ -36,6 +36,9 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 	/** @var int|FALSE  Affected rows */
 	private $affectedRows = FALSE;
 
+	/** @var string */
+	private $driverName;
+
 
 
 	/**
@@ -74,6 +77,8 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 		if (!$this->connection) {
 			throw new DibiDriverException('Connecting error.');
 		}
+
+		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
 	}
 
 
@@ -99,7 +104,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 	{
 		// must detect if SQL returns result set or num of affected rows
 		$cmd = strtoupper(substr(ltrim($sql), 0, 6));
-		$list = array('UPDATE'=>1, 'DELETE'=>1, 'INSERT'=>1, 'REPLAC'=>1);
+		static $list = array('UPDATE'=>1, 'DELETE'=>1, 'INSERT'=>1, 'REPLAC'=>1);
 
 		if (isset($list[$cmd])) {
 			$this->resultSet = NULL;
@@ -229,7 +234,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 			return $this->connection->quote($value, PDO::PARAM_LOB);
 
 		case dibi::IDENTIFIER:
-			switch ($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+			switch ($this->driverName) {
 			case 'mysql':
 				return '`' . str_replace('`', '``', $value) . '`';
 
@@ -293,7 +298,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 	{
 		if ($limit < 0 && $offset < 1) return;
 
-		switch ($this->connection->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+		switch ($this->driverName) {
 		case 'mysql':
 			$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
 				. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
