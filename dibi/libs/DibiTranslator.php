@@ -47,6 +47,9 @@ final class DibiTranslator extends DibiObject
 	/** @var int */
 	private $offset;
 
+	/** @var array */
+	private $dCache;
+
 
 
 	public function __construct(IDibiDriver $driver)
@@ -74,6 +77,12 @@ final class DibiTranslator extends DibiObject
 	 */
 	public function translate(array $args)
 	{
+		$args = array_values($args);
+		while (count($args) === 1 && is_array($args[0])) { // implicit array expansion
+			$args = array_values($args[0]);
+		}
+		$this->args = $args;
+
 		$this->limit = -1;
 		$this->offset = 0;
 		$this->hasError = FALSE;
@@ -82,8 +91,6 @@ final class DibiTranslator extends DibiObject
 		// shortcuts
 		$cursor = & $this->cursor;
 		$cursor = 0;
-		$this->args = array_values($args);
-		$args = & $this->args;
 
 		// conditional sql
 		$this->ifLevel = $this->ifLevelStart = 0;
@@ -92,9 +99,9 @@ final class DibiTranslator extends DibiObject
 
 		// iterate
 		$sql = array();
-		while ($cursor < count($args))
+		while ($cursor < count($this->args))
 		{
-			$arg = $args[$cursor];
+			$arg = $this->args[$cursor];
 			$cursor++;
 
 			// simple string means SQL
@@ -142,7 +149,7 @@ final class DibiTranslator extends DibiObject
 				if (is_string(key($arg))) {
 					// associative array -> autoselect between SET or VALUES & LIST
 					if ($commandIns === NULL) {
-						$commandIns = strtoupper(substr(ltrim($args[0]), 0, 6));
+						$commandIns = strtoupper(substr(ltrim($this->args[0]), 0, 6));
 						$commandIns = $commandIns === 'INSERT' || $commandIns === 'REPLAC';
 						$sql[] = $this->formatValue($arg, $commandIns ? 'v' : 'a');
 					} else {
@@ -150,12 +157,6 @@ final class DibiTranslator extends DibiObject
 						$sql[] = $this->formatValue($arg, $commandIns ? 'l' : 'a');
 					}
 					$lastArr = $cursor;
-					continue;
-
-				} elseif ($cursor === 1) {
-					// implicit array expansion
-					$cursor = 0;
-					array_splice($args, 0, 1, $arg);
 					continue;
 				}
 			}
@@ -414,7 +415,10 @@ final class DibiTranslator extends DibiObject
 		if (is_string($value)) {
 			return $this->driver->escape($value, dibi::TEXT);
 
-		} elseif (is_int($value) || is_float($value)) {
+		} elseif (is_int($value)) {
+			return (string) $value;
+
+		} elseif (is_float($value)) {
 			return rtrim(rtrim(number_format($value, 5, '.', ''), '0'), '.');
 
 		} elseif (is_bool($value)) {
@@ -564,11 +568,15 @@ final class DibiTranslator extends DibiObject
 	 */
 	private function delimite($value)
 	{
-		$parts = explode('.', self::substitute($value));
-		foreach ($parts as & $value) {
-			$value = $value === '*' ? '*' : $this->driver->escape($value, dibi::IDENTIFIER);
+		$value = self::substitute($value);
+		if (isset($this->dCache[$value])) {
+			return $this->dCache[$value];
 		}
-		return implode('.', $parts);
+		$parts = explode('.', $value);
+		foreach ($parts as & $v) {
+			if ($v !== '*') $v = $this->driver->escape($v, dibi::IDENTIFIER);
+		}
+		return $this->dCache[$value] = implode('.', $parts);
 	}
 
 
