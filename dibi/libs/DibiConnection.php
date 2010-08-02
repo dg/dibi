@@ -34,6 +34,9 @@ class DibiConnection extends DibiObject
 	/** @var IDibiDriver  Driver */
 	private $driver;
 
+	/** @var IDibiDriver  Driver */
+	private $translator;
+
 	/** @var IDibiProfiler  Profiler */
 	private $profiler;
 
@@ -88,6 +91,7 @@ class DibiConnection extends DibiObject
 		$config['name'] = $name;
 		$this->config = $config;
 		$this->driver = new $class;
+		$this->translator = new DibiTranslator($this->driver);
 
 		// profiler
 		$profilerCfg = & $config['profiler'];
@@ -251,8 +255,7 @@ class DibiConnection extends DibiObject
 	{
 		$args = func_get_args();
 		$this->connect();
-		$translator = new DibiTranslator($this->driver);
-		return $this->nativeQuery($translator->translate($args));
+		return $this->nativeQuery($this->translator->translate($args));
 	}
 
 
@@ -267,8 +270,7 @@ class DibiConnection extends DibiObject
 	{
 		$args = func_get_args();
 		$this->connect();
-		$translator = new DibiTranslator($this->driver);
-		return $translator->translate($args);
+		return $this->translator->translate($args);
 	}
 
 
@@ -283,8 +285,7 @@ class DibiConnection extends DibiObject
 		$args = func_get_args();
 		$this->connect();
 		try {
-			$translator = new DibiTranslator($this->driver);
-			dibi::dump($translator->translate($args));
+			dibi::dump($this->translator->translate($args));
 			return TRUE;
 
 		} catch (DibiException $e) {
@@ -305,8 +306,7 @@ class DibiConnection extends DibiObject
 	{
 		$args = func_get_args();
 		$this->connect();
-		$translator = new DibiTranslator($this->driver);
-		return new DibiDataSource($translator->translate($args), $this);
+		return new DibiDataSource($this->translator->translate($args), $this);
 	}
 
 
