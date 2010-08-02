@@ -78,7 +78,7 @@ class DibiConnection extends DibiObject
 			$config['driver'] = dibi::$defaultDriver;
 		}
 
-		$driver = preg_replace('#[^a-z0-9_]#', '_', $config['driver']);
+		$driver = preg_replace('#[^a-z0-9_]#', '_', strtolower($config['driver']));
 		$class = "Dibi" . $driver . "Driver";
 		if (!class_exists($class, FALSE)) {
 			include_once dirname(__FILE__) . "/../drivers/$driver.php";
