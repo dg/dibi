@@ -472,9 +472,6 @@ class DibiColumnInfo extends DibiObject
 	/** @var array (name, nativetype, [table], [fullname], [size], [nullable], [default], [autoincrement], [vendor]) */
 	private $info;
 
-	/** @var string */
-	private $type;
-
 
 
 	public function __construct(IDibiReflector $driver, array $info)
@@ -533,10 +530,10 @@ class DibiColumnInfo extends DibiObject
 	 */
 	public function getType()
 	{
-		if ($this->type === NULL) {
-			$this->type = self::detectType($this->info['nativetype']);
+		if (self::$types === NULL) {
+			self::$types = new DibiLazyStorage(array(__CLASS__, 'detectType'));
 		}
-		return $this->type;
+		return self::$types->{$this->info['nativetype']};
 	}
 
 
@@ -616,8 +613,9 @@ class DibiColumnInfo extends DibiObject
 	 * Heuristic type detection.
 	 * @param  string
 	 * @return string
+     * @internal
 	 */
-	private static function detectType($type)
+	public static function detectType($type)
 	{
 		static $patterns = array(
 			'BYTEA|BLOB|BIN' => dibi::BINARY,
@@ -630,15 +628,12 @@ class DibiColumnInfo extends DibiObject
 			'BOOL|BIT' => dibi::BOOL,
 		);
 
-		if (!isset(self::$types[$type])) {
-			self::$types[$type] = dibi::TEXT;
-			foreach ($patterns as $s => $val) {
-				if (preg_match("#$s#i", $type)) {
-					return self::$types[$type] = $val;
-				}
+		foreach ($patterns as $s => $val) {
+			if (preg_match("#$s#i", $type)) {
+				return $val;
 			}
 		}
-		return self::$types[$type];
+		return dibi::TEXT;
 	}
 
 }
