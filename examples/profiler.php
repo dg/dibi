@@ -1,7 +1,8 @@
 <?php ob_start(1) // needed by FirePHP ?>
+
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Dibi profiler example</h1>
+<h1>Using Profiler | dibi</h1>
 
 <?php
 
@@ -16,10 +17,12 @@ dibi::connect(array(
 ));
 
 
+// execute some queries...
 for ($i=0; $i<20; $i++) {
 	$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] < %i', $i);
 }
 
+// display output
 ?>
 <p>Last query: <strong><?php echo dibi::$sql; ?></strong></p>
 

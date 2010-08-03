@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>dibi logger example</h1>
+<h1>Using Logger | dibi</h1>
 
 <?php
 
@@ -17,7 +17,7 @@ dibi::connect(array(
 ));
 
 
-// enable log to this file
+// enable query logging to this file
 dibi::getProfiler()->setFile('data/log.sql');
 
 
@@ -34,6 +34,7 @@ try {
 }
 
 
+// outputs a log file
 echo "<h2>File data/log.sql:</h2>";
 
 echo '<pre>', file_get_contents('data/log.sql'), '</pre>';

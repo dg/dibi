@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>dibi metatypes example</h1>
+<h1>Result Set Data Types  | dibi</h1>
 
 <?php
 
@@ -16,14 +16,28 @@ dibi::connect(array(
 ));
 
 
+// using manual hints
 $res = dibi::query('SELECT * FROM [customers]');
 
-// auto-converts this column to integer
-$res->setType('customer_id', Dibi::INTEGER);
-$res->setType('added', Dibi::DATETIME, 'H:i j.n.Y');
+$res->setType('customer_id', Dibi::INTEGER)
+	->setType('added', Dibi::DATETIME, 'H:i j.n.Y');
 
-$row = $res->fetch();
-Debug::dump($row);
+Debug::dump( $res->fetch() );
+// outputs:
+// object(DibiRow)#3 (3) {
+//     customer_id => int(1)
+//     name =>  string(11) "Dave Lister"
+//     added =>  object(DateTime53) {}
+// }
+
+
+
+// using auto-detection (works well with MySQL or other strictly typed databases)
+$res = dibi::query('SELECT * FROM [customers]');
+
+$res->detectTypes();
+
+Debug::dump( $res->fetch() );
 // outputs:
 // object(DibiRow)#3 (3) {
 //     customer_id => int(1)

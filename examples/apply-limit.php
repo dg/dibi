@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>dibi apply limit/offset example</h1>
+<h1>Using Limit & Offset | dibi</h1>
 
 <?php
 

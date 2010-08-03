@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Nette\Debug & dibi example 2</h1>
+<h1>Nette\Debug & Variables | dibi</h1>
 
 <p>Dibi can dump variables via Nette\Debug, part of Nette Framework.</p>
 
@@ -27,6 +27,4 @@ dibi::connect(array(
 ));
 
 
-
-// throws error
 Debug::barDump( dibi::fetchAll('SELECT * FROM [customers] WHERE [customer_id] < %i', 38), '[customers]' );

@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>dibi import SQL dump example</h1>
+<h1>Importing SQL Dump from File | dibi</h1>
 
 <?php
 

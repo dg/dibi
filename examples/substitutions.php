@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>dibi prefix & substitute example</h1>
+<h1>Using Substitutions | dibi</h1>
 
 <?php
 
@@ -19,24 +19,34 @@ dibi::connect(array(
 // create new substitution :blog:  ==>  wp_
 dibi::addSubst('blog', 'wp_');
 
-dibi::test("UPDATE :blog:items SET [text]='Hello World'");
-// -> UPDATE wp_items SET [text]='Hello World'
+dibi::test("SELECT * FROM [:blog:items]");
+// -> SELECT * FROM [wp_items]
 
 
 
 
 
-// create substitution fallback
+// create substitutions using fallback callback
 function substFallBack($expr)
 {
-	if (defined($expr)) {
-		return constant($expr);
+	$const = 'SUBST_' . strtoupper($expr);
+	if (defined($const)) {
+		return constant($const);
 	} else {
-		return 'the_' . $expr;
+		throw new Exception("Undefined substitution :$expr:");
 	}
 }
 
+// define callback
 dibi::setSubstFallBack('substFallBack');
 
-dibi::test("UPDATE [:account:user] SET [name]='John Doe', [active]=:true:");
-// -> UPDATE [the_accountuser] SET [name]='John Doe', [active]=1
+// define substitutes as constants
+define('SUBST_ACCOUNT', 'eshop_');
+define('SUBST_ACTIVE', 7);
+
+dibi::test("
+	UPDATE [:account:user]
+	SET [name]='John Doe', [status]=:active:
+	WHERE id=", 7
+);
+// -> UPDATE [the_accountuser] SET [name]='John Doe', [status]=7 WHERE id=7

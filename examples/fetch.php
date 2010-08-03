@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>dibi fetch example</h1>
+<h1>Fetching Examples | dibi</h1>
 
 <?php
 
@@ -27,43 +27,51 @@ product_id | title
 
 
 // fetch a single row
-$row = dibi::fetch('SELECT title FROM [products]');
+echo "<h2>fetch()</h2>\n";
+$row = dibi::fetch('SELECT title FROM products');
 Debug::dump($row); // Chair
 
 
 // fetch a single value
+echo "<h2>fetchSingle()</h2>\n";
 $value = dibi::fetchSingle('SELECT [title] FROM [products]');
 Debug::dump($value); // Chair
 
 
 // fetch complete result set
+echo "<h2>fetchAll()</h2>\n";
 $all = dibi::fetchAll('SELECT * FROM [products]');
 Debug::dump($all);
 
 
 // fetch complete result set like association array
+echo "<h2>fetchAssoc('title')</h2>\n";
 $res = dibi::query('SELECT * FROM [products]');
 $assoc = $res->fetchAssoc('title'); // key
 Debug::dump($assoc);
 
 
 // fetch complete result set like pairs key => value
+echo "<h2>fetchPairs('product_id', 'title')</h2>\n";
 $pairs = $res->fetchPairs('product_id', 'title');
 Debug::dump($pairs);
 
 
 // fetch row by row
+echo "<h2>using foreach</h2>\n";
 foreach ($res as $n => $row) {
 	Debug::dump($row);
 }
 
 
 // fetch row by row with defined offset
+echo "<h2>getIterator(2)</h2>\n";
 foreach ($res->getIterator(2) as $n => $row) {
 	Debug::dump($row);
 }
 
 // fetch row by row with defined offset and limit
+echo "<h2>getIterator(2, 1)</h2>\n";
 foreach ($res->getIterator(2, 1) as $n => $row) {
 	Debug::dump($row);
 }
@@ -71,17 +79,20 @@ foreach ($res->getIterator(2, 1) as $n => $row) {
 
 // more complex association array
 $res = dibi::query('
-SELECT *
-FROM [products]
-INNER JOIN [orders] USING ([product_id])
-INNER JOIN [customers] USING ([customer_id])
+	SELECT *
+	FROM [products]
+	INNER JOIN [orders] USING ([product_id])
+	INNER JOIN [customers] USING ([customer_id])
 ');
 
+echo "<h2>fetchAssoc('customers.name|products.title')</h2>\n";
 $assoc = $res->fetchAssoc('customers.name|products.title'); // key
 Debug::dump($assoc);
 
+echo "<h2>fetchAssoc('customers.name[]products.title')</h2>\n";
 $assoc = $res->fetchAssoc('customers.name[]products.title'); // key
 Debug::dump($assoc);
 
+echo "<h2>fetchAssoc('customers.name->products.title')</h2>\n";
 $assoc = $res->fetchAssoc('customers.name->products.title'); // key
 Debug::dump($assoc);

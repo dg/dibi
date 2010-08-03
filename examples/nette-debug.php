@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Nette\Debug & dibi example</h1>
+<h1>Nette\Debug & SQL Exceptions | dibi</h1>
 
 <p>Dibi can display and log exceptions via Nette\Debug, part of Nette Framework.</p>
 
@@ -27,6 +27,5 @@ dibi::connect(array(
 ));
 
 
-
-// throws error
+// throws error because SQL is bad
 dibi::query('SELECT FROM [customers] WHERE [customer_id] < %i', 38);

@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>dibi::connect() example</h1>
+<h1>Connecting to Databases | dibi</h1>
 
 <?php
 
@@ -8,10 +8,27 @@ require_once 'Nette/Debug.php';
 require_once '../dibi/dibi.php';
 
 
-// connects to SQlite
+// connects to SQlite using dibi class
 echo '<p>Connecting to Sqlite: ';
 try {
 	dibi::connect(array(
+		'driver'   => 'sqlite',
+		'database' => 'data/sample.sdb',
+	));
+	echo 'OK';
+
+} catch (DibiException $e) {
+	echo get_class($e), ': ', $e->getMessage(), "\n";
+}
+echo "</p>\n";
+
+
+
+
+// connects to SQlite using DibiConnection object
+echo '<p>Connecting to Sqlite: ';
+try {
+	$connection = new DibiConnection(array(
 		'driver'   => 'sqlite',
 		'database' => 'data/sample.sdb',
 	));
@@ -40,7 +57,7 @@ echo "</p>\n";
 
 
 // connects to MySQLi using array
-echo '<p>Connecting to MySQL: ';
+echo '<p>Connecting to MySQLi: ';
 try {
 	dibi::connect(array(
 		'driver'   => 'mysqli',

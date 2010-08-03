@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>dibi fluent example</h1>
+<h1>Using Fluent Syntax | dibi</h1>
 
 <?php
 
@@ -36,8 +36,6 @@ dibi::select('product_id')->as('id')
 
 
 
-echo "\n";
-
 // SELECT ...
 echo dibi::select('title')->as('id')
 	->from('products')
@@ -45,8 +43,6 @@ echo dibi::select('title')->as('id')
 // -> Chair (as result of query: SELECT [title] AS [id] FROM [products])
 
 
-
-echo "\n";
 
 // INSERT ...
 dibi::insert('products', $record)
@@ -56,8 +52,6 @@ dibi::insert('products', $record)
 
 
 
-echo "\n";
-
 // UPDATE ...
 dibi::update('products', $record)
 	->where('product_id = %d', $id)
@@ -66,8 +60,6 @@ dibi::update('products', $record)
 
 
 
-echo "\n";
-
 // DELETE ...
 dibi::delete('products')
 	->where('product_id = %d', $id)
@@ -75,8 +67,6 @@ dibi::delete('products')
 // -> DELETE FROM [products] WHERE product_id = 10
 
 
-
-echo "\n";
 
 // custom commands
 dibi::command()
@@ -87,8 +77,6 @@ dibi::command()
 // -> UPDATE [products] SET [title]='Super product', [price]=318, [active]=1 WHERE product_id = 10
 
 
-
-echo "\n";
 
 dibi::command()
 	->truncate('products')

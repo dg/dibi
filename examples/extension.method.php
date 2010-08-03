@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>dibi extension method example</h1>
+<h1>Using Extension Methods | dibi</h1>
 
 <?php
 
