@@ -60,7 +60,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	/** @var array  clauses separators */
 	public static $separators = array(
 		'SELECT' => ',',
-		'FROM' => FALSE,
+		'FROM' => ',',
 		'WHERE' => 'AND',
 		'GROUP BY' => ',',
 		'HAVING' => 'AND',
