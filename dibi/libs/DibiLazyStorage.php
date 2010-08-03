@@ -59,6 +59,9 @@ final class DibiLazyStorage extends DibiLazyStorageBase
 		if (is_array($nm)) { // preg_replace_callback support
 			$nm = $nm[1];
 		}
+		if ($nm == '') {
+			throw new InvalidStateException('Missing identifier name.');
+		}
 		return $this->$nm = call_user_func($this->getCallback(), $nm);
 	}
 
