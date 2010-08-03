@@ -478,6 +478,19 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiReflector
 			}
 			$res[$index]['primary'] = (bool) $primary;
 		}
+		if (!$res) { // @see http://www.sqlite.org/lang_createtable.html#rowid
+			foreach ($columns as $column) {
+				if ($column['vendor']['pk']) {
+					$res[] = array(
+						'name' => 'ROWID',
+						'unique' => TRUE,
+						'primary' => TRUE,
+						'columns' => array($column['name']),
+					);
+					break;
+				}
+			}
+		}
 
 		return array_values($res);
 	}
