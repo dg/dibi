@@ -313,7 +313,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver
 	 * Returns metadata for all columns in a result set.
 	 * @return array
 	 */
-	public function getColumnsMeta()
+	public function getResultColumns()
 	{
 		$count = mssql_num_fields($this->resultSet);
 		$res = array();

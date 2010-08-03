@@ -369,7 +369,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiReflecto
 	 * Returns metadata for all columns in a result set.
 	 * @return array
 	 */
-	public function getColumnsMeta()
+	public function getResultColumns()
 	{
 		$hasTable = version_compare(PHP_VERSION , '5.2.0', '>=');
 		$count = pg_num_fields($this->resultSet);

@@ -433,7 +433,7 @@ class DibiResultInfo extends DibiObject
 	{
 		if ($this->columns === NULL) {
 			$this->columns = array();
-			foreach ($this->driver->getColumnsMeta() as $info) {
+			foreach ($this->driver->getResultColumns() as $info) {
 				$this->columns[] = $this->names[$info['name']] = new DibiColumnInfo($this->driver, $info);
 			}
 		}

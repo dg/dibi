@@ -347,7 +347,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiReflector
 	 * Returns metadata for all columns in a result set.
 	 * @return array
 	 */
-	public function getColumnsMeta()
+	public function getResultColumns()
 	{
 		$count = sqlite_num_fields($this->resultSet);
 		$res = array();

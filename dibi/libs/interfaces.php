@@ -223,7 +223,7 @@ interface IDibiDriver
 	 * Returns metadata for all columns in a result set.
 	 * @return array of {name, nativetype [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor ]}
 	 */
-	function getColumnsMeta();
+	function getResultColumns();
 
 	/**
 	 * Returns the result set resource.

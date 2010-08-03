@@ -393,7 +393,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver
 	 * @return array
 	 * @throws DibiException
 	 */
-	public function getColumnsMeta()
+	public function getResultColumns()
 	{
 		$count = $this->resultSet->columnCount();
 		$res = array();

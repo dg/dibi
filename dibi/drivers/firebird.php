@@ -393,7 +393,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiReflect
 	 * Returns metadata for all columns in a result set.
 	 * @return array
 	 */
-	public function getColumnsMeta()
+	public function getResultColumns()
 	{
 		throw new NotImplementedException;
 	}

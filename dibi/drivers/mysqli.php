@@ -390,7 +390,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiReflector
 	 * Returns metadata for all columns in a result set.
 	 * @return array
 	 */
-	public function getColumnsMeta()
+	public function getResultColumns()
 	{
 		static $types;
 		if (empty($types)) {
