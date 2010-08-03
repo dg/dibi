@@ -47,14 +47,15 @@ final class DibiTranslator extends DibiObject
 	/** @var int */
 	private $offset;
 
-	/** @var array */
-	private $dCache;
+	/** @var DibiLazyStorage */
+	private $identifiers;
 
 
 
 	public function __construct(IDibiDriver $driver)
 	{
 		$this->driver = $driver;
+		$this->identifiers = new DibiLazyStorage(array($this, 'delimite'));
 	}
 
 
@@ -209,7 +210,7 @@ final class DibiTranslator extends DibiObject
 				foreach ($value as $k => $v) {
 					if (is_string($k)) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
-						$k = $this->delimite($pair[0]) . ' ';
+						$k = $this->identifiers->{$pair[0]} . ' ';
 						if (!isset($pair[1])) {
 							$v = $this->formatValue($v, FALSE);
 							$vx[] = $k . ($v === 'NULL' ? 'IS ' : '= ') . $v;
@@ -231,10 +232,10 @@ final class DibiTranslator extends DibiObject
 			case 'n':  // key, key, ... identifier names
 				foreach ($value as $k => $v) {
 					if (is_string($k)) {
-						$vx[] = $this->delimite($k) . (empty($v) ? '' : ' AS ' . $v);
+						$vx[] = $this->identifiers->$k . (empty($v) ? '' : ' AS ' . $v);
 					} else {
 						$pair = explode('%', $v, 2); // split into identifier & modifier
-						$vx[] = $this->delimite($pair[0]);
+						$vx[] = $this->identifiers->{$pair[0]};
 					}
 				}
 				return implode(', ', $vx);
@@ -243,7 +244,7 @@ final class DibiTranslator extends DibiObject
 			case 'a': // key=val, key=val, ...
 				foreach ($value as $k => $v) {
 					$pair = explode('%', $k, 2); // split into identifier & modifier
-					$vx[] = $this->delimite($pair[0]) . '='
+					$vx[] = $this->identifiers->{$pair[0]} . '='
 						. $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
 				}
 				return implode(', ', $vx);
@@ -261,7 +262,7 @@ final class DibiTranslator extends DibiObject
 			case 'v': // (key, key, ...) VALUES (val, val, ...)
 				foreach ($value as $k => $v) {
 					$pair = explode('%', $k, 2); // split into identifier & modifier
-					$kx[] = $this->delimite($pair[0]);
+					$kx[] = $this->identifiers->{$pair[0]};
 					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
 				}
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
@@ -283,7 +284,7 @@ final class DibiTranslator extends DibiObject
 					}
 
 					$pair = explode('%', $k, 2); // split into identifier & modifier
-					$kx[] = $this->delimite($pair[0]);
+					$kx[] = $this->identifiers->{$pair[0]};
 					foreach ($v as $k2 => $v2) {
 						$vx[$k2][] = $this->formatValue($v2, isset($pair[1]) ? $pair[1] : (is_array($v2) ? 'ex' : FALSE));
 					}
@@ -299,9 +300,9 @@ final class DibiTranslator extends DibiObject
 						$vx[] = $this->formatValue($v, 'ex');
 					} elseif (is_string($k)) {
 						$v = (is_string($v) && strncasecmp($v, 'd', 1)) || $v > 0 ? 'ASC' : 'DESC';
-						$vx[] = $this->delimite($k) . ' ' . $v;
+						$vx[] = $this->identifiers->$k . ' ' . $v;
 					} else {
-						$vx[] = $this->delimite($v);
+						$vx[] = $this->identifiers->$v;
 					}
 				}
 				return implode(', ', $vx);
@@ -375,7 +376,7 @@ final class DibiTranslator extends DibiObject
 
 			case 'by':
 			case 'n':  // identifier name
-				return $this->delimite($value);
+				return $this->identifiers->$value;
 
 			case 'ex':
 			case 'sql': // preserve as dibi-SQL  (TODO: leave only %ex)
@@ -534,10 +535,10 @@ final class DibiTranslator extends DibiObject
 		if ($this->comment) return '...';
 
 		if ($matches[1])  // SQL identifiers: `ident`
-			return $this->delimite($matches[1]);
+			return $this->identifiers->{$matches[1]};
 
 		if ($matches[2])  // SQL identifiers: [ident]
-			return $this->delimite($matches[2]);
+			return $this->identifiers->{$matches[2]};
 
 		if ($matches[3])  // SQL strings: '...'
 			return $this->driver->escape( str_replace("''", "'", $matches[4]), dibi::TEXT);
@@ -565,18 +566,16 @@ final class DibiTranslator extends DibiObject
 	 * Apply substitutions to indentifier and delimites it.
 	 * @param  string indentifier
 	 * @return string
+     * @internal
 	 */
-	private function delimite($value)
+	public function delimite($value)
 	{
 		$value = self::substitute($value);
-		if (isset($this->dCache[$value])) {
-			return $this->dCache[$value];
-		}
 		$parts = explode('.', $value);
 		foreach ($parts as & $v) {
 			if ($v !== '*') $v = $this->driver->escape($v, dibi::IDENTIFIER);
 		}
-		return $this->dCache[$value] = implode('.', $parts);
+		return implode('.', $parts);
 	}
 
 
