@@ -38,11 +38,11 @@ interface IDibiProfiler
 	const INSERT = 8;
 	const DELETE = 16;
 	const UPDATE = 32;
-	const QUERY = 60;
+	const QUERY = 60; // SELECT | INSERT | DELETE | UPDATE
 	const BEGIN = 64;
 	const COMMIT = 128;
 	const ROLLBACK = 256;
-	const TRANSACTION = 448;
+	const TRANSACTION = 448; // BEGIN | COMMIT | ROLLBACK
 	const EXCEPTION = 512;
 	const ALL = 1023;
 	/**#@-*/

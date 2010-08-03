@@ -31,13 +31,13 @@ class DibiConnection extends DibiObject
 	/** @var array  Current connection configuration */
 	private $config;
 
-	/** @var IDibiDriver  Driver */
+	/** @var IDibiDriver */
 	private $driver;
 
-	/** @var IDibiDriver  Driver */
+	/** @var DibiTranslator */
 	private $translator;
 
-	/** @var IDibiProfiler  Profiler */
+	/** @var IDibiProfiler */
 	private $profiler;
 
 	/** @var bool  Is connected? */
