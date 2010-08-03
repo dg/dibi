@@ -129,7 +129,7 @@ class DibiConnection extends DibiObject
 	public function __destruct()
 	{
 		// disconnects and rolls back transaction - do not rely on auto-disconnect and rollback!
-		$this->disconnect();
+		$this->connected && $this->disconnect();
 	}
 
 
@@ -140,15 +140,13 @@ class DibiConnection extends DibiObject
 	 */
 	final public function connect()
 	{
-		if (!$this->connected) {
-			if ($this->profiler !== NULL) {
-				$ticket = $this->profiler->before($this, IDibiProfiler::CONNECT);
-			}
-			$this->driver->connect($this->config);
-			$this->connected = TRUE;
-			if (isset($ticket)) {
-				$this->profiler->after($ticket);
-			}
+		if ($this->profiler !== NULL) {
+			$ticket = $this->profiler->before($this, IDibiProfiler::CONNECT);
+		}
+		$this->driver->connect($this->config);
+		$this->connected = TRUE;
+		if (isset($ticket)) {
+			$this->profiler->after($ticket);
 		}
 	}
 
@@ -160,10 +158,8 @@ class DibiConnection extends DibiObject
 	 */
 	final public function disconnect()
 	{
-		if ($this->connected) {
-			$this->driver->disconnect();
-			$this->connected = FALSE;
-		}
+		$this->driver->disconnect();
+		$this->connected = FALSE;
 	}
 
 
@@ -222,11 +218,12 @@ class DibiConnection extends DibiObject
 
 
 	/**
-	 * Returns the connection resource.
+	 * Returns the driver and connects to a database in lazy mode.
 	 * @return IDibiDriver
 	 */
 	final public function getDriver()
 	{
+		$this->connected || $this->connect();
 		return $this->driver;
 	}
 
@@ -240,8 +237,8 @@ class DibiConnection extends DibiObject
 	 */
 	final public function query($args)
 	{
+		$this->connected || $this->connect();
 		$args = func_get_args();
-		$this->connect();
 		return $this->nativeQuery($this->translator->translate($args));
 	}
 
@@ -255,8 +252,8 @@ class DibiConnection extends DibiObject
 	 */
 	final public function sql($args)
 	{
+		$this->connected || $this->connect();
 		$args = func_get_args();
-		$this->connect();
 		return $this->translator->translate($args);
 	}
 
@@ -269,8 +266,8 @@ class DibiConnection extends DibiObject
 	 */
 	final public function test($args)
 	{
+		$this->connected || $this->connect();
 		$args = func_get_args();
-		$this->connect();
 		try {
 			dibi::dump($this->translator->translate($args));
 			return TRUE;
@@ -291,8 +288,8 @@ class DibiConnection extends DibiObject
 	 */
 	final public function dataSource($args)
 	{
+		$this->connected || $this->connect();
 		$args = func_get_args();
-		$this->connect();
 		return new DibiDataSource($this->translator->translate($args), $this);
 	}
 
@@ -306,7 +303,7 @@ class DibiConnection extends DibiObject
 	 */
 	final public function nativeQuery($sql)
 	{
-		$this->connect();
+		$this->connected || $this->connect();
 
 		if ($this->profiler !== NULL) {
 			$event = IDibiProfiler::QUERY;
@@ -342,6 +339,7 @@ class DibiConnection extends DibiObject
 	 */
 	public function getAffectedRows()
 	{
+		$this->connected || $this->connect();
 		$rows = $this->driver->getAffectedRows();
 		if (!is_int($rows) || $rows < 0) throw new DibiException('Cannot retrieve number of affected rows.');
 		return $rows;
@@ -369,6 +367,7 @@ class DibiConnection extends DibiObject
 	 */
 	public function getInsertId($sequence = NULL)
 	{
+		$this->connected || $this->connect();
 		$id = $this->driver->getInsertId($sequence);
 		if ($id < 1) throw new DibiException('Cannot retrieve last generated ID.');
 		return (int) $id;
@@ -396,7 +395,7 @@ class DibiConnection extends DibiObject
 	 */
 	public function begin($savepoint = NULL)
 	{
-		$this->connect();
+		$this->connected || $this->connect();
 		if ($this->profiler !== NULL) {
 			$ticket = $this->profiler->before($this, IDibiProfiler::BEGIN, $savepoint);
 		}
@@ -415,6 +414,7 @@ class DibiConnection extends DibiObject
 	 */
 	public function commit($savepoint = NULL)
 	{
+		$this->connected || $this->connect();
 		if ($this->profiler !== NULL) {
 			$ticket = $this->profiler->before($this, IDibiProfiler::COMMIT, $savepoint);
 		}
@@ -433,6 +433,7 @@ class DibiConnection extends DibiObject
 	 */
 	public function rollback($savepoint = NULL)
 	{
+		$this->connected || $this->connect();
 		if ($this->profiler !== NULL) {
 			$ticket = $this->profiler->before($this, IDibiProfiler::ROLLBACK, $savepoint);
 		}
@@ -611,8 +612,7 @@ class DibiConnection extends DibiObject
 	 */
 	public function loadFile($file)
 	{
-		$this->connect();
-
+		$this->connected || $this->connect();
 		@set_time_limit(0); // intentionally @
 
 		$handle = @fopen($file, 'r'); // intentionally @
@@ -646,7 +646,7 @@ class DibiConnection extends DibiObject
 		if (!($this->driver instanceof IDibiReflector)) {
 			throw new NotSupportedException('Driver '. get_class($this->driver) . ' has not reflection capabilities.');
 		}
-		$this->connect();
+		$this->connected || $this->connect();
 		return new DibiDatabaseInfo($this->driver, isset($this->config['database']) ? $this->config['database'] : NULL);
 	}
 
