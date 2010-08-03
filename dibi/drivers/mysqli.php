@@ -389,6 +389,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiReflector
 					$types[$value] = substr($key, 12);
 				}
 			}
+			$types[MYSQLI_TYPE_TINY] = $types[MYSQLI_TYPE_SHORT] = $types[MYSQLI_TYPE_LONG] = 'INT';
 		}
 
 		$count = mysqli_num_fields($this->resultSet);
