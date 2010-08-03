@@ -638,6 +638,9 @@ class dibi
 	 */
 	public static function addSubst($expr, $subst)
 	{
+		if ($expr === '') {
+			trigger_error(__METHOD__ . ': empty substitutions will probably be deprecated.', E_USER_NOTICE);
+		}
 		self::$substs[$expr] = $subst;
 	}
 
@@ -653,7 +656,7 @@ class dibi
 		if ($expr === TRUE) {
 			self::$substs = array();
 		} else {
-			unset(self::$substs[':'.$expr.':']);
+			unset(self::$substs[$expr]);
 		}
 	}
 
