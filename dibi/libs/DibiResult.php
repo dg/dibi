@@ -176,13 +176,14 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Required by the IteratorAggregate interface.
-	 * @param  int  offset
-	 * @param  int  limit
 	 * @return DibiResultIterator
 	 */
-	final public function getIterator($offset = NULL, $limit = NULL)
+	final public function getIterator()
 	{
-		return new DibiResultIterator($this, $offset, $limit);
+		if (func_num_args()) {
+			trigger_error(__METHOD__ . ' arguments $offset & $limit have been dropped; use SQL clauses instead.', E_USER_WARNING);
+		}
+		return new DibiResultIterator($this);
 	}
 
 

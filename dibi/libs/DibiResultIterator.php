@@ -24,13 +24,6 @@
  * unset($result);
  * </code>
  *
- * Optionally you can specify offset and limit:
- * <code>
- * foreach ($result->getIterator(2, 3) as $row) {
- *     print_r($row);
- * }
- * </code>
- *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
@@ -38,12 +31,6 @@ class DibiResultIterator implements Iterator, Countable
 {
 	/** @var DibiResult */
 	private $result;
-
-	/** @var int */
-	private $offset;
-
-	/** @var int */
-	private $limit;
 
 	/** @var int */
 	private $row;
@@ -54,14 +41,10 @@ class DibiResultIterator implements Iterator, Countable
 
 	/**
 	 * @param  DibiResult
-	 * @param  int  offset
-	 * @param  int  limit
 	 */
-	public function __construct(DibiResult $result, $offset = NULL, $limit = NULL)
+	public function __construct(DibiResult $result)
 	{
 		$this->result = $result;
-		$this->offset = (int) $offset;
-		$this->limit = $limit === NULL ? -1 : (int) $limit;
 	}
 
 
@@ -73,7 +56,7 @@ class DibiResultIterator implements Iterator, Countable
 	public function rewind()
 	{
 		$this->pointer = 0;
-		$this->result->seek($this->offset);
+		$this->result->seek(0);
 		$this->row = $this->result->fetch();
 	}
 
@@ -107,7 +90,6 @@ class DibiResultIterator implements Iterator, Countable
 	 */
 	public function next()
 	{
-		//$this->result->seek($this->offset + $this->pointer + 1);
 		$this->row = $this->result->fetch();
 		$this->pointer++;
 	}
@@ -120,7 +102,7 @@ class DibiResultIterator implements Iterator, Countable
 	 */
 	public function valid()
 	{
-		return !empty($this->row) && ($this->limit < 0 || $this->pointer < $this->limit);
+		return !empty($this->row);
 	}
 
 

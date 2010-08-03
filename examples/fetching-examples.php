@@ -64,19 +64,6 @@ foreach ($res as $n => $row) {
 }
 
 
-// fetch row by row with defined offset
-echo "<h2>getIterator(2)</h2>\n";
-foreach ($res->getIterator(2) as $n => $row) {
-	Debug::dump($row);
-}
-
-// fetch row by row with defined offset and limit
-echo "<h2>getIterator(2, 1)</h2>\n";
-foreach ($res->getIterator(2, 1) as $n => $row) {
-	Debug::dump($row);
-}
-
-
 // more complex association array
 $res = dibi::query('
 	SELECT *
