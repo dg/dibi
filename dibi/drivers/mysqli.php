@@ -24,7 +24,8 @@
  *   - 'database' - the database name to select
  *   - 'charset' - character encoding to set
  *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
- *   - 'options' - driver specific constants (MYSQLI_*)
+ *   - 'flags' - driver specific bit constants (MYSQLI_CLIENT_*) {@see mysqli_real_connect}
+ *   - 'options' - array of driver specific constants (MYSQLI_*) and values {@see mysqli_options}
  *   - 'sqlmode' - see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - 'lazy' - if TRUE, connection will be established only when required
  *   - 'resource' - connection resource (optional)
@@ -68,9 +69,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiReflector
 	 */
 	public function connect(array &$config)
 	{
-		$foo = & $config['options'];
-		$foo = & $config['database'];
-
 		mysqli_report(MYSQLI_REPORT_OFF);
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
@@ -92,8 +90,21 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiReflector
 				}
 			}
 
+			$foo = & $config['flags'];
+			$foo = & $config['database'];
+
 			$this->connection = mysqli_init();
-			@mysqli_real_connect($this->connection, $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['options']); // intentionally @
+			if (isset($config['options'])) {
+				if (is_scalar($config['options'])) {
+					$config['flags'] = $config['options']; // back compatibility
+					trigger_error(__CLASS__ . ": configuration item 'options' must be array; for constants MYSQLI_CLIENT_* use 'flags'.", E_USER_NOTICE);
+				} else {
+					foreach ((array) $config['options'] as $key => $value) {
+						mysqli_options($this->connection, $key, $value);
+					}
+				}
+			}
+			@mysqli_real_connect($this->connection, $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['flags']); // intentionally @
 
 			if ($errno = mysqli_connect_errno()) {
 				throw new DibiDriverException(mysqli_connect_error(), $errno);

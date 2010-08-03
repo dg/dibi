@@ -66,6 +66,10 @@ try {
 		'password' => 'xxx',
 		'database' => 'dibi',
 		'charset'  => 'utf8',
+		'options'  => array(
+			MYSQLI_OPT_CONNECT_TIMEOUT => 30
+		),
+		'flags'    => MYSQLI_CLIENT_COMPRESS,
 	));
 	echo 'OK';
 

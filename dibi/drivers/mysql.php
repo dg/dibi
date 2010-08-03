@@ -24,7 +24,7 @@
  *   - 'database' - the database name to select
  *   - 'charset' - character encoding to set
  *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
- *   - 'options' - driver specific constants (MYSQL_*)
+ *   - 'flags' - driver specific constants (MYSQL_CLIENT_*)
  *   - 'sqlmode' - see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - 'lazy' - if TRUE, connection will be established only when required
  *   - 'resource' - connection resource (optional)
@@ -68,13 +68,12 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiReflector
 	 */
 	public function connect(array &$config)
 	{
-		$foo = & $config['options'];
-
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
 
 		} else {
 			// default values
+			DibiConnection::alias($config, 'flags', 'options');
 			if (!isset($config['username'])) $config['username'] = ini_get('mysql.default_user');
 			if (!isset($config['password'])) $config['password'] = ini_get('mysql.default_password');
 			if (!isset($config['host'])) {
@@ -95,9 +94,9 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiReflector
 			}
 
 			if (empty($config['persistent'])) {
-				$this->connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['options']); // intentionally @
+				$this->connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['flags']); // intentionally @
 			} else {
-				$this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['options']); // intentionally @
+				$this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['flags']); // intentionally @
 			}
 		}
 
