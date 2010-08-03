@@ -9,13 +9,13 @@ date_default_timezone_set('Europe/Prague');
 
 dibi::connect(array(
 	'driver'   => 'sqlite',
-	'database' => 'sample.sdb',
+	'database' => 'data/sample.sdb',
 	'profiler' => TRUE,
 ));
 
 
 // enable log to this file
-dibi::getProfiler()->setFile('log.sql');
+dibi::getProfiler()->setFile('data/log.sql');
 
 
 
@@ -31,6 +31,6 @@ try {
 }
 
 
-echo "<h2>File log.sql:</h2>";
+echo "<h2>File data/log.sql:</h2>";
 
-echo '<pre>', file_get_contents('log.sql'), '</pre>';
+echo '<pre>', file_get_contents('data/log.sql'), '</pre>';

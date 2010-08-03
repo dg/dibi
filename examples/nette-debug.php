@@ -21,7 +21,7 @@ Debug::enable();
 
 dibi::connect(array(
 	'driver'   => 'sqlite',
-	'database' => 'sample.sdb',
+	'database' => 'data/sample.sdb',
 	'profiler' => array(
 		'run' => TRUE,
 	)

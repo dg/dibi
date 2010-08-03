@@ -8,10 +8,10 @@ require_once '../dibi/dibi.php';
 
 dibi::connect(array(
 	'driver'   => 'sqlite',
-	'database' => 'sample.sdb',
+	'database' => 'data/sample.sdb',
 ));
 
 
-$count = dibi::loadFile('compress.zlib://sample.dump.sql.gz');
+$count = dibi::loadFile('compress.zlib://data/sample.dump.sql.gz');
 
 echo 'Number of SQL commands:', $count;

@@ -10,7 +10,7 @@ echo '<p>Connecting to Sqlite: ';
 try {
 	dibi::connect(array(
 		'driver'   => 'sqlite',
-		'database' => 'sample.sdb',
+		'database' => 'data/sample.sdb',
 	));
 	echo 'OK';
 
@@ -64,7 +64,7 @@ try {
 		'driver'   => 'odbc',
 		'username' => 'root',
 		'password' => '***',
-		'dsn'      => 'Driver={Microsoft Access Driver (*.mdb)};Dbq='.dirname(__FILE__).'/sample.mdb',
+		'dsn'      => 'Driver={Microsoft Access Driver (*.mdb)};Dbq='.dirname(__FILE__).'/data/sample.mdb',
 	));
 	echo 'OK';
 
