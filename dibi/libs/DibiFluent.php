@@ -132,29 +132,6 @@ class DibiFluent extends DibiObject implements IDataSource
 			$this->cursor = & $this->clauses[self::$clauseSwitches[$clause]];
 		}
 
-		// special types or argument
-		if (count($args) === 1) {
-			$arg = $args[0];
-			// TODO: really ignore TRUE?
-			if ($arg === TRUE) { // flag
-				$args = array();
-
-			} elseif (is_string($arg) && preg_match('#^[a-z:_][a-z0-9_.:]*$#i', $arg)) { // identifier
-				$args = array('%n', $arg);
-
-			} elseif ($arg instanceof self) {
-				$args = array_merge(array('('), $arg->_export(), array(')'));
-
-			} elseif (is_array($arg) || $arg instanceof Traversable) { // any array
-				if (isset(self::$modifiers[$clause])) {
-					$args = array(self::$modifiers[$clause], $arg);
-
-				} elseif (is_string(key($arg))) { // associative array
-					$args = array('%a', $arg);
-				}
-			} // case $arg === FALSE is handled below
-		}
-
 		if (array_key_exists($clause, $this->clauses)) {
 			// append to clause
 			$this->cursor = & $this->clauses[$clause];
@@ -186,6 +163,29 @@ class DibiFluent extends DibiObject implements IDataSource
 
 		if ($this->cursor === NULL) {
 			$this->cursor = array();
+		}
+
+		// special types or argument
+		if (count($args) === 1) {
+			$arg = $args[0];
+			// TODO: really ignore TRUE?
+			if ($arg === TRUE) { // flag
+				return $this;
+
+			} elseif (is_string($arg) && preg_match('#^[a-z:_][a-z0-9_.:]*$#i', $arg)) { // identifier
+				$args = array('%n', $arg);
+
+			} elseif ($arg instanceof self) {
+				$args = array_merge(array('('), $arg->_export(), array(')'));
+
+			} elseif (is_array($arg) || $arg instanceof Traversable) { // any array
+				if (isset(self::$modifiers[$clause])) {
+					$args = array(self::$modifiers[$clause], $arg);
+
+				} elseif (is_string(key($arg))) { // associative array
+					$args = array('%a', $arg);
+				}
+			} // case $arg === FALSE is handled above
 		}
 
 		array_splice($this->cursor, count($this->cursor), 0, $args);
