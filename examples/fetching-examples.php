@@ -34,19 +34,19 @@ Debug::dump($row); // Chair
 
 // fetch a single value
 echo "<h2>fetchSingle()</h2>\n";
-$value = dibi::fetchSingle('SELECT [title] FROM [products]');
+$value = dibi::fetchSingle('SELECT title FROM products');
 Debug::dump($value); // Chair
 
 
 // fetch complete result set
 echo "<h2>fetchAll()</h2>\n";
-$all = dibi::fetchAll('SELECT * FROM [products]');
+$all = dibi::fetchAll('SELECT * FROM products');
 Debug::dump($all);
 
 
 // fetch complete result set like association array
 echo "<h2>fetchAssoc('title')</h2>\n";
-$res = dibi::query('SELECT * FROM [products]');
+$res = dibi::query('SELECT * FROM products');
 $assoc = $res->fetchAssoc('title'); // key
 Debug::dump($assoc);
 
@@ -80,9 +80,9 @@ foreach ($res->getIterator(2, 1) as $n => $row) {
 // more complex association array
 $res = dibi::query('
 	SELECT *
-	FROM [products]
-	INNER JOIN [orders] USING ([product_id])
-	INNER JOIN [customers] USING ([customer_id])
+	FROM products
+	INNER JOIN orders USING (product_id)
+	INNER JOIN customers USING (customer_id)
 ');
 
 echo "<h2>fetchAssoc('customers.name|products.title')</h2>\n";

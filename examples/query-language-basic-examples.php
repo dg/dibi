@@ -32,12 +32,12 @@ dibi::test('
 
 // dibi detects INSERT or REPLACE command
 dibi::test('
-	REPLACE INTO [products]', array(
+	REPLACE INTO products', array(
 		'title' => 'Super product',
 		'price' => 318,
 		'active' => TRUE,
 ));
-// -> REPLACE INTO [products] ([title], [price], [active]) VALUES ('Super product', 318, 1)
+// -> REPLACE INTO products ([title], [price], [active]) VALUES ('Super product', 318, 1)
 
 
 
@@ -48,19 +48,19 @@ $array = array(
 	'brand' => NULL,
 	'created' => new DateTime,
 );
-dibi::test("INSERT INTO [products]", $array, $array, $array);
-// -> INSERT INTO [products] ([title], [price], [brand], [created]) VALUES ('Super Product', ...) , (...) , (...)
+dibi::test("INSERT INTO products", $array, $array, $array);
+// -> INSERT INTO products ([title], [price], [brand], [created]) VALUES ('Super Product', ...) , (...) , (...)
 
 
 
 // dibi detects UPDATE command
 dibi::test("
-	UPDATE [colors] SET", array(
+	UPDATE colors SET", array(
 		'color' => 'blue',
 		'order' => 12,
 	), "
-	WHERE [id]=%i", 123);
-// -> UPDATE [colors] SET [color]='blue', [order]=12 WHERE [id]=123
+	WHERE id=%i", 123);
+// -> UPDATE colors SET [color]='blue', [order]=12 WHERE id=123
 
 
 
@@ -68,10 +68,10 @@ dibi::test("
 $array = array(1, 2, 3);
 dibi::test("
 	SELECT *
-	FROM [people]
-	WHERE [id] IN (", $array, ")
-");
-// -> SELECT * FROM [people] WHERE [id] IN ( 1, 2, 3 )
+	FROM people
+	WHERE id IN (%i)", $array
+);
+// -> SELECT * FROM people WHERE id IN ( 1, 2, 3 )
 
 
 
@@ -82,10 +82,10 @@ $order = array(
 );
 dibi::test("
 	SELECT *
-	FROM [people]
+	FROM people
 	ORDER BY %by", $order, "
 ");
-// -> SELECT * FROM [people] ORDER BY [field1] ASC, [field2] DESC
+// -> SELECT * FROM people ORDER BY [field1] ASC, [field2] DESC
 
 
 

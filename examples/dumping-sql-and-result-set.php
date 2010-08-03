@@ -16,9 +16,9 @@ dibi::connect(array(
 
 
 $res = dibi::query('
-	SELECT * FROM [products]
-	INNER JOIN [orders] USING ([product_id])
-	INNER JOIN [customers] USING ([customer_id])
+	SELECT * FROM products
+	INNER JOIN orders USING (product_id)
+	INNER JOIN customers USING (customer_id)
 ');
 
 

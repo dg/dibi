@@ -26,10 +26,10 @@ $name = $cond1 ? 'K%' : NULL;
 // if & end
 dibi::test('
 	SELECT *
-	FROM [customers]
-	%if', isset($name), 'WHERE [name] LIKE %s', $name, '%end'
+	FROM customers
+	%if', isset($name), 'WHERE name LIKE %s', $name, '%end'
 );
-// -> SELECT * FROM [customers] WHERE [name] LIKE 'K%'
+// -> SELECT * FROM customers WHERE name LIKE 'K%'
 
 
 
@@ -37,22 +37,22 @@ dibi::test('
 // if & else & (optional) end
 dibi::test("
 	SELECT *
-	FROM [people]
-	WHERE [id] > 0
-		%if", ($foo > 0), "AND [foo]=%i", $foo, "
-		%else %if", ($bar > 0), "AND [bar]=%i", $bar, "
+	FROM people
+	WHERE id > 0
+		%if", ($foo > 0), "AND foo=%i", $foo, "
+		%else %if", ($bar > 0), "AND bar=%i", $bar, "
 ");
-// -> SELECT * FROM [people] WHERE [id] > 0 AND [bar]=2
+// -> SELECT * FROM people WHERE id > 0 AND bar=2
 
 
 
 // nested condition
 dibi::test('
 	SELECT *
-	FROM [customers]
+	FROM customers
 	WHERE
-		%if', isset($name), '[name] LIKE %s', $name, '
-			%if', $cond2, 'AND [admin]=1 %end
+		%if', isset($name), 'name LIKE %s', $name, '
+			%if', $cond2, 'AND admin=1 %end
 		%else 1 LIMIT 10 %end'
 );
-// -> SELECT * FROM [customers] WHERE LIMIT 10
+// -> SELECT * FROM customers WHERE LIMIT 10

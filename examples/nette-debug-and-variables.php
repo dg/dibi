@@ -27,4 +27,4 @@ dibi::connect(array(
 ));
 
 
-Debug::barDump( dibi::fetchAll('SELECT * FROM [customers] WHERE [customer_id] < %i', 38), '[customers]' );
+Debug::barDump( dibi::fetchAll('SELECT * FROM customers WHERE customer_id < %i', 38), '[customers]' );
