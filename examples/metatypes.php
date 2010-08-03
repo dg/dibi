@@ -1,5 +1,7 @@
+<!DOCTYPE html><link rel="stylesheet" href="data/style.css">
+
 <h1>dibi metatypes example</h1>
-<pre>
+
 <?php
 
 require_once 'Nette/Debug.php';

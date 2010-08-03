@@ -1,7 +1,6 @@
-<!DOCTYPE html>
+<!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
 <h1>Nette\Debug & dibi example 2</h1>
-
 
 <p>Dibi can dump variables via Nette\Debug, part of Nette Framework.</p>
 

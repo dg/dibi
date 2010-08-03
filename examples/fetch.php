@@ -1,5 +1,7 @@
+<!DOCTYPE html><link rel="stylesheet" href="data/style.css">
+
 <h1>dibi fetch example</h1>
-<pre>
+
 <?php
 
 require_once 'Nette/Debug.php';
@@ -27,39 +29,33 @@ product_id | title
 // fetch a single row
 $row = dibi::fetch('SELECT title FROM [products]');
 Debug::dump($row); // Chair
-echo '<hr>';
 
 
 // fetch a single value
 $value = dibi::fetchSingle('SELECT [title] FROM [products]');
 Debug::dump($value); // Chair
-echo '<hr>';
 
 
 // fetch complete result set
 $all = dibi::fetchAll('SELECT * FROM [products]');
 Debug::dump($all);
-echo '<hr>';
 
 
 // fetch complete result set like association array
 $res = dibi::query('SELECT * FROM [products]');
 $assoc = $res->fetchAssoc('title'); // key
 Debug::dump($assoc);
-echo '<hr>';
 
 
 // fetch complete result set like pairs key => value
 $pairs = $res->fetchPairs('product_id', 'title');
 Debug::dump($pairs);
-echo '<hr>';
 
 
 // fetch row by row
 foreach ($res as $n => $row) {
 	Debug::dump($row);
 }
-echo '<hr>';
 
 
 // fetch row by row with defined offset
@@ -83,12 +79,9 @@ INNER JOIN [customers] USING ([customer_id])
 
 $assoc = $res->fetchAssoc('customers.name|products.title'); // key
 Debug::dump($assoc);
-echo '<hr>';
 
 $assoc = $res->fetchAssoc('customers.name[]products.title'); // key
 Debug::dump($assoc);
-echo '<hr>';
 
 $assoc = $res->fetchAssoc('customers.name->products.title'); // key
 Debug::dump($assoc);
-echo '<hr>';

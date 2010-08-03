@@ -1,8 +1,7 @@
-<style>
-pre.dibi { padding-bottom: 10px; }
-</style>
+<!DOCTYPE html><link rel="stylesheet" href="data/style.css">
+
 <h1>dibi SQL builder example</h1>
-<pre>
+
 <?php
 
 require_once 'Nette/Debug.php';

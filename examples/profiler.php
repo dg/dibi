@@ -1,3 +1,8 @@
+<?php ob_start(1) // needed by FirePHP ?>
+<!DOCTYPE html><link rel="stylesheet" href="data/style.css">
+
+<h1>Dibi profiler example</h1>
+
 <?php
 
 require_once 'Nette/Debug.php';
@@ -16,8 +21,6 @@ for ($i=0; $i<20; $i++) {
 }
 
 ?>
-<h1>Dibi profiler example</h1>
-
 <p>Last query: <strong><?php echo dibi::$sql; ?></strong></p>
 
 <p>Number of queries: <strong><?php echo dibi::$numOfQueries; ?></strong></p>

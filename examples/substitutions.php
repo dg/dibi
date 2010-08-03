@@ -1,4 +1,7 @@
+<!DOCTYPE html><link rel="stylesheet" href="data/style.css">
+
 <h1>dibi prefix & substitute example</h1>
+
 <?php
 
 require_once 'Nette/Debug.php';
