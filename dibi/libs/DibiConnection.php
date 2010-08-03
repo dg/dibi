@@ -95,10 +95,11 @@ class DibiConnection extends DibiObject
 
 		// profiler
 		$profilerCfg = & $config['profiler'];
-		if (is_numeric($profilerCfg) || is_bool($profilerCfg)) { // back compatibility
-			$profilerCfg = array('run' => (bool) $profilerCfg);
-		} elseif (is_string($profilerCfg)) {
-			$profilerCfg = array('run' => TRUE, 'class' => $profilerCfg);
+		if (is_scalar($profilerCfg)) { // back compatibility
+			$profilerCfg = array(
+				'run' => (bool) $profilerCfg,
+				'class' => strlen($profilerCfg) > 1 ? $profilerCfg : NULL,
+			);
 		}
 
 		if (!empty($profilerCfg['run'])) {
