@@ -556,7 +556,7 @@ final class DibiTranslator extends DibiObject
 	 * Apply substitutions to indentifier and delimites it.
 	 * @param  string indentifier
 	 * @return string
-     * @internal
+	 * @internal
 	 */
 	public function delimite($value)
 	{

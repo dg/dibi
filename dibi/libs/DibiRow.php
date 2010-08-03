@@ -13,7 +13,7 @@
 
 
 /**
- * Result-set single row.
+ * Result set single row.
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi

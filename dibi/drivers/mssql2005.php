@@ -14,15 +14,15 @@
 /**
  * The dibi driver for MS SQL Driver 2005 database.
  *
- * Connection options:
- *   - 'host' - the MS SQL server host name. It can also include a port number (hostname:port)
- *   - 'username'
- *   - 'password'
- *   - 'database' - the database name to select
- *   - 'options' - connection info array {@link http://msdn.microsoft.com/en-us/library/cc296161(SQL.90).aspx}
- *   - 'lazy' - if TRUE, connection will be established only when required
- *   - 'charset' - character encoding to set (default is UTF-8)
- *   - 'resource' - connection resource (optional)
+ * Driver options:
+ *   - host => the MS SQL server host name. It can also include a port number (hostname:port)
+ *   - username (or user)
+ *   - password (or pass)
+ *   - database => the database name to select
+ *   - options (array) => connection options {@link http://msdn.microsoft.com/en-us/library/cc296161(SQL.90).aspx}
+ *   - charset => character encoding to set (default is UTF-8)
+ *   - resource (resource) => existing connection resource
+ *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers

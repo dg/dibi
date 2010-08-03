@@ -14,14 +14,14 @@
 /**
  * The dibi driver for Firebird/InterBase database.
  *
- * Connection options:
- *   - 'database' - the path to database file (server:/path/database.fdb)
- *   - 'username' (or 'user')
- *   - 'password' (or 'pass')
- *   - 'charset' - character encoding to set
- *   - 'buffers' - buffers is the number of database buffers to allocate for the server-side cache. If 0 or omitted, server chooses its own default.
- *   - 'lazy' - if TRUE, connection will be established only when required
- *   - 'resource' - connection resource (optional)
+ * Driver options:
+ *   - database => the path to database file (server:/path/database.fdb)
+ *   - username (or user)
+ *   - password (or pass)
+ *   - charset => character encoding to set
+ *   - buffers (int) => buffers is the number of database buffers to allocate for the server-side cache. If 0 or omitted, server chooses its own default.
+ *   - resource (resource) => existing connection resource
+ *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @author     Tomáš Kraina, Roman Sklenář
  * @copyright  Copyright (c) 2010

@@ -14,21 +14,21 @@
 /**
  * The dibi driver for MySQL database via improved extension.
  *
- * Connection options:
- *   - 'host' - the MySQL server host name
- *   - 'port' - the port number to attempt to connect to the MySQL server
- *   - 'socket' - the socket or named pipe
- *   - 'username' (or 'user')
- *   - 'password' (or 'pass')
- *   - 'persistent' - try to find a persistent link?
- *   - 'database' - the database name to select
- *   - 'charset' - character encoding to set
- *   - 'unbuffered' - sends query without fetching and buffering the result rows automatically?
- *   - 'flags' - driver specific bit constants (MYSQLI_CLIENT_*) {@see mysqli_real_connect}
- *   - 'options' - array of driver specific constants (MYSQLI_*) and values {@see mysqli_options}
- *   - 'sqlmode' - see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
- *   - 'lazy' - if TRUE, connection will be established only when required
- *   - 'resource' - connection resource (optional)
+ * Driver options:
+ *   - host => the MySQL server host name
+ *   - port (int) => the port number to attempt to connect to the MySQL server
+ *   - socket => the socket or named pipe
+ *   - username (or user)
+ *   - password (or pass)
+ *   - database => the database name to select
+ *   - options (array) => array of driver specific constants (MYSQLI_*) and values {@see mysqli_options}
+ *   - flags (int) => driver specific constants (MYSQLI_CLIENT_*) {@see mysqli_real_connect}
+ *   - charset => character encoding to set
+ *   - persistent (bool) => try to find a persistent link?
+ *   - unbuffered (bool) => sends query without fetching and buffering the result rows automatically?
+ *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
+ *   - resource (mysqli) => existing connection resource
+ *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers

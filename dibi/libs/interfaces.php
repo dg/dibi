@@ -221,8 +221,7 @@ interface IDibiDriver
 
 	/**
 	 * Returns metadata for all columns in a result set.
-	 * @return array
-	 * @throws DibiException
+	 * @return array of {name, nativetype [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor ]}
 	 */
 	function getColumnsMeta();
 
@@ -248,21 +247,21 @@ interface IDibiReflector
 
 	/**
 	 * Returns list of tables.
-	 * @return array
+	 * @return array of {name [, (bool) view ]}
 	 */
 	function getTables();
 
 	/**
 	 * Returns metadata for all columns in a table.
 	 * @param  string
-	 * @return array
+	 * @return array of {name, nativetype [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor ]}
 	 */
 	function getColumns($table);
 
 	/**
 	 * Returns metadata for all indexes in a table.
 	 * @param  string
-	 * @return array
+	 * @return array of {name, (array of names) columns [, (bool) unique, (bool) primary ]}
 	 */
 	function getIndexes($table);
 

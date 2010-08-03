@@ -14,13 +14,13 @@
 /**
  * The dibi driver interacting with databases via ODBC connections.
  *
- * Connection options:
- *   - 'dsn' - driver specific DSN
- *   - 'username' (or 'user')
- *   - 'password' (or 'pass')
- *   - 'persistent' - try to find a persistent link?
- *   - 'lazy' - if TRUE, connection will be established only when required
- *   - 'resource' - connection resource (optional)
+ * Driver options:
+ *   - dsn => driver specific DSN
+ *   - username (or user)
+ *   - password (or pass)
+ *   - persistent (bool) => try to find a persistent link?
+ *   - resource (resource) => existing connection resource
+ *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers

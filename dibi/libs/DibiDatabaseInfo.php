@@ -497,7 +497,7 @@ class DibiColumnInfo extends DibiObject
 	 */
 	public function getFullName()
 	{
-		return $this->info['fullname'];
+		return isset($this->info['fullname']) ? $this->info['fullname'] : NULL;
 	}
 
 
@@ -613,7 +613,7 @@ class DibiColumnInfo extends DibiObject
 	 * Heuristic type detection.
 	 * @param  string
 	 * @return string
-     * @internal
+	 * @internal
 	 */
 	public static function detectType($type)
 	{

@@ -14,13 +14,13 @@
 /**
  * The dibi driver for PDO.
  *
- * Connection options:
- *   - 'dsn' - driver specific DSN
- *   - 'username' (or 'user')
- *   - 'password' (or 'pass')
- *   - 'options' - driver specific options array
- *   - 'resource' - PDO object (optional)
- *   - 'lazy' - if TRUE, connection will be established only when required
+ * Driver options:
+ *   - dsn => driver specific DSN
+ *   - username (or user)
+ *   - password (or pass)
+ *   - options (array) => driver specific options {@see PDO::__construct}
+ *   - resource (PDO) => existing connection
+ *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers

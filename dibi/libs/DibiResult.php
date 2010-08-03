@@ -13,7 +13,7 @@
 
 
 /**
- * dibi result-set.
+ * dibi result set.
  *
  * <code>
  * $result = dibi::query('SELECT * FROM [table]');
@@ -27,10 +27,6 @@
  *
  * unset($result);
  * </code>
- *
- * Result options:
- *   - 'detectTypes' - whether call automatically detectTypes()
- *   - 'formatDateTime' - how to format datetime
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
@@ -648,7 +644,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * Displays complete result-set as HTML table for debug purposes.
+	 * Displays complete result set as HTML table for debug purposes.
 	 * @return void
 	 */
 	final public function dump()

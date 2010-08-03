@@ -14,15 +14,15 @@
 /**
  * The dibi driver for Oracle database.
  *
- * Connection options:
- *   - 'database' (or 'db') - the name of the local Oracle instance or the name of the entry in tnsnames.ora
- *   - 'username' (or 'user')
- *   - 'password' (or 'pass')
- *   - 'lazy' - if TRUE, connection will be established only when required
- *   - 'formatDate' - how to format date in SQL (@see date)
- *   - 'formatDateTime' - how to format datetime in SQL (@see date)
- *   - 'charset' - character encoding to set
- *   - 'resource' - connection resource (optional)
+ * Driver options:
+ *   - database => the name of the local Oracle instance or the name of the entry in tnsnames.ora
+ *   - username (or user)
+ *   - password (or pass)
+ *   - charset => character encoding to set
+ *   - formatDate => how to format date in SQL (@see date)
+ *   - formatDateTime => how to format datetime in SQL (@see date)
+ *   - resource (resource) => existing connection resource
+ *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers

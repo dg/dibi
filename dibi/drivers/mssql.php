@@ -14,14 +14,14 @@
 /**
  * The dibi driver for MS SQL database.
  *
- * Connection options:
- *   - 'host' - the MS SQL server host name. It can also include a port number (hostname:port)
- *   - 'username' (or 'user')
- *   - 'password' (or 'pass')
- *   - 'persistent' - try to find a persistent link?
- *   - 'database' - the database name to select
- *   - 'lazy' - if TRUE, connection will be established only when required
- *   - 'resource' - connection resource (optional)
+ * Driver options:
+ *   - host => the MS SQL server host name. It can also include a port number (hostname:port)
+ *   - username (or user)
+ *   - password (or pass)
+ *   - database => the database name to select
+ *   - persistent (bool) => try to find a persistent link?
+ *   - resource (resource) => existing connection resource
+ *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers

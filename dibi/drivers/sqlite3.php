@@ -14,14 +14,14 @@
 /**
  * The dibi driver for SQLite3 database.
  *
- * Connection options:
- *   - 'database' (or 'file') - the filename of the SQLite3 database
- *   - 'lazy' - if TRUE, connection will be established only when required
- *   - 'formatDate' - how to format date in SQL (@see date)
- *   - 'formatDateTime' - how to format datetime in SQL (@see date)
- *   - 'dbcharset' - database character encoding (will be converted to 'charset')
- *   - 'charset' - character encoding to set (default is UTF-8)
- *   - 'resource' - connection resource (optional)
+ * Driver options:
+ *   - database (or file) => the filename of the SQLite3 database
+ *   - formatDate => how to format date in SQL (@see date)
+ *   - formatDateTime => how to format datetime in SQL (@see date)
+ *   - dbcharset => database character encoding (will be converted to 'charset')
+ *   - charset => character encoding to set (default is UTF-8)
+ *   - resource (SQLite3) => existing connection resource
+ *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers

@@ -95,7 +95,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	/** @var array */
 	private $cursor;
 
-    /** @var DibiLazyStorage  normalized clauses */
+	/** @var DibiLazyStorage  normalized clauses */
 	private static $normalizer;
 
 
@@ -476,7 +476,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	 * Format camelCase clause name to UPPER CASE.
 	 * @param  string
 	 * @return string
-     * @internal
+	 * @internal
 	 */
 	public static function _formatClause($s)
 	{

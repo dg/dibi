@@ -46,7 +46,16 @@ class DibiConnection extends DibiObject
 
 
 	/**
-	 * Creates object and (optionally) connects to a database.
+	 * Connection options: (see driver-specific options too)
+	 *   - lazy (bool) => if TRUE, connection will be established only when required
+	 *   - result (array) => result set options
+	 *       - detectTypes (bool) => detect the types of result set fields?
+	 *       - formatDateTime => date-time format (if empty, DateTime objects will be returned)
+	 *   - profiler (array or bool)
+	 *       - run (bool) => enable profiler?
+	 *       - class => profiler class name (default is DibiProfiler)
+	 *   - substitutes (array) => map of driver specific substitutes (under development)
+
 	 * @param  mixed   connection parameters
 	 * @param  string  connection name
 	 * @throws DibiException

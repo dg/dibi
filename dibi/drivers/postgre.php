@@ -14,14 +14,14 @@
 /**
  * The dibi driver for PostgreSQL database.
  *
- * Connection options:
- *   - 'host','hostaddr','port','dbname','user','password','connect_timeout','options','sslmode','service' - see PostgreSQL API
- *   - 'string' - or use connection string
- *   - 'persistent' - try to find a persistent link?
- *   - 'charset' - character encoding to set
- *   - 'schema' - the schema search path
- *   - 'lazy' - if TRUE, connection will be established only when required
- *   - 'resource' - connection resource (optional)
+ * Driver options:
+ *   - host, hostaddr, port, dbname, user, password, connect_timeout, options, sslmode, service => see PostgreSQL API
+ *   - string => or use connection string
+ *   - schema => the schema search path
+ *   - charset => character encoding to set
+ *   - persistent (bool) => try to find a persistent link?
+ *   - resource (resource) => existing connection resource
+ *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers
