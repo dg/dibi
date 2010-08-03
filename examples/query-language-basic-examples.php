@@ -92,5 +92,3 @@ dibi::test("
 // indentifiers and strings syntax mix
 dibi::test('UPDATE [table] SET `item` = "5 1/4"" diskette"');
 // -> UPDATE [table] SET [item] = '5 1/4" diskette'
-
-
