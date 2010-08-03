@@ -61,16 +61,6 @@ final class DibiTranslator extends DibiObject
 
 
 	/**
-	 * return IDibiDriver.
-	 */
-	public function getDriver()
-	{
-		return $this->driver;
-	}
-
-
-
-	/**
 	 * Generates SQL.
 	 * @param  array
 	 * @return string
