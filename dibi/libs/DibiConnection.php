@@ -260,8 +260,19 @@ class DibiConnection extends DibiObject
 	 * @return string
 	 * @throws DibiException
 	 */
-	final public function sql($args)
+	final public function translate($args)
 	{
+		$this->connected || $this->connect();
+		$args = func_get_args();
+		return $this->translator->translate($args);
+	}
+
+
+
+	/** @deprecated */
+	function sql($args)
+	{
+		trigger_error(__METHOD__ . '() is deprecated; use translate() instead.', E_USER_NOTICE);
 		$this->connected || $this->connect();
 		$args = func_get_args();
 		return $this->translator->translate($args);

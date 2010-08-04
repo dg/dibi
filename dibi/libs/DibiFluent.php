@@ -422,7 +422,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	 */
 	public function toDataSource()
 	{
-		return new DibiDataSource($this->connection->sql($this->_export()), $this->connection);
+		return new DibiDataSource($this->connection->translate($this->_export()), $this->connection);
 	}
 
 
@@ -433,7 +433,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	 */
 	final public function __toString()
 	{
-		return $this->connection->sql($this->_export());
+		return $this->connection->translate($this->_export());
 	}
 
 
