@@ -45,7 +45,7 @@ echo "</p>\n";
 // connects to MySQL using DSN
 echo '<p>Connecting to MySQL: ';
 try {
-	dibi::connect('driver=mysql&host=localhost&username=root&password=xxx&database=test&charset=utf8');
+	dibi::connect('driver=mysql&host=localhost&username=root&password=xxx&database=test&charset=cp1250');
 	echo 'OK';
 
 } catch (DibiException $e) {
@@ -65,7 +65,6 @@ try {
 		'username' => 'root',
 		'password' => 'xxx',
 		'database' => 'dibi',
-		'charset'  => 'utf8',
 		'options'  => array(
 			MYSQLI_OPT_CONNECT_TIMEOUT => 30
 		),

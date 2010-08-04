@@ -18,7 +18,7 @@
  *   - host, hostaddr, port, dbname, user, password, connect_timeout, options, sslmode, service => see PostgreSQL API
  *   - string => or use connection string
  *   - schema => the schema search path
- *   - charset => character encoding to set
+ *   - charset => character encoding to set (default is utf8)
  *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
@@ -62,6 +62,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			$this->connection = $config['resource'];
 
 		} else {
+			if (!isset($config['charset'])) $config['charset'] = 'utf8';
 			if (isset($config['string'])) {
 				$string = $config['string'];
 			} else {

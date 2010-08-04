@@ -22,7 +22,7 @@
  *   - password (or pass)
  *   - database => the database name to select
  *   - flags (int) => driver specific constants (MYSQL_CLIENT_*)
- *   - charset => character encoding to set
+ *   - charset => character encoding to set (default is utf8)
  *   - persistent (bool) => try to find a persistent link?
  *   - unbuffered (bool) => sends query without fetching and buffering the result rows automatically?
  *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
@@ -74,6 +74,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 		} else {
 			// default values
 			DibiConnection::alias($config, 'flags', 'options');
+			if (!isset($config['charset'])) $config['charset'] = 'utf8';
 			if (!isset($config['username'])) $config['username'] = ini_get('mysql.default_user');
 			if (!isset($config['password'])) $config['password'] = ini_get('mysql.default_password');
 			if (!isset($config['host'])) {

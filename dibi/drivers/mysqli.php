@@ -23,7 +23,7 @@
  *   - database => the database name to select
  *   - options (array) => array of driver specific constants (MYSQLI_*) and values {@see mysqli_options}
  *   - flags (int) => driver specific constants (MYSQLI_CLIENT_*) {@see mysqli_real_connect}
- *   - charset => character encoding to set
+ *   - charset => character encoding to set (default is utf8)
  *   - persistent (bool) => try to find a persistent link?
  *   - unbuffered (bool) => sends query without fetching and buffering the result rows automatically?
  *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
@@ -75,6 +75,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 		} else {
 			// default values
+			if (!isset($config['charset'])) $config['charset'] = 'utf8';
 			if (!isset($config['username'])) $config['username'] = ini_get('mysqli.default_user');
 			if (!isset($config['password'])) $config['password'] = ini_get('mysqli.default_pw');
 			if (!isset($config['socket'])) $config['socket'] = ini_get('mysqli.default_socket');
