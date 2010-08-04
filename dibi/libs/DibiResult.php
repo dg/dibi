@@ -32,7 +32,7 @@
  * @package    dibi
  *
  * @property-read mixed $resource
- * @property-read IDibiDriver $driver
+ * @property-read IDibiResultDriver $driver
  * @property-read int $rowCount
  * @property-read DibiResultIterator $iterator
  * @property string $rowClass
@@ -40,7 +40,7 @@
  */
 class DibiResult extends DibiObject implements IDataSource
 {
-	/** @var array  IDibiDriver */
+	/** @var array  IDibiResultDriver */
 	private $driver;
 
 	/** @var array  Translate table */
@@ -61,7 +61,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * @param  IDibiDriver
+	 * @param  IDibiResultDriver
 	 * @param  array
 	 */
 	public function __construct($driver, $config)
@@ -106,7 +106,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Safe access to property $driver.
-	 * @return IDibiDriver
+	 * @return IDibiResultDriver
 	 * @throws InvalidStateException
 	 */
 	private function getDriver()

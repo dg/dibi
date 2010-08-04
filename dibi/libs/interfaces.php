@@ -104,7 +104,7 @@ interface IDibiDriver
 	/**
 	 * Internal: Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return IDibiDriver|NULL
+	 * @return IDibiResultDriver|NULL
 	 * @throws DibiDriverException
 	 */
 	function query($sql);
@@ -151,12 +151,6 @@ interface IDibiDriver
 	 */
 	function getResource();
 
-
-
-	/********************* SQL ****************d*g**/
-
-
-
 	/**
 	 * Encodes data for use in a SQL statement.
 	 * @param  string    value
@@ -167,15 +161,6 @@ interface IDibiDriver
 	function escape($value, $type);
 
 	/**
-	 * Decodes data from result set.
-	 * @param  string    value
-	 * @param  string    type (dibi::BINARY)
-	 * @return string    decoded value
-	 * @throws InvalidArgumentException
-	 */
-	function unescape($value, $type);
-
-	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string &$sql  The SQL query that will be modified.
 	 * @param  int $limit
@@ -184,11 +169,20 @@ interface IDibiDriver
 	 */
 	function applyLimit(&$sql, $limit, $offset);
 
+}
 
 
-	/********************* result set ****************d*g**/
 
 
+
+/**
+ * dibi result set driver interface.
+ *
+ * @copyright  Copyright (c) 2005, 2010 David Grudl
+ * @package    dibi
+ */
+interface IDibiResultDriver
+{
 
 	/**
 	 * Returns the number of rows in a result set.
@@ -230,6 +224,16 @@ interface IDibiDriver
 	 * @return mixed
 	 */
 	function getResultResource();
+
+	/**
+	 * Decodes data from result set.
+	 * @param  string    value
+	 * @param  string    type (dibi::BINARY)
+	 * @return string    decoded value
+	 * @throws InvalidArgumentException
+	 */
+	function unescape($value, $type);
+
 }
 
 

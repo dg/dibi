@@ -27,7 +27,7 @@
  * @copyright  Copyright (c) 2010
  * @package    dibi\drivers
  */
-class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiReflector
+class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
 {
 	const ERROR_EXCEPTION_THROWN = -836;
 
@@ -109,7 +109,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiReflect
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return IDibiDriver|NULL
+	 * @return IDibiResultDriver|NULL
 	 * @throws DibiDriverException|DibiException
 	 */
 	public function query($sql)
@@ -331,7 +331,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiReflect
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
-	 * @internal
 	 */
 	public function fetch($assoc)
 	{

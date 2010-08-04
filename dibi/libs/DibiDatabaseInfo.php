@@ -349,7 +349,7 @@ class DibiTableInfo extends DibiObject
  */
 class DibiResultInfo extends DibiObject
 {
-	/** @var IDibiReflector */
+	/** @var IDibiResultDriver */
 	private $driver;
 
 	/** @var array */
@@ -360,7 +360,7 @@ class DibiResultInfo extends DibiObject
 
 
 
-	public function __construct(IDibiReflector $driver)
+	public function __construct(IDibiResultDriver $driver)
 	{
 		$this->driver = $driver;
 	}

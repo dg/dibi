@@ -33,7 +33,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers
  */
-class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiReflector
+class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
 {
 	const ERROR_ACCESS_DENIED = 1045;
 	const ERROR_DUPLICATE_ENTRY = 1062;
@@ -147,7 +147,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiReflector
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return IDibiDriver|NULL
+	 * @return IDibiResultDriver|NULL
 	 * @throws DibiDriverException
 	 */
 	public function query($sql)
@@ -349,7 +349,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiReflector
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
-	 * @internal
 	 */
 	public function fetch($assoc)
 	{

@@ -25,7 +25,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers
  */
-class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiReflector
+class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
 {
 	/** @var resource  Connection resource */
 	private $connection;
@@ -93,7 +93,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiReflector
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return IDibiDriver|NULL
+	 * @return IDibiResultDriver|NULL
 	 * @throws DibiDriverException
 	 */
 	public function query($sql)
@@ -293,7 +293,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiReflector
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
 	 * @return array    array on success, nonarray if no next record
-	 * @internal
 	 */
 	public function fetch($assoc)
 	{
