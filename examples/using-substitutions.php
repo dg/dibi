@@ -26,6 +26,16 @@ dibi::test("SELECT * FROM [:blog:items]");
 
 
 
+// create new substitution :: (empty)  ==>  my_
+dibi::addSubst('', 'my_');
+
+dibi::test("UPDATE ::table SET [text]='Hello World'");
+// -> UPDATE my_table SET [text]='Hello World'
+
+
+
+
+
 // create substitutions using fallback callback
 function substFallBack($expr)
 {
