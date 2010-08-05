@@ -683,7 +683,7 @@ class dibi
 	 */
 	public static function defaultSubstFallback($expr)
 	{
-		throw new InvalidStateException("Missing substitution for '$expr' expression.");
+		return ":$expr:";
 	}
 
 
