@@ -54,15 +54,24 @@ abstract class DibiLazyStorageBase
 final class DibiLazyStorage extends DibiLazyStorageBase
 {
 
+	public function __set($nm, $val)
+	{
+		if ($nm == '') {
+			$nm = "\xFF";
+		}
+		$this->$nm = $val;
+	}
+
+
+
 	public function __get($nm)
 	{
-		if (is_array($nm)) { // preg_replace_callback support
-			$nm = $nm[1];
-		}
 		if ($nm == '') {
-			throw new InvalidStateException('Missing identifier name.');
+			$nm = "\xFF";
+			return isset($this->$nm) ? $this->$nm : $this->$nm = call_user_func($this->getCallback(), '');
+		} else {
+			return $this->$nm = call_user_func($this->getCallback(), $nm);
 		}
-		return $this->$nm = call_user_func($this->getCallback(), $nm);
 	}
 
 }

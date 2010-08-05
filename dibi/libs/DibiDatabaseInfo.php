@@ -544,7 +544,7 @@ class DibiColumnInfo extends DibiObject
 		if (self::$types === NULL) {
 			self::$types = new DibiLazyStorage(array(__CLASS__, 'detectType'));
 		}
-		return $this->info['nativetype'] ? self::$types->{$this->info['nativetype']} : dibi::TEXT;
+		return self::$types->{$this->info['nativetype']};
 	}
 
 
