@@ -653,7 +653,7 @@ class dibi
 		if ($expr === TRUE) {
 			self::$substs = array();
 		} else {
-			unset(self::$substs[':'.$expr.':']);
+			unset(self::$substs[$expr]);
 		}
 	}
 
