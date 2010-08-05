@@ -67,7 +67,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 			throw new DibiDriverException("Can't connect to DB.");
 		}
 
-		if (isset($config['database']) && !@mssql_select_db($config['database'], $this->connection)) { // intentionally @
+		if (isset($config['database']) && !@mssql_select_db($this->escape($config['database'], dibi::IDENTIFIER), $this->connection)) { // intentionally @
 			throw new DibiDriverException("Can't select DB '$config[database]'.");
 		}
 	}
