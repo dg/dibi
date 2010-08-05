@@ -11,6 +11,9 @@
  */
 
 
+require_once dirname(__FILE__) . '/mysql.reflector.php';
+
+
 /**
  * The dibi driver for MySQL database.
  *
@@ -32,7 +35,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers
  */
-class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 {
 	const ERROR_ACCESS_DENIED = 1045;
 	const ERROR_DUPLICATE_ENTRY = 1062;
@@ -263,7 +266,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function getReflector()
 	{
-		return $this;
+		return new DibiMySqlReflector($this);
 	}
 
 
@@ -432,92 +435,6 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	public function getResultResource()
 	{
 		return $this->resultSet;
-	}
-
-
-
-	/********************* IDibiReflector ****************d*g**/
-
-
-
-	/**
-	 * Returns list of tables.
-	 * @return array
-	 */
-	public function getTables()
-	{
-		$this->query("SHOW FULL TABLES");
-		$res = array();
-		while ($row = $this->fetch(FALSE)) {
-			$res[] = array(
-				'name' => $row[0],
-				'view' => isset($row[1]) && $row[1] === 'VIEW',
-			);
-		}
-		$this->free();
-		return $res;
-	}
-
-
-
-	/**
-	 * Returns metadata for all columns in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getColumns($table)
-	{
-		$this->query("SHOW FULL COLUMNS FROM `$table`");
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
-			$type = explode('(', $row['Type']);
-			$res[] = array(
-				'name' => $row['Field'],
-				'table' => $table,
-				'nativetype' => strtoupper($type[0]),
-				'size' => isset($type[1]) ? (int) $type[1] : NULL,
-				'unsigned' => (bool) strstr($row['Type'], 'unsigned'),
-				'nullable' => $row['Null'] === 'YES',
-				'default' => $row['Default'],
-				'autoincrement' => $row['Extra'] === 'auto_increment',
-				'vendor' => $row,
-			);
-		}
-		$this->free();
-		return $res;
-	}
-
-
-
-	/**
-	 * Returns metadata for all indexes in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getIndexes($table)
-	{
-		$this->query("SHOW INDEX FROM `$table`");
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
-			$res[$row['Key_name']]['name'] = $row['Key_name'];
-			$res[$row['Key_name']]['unique'] = !$row['Non_unique'];
-			$res[$row['Key_name']]['primary'] = $row['Key_name'] === 'PRIMARY';
-			$res[$row['Key_name']]['columns'][$row['Seq_in_index'] - 1] = $row['Column_name'];
-		}
-		$this->free();
-		return array_values($res);
-	}
-
-
-
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getForeignKeys($table)
-	{
-		throw new NotImplementedException;
 	}
 
 }

@@ -11,6 +11,9 @@
  */
 
 
+require_once dirname(__FILE__) . '/sqlite.reflector.php';
+
+
 /**
  * The dibi driver for SQLite3 database.
  *
@@ -26,7 +29,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi\drivers
  */
-class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDriver
 {
 	/** @var SQLite3  Connection resource */
 	private $connection;
@@ -200,7 +203,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getReflector()
 	{
-		return $this;
+		return new DibiSqliteReflector($this);
 	}
 
 
@@ -369,153 +372,6 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 	public function getResultResource()
 	{
 		return $this->resultSet;
-	}
-
-
-
-	/********************* IDibiReflector ****************d*g**/
-
-
-
-	/**
-	 * Returns list of tables.
-	 * @return array
-	 */
-	public function getTables()
-	{
-		$this->query("
-			SELECT name, type = 'view' as view FROM sqlite_master WHERE type IN ('table', 'view')
-			UNION ALL
-			SELECT name, type = 'view' as view FROM sqlite_temp_master WHERE type IN ('table', 'view')
-			ORDER BY name
-		");
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
-			$res[] = $row;
-		}
-		$this->free();
-		return $res;
-	}
-
-
-
-	/**
-	 * Returns metadata for all columns in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getColumns($table)
-	{
-		$this->query("
-			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = '$table'
-			UNION ALL
-			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = '$table'"
-		);
-		$meta = $this->fetch(TRUE);
-		$this->free();
-
-		$this->query("PRAGMA table_info([$table])");
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
-			$column = $row['name'];
-			$pattern = "/(\"$column\"|\[$column\]|$column)\s+[^,]+\s+PRIMARY\s+KEY\s+AUTOINCREMENT/Ui";
-			$type = explode('(', $row['type']);
-
-			$res[] = array(
-				'name' => $column,
-				'table' => $table,
-				'fullname' => "$table.$column",
-				'nativetype' => strtoupper($type[0]),
-				'size' => isset($type[1]) ? (int) $type[1] : NULL,
-				'nullable' => $row['notnull'] == '0',
-				'default' => $row['dflt_value'],
-				'autoincrement' => (bool) preg_match($pattern, $meta['sql']),
-				'vendor' => $row,
-			);
-		}
-		$this->free();
-		return $res;
-	}
-
-
-
-	/**
-	 * Returns metadata for all indexes in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getIndexes($table)
-	{
-		$this->query("PRAGMA index_list([$table])");
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
-			$res[$row['name']]['name'] = $row['name'];
-			$res[$row['name']]['unique'] = (bool) $row['unique'];
-		}
-		$this->free();
-
-		foreach ($res as $index => $values) {
-			$this->query("PRAGMA index_info([$index])");
-			while ($row = $this->fetch(TRUE)) {
-				$res[$index]['columns'][$row['seqno']] = $row['name'];
-			}
-		}
-		$this->free();
-
-		$columns = $this->getColumns($table);
-		foreach ($res as $index => $values) {
-			$column = $res[$index]['columns'][0];
-			$primary = FALSE;
-			foreach ($columns as $info) {
-				if ($column == $info['name']) {
-					$primary = $info['vendor']['pk'];
-					break;
-				}
-			}
-			$res[$index]['primary'] = (bool) $primary;
-		}
-		if (!$res) { // @see http://www.sqlite.org/lang_createtable.html#rowid
-			foreach ($columns as $column) {
-				if ($column['vendor']['pk']) {
-					$res[] = array(
-						'name' => 'ROWID',
-						'unique' => TRUE,
-						'primary' => TRUE,
-						'columns' => array($column['name']),
-					);
-					break;
-				}
-			}
-		}
-
-		return array_values($res);
-	}
-
-
-
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getForeignKeys($table)
-	{
-		$this->query("PRAGMA foreign_key_list([$table])");
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
-			$res[$row['id']]['name'] = $row['id']; // foreign key name
-			$res[$row['id']]['local'][$row['seq']] = $row['from']; // local columns
-			$res[$row['id']]['table'] = $row['table']; // referenced table
-			$res[$row['id']]['foreign'][$row['seq']] = $row['to']; // referenced columns
-			$res[$row['id']]['onDelete'] = $row['on_delete'];
-			$res[$row['id']]['onUpdate'] = $row['on_update'];
-
-			if ($res[$row['id']]['foreign'][0] == NULL) {
-				$res[$row['id']]['foreign'] = NULL;
-			}
-		}
-		$this->free();
-		return array_values($res);
 	}
 
 
