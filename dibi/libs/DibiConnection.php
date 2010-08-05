@@ -664,11 +664,8 @@ class DibiConnection extends DibiObject
 	 */
 	public function getDatabaseInfo()
 	{
-		if (!($this->driver instanceof IDibiReflector)) {
-			throw new NotSupportedException('Driver '. get_class($this->driver) . ' has not reflection capabilities.');
-		}
 		$this->connected || $this->connect();
-		return new DibiDatabaseInfo($this->driver, isset($this->config['database']) ? $this->config['database'] : NULL);
+		return new DibiDatabaseInfo($this->driver->getReflector(), isset($this->config['database']) ? $this->config['database'] : NULL);
 	}
 
 

@@ -181,6 +181,17 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 
 
 
+	/**
+	 * Returns the connection reflector.
+	 * @return IDibiReflector
+	 */
+	public function getReflector()
+	{
+		throw new NotSupportedException;
+	}
+
+
+
 	/********************* SQL ****************d*g**/
 
 
@@ -338,5 +349,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	{
 		return $this->resultSet;
 	}
+
 
 }

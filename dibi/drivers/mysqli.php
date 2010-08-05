@@ -254,6 +254,17 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 
 
+	/**
+	 * Returns the connection reflector.
+	 * @return IDibiReflector
+	 */
+	public function getReflector()
+	{
+		return $this;
+	}
+
+
+
 	/********************* SQL ****************d*g**/
 
 

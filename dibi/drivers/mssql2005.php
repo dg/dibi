@@ -183,6 +183,17 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 
 
 
+	/**
+	 * Returns the connection reflector.
+	 * @return IDibiReflector
+	 */
+	public function getReflector()
+	{
+		throw new NotSupportedException;
+	}
+
+
+
 	/********************* SQL ****************d*g**/
 
 

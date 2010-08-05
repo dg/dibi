@@ -213,6 +213,17 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 
 
 
+	/**
+	 * Returns the connection reflector.
+	 * @return IDibiReflector
+	 */
+	public function getReflector()
+	{
+		throw new NotSupportedException;
+	}
+
+
+
 	/********************* SQL ****************d*g**/
 
 

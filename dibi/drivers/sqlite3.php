@@ -194,6 +194,17 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 
 
+	/**
+	 * Returns the connection reflector.
+	 * @return IDibiReflector
+	 */
+	public function getReflector()
+	{
+		return $this;
+	}
+
+
+
 	/********************* SQL ****************d*g**/
 
 

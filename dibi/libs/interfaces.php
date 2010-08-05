@@ -152,6 +152,12 @@ interface IDibiDriver
 	function getResource();
 
 	/**
+	 * Returns the connection reflector.
+	 * @return IDibiReflector
+	 */
+	function getReflector();
+
+	/**
 	 * Encodes data for use in a SQL statement.
 	 * @param  string    value
 	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)

@@ -200,6 +200,17 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 
 
 
+	/**
+	 * Returns the connection reflector.
+	 * @return IDibiReflector
+	 */
+	public function getReflector()
+	{
+		return $this;
+	}
+
+
+
 	/********************* SQL ****************d*g**/
 
 
