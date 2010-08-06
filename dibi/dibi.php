@@ -176,11 +176,8 @@ class dibi
 	/** @var DibiConnection  Current connection */
 	private static $connection;
 
-	/** @var array  Substitutions for identifiers */
-	public static $substs = array();
-
-	/** @var callback  Substitution fallback */
-	public static $substFallBack = array(__CLASS__, 'defaultSubstFallback');
+	/** @var DibiLazyStorage  Substitutions for identifiers */
+	public static $substs;
 
 	/** @var array  @see addHandler */
 	private static $handlers = array();
@@ -638,7 +635,7 @@ class dibi
 	 */
 	public static function addSubst($expr, $subst)
 	{
-		self::$substs[$expr] = $subst;
+		self::$substs->$expr = $subst;
 	}
 
 
@@ -651,9 +648,9 @@ class dibi
 	public static function removeSubst($expr)
 	{
 		if ($expr === TRUE) {
-			self::$substs = array();
+			self::$substs = new DibiLazyStorage(self::$substs->getCallback());
 		} else {
-			unset(self::$substs[$expr]);
+			unset(self::$substs->$expr);
 		}
 	}
 
@@ -666,12 +663,7 @@ class dibi
 	 */
 	public static function setSubstFallback($callback)
 	{
-		if (!is_callable($callback)) {
-			$able = is_callable($callback, TRUE, $textual);
-			throw new InvalidArgumentException("Handler '$textual' is not " . ($able ? 'callable.' : 'valid PHP callback.'));
-		}
-
-		self::$substFallBack = $callback;
+		self::$substs->setCallback($callback);
 	}
 
 
@@ -755,3 +747,8 @@ class dibi
 	}
 
 }
+
+
+
+// static constructor
+dibi::$substs = new DibiLazyStorage(array('dibi', 'defaultSubstFallback'));
