@@ -55,7 +55,6 @@ final class DibiTranslator extends DibiObject
 	public function __construct(IDibiDriver $driver)
 	{
 		$this->driver = $driver;
-		$this->identifiers = new DibiLazyStorage(array($this, 'delimite'));
 	}
 
 
@@ -68,6 +67,7 @@ final class DibiTranslator extends DibiObject
 	 */
 	public function translate(array $args)
 	{
+		$this->identifiers = new DibiLazyStorage(array($this, 'delimite'));
 		$args = array_values($args);
 		while (count($args) === 1 && is_array($args[0])) { // implicit array expansion
 			$args = array_values($args[0]);
