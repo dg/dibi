@@ -22,7 +22,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
-class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebugPanel
+class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 {
 	/** maximum number of rows */
 	static public $maxQueries = 30;
@@ -52,8 +52,12 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, /*Nette\*/IDebug
 
 	public function __construct(array $config)
 	{
-		if (class_exists(/*Nette\*/'Debug', FALSE) && is_callable(/*Nette\*/'Debug::addPanel')) {
-			/*Nette\*/Debug::addPanel($this);
+		if (is_callable('Nette\Debug::addPanel')) {
+			call_user_func('Nette\Debug::addPanel', $this);
+		} elseif (is_callable('NDebug::addPanel')) {
+			NDebug::addPanel($this);
+		} elseif (is_callable('Debug::addPanel')) {
+			Debug::addPanel($this);
 		}
 
 		$this->useFirebug = isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'FirePHP/');

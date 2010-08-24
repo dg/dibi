@@ -18,7 +18,7 @@
  * @copyright  Copyright (c) 2005, 2010 David Grudl
  * @package    dibi
  */
-class DibiException extends Exception implements /*Nette\*/IDebugPanel
+class DibiException extends Exception implements IDebugPanel
 {
 	/** @var string */
 	private $sql;
