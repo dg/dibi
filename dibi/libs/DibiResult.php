@@ -80,6 +80,17 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
+	 * Automatically frees the resources allocated for this result set.
+	 * @return void
+	 */
+	public function __destruct()
+	{
+		@$this->free(); // intentionally @
+	}
+
+
+
+	/**
 	 * Returns the result set resource.
 	 * @return mixed
 	 */
