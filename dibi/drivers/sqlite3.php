@@ -248,6 +248,20 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 
 	/**
+	 * Encodes string for use in a LIKE statement.
+	 * @param  string
+	 * @param  int
+	 * @return string
+	 */
+	public function escapeLike($value, $pos)
+	{
+		$value = addcslashes($this->connection->escapeString($value), '%_\\');
+		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
+	}
+
+
+
+	/**
 	 * Decodes data from result set.
 	 * @param  string    value
 	 * @param  string    type (dibi::BINARY)

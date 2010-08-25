@@ -308,6 +308,20 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 
 	/**
+	 * Encodes string for use in a LIKE statement.
+	 * @param  string
+	 * @param  int
+	 * @return string
+	 */
+	public function escapeLike($value, $pos)
+	{
+		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
+		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+	}
+
+
+
+	/**
 	 * Decodes data from result set.
 	 * @param  string    value
 	 * @param  string    type (dibi::BINARY)

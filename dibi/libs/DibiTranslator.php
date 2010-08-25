@@ -114,11 +114,11 @@ final class DibiTranslator extends DibiObject
 						(")((?:""|[^"])*)"|          ## 5,6) "string"
 						(\'|")|                      ## 7) lone quote
 						:(\S*?:)([a-zA-Z0-9._]?)|    ## 8,9) :substitution:
-						%([a-zA-Z]{1,4})(?![a-zA-Z])|## 10) modifier
+						%([a-zA-Z~][a-zA-Z0-9~]{0,5})|## 10) modifier
 						(\?)                         ## 11) placeholder
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
-					. preg_replace_callback('/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z]{1,4})(?![a-zA-Z])|(\?))/s',
+					. preg_replace_callback('/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
 							array($this, 'cb'),
 							substr($arg, $toSkip)
 					);
@@ -386,6 +386,15 @@ final class DibiTranslator extends DibiObject
 
 			case 'SQL': // preserve as real SQL (TODO: rename to %sql)
 				return (string) $value;
+
+			case 'like~':  // LIKE string%
+				return $this->driver->escapeLike($value, 1);
+
+			case '~like':  // LIKE %string
+				return $this->driver->escapeLike($value, -1);
+
+			case '~like~': // LIKE %string%
+				return $this->driver->escapeLike($value, 0);
 
 			case 'and':
 			case 'or':

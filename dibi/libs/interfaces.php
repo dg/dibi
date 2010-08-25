@@ -167,6 +167,14 @@ interface IDibiDriver
 	function escape($value, $type);
 
 	/**
+	 * Encodes string for use in a LIKE statement.
+	 * @param  string
+	 * @param  int
+	 * @return string
+	 */
+	function escapeLike($value, $pos);
+
+	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string &$sql  The SQL query that will be modified.
 	 * @param  int $limit

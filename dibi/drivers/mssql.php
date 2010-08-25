@@ -231,6 +231,20 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 
 
 	/**
+	 * Encodes string for use in a LIKE statement.
+	 * @param  string
+	 * @param  int
+	 * @return string
+	 */
+	public function escapeLike($value, $pos)
+	{
+		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+	}
+
+
+
+	/**
 	 * Decodes data from result set.
 	 * @param  string    value
 	 * @param  string    type (dibi::BINARY)

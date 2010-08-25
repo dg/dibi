@@ -256,6 +256,19 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 
 	/**
+	 * Encodes string for use in a LIKE statement.
+	 * @param  string
+	 * @param  int
+	 * @return string
+	 */
+	public function escapeLike($value, $pos)
+	{
+		throw new NotSupportedException;
+	}
+
+
+
+	/**
 	 * Decodes data from result set.
 	 * @param  string    value
 	 * @param  string    type (dibi::BINARY)
