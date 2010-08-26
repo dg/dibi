@@ -355,6 +355,17 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 
 
 	/**
+	 * Automatically frees the resources allocated for this result set.
+	 * @return void
+	 */
+	public function __destruct()
+	{
+		$this->resultSet && @$this->free();
+	}
+
+
+
+	/**
 	 * Returns the number of rows in a result set.
 	 * @return int
 	 */
@@ -460,7 +471,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				'view' => $row[1] === 'TRUE',
 			);
 		}
-		$res->free();
 		return $tables;
 	}
 
@@ -517,7 +527,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				'autoincrement' => FALSE,
 			);
 		}
-		$res->free();
 		return $columns;
 	}
 
@@ -553,7 +562,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			$indexes[$key]['table'] = $table;
 			$indexes[$key]['columns'][$row['FIELD_POSITION']] = $row['FIELD_NAME'];
 		}
-		$res->free();
 		return $indexes;
 	}
 
@@ -585,7 +593,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				'table' => $table,
 			);
 		}
-		$res->free();
 		return $keys;
 	}
 
@@ -609,7 +616,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 		while ($row = $res->fetch(FALSE)) {
 			$indices[] = $row[0];
 		}
-		$res->free();
 		return $indices;
 	}
 
@@ -635,7 +641,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 		while ($row = $res->fetch(FALSE)) {
 			$constraints[] = $row[0];
 		}
-		$res->free();
 		return $constraints;
 	}
 
@@ -686,7 +691,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				'enabled' => trim($row['TRIGGER_ENABLED']) === 'TRUE',
 			);
 		}
-		$res->free();
 		return $triggers;
 	}
 
@@ -710,7 +714,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 		while ($row = $res->fetch(FALSE)) {
 			$triggers[] = $row[0];
 		}
-		$res->free();
 		return $triggers;
 	}
 
@@ -765,7 +768,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			$procedures[$key]['params'][$io][$num]['type'] = trim($row['FIELD_TYPE']);
 			$procedures[$key]['params'][$io][$num]['size'] = $row['FIELD_LENGTH'];
 		}
-		$res->free();
 		return $procedures;
 	}
 
@@ -785,7 +787,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 		while ($row = $res->fetch(FALSE)) {
 			$procedures[] = $row[0];
 		}
-		$res->free();
 		return $procedures;
 	}
 
@@ -806,7 +807,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 		while ($row = $res->fetch(FALSE)) {
 			$generators[] = $row[0];
 		}
-		$res->free();
 		return $generators;
 	}
 
@@ -827,7 +827,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 		while ($row = $res->fetch(FALSE)) {
 			$functions[] = $row[0];
 		}
-		$res->free();
 		return $functions;
 	}
 

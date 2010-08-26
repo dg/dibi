@@ -171,7 +171,6 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 		if (!$res) return FALSE;
 
 		$row = $res->fetch(FALSE);
-		$res->free();
 		return is_array($row) ? $row[0] : FALSE;
 	}
 
@@ -364,6 +363,17 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 
 	/**
+	 * Automatically frees the resources allocated for this result set.
+	 * @return void
+	 */
+	public function __destruct()
+	{
+		$this->resultSet && @$this->free();
+	}
+
+
+
+	/**
 	 * Returns the number of rows in a result set.
 	 * @return int
 	 */
@@ -465,7 +475,6 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			WHERE table_schema = current_schema()
 		");
 		$tables = pg_fetch_all($res->resultSet);
-		$res->free();
 		return $tables ? $tables : array();
 	}
 
@@ -507,7 +516,6 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 				'vendor' => $row,
 			);
 		}
-		$res->free();
 		return $columns;
 	}
 
@@ -550,7 +558,6 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 				$indexes[$row['relname']]['columns'][] = $columns[$index];
 			}
 		}
-		$res->free();
 		return array_values($indexes);
 	}
 

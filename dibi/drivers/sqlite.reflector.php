@@ -48,7 +48,6 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 		while ($row = $res->fetch(TRUE)) {
 			$tables[] = $row;
 		}
-		$res->free();
 		return $tables;
 	}
 
@@ -85,7 +84,6 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 				'vendor' => $row,
 			);
 		}
-		$res->free();
 		return $columns;
 	}
 
@@ -104,14 +102,12 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 			$indexes[$row['name']]['name'] = $row['name'];
 			$indexes[$row['name']]['unique'] = (bool) $row['unique'];
 		}
-		$res->free();
 
 		foreach ($indexes as $index => $values) {
 			$res = $this->driver->query("PRAGMA index_info([$index])");
 			while ($row = $res->fetch(TRUE)) {
 				$indexes[$index]['columns'][$row['seqno']] = $row['name'];
 			}
-			$res->free();
 		}
 
 		$columns = $this->getColumns($table);
@@ -169,7 +165,6 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 				$keys[$row['id']]['foreign'] = NULL;
 			}
 		}
-		$res->free();
 		return array_values($keys);
 	}
 

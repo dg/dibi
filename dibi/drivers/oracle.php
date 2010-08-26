@@ -315,6 +315,17 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 
 	/**
+	 * Automatically frees the resources allocated for this result set.
+	 * @return void
+	 */
+	public function __destruct()
+	{
+		$this->resultSet && @$this->free();
+	}
+
+
+
+	/**
 	 * Returns the number of rows in a result set.
 	 * @return int
 	 */
@@ -413,7 +424,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 				);
 			}
 		}
-		$res->free();
 		return $tables;
 	}
 

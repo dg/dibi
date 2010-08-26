@@ -51,7 +51,6 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 				'view' => isset($row[1]) && $row[1] === 'VIEW',
 			);
 		}
-		$res->free();
 		return $tables;
 	}
 
@@ -86,7 +85,6 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 				'vendor' => $row,
 			);
 		}
-		$res->free();
 		return $columns;
 	}
 
@@ -114,7 +112,6 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 			$indexes[$row['Key_name']]['primary'] = $row['Key_name'] === 'PRIMARY';
 			$indexes[$row['Key_name']]['columns'][$row['Seq_in_index'] - 1] = $row['Column_name'];
 		}
-		$res->free();
 		return array_values($indexes);
 	}
 
