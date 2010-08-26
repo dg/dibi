@@ -691,13 +691,13 @@ class dibi
 			$sql = preg_replace('#[ \t]{2,}#', " ", $sql);
 
 			$sql = wordwrap($sql, 100);
-			$sql = htmlSpecialChars($sql);
 			$sql = preg_replace("#([ \t]*\r?\n){2,}#", "\n", $sql);
 
 			if (PHP_SAPI === 'cli') {
 				echo trim($sql) . "\n\n";
 			} else {
 				// syntax highlight
+				$sql = htmlSpecialChars($sql);
 				$sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is", array('dibi', 'highlightCallback'), $sql);
 				echo '<pre class="dump">', trim($sql), "</pre>\n";
 			}
