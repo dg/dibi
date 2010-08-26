@@ -432,10 +432,10 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		}
 
 		$count = mysqli_num_fields($this->resultSet);
-		$res = array();
+		$columns = array();
 		for ($i = 0; $i < $count; $i++) {
 			$row = (array) mysqli_fetch_field_direct($this->resultSet, $i);
-			$res[] = array(
+			$columns[] = array(
 				'name' => $row['name'],
 				'table' => $row['orgtable'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
@@ -443,7 +443,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 				'vendor' => $row,
 			);
 		}
-		return $res;
+		return $columns;
 	}
 
 

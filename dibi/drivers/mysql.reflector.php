@@ -43,16 +43,16 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 			FROM INFORMATION_SCHEMA.TABLES
 			WHERE TABLE_SCHEMA = DATABASE()
 		");*/
-		$this->driver->query("SHOW FULL TABLES");
-		$res = array();
-		while ($row = $this->driver->fetch(FALSE)) {
-			$res[] = array(
+		$res = $this->driver->query("SHOW FULL TABLES");
+		$tables = array();
+		while ($row = $res->fetch(FALSE)) {
+			$tables[] = array(
 				'name' => $row[0],
 				'view' => isset($row[1]) && $row[1] === 'VIEW',
 			);
 		}
-		$this->driver->free();
-		return $res;
+		$res->free();
+		return $tables;
 	}
 
 
@@ -70,11 +70,11 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 			FROM INFORMATION_SCHEMA.COLUMNS
 			WHERE TABLE_NAME = $table AND TABLE_SCHEMA = DATABASE()
 		");*/
-		$this->driver->query("SHOW FULL COLUMNS FROM `$table`");
-		$res = array();
-		while ($row = $this->driver->fetch(TRUE)) {
+		$res = $this->driver->query("SHOW FULL COLUMNS FROM `$table`");
+		$columns = array();
+		while ($row = $res->fetch(TRUE)) {
 			$type = explode('(', $row['Type']);
-			$res[] = array(
+			$columns[] = array(
 				'name' => $row['Field'],
 				'table' => $table,
 				'nativetype' => strtoupper($type[0]),
@@ -86,8 +86,8 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 				'vendor' => $row,
 			);
 		}
-		$this->driver->free();
-		return $res;
+		$res->free();
+		return $columns;
 	}
 
 
@@ -106,16 +106,16 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 			WHERE TABLE_NAME = $table AND TABLE_SCHEMA = DATABASE()
 			AND REFERENCED_COLUMN_NAME IS NULL
 		");*/
-		$this->driver->query("SHOW INDEX FROM `$table`");
-		$res = array();
-		while ($row = $this->driver->fetch(TRUE)) {
-			$res[$row['Key_name']]['name'] = $row['Key_name'];
-			$res[$row['Key_name']]['unique'] = !$row['Non_unique'];
-			$res[$row['Key_name']]['primary'] = $row['Key_name'] === 'PRIMARY';
-			$res[$row['Key_name']]['columns'][$row['Seq_in_index'] - 1] = $row['Column_name'];
+		$res = $this->driver->query("SHOW INDEX FROM `$table`");
+		$indexes = array();
+		while ($row = $res->fetch(TRUE)) {
+			$indexes[$row['Key_name']]['name'] = $row['Key_name'];
+			$indexes[$row['Key_name']]['unique'] = !$row['Non_unique'];
+			$indexes[$row['Key_name']]['primary'] = $row['Key_name'] === 'PRIMARY';
+			$indexes[$row['Key_name']]['columns'][$row['Seq_in_index'] - 1] = $row['Column_name'];
 		}
-		$this->driver->free();
-		return array_values($res);
+		$res->free();
+		return array_values($indexes);
 	}
 
 

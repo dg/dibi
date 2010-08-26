@@ -133,8 +133,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getInsertId($sequence)
 	{
-		$this->query("SELECT $sequence.CURRVAL AS ID FROM DUAL");
-		$row = $this->fetch(TRUE);
+		$row = $this->query("SELECT $sequence.CURRVAL AS ID FROM DUAL")->fetch(TRUE);
 		return isset($row['ID']) ? (int) $row['ID'] : FALSE;
 	}
 
@@ -354,16 +353,16 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function getResultColumns()
 	{
 		$count = oci_num_fields($this->resultSet);
-		$res = array();
+		$columns = array();
 		for ($i = 1; $i <= $count; $i++) {
-			$res[] = array(
-				'name'      => oci_field_name($this->resultSet, $i),
-				'table'     => NULL,
-				'fullname'  => oci_field_name($this->resultSet, $i),
+			$columns[] = array(
+				'name' => oci_field_name($this->resultSet, $i),
+				'table' => NULL,
+				'fullname' => oci_field_name($this->resultSet, $i),
 				'nativetype'=> oci_field_type($this->resultSet, $i),
 			);
 		}
-		return $res;
+		return $columns;
 	}
 
 
@@ -389,18 +388,18 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getTables()
 	{
-		$this->query('SELECT * FROM cat');
-		$res = array();
-		while ($row = $this->fetch(FALSE)) {
+		$res = $this->query('SELECT * FROM cat');
+		$tables = array();
+		while ($row = $res->fetch(FALSE)) {
 			if ($row[1] === 'TABLE' || $row[1] === 'VIEW') {
-				$res[] = array(
+				$tables[] = array(
 					'name' => $row[0],
 					'view' => $row[1] === 'VIEW',
 				);
 			}
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $tables;
 	}
 
 

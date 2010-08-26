@@ -38,18 +38,18 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getTables()
 	{
-		$this->driver->query("
+		$res = $this->driver->query("
 			SELECT name, type = 'view' as view FROM sqlite_master WHERE type IN ('table', 'view')
 			UNION ALL
 			SELECT name, type = 'view' as view FROM sqlite_temp_master WHERE type IN ('table', 'view')
 			ORDER BY name
 		");
-		$res = array();
-		while ($row = $this->driver->fetch(TRUE)) {
-			$res[] = $row;
+		$tables = array();
+		while ($row = $res->fetch(TRUE)) {
+			$tables[] = $row;
 		}
-		$this->driver->free();
-		return $res;
+		$res->free();
+		return $tables;
 	}
 
 
@@ -61,22 +61,19 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getColumns($table)
 	{
-		$this->driver->query("
+		$meta = $this->driver->query("
 			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = '$table'
 			UNION ALL
 			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = '$table'"
-		);
-		$meta = $this->driver->fetch(TRUE);
-		$this->driver->free();
+		)->fetch(TRUE);
 
-		$this->driver->query("PRAGMA table_info([$table])");
-		$res = array();
-		while ($row = $this->driver->fetch(TRUE)) {
+		$res = $this->driver->query("PRAGMA table_info([$table])");
+		$columns = array();
+		while ($row = $res->fetch(TRUE)) {
 			$column = $row['name'];
 			$pattern = "/(\"$column\"|\[$column\]|$column)\s+[^,]+\s+PRIMARY\s+KEY\s+AUTOINCREMENT/Ui";
 			$type = explode('(', $row['type']);
-
-			$res[] = array(
+			$columns[] = array(
 				'name' => $column,
 				'table' => $table,
 				'fullname' => "$table.$column",
@@ -88,8 +85,8 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 				'vendor' => $row,
 			);
 		}
-		$this->driver->free();
-		return $res;
+		$res->free();
+		return $columns;
 	}
 
 
@@ -101,25 +98,25 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getIndexes($table)
 	{
-		$this->driver->query("PRAGMA index_list([$table])");
-		$res = array();
-		while ($row = $this->driver->fetch(TRUE)) {
-			$res[$row['name']]['name'] = $row['name'];
-			$res[$row['name']]['unique'] = (bool) $row['unique'];
+		$res = $this->driver->query("PRAGMA index_list([$table])");
+		$indexes = array();
+		while ($row = $res->fetch(TRUE)) {
+			$indexes[$row['name']]['name'] = $row['name'];
+			$indexes[$row['name']]['unique'] = (bool) $row['unique'];
 		}
-		$this->driver->free();
+		$res->free();
 
-		foreach ($res as $index => $values) {
-			$this->driver->query("PRAGMA index_info([$index])");
-			while ($row = $this->driver->fetch(TRUE)) {
-				$res[$index]['columns'][$row['seqno']] = $row['name'];
+		foreach ($indexes as $index => $values) {
+			$res = $this->driver->query("PRAGMA index_info([$index])");
+			while ($row = $res->fetch(TRUE)) {
+				$indexes[$index]['columns'][$row['seqno']] = $row['name'];
 			}
+			$res->free();
 		}
-		$this->driver->free();
 
 		$columns = $this->getColumns($table);
-		foreach ($res as $index => $values) {
-			$column = $res[$index]['columns'][0];
+		foreach ($indexes as $index => $values) {
+			$column = $indexes[$index]['columns'][0];
 			$primary = FALSE;
 			foreach ($columns as $info) {
 				if ($column == $info['name']) {
@@ -127,12 +124,12 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 					break;
 				}
 			}
-			$res[$index]['primary'] = (bool) $primary;
+			$indexes[$index]['primary'] = (bool) $primary;
 		}
-		if (!$res) { // @see http://www.sqlite.org/lang_createtable.html#rowid
+		if (!$indexes) { // @see http://www.sqlite.org/lang_createtable.html#rowid
 			foreach ($columns as $column) {
 				if ($column['vendor']['pk']) {
-					$res[] = array(
+					$indexes[] = array(
 						'name' => 'ROWID',
 						'unique' => TRUE,
 						'primary' => TRUE,
@@ -143,7 +140,7 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 			}
 		}
 
-		return array_values($res);
+		return array_values($indexes);
 	}
 
 
@@ -158,22 +155,22 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 		if (!($this->driver instanceof DibiSqlite3Driver)) {
 			// throw new NotSupportedException; // @see http://www.sqlite.org/foreignkeys.html
 		}
-		$this->driver->query("PRAGMA foreign_key_list([$table])");
-		$res = array();
-		while ($row = $this->driver->fetch(TRUE)) {
-			$res[$row['id']]['name'] = $row['id']; // foreign key name
-			$res[$row['id']]['local'][$row['seq']] = $row['from']; // local columns
-			$res[$row['id']]['table'] = $row['table']; // referenced table
-			$res[$row['id']]['foreign'][$row['seq']] = $row['to']; // referenced columns
-			$res[$row['id']]['onDelete'] = $row['on_delete'];
-			$res[$row['id']]['onUpdate'] = $row['on_update'];
+		$res = $this->driver->query("PRAGMA foreign_key_list([$table])");
+		$keys = array();
+		while ($row = $res->fetch(TRUE)) {
+			$keys[$row['id']]['name'] = $row['id']; // foreign key name
+			$keys[$row['id']]['local'][$row['seq']] = $row['from']; // local columns
+			$keys[$row['id']]['table'] = $row['table']; // referenced table
+			$keys[$row['id']]['foreign'][$row['seq']] = $row['to']; // referenced columns
+			$keys[$row['id']]['onDelete'] = $row['on_delete'];
+			$keys[$row['id']]['onUpdate'] = $row['on_update'];
 
-			if ($res[$row['id']]['foreign'][0] == NULL) {
-				$res[$row['id']]['foreign'] = NULL;
+			if ($keys[$row['id']]['foreign'][0] == NULL) {
+				$keys[$row['id']]['foreign'] = NULL;
 			}
 		}
-		$this->driver->free();
-		return array_values($res);
+		$res->free();
+		return array_values($keys);
 	}
 
 }

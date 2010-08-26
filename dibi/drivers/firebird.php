@@ -422,21 +422,21 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getTables()
 	{
-		$this->query("
+		$res = $this->query("
 			SELECT TRIM(RDB\$RELATION_NAME),
 				CASE RDB\$VIEW_BLR WHEN NULL THEN 'TRUE' ELSE 'FALSE' END
 			FROM RDB\$RELATIONS
 			WHERE RDB\$SYSTEM_FLAG = 0;"
 		);
-		$res = array();
-		while ($row = $this->fetch(FALSE)) {
-			$res[] = array(
+		$tables = array();
+		while ($row = $res->fetch(FALSE)) {
+			$tables[] = array(
 				'name' => $row[0],
 				'view' => $row[1] === 'TRUE',
 			);
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $tables;
 	}
 
 
@@ -449,7 +449,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	public function getColumns($table)
 	{
 		$table = strtoupper($table);
-		$this->query("
+		$res = $this->query("
 			SELECT TRIM(r.RDB\$FIELD_NAME) AS FIELD_NAME,
 				CASE f.RDB\$FIELD_TYPE
 					WHEN 261 THEN 'BLOB'
@@ -479,10 +479,10 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			ORDER BY r.RDB\$FIELD_POSITION;"
 
 		);
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
+		$columns = array();
+		while ($row = $res->fetch(TRUE)) {
 			$key = $row['FIELD_NAME'];
-			$res[$key] = array(
+			$columns[$key] = array(
 				'name' => $key,
 				'table' => $table,
 				'nativetype' => trim($row['FIELD_TYPE']),
@@ -492,8 +492,8 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				'autoincrement' => FALSE,
 			);
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $columns;
 	}
 
 
@@ -506,7 +506,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	public function getIndexes($table)
 	{
 		$table = strtoupper($table);
-		$this->query("
+		$res = $this->query("
 			SELECT TRIM(s.RDB\$INDEX_NAME) AS INDEX_NAME,
 				TRIM(s.RDB\$FIELD_NAME) AS FIELD_NAME,
 				i.RDB\$UNIQUE_FLAG AS UNIQUE_FLAG,
@@ -519,17 +519,17 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			WHERE UPPER(i.RDB\$RELATION_NAME) = '$table'
 			ORDER BY s.RDB\$FIELD_POSITION"
 		);
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
+		$indexes = array();
+		while ($row = $res->fetch(TRUE)) {
 			$key = $row['INDEX_NAME'];
-			$res[$key]['name'] = $key;
-			$res[$key]['unique'] = $row['UNIQUE_FLAG'] === 1;
-			$res[$key]['primary'] = $row['CONSTRAINT_TYPE'] === 'PRIMARY KEY';
-			$res[$key]['table'] = $table;
-			$res[$key]['columns'][$row['FIELD_POSITION']] = $row['FIELD_NAME'];
+			$indexes[$key]['name'] = $key;
+			$indexes[$key]['unique'] = $row['UNIQUE_FLAG'] === 1;
+			$indexes[$key]['primary'] = $row['CONSTRAINT_TYPE'] === 'PRIMARY KEY';
+			$indexes[$key]['table'] = $table;
+			$indexes[$key]['columns'][$row['FIELD_POSITION']] = $row['FIELD_NAME'];
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $indexes;
 	}
 
 
@@ -542,7 +542,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	public function getForeignKeys($table)
 	{
 		$table = strtoupper($table);
-		$this->query("
+		$res = $this->query("
 			SELECT TRIM(s.RDB\$INDEX_NAME) AS INDEX_NAME,
 				TRIM(s.RDB\$FIELD_NAME) AS FIELD_NAME,
 			FROM RDB\$INDEX_SEGMENTS s
@@ -551,17 +551,17 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				AND r.RDB\$CONSTRAINT_TYPE = 'FOREIGN KEY'
 			ORDER BY s.RDB\$FIELD_POSITION"
 		);
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
+		$keys = array();
+		while ($row = $res->fetch(TRUE)) {
 			$key = $row['INDEX_NAME'];
-			$res[$key] = array(
+			$keys[$key] = array(
 				'name' => $key,
 				'column' => $row['FIELD_NAME'],
 				'table' => $table,
 			);
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $keys;
 	}
 
 
@@ -573,19 +573,19 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getIndices($table)
 	{
-		$this->query("
+		$res = $this->query("
 			SELECT TRIM(RDB\$INDEX_NAME)
 			FROM RDB\$INDICES
 			WHERE RDB\$RELATION_NAME = UPPER('$table')
 				AND RDB\$UNIQUE_FLAG IS NULL
 				AND RDB\$FOREIGN_KEY IS NULL;"
 		);
-		$res = array();
-		while ($row = $this->fetch(FALSE)) {
-			$res[] = $row[0];
+		$indices = array();
+		while ($row = $res->fetch(FALSE)) {
+			$indices[] = $row[0];
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $indices;
 	}
 
 
@@ -597,7 +597,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getConstraints($table)
 	{
-		$this->query("
+		$res = $this->query("
 			SELECT TRIM(RDB\$INDEX_NAME)
 			FROM RDB\$INDICES
 			WHERE RDB\$RELATION_NAME = UPPER('$table')
@@ -606,12 +606,12 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 					OR RDB\$FOREIGN_KEY IS NOT NULL
 			);"
 		);
-		$res = array();
-		while ($row = $this->fetch(FALSE)) {
-			$res[] = $row[0];
+		$constraints = array();
+		while ($row = $res->fetch(FALSE)) {
+			$constraints[] = $row[0];
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $constraints;
 	}
 
 
@@ -625,7 +625,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getTriggersMeta($table = NULL)
 	{
-		$this->query("
+		$res = $this->query("
 			SELECT TRIM(RDB\$TRIGGER_NAME) AS TRIGGER_NAME,
 				TRIM(RDB\$RELATION_NAME) AS TABLE_NAME,
 				CASE RDB\$TRIGGER_TYPE
@@ -651,9 +651,9 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			WHERE RDB\$SYSTEM_FLAG = 0"
 			. ($table === NULL ? ";" : " AND RDB\$RELATION_NAME = UPPER('$table');")
 		);
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
-			$res[$row['TRIGGER_NAME']] = array(
+		$triggers = array();
+		while ($row = $res->fetch(TRUE)) {
+			$triggers[$row['TRIGGER_NAME']] = array(
 				'name' => $row['TRIGGER_NAME'],
 				'table' => $row['TABLE_NAME'],
 				'type' => trim($row['TRIGGER_TYPE']),
@@ -661,8 +661,8 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				'enabled' => trim($row['TRIGGER_ENABLED']) === 'TRUE',
 			);
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $triggers;
 	}
 
 
@@ -680,13 +680,13 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			WHERE RDB\$SYSTEM_FLAG = 0";
 		$q .= $table === NULL ? ";" : " AND RDB\$RELATION_NAME = UPPER('$table')";
 
-		$this->query($q);
-		$res = array();
-		while ($row = $this->fetch(FALSE)) {
-			$res[] = $row[0];
+		$res = $this->query($q);
+		$triggers = array();
+		while ($row = $res->fetch(FALSE)) {
+			$triggers[] = $row[0];
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $triggers;
 	}
 
 
@@ -698,7 +698,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getProceduresMeta()
 	{
-		$this->query("
+		$res = $this->query("
 			SELECT
 				TRIM(p.RDB\$PARAMETER_NAME) AS PARAMETER_NAME,
 				TRIM(p.RDB\$PROCEDURE_NAME) AS PROCEDURE_NAME,
@@ -730,18 +730,18 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				LEFT JOIN RDB\$FIELDS f ON f.RDB\$FIELD_NAME = p.RDB\$FIELD_SOURCE
 			ORDER BY p.RDB\$PARAMETER_TYPE, p.RDB\$PARAMETER_NUMBER;"
 		);
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
+		$procedures = array();
+		while ($row = $res->fetch(TRUE)) {
 			$key = $row['PROCEDURE_NAME'];
 			$io = trim($row['PARAMETER_TYPE']);
 			$num = $row['PARAMETER_NUMBER'];
-			$res[$key]['name'] = $row['PROCEDURE_NAME'];
-			$res[$key]['params'][$io][$num]['name'] = $row['PARAMETER_NAME'];
-			$res[$key]['params'][$io][$num]['type'] = trim($row['FIELD_TYPE']);
-			$res[$key]['params'][$io][$num]['size'] = $row['FIELD_LENGTH'];
+			$procedures[$key]['name'] = $row['PROCEDURE_NAME'];
+			$procedures[$key]['params'][$io][$num]['name'] = $row['PARAMETER_NAME'];
+			$procedures[$key]['params'][$io][$num]['type'] = trim($row['FIELD_TYPE']);
+			$procedures[$key]['params'][$io][$num]['size'] = $row['FIELD_LENGTH'];
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $procedures;
 	}
 
 
@@ -752,16 +752,16 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getProcedures()
 	{
-		$this->query("
+		$res = $this->query("
 			SELECT TRIM(RDB\$PROCEDURE_NAME)
 			FROM RDB\$PROCEDURES;"
 		);
-		$res = array();
-		while ($row = $this->fetch(FALSE)) {
-			$res[] = $row[0];
+		$procedures = array();
+		while ($row = $res->fetch(FALSE)) {
+			$procedures[] = $row[0];
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $procedures;
 	}
 
 
@@ -772,17 +772,17 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getGenerators()
 	{
-		$this->query("
+		$res = $this->query("
 			SELECT TRIM(RDB\$GENERATOR_NAME)
 			FROM RDB\$GENERATORS
 			WHERE RDB\$SYSTEM_FLAG = 0;"
 		);
-		$res = array();
-		while ($row = $this->fetch(FALSE)) {
-			$res[] = $row[0];
+		$generators = array();
+		while ($row = $res->fetch(FALSE)) {
+			$generators[] = $row[0];
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $generators;
 	}
 
 
@@ -793,17 +793,17 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getFunctions()
 	{
-		$this->query("
+		$res = $this->query("
 			SELECT TRIM(RDB\$FUNCTION_NAME)
 			FROM RDB\$FUNCTIONS
 			WHERE RDB\$SYSTEM_FLAG = 0;"
 		);
-		$res = array();
-		while ($row = $this->fetch(FALSE)) {
-			$res[] = $row[0];
+		$functions = array();
+		while ($row = $res->fetch(FALSE)) {
+			$functions[] = $row[0];
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $functions;
 	}
 
 }

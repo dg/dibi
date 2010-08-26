@@ -340,17 +340,17 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	public function getResultColumns()
 	{
 		$count = mssql_num_fields($this->resultSet);
-		$res = array();
+		$columns = array();
 		for ($i = 0; $i < $count; $i++) {
 			$row = (array) mssql_fetch_field($this->resultSet, $i);
-			$res[] = array(
+			$columns[] = array(
 				'name' => $row['name'],
 				'fullname' => $row['column_source'] ? $row['column_source'] . '.' . $row['name'] : $row['name'],
 				'table' => $row['column_source'],
 				'nativetype' => $row['type'],
 			);
 		}
-		return $res;
+		return $columns;
 	}
 
 

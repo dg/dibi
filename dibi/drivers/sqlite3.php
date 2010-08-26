@@ -364,17 +364,17 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 	public function getResultColumns()
 	{
 		$count = $this->resultSet->numColumns();
-		$res = array();
+		$columns = array();
 		static $types = array(SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null');
 		for ($i = 0; $i < $count; $i++) {
-			$res[] = array(
+			$columns[] = array(
 				'name'  => $this->resultSet->columnName($i),
 				'table' => NULL,
 				'fullname' => $this->resultSet->columnName($i),
 				'nativetype' => $types[$this->resultSet->columnType($i)],
 			);
 		}
-		return $res;
+		return $columns;
 	}
 
 

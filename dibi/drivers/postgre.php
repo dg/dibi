@@ -155,15 +155,15 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	{
 		if ($sequence === NULL) {
 			// PostgreSQL 8.1 is needed
-			$has = $this->query("SELECT LASTVAL()");
+			$res = $this->query("SELECT LASTVAL()");
 		} else {
-			$has = $this->query("SELECT CURRVAL('$sequence')");
+			$res = $this->query("SELECT CURRVAL('$sequence')");
 		}
 
-		if (!$has) return FALSE;
+		if (!$res) return FALSE;
 
-		$row = $this->fetch(FALSE);
-		$this->free();
+		$row = $res->fetch(FALSE);
+		$res->free();
 		return is_array($row) ? $row[0] : FALSE;
 	}
 
@@ -396,7 +396,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	{
 		$hasTable = version_compare(PHP_VERSION , '5.2.0', '>=');
 		$count = pg_num_fields($this->resultSet);
-		$res = array();
+		$columns = array();
 		for ($i = 0; $i < $count; $i++) {
 			$row = array(
 				'name'      => pg_field_name($this->resultSet, $i),
@@ -404,9 +404,9 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 				'nativetype'=> pg_field_type($this->resultSet, $i),
 			);
 			$row['fullname'] = $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'];
-			$res[] = $row;
+			$columns[] = $row;
 		}
-		return $res;
+		return $columns;
 	}
 
 
@@ -437,14 +437,14 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			throw new DibiDriverException('Reflection requires PostgreSQL 8.');
 		}
 
-		$this->query("
+		$res = $this->query("
 			SELECT table_name as name, CAST(table_type = 'VIEW' AS INTEGER) as view
 			FROM information_schema.tables
 			WHERE table_schema = current_schema()
 		");
-		$res = pg_fetch_all($this->resultSet);
-		$this->free();
-		return $res ? $res : array();
+		$tables = pg_fetch_all($res->resultSet);
+		$res->free();
+		return $tables ? $tables : array();
 	}
 
 
@@ -457,24 +457,24 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	public function getColumns($table)
 	{
 		$_table = $this->escape($table, dibi::TEXT);
-		$this->query("
+		$res = $this->query("
 			SELECT indkey
 			FROM pg_class
 			LEFT JOIN pg_index on pg_class.oid = pg_index.indrelid AND pg_index.indisprimary
 			WHERE pg_class.relname = $_table
 		");
-		$primary = (int) pg_fetch_object($this->resultSet)->indkey;
+		$primary = (int) pg_fetch_object($res->resultSet)->indkey;
 
-		$this->query("
+		$res = $this->query("
 			SELECT *
 			FROM information_schema.columns
 			WHERE table_name = $_table AND table_schema = current_schema()
 			ORDER BY ordinal_position
 		");
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
+		$columns = array();
+		while ($row = $res->fetch(TRUE)) {
 			$size = (int) max($row['character_maximum_length'], $row['numeric_precision']);
-			$res[] = array(
+			$columns[] = array(
 				'name' => $row['column_name'],
 				'table' => $table,
 				'nativetype' => strtoupper($row['udt_name']),
@@ -485,8 +485,8 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 				'vendor' => $row,
 			);
 		}
-		$this->free();
-		return $res;
+		$res->free();
+		return $columns;
 	}
 
 
@@ -499,7 +499,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	public function getIndexes($table)
 	{
 		$_table = $this->escape($table, dibi::TEXT);
-		$this->query("
+		$res = $this->query("
 			SELECT ordinal_position, column_name
 			FROM information_schema.columns
 			WHERE table_name = $_table AND table_schema = current_schema()
@@ -507,11 +507,11 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 		");
 
 		$columns = array();
-		while ($row = $this->fetch(TRUE)) {
+		while ($row = $res->fetch(TRUE)) {
 			$columns[$row['ordinal_position']] = $row['column_name'];
 		}
 
-		$this->query("
+		$res = $this->query("
 			SELECT pg_class2.relname, indisunique, indisprimary, indkey
 			FROM pg_class
 			LEFT JOIN pg_index on pg_class.oid = pg_index.indrelid
@@ -519,17 +519,17 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			WHERE pg_class.relname = $_table
 		");
 
-		$res = array();
-		while ($row = $this->fetch(TRUE)) {
-			$res[$row['relname']]['name'] = $row['relname'];
-			$res[$row['relname']]['unique'] = $row['indisunique'] === 't';
-			$res[$row['relname']]['primary'] = $row['indisprimary'] === 't';
+		$indexes = array();
+		while ($row = $res->fetch(TRUE)) {
+			$indexes[$row['relname']]['name'] = $row['relname'];
+			$indexes[$row['relname']]['unique'] = $row['indisunique'] === 't';
+			$indexes[$row['relname']]['primary'] = $row['indisprimary'] === 't';
 			foreach (explode(' ', $row['indkey']) as $index) {
-				$res[$row['relname']]['columns'][] = $columns[$index];
+				$indexes[$row['relname']]['columns'][] = $columns[$index];
 			}
 		}
-		$this->free();
-		return array_values($res);
+		$res->free();
+		return array_values($indexes);
 	}
 
 

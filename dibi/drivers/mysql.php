@@ -426,10 +426,10 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	public function getResultColumns()
 	{
 		$count = mysql_num_fields($this->resultSet);
-		$res = array();
+		$columns = array();
 		for ($i = 0; $i < $count; $i++) {
 			$row = (array) mysql_fetch_field($this->resultSet, $i);
-			$res[] = array(
+			$columns[] = array(
 				'name' => $row['name'],
 				'table' => $row['table'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
@@ -437,7 +437,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 				'vendor' => $row,
 			);
 		}
-		return $res;
+		return $columns;
 	}
 
 
