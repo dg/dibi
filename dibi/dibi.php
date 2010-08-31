@@ -256,6 +256,18 @@ class dibi
 
 
 	/**
+	 * Sets connection.
+	 * @param  DibiConnection
+	 * @return DibiConnection
+	 */
+	public static function setConnection(DibiConnection $connection)
+	{
+		return self::$connection = $connection;
+	}
+
+
+
+	/**
 	 * Change active connection.
 	 * @param  string   connection registy name
 	 * @return void
