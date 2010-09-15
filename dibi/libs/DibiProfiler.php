@@ -61,6 +61,10 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 
 		$this->useFirebug = isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'FirePHP/');
 
+		if (isset($config['file'])) {
+			$this->setFile($config['file']);
+		}
+
 		if (isset($config['filter'])) {
 			$this->setFilter($config['filter']);
 		}
