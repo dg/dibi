@@ -25,10 +25,10 @@ if (version_compare(PHP_VERSION, '5.2.0', '<')) {
 /**
  * Compatibility with Nette
  */
-if (interface_exists('Nette\\IDebugPanel', FALSE)) {
+if (interface_exists('Nette\\IDebugPanel')) {
 	class_alias('Nette\\IDebugPanel', 'IDebugPanel');
 
-} elseif (!interface_exists('IDebugPanel', FALSE)) {
+} elseif (!interface_exists('IDebugPanel')) {
 	interface IDebugPanel {}
 }
 
