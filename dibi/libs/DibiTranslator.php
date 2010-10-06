@@ -121,7 +121,7 @@ final class DibiTranslator extends DibiObject
 							array($this, 'cb'),
 							substr($arg, $toSkip)
 					);
-					if (preg_last_error()) throw new PcreException;
+					if (preg_last_error()) throw new DibiPcreException;
 				}
 				continue;
 			}
@@ -379,7 +379,7 @@ final class DibiTranslator extends DibiObject
 						array($this, 'cb'),
 						substr($value, $toSkip)
 					);
-					if (preg_last_error()) throw new PcreException;
+					if (preg_last_error()) throw new DibiPcreException;
 				}
 				return $value;
 

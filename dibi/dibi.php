@@ -44,8 +44,7 @@ if (!defined('NETTE')) {
 }
 
 
-/** @package exceptions */
-class PcreException extends Exception {
+class DibiPcreException extends Exception {
 
 	public function __construct($message = '%msg.')
 	{
