@@ -41,8 +41,6 @@ if (!defined('NETTE')) {
 	class IOException extends RuntimeException {}
 	class FileNotFoundException extends IOException {}
 	/**#@-*/
-
-	require_once dirname(__FILE__) . '/Nette/DateTime53.php';
 }
 
 
@@ -65,21 +63,9 @@ class PcreException extends Exception {
 
 
 
-/**
- * @deprecated
- */
-class DibiVariable extends DateTime53
-{
-	function __construct($val)
-	{
-		parent::__construct($val);
-	}
-}
-
-
-
 // dibi libraries
 require_once dirname(__FILE__) . '/libs/interfaces.php';
+require_once dirname(__FILE__) . '/libs/DibiDateTime.php';
 require_once dirname(__FILE__) . '/libs/DibiObject.php';
 require_once dirname(__FILE__) . '/libs/DibiLazyStorage.php';
 require_once dirname(__FILE__) . '/libs/DibiException.php';
@@ -92,6 +78,19 @@ require_once dirname(__FILE__) . '/libs/DibiDataSource.php';
 require_once dirname(__FILE__) . '/libs/DibiFluent.php';
 require_once dirname(__FILE__) . '/libs/DibiDatabaseInfo.php';
 require_once dirname(__FILE__) . '/libs/DibiProfiler.php';
+
+
+
+/**
+ * @deprecated
+ */
+class DibiVariable extends DibiDateTime
+{
+	function __construct($val)
+	{
+		parent::__construct($val);
+	}
+}
 
 
 
@@ -593,7 +592,7 @@ class dibi
 	 */
 	public static function datetime($time = NULL)
 	{
-		return new DateTime53(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
+		return new DibiDateTime(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
 	}
 
 
@@ -603,7 +602,7 @@ class dibi
 	 */
 	public static function date($date = NULL)
 	{
-		return new DateTime53(is_numeric($date) ? date('Y-m-d', $date) : $date);
+		return new DibiDateTime(is_numeric($date) ? date('Y-m-d', $date) : $date);
 	}
 
 

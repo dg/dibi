@@ -592,7 +592,7 @@ class DibiResult extends DibiObject implements IDataSource
 				return NULL;
 
 			} elseif ($this->dateFormat === '') { // return DateTime object (default)
-				return new DateTime53(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
+				return new DibiDateTime(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
 
 			} elseif ($this->dateFormat === 'U') { // return timestamp
 				return is_numeric($value) ? (int) $value : strtotime($value);
@@ -601,7 +601,7 @@ class DibiResult extends DibiObject implements IDataSource
 				return date($this->dateFormat, $value);
 
 			} else {
-				$value = new DateTime53($value);
+				$value = new DibiDateTime($value);
 				return $value->format($this->dateFormat);
 			}
 

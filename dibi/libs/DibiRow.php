@@ -46,7 +46,7 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 		if ((int) $time === 0) { // '', NULL, FALSE, '0000-00-00', ...
 			return NULL;
 		}
-		$dt = new DateTime53(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
+		$dt = new DibiDateTime(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
 		return $format === NULL ? $dt : $dt->format($format);
 	}
 
