@@ -126,7 +126,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 				throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
 			}
 
-			return clone $this;
+			return $this->createResultDriver($this->resultSet);
 		}
 	}
 
@@ -220,6 +220,20 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	public function getReflector()
 	{
 		throw new NotSupportedException;
+	}
+
+
+
+	/**
+	 * Result set driver factory.
+	 * @param  PDOStatement
+	 * @return IDibiResultDriver
+	 */
+	public function createResultDriver(PDOStatement $resource)
+	{
+		$res = clone $this;
+		$res->resultSet = $resource;
+		return $res;
 	}
 
 

@@ -99,7 +99,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 			throw new DibiDriverException(mssql_get_last_message(), 0, $sql);
 		}
 
-		return is_resource($this->resultSet) ? clone $this : NULL;
+		return is_resource($this->resultSet) ? $this->createResultDriver($this->resultSet) : NULL;
 	}
 
 
@@ -188,6 +188,20 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	public function getReflector()
 	{
 		throw new NotSupportedException;
+	}
+
+
+
+	/**
+	 * Result set driver factory.
+	 * @param  resource
+	 * @return IDibiResultDriver
+	 */
+	public function createResultDriver($resource)
+	{
+		$res = clone $this;
+		$res->resultSet = $resource;
+		return $res;
 	}
 
 

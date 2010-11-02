@@ -131,7 +131,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			throw new DibiDriverException(pg_last_error($this->connection), 0, $sql);
 		}
 
-		return is_resource($this->resultSet) && pg_num_fields($this->resultSet) ? clone $this : NULL;
+		return is_resource($this->resultSet) && pg_num_fields($this->resultSet) ? $this->createResultDriver($this->resultSet) : NULL;
 	}
 
 
@@ -237,6 +237,20 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	public function getReflector()
 	{
 		return $this;
+	}
+
+
+
+	/**
+	 * Result set driver factory.
+	 * @param  resource
+	 * @return IDibiResultDriver
+	 */
+	public function createResultDriver($resource)
+	{
+		$res = clone $this;
+		$res->resultSet = $resource;
+		return $res;
 	}
 
 

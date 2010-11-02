@@ -162,7 +162,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 			throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection), $sql);
 		}
 
-		return is_object($this->resultSet) ? clone $this : NULL;
+		return is_object($this->resultSet) ? $this->createResultDriver($this->resultSet) : NULL;
 	}
 
 
@@ -264,6 +264,20 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function getReflector()
 	{
 		return new DibiMySqlReflector($this);
+	}
+
+
+
+	/**
+	 * Result set driver factory.
+	 * @param  mysqli_result
+	 * @return IDibiResultDriver
+	 */
+	public function createResultDriver(mysqli_result $resource)
+	{
+		$res = clone $this;
+		$res->resultSet = $resource;
+		return $res;
 	}
 
 

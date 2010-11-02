@@ -340,7 +340,7 @@ class DibiConnection extends DibiObject
 
 		dibi::$sql = $sql;
 		if ($res = $this->driver->query($sql)) { // intentionally =
-			$res = new DibiResult($res, $this->config['result']);
+			$res = $this->createResultSet($res);
 		} else {
 			$res = $this->driver->getAffectedRows();
 		}
@@ -462,6 +462,18 @@ class DibiConnection extends DibiObject
 		if (isset($ticket)) {
 			$this->profiler->after($ticket);
 		}
+	}
+
+
+
+	/**
+	 * Result set factory.
+	 * @param  IDibiResultDriver
+	 * @return DibiResult
+	 */
+	public function createResultSet(IDibiResultDriver $resultDriver)
+	{
+		return new DibiResult($resultDriver, $this->config['result']);
 	}
 
 

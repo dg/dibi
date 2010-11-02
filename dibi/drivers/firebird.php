@@ -131,7 +131,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			throw new DibiDriverException(ibase_errmsg(), ibase_errcode(), $sql);
 		}
 
-		return is_resource($this->resultSet) ? clone $this : NULL;
+		return is_resource($this->resultSet) ? $this->createResultDriver($this->resultSet) : NULL;
 	}
 
 
@@ -247,6 +247,20 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	public function getReflector()
 	{
 		return $this;
+	}
+
+
+
+	/**
+	 * Result set driver factory.
+	 * @param  resource
+	 * @return IDibiResultDriver
+	 */
+	public function createResultDriver($resource)
+	{
+		$res = clone $this;
+		$res->resultSet = $resource;
+		return $res;
 	}
 
 

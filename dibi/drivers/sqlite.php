@@ -130,7 +130,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 			throw new DibiDriverException($msg, sqlite_last_error($this->connection), $sql);
 		}
 
-		return is_resource($this->resultSet) ? clone $this : NULL;
+		return is_resource($this->resultSet) ? $this->createResultDriver($this->resultSet) : NULL;
 	}
 
 
@@ -214,6 +214,20 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function getReflector()
 	{
 		return new DibiSqliteReflector($this);
+	}
+
+
+
+	/**
+	 * Result set driver factory.
+	 * @param  resource
+	 * @return IDibiResultDriver
+	 */
+	public function createResultDriver($resource)
+	{
+		$res = clone $this;
+		$res->resultSet = $resource;
+		return $res;
 	}
 
 
