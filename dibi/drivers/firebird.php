@@ -115,7 +115,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	{
 		DibiDriverException::tryError();
 		$resource = $this->inTransaction ? $this->transaction : $this->connection;
-		$this->resultSet = ibase_query($resource, $sql);
+		$res = ibase_query($resource, $sql);
 
 		if (DibiDriverException::catchError($msg)) {
 			if (ibase_errcode() == self::ERROR_EXCEPTION_THROWN) {
@@ -127,11 +127,12 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			}
 		}
 
-		if ($this->resultSet === FALSE) {
+		if ($res === FALSE) {
 			throw new DibiDriverException(ibase_errmsg(), ibase_errcode(), $sql);
-		}
 
-		return is_resource($this->resultSet) ? $this->createResultDriver($this->resultSet) : NULL;
+		} elseif (is_resource($res)) {
+			return $this->createResultDriver($res);
+		}
 	}
 
 

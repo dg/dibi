@@ -105,9 +105,9 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 		// must detect if SQL returns result set or num of affected rows
 		$cmd = strtoupper(substr(ltrim($sql), 0, 6));
 		static $list = array('UPDATE'=>1, 'DELETE'=>1, 'INSERT'=>1, 'REPLAC'=>1);
+		$this->affectedRows = FALSE;
 
 		if (isset($list[$cmd])) {
-			$this->resultSet = NULL;
 			$this->affectedRows = $this->connection->exec($sql);
 
 			if ($this->affectedRows === FALSE) {
@@ -115,18 +115,15 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 				throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
 			}
 
-			return NULL;
-
 		} else {
-			$this->resultSet = $this->connection->query($sql);
-			$this->affectedRows = FALSE;
+			$res = $this->connection->query($sql);
 
-			if ($this->resultSet === FALSE) {
+			if ($res === FALSE) {
 				$err = $this->connection->errorInfo();
 				throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
+			} else {
+				return $this->createResultDriver($res);
 			}
-
-			return $this->createResultDriver($this->resultSet);
 		}
 	}
 

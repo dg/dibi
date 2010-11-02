@@ -156,13 +156,14 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function query($sql)
 	{
-		$this->resultSet = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT); // intentionally @
+		$res = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT); // intentionally @
 
 		if (mysqli_errno($this->connection)) {
 			throw new DibiDriverException(mysqli_error($this->connection), mysqli_errno($this->connection), $sql);
-		}
 
-		return is_object($this->resultSet) ? $this->createResultDriver($this->resultSet) : NULL;
+		} elseif (is_object($res)) {
+			return $this->createResultDriver($res);
+		}
 	}
 
 

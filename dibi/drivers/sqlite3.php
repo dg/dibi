@@ -115,12 +115,13 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 			$sql = iconv($this->charset, $this->dbcharset . '//IGNORE', $sql);
 		}
 
-		$this->resultSet = @$this->connection->query($sql); // intentionally @
+		$res = @$this->connection->query($sql); // intentionally @
 		if ($this->connection->lastErrorCode()) {
 			throw new DibiDriverException($this->connection->lastErrorMsg(), $this->connection->lastErrorCode(), $sql);
-		}
 
-		return $this->resultSet instanceof SQLite3Result ? $this->createResultDriver($this->resultSet) : NULL;
+		} elseif ($res instanceof SQLite3Result) {
+			return $this->createResultDriver($res);
+		}
 	}
 
 

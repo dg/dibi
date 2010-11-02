@@ -34,6 +34,9 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	/** @var resource  Resultset resource */
 	private $resultSet;
 
+	/** @var int|FALSE  Affected rows */
+	private $affectedRows = FALSE;
+
 	/** @var bool  Escape method */
 	private $escMethod = FALSE;
 
@@ -125,13 +128,18 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function query($sql)
 	{
-		$this->resultSet = @pg_query($this->connection, $sql); // intentionally @
+		$this->affectedRows = FALSE;
+		$res = @pg_query($this->connection, $sql); // intentionally @
 
-		if ($this->resultSet === FALSE) {
+		if ($res === FALSE) {
 			throw new DibiDriverException(pg_last_error($this->connection), 0, $sql);
-		}
 
-		return is_resource($this->resultSet) && pg_num_fields($this->resultSet) ? $this->createResultDriver($this->resultSet) : NULL;
+		} elseif (is_resource($res)) {
+			$this->affectedRows = pg_affected_rows($res);
+			if (pg_num_fields($res)) {
+				return $this->createResultDriver($res);
+			}
+		}
 	}
 
 
@@ -142,7 +150,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getAffectedRows()
 	{
-		return pg_affected_rows($this->resultSet);
+		return $this->affectedRows;
 	}
 
 

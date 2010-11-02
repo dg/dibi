@@ -122,15 +122,16 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 		DibiDriverException::tryError();
 		if ($this->buffered) {
-			$this->resultSet = sqlite_query($this->connection, $sql);
+			$res = sqlite_query($this->connection, $sql);
 		} else {
-			$this->resultSet = sqlite_unbuffered_query($this->connection, $sql);
+			$res = sqlite_unbuffered_query($this->connection, $sql);
 		}
 		if (DibiDriverException::catchError($msg)) {
 			throw new DibiDriverException($msg, sqlite_last_error($this->connection), $sql);
-		}
 
-		return is_resource($this->resultSet) ? $this->createResultDriver($this->resultSet) : NULL;
+		} elseif (is_resource($res)) {
+			return $this->createResultDriver($res);
+		}
 	}
 
 

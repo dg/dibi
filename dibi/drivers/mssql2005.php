@@ -35,6 +35,9 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	/** @var resource  Resultset resource */
 	private $resultSet;
 
+	/** @var int|FALSE  Affected rows */
+	private $affectedRows = FALSE;
+
 
 
 	/**
@@ -94,14 +97,17 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function query($sql)
 	{
-		$this->resultSet = sqlsrv_query($this->connection, $sql);
+		$this->affectedRows = FALSE;
+		$res = sqlsrv_query($this->connection, $sql);
 
-		if ($this->resultSet === FALSE) {
+		if ($res === FALSE) {
 			$info = sqlsrv_errors();
 			throw new DibiDriverException($info[0]['message'], $info[0]['code'], $sql);
-		}
 
-		return is_resource($this->resultSet) ? $this->createResultDriver($this->resultSet) : NULL;
+		} elseif (is_resource($res)) {
+			$this->affectedRows = sqlsrv_rows_affected($res);
+			return $this->createResultDriver($res);
+		}
 	}
 
 
@@ -112,7 +118,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getAffectedRows()
 	{
-		return sqlsrv_rows_affected($this->resultSet);
+		return $this->affectedRows;
 	}
 
 

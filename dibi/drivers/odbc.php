@@ -33,6 +33,9 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	/** @var resource  Resultset resource */
 	private $resultSet;
 
+	/** @var int|FALSE  Affected rows */
+	private $affectedRows = FALSE;
+
 	/** @var int  Cursor */
 	private $row = 0;
 
@@ -98,13 +101,16 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	 */
 	public function query($sql)
 	{
-		$this->resultSet = @odbc_exec($this->connection, $sql); // intentionally @
+		$this->affectedRows = FALSE;
+		$res = @odbc_exec($this->connection, $sql); // intentionally @
 
-		if ($this->resultSet === FALSE) {
+		if ($res === FALSE) {
 			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
-		}
 
-		return is_resource($this->resultSet) ? $this->createResultDriver($this->resultSet) : NULL;
+		} elseif (is_resource($res)) {
+			$this->affectedRows = odbc_num_rows($res);
+			return $this->createResultDriver($res);
+		}
 	}
 
 
@@ -115,7 +121,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	 */
 	public function getAffectedRows()
 	{
-		return odbc_num_rows($this->resultSet);
+		return $this->affectedRows;
 	}
 
 
