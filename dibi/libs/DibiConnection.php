@@ -111,6 +111,7 @@ class DibiConnection extends DibiObject
 		}
 
 		if (!empty($profilerCfg['run'])) {
+			class_exists('dibi'); // ensure dibi.php is processed
 			$class = isset($profilerCfg['class']) ? $profilerCfg['class'] : 'DibiProfiler';
 			if (!class_exists($class)) {
 				throw new DibiException("Unable to create instance of dibi profiler '$class'.");
