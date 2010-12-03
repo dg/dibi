@@ -54,6 +54,9 @@ class DibiResult extends DibiObject implements IDataSource
 	/** @var string  returned object class */
 	private $rowClass = 'DibiRow';
 
+	/** @var Callback  returned object factory*/
+	private $rowFactory;
+
 	/** @var array  format */
 	private $formats = array();
 
@@ -204,6 +207,19 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
+	 * Set a factory to create fetched object instances. These should extend the DibiRow class.
+	 * @param  callback
+	 * @return DibiResult  provides a fluent interface
+	 */
+	public function setRowFactory($callback)
+	{
+		$this->rowFactory = $callback;
+		return $this;
+	}
+
+
+
+	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
 	 * @return DibiRow|FALSE  array on success, FALSE if no next record
@@ -216,7 +232,9 @@ class DibiResult extends DibiObject implements IDataSource
 		}
 		$this->fetched = TRUE;
 		$this->normalize($row);
-		if ($this->rowClass) {
+		if ($this->rowFactory) {
+			return call_user_func($this->rowFactory, $row);
+		} elseif ($this->rowClass) {
 			$row = new $this->rowClass($row);
 		}
 		return $row;
