@@ -577,7 +577,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 		case dibi::DATE:
 		case dibi::DATETIME:
-			if ((int) $value === 0) { // '', NULL, FALSE, '0000-00-00', ...
+			if ((int) $value === 0 && strpos((string) $value, ':') === false ) { // '', NULL, FALSE, '0000-00-00', ...
 				return NULL;
 
 			} elseif ($this->dateFormat === '') { // return DateTime object (default)
