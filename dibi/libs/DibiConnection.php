@@ -328,7 +328,7 @@ class DibiConnection extends DibiObject
 
 		if ($this->profiler !== NULL) {
 			$event = IDibiProfiler::QUERY;
-			if (preg_match('#\s*(SELECT|UPDATE|INSERT|DELETE)#i', $sql, $matches)) {
+			if (preg_match('#\s*(SELECT|UPDATE|INSERT|DELETE)#iA', $sql, $matches)) {
 				static $events = array(
 					'SELECT' => IDibiProfiler::SELECT, 'UPDATE' => IDibiProfiler::UPDATE,
 					'INSERT' => IDibiProfiler::INSERT, 'DELETE' => IDibiProfiler::DELETE,
