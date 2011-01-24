@@ -182,6 +182,10 @@ final class DibiTranslator extends DibiObject
 	 */
 	public function formatValue($value, $modifier)
 	{
+		if ($this->comment) {
+			return "...";
+		}
+
 		// array processing (with or without modifier)
 		if ($value instanceof Traversable) {
 			$value = iterator_to_array($value);
