@@ -20,6 +20,20 @@
 class DibiDateTime extends DateTime
 {
 
+	public function __construct($time = 'now', DateTimeZone $timezone = NULL)
+	{
+		if (is_numeric($time)) {
+			$time = date('Y-m-d H:i:s', $time);
+		}
+		if ($timezone === NULL) {
+			parent::__construct($time);
+		} else {
+			parent::__construct($time, $timezone);
+		}
+	}
+
+
+
 	public function __sleep()
 	{
 		$this->fix = array($this->format('Y-m-d H:i:s'), $this->getTimezone()->getName());
