@@ -247,24 +247,22 @@ class DibiConnection extends DibiObject
 	 */
 	final public function query($args)
 	{
-		$this->connected || $this->connect();
 		$args = func_get_args();
-		return $this->nativeQuery($this->translator->translate($args));
+		return $this->nativeQuery($this->translateArgs($args));
 	}
 
 
 
 	/**
-	 * Generates and returns SQL query.
+	 * Generates SQL query.
 	 * @param  array|mixed      one or more arguments
 	 * @return string
 	 * @throws DibiException
 	 */
 	final public function translate($args)
 	{
-		$this->connected || $this->connect();
 		$args = func_get_args();
-		return $this->translator->translate($args);
+		return $this->translateArgs($args);
 	}
 
 
@@ -273,9 +271,8 @@ class DibiConnection extends DibiObject
 	function sql($args)
 	{
 		trigger_error(__METHOD__ . '() is deprecated; use translate() instead.', E_USER_NOTICE);
-		$this->connected || $this->connect();
 		$args = func_get_args();
-		return $this->translator->translate($args);
+		return $this->translateArgs($args);
 	}
 
 
@@ -287,10 +284,9 @@ class DibiConnection extends DibiObject
 	 */
 	final public function test($args)
 	{
-		$this->connected || $this->connect();
 		$args = func_get_args();
 		try {
-			dibi::dump($this->translator->translate($args));
+			dibi::dump($this->translateArgs($args));
 			return TRUE;
 
 		} catch (DibiException $e) {
@@ -309,9 +305,21 @@ class DibiConnection extends DibiObject
 	 */
 	final public function dataSource($args)
 	{
-		$this->connected || $this->connect();
 		$args = func_get_args();
-		return new DibiDataSource($this->translator->translate($args), $this);
+		return new DibiDataSource($this->translateArgs($args), $this);
+	}
+
+
+
+	/**
+	 * Generates SQL query.
+	 * @param  array
+	 * @return string
+	 */
+	private function translateArgs($args)
+	{
+		$this->connected || $this->connect();
+		return $this->translator->translate($args);
 	}
 
 
