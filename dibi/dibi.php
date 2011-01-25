@@ -136,7 +136,7 @@ class dibi
 	/**#@+
 	 * dibi version
 	 */
-	const VERSION = '1.3-dev';
+	const VERSION = '1.5-rc1';
 	const REVISION = '$WCREV$ released on $WCDATE$';
 	/**#@-*/
 
