@@ -41,12 +41,12 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 
 
 	/**
-	 * @throws DibiException
+	 * @throws NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('sqlsrv')) {
-			throw new DibiDriverException("PHP extension 'sqlsrv' is not loaded.");
+			throw new NotSupportedException("PHP extension 'sqlsrv' is not loaded.");
 		}
 	}
 

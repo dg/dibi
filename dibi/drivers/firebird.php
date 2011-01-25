@@ -44,12 +44,12 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 
 
 	/**
-	 * @throws DibiException
+	 * @throws NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('interbase')) {
-			throw new DibiDriverException("PHP extension 'interbase' is not loaded.");
+			throw new NotSupportedException("PHP extension 'interbase' is not loaded.");
 		}
 	}
 
@@ -169,7 +169,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	public function begin($savepoint = NULL)
 	{
 		if ($savepoint !== NULL) {
-			throw new DibiDriverException('Savepoints are not supported in Firebird/Interbase.');
+			throw new NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 		$this->transaction = ibase_trans($this->resource);
 		$this->inTransaction = TRUE;
@@ -186,11 +186,11 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	public function commit($savepoint = NULL)
 	{
 		if ($savepoint !== NULL) {
-			throw new DibiDriverException('Savepoints are not supported in Firebird/Interbase.');
+			throw new NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 
 		if (!ibase_commit($this->transaction)) {
-			DibiDriverException('Unable to handle operation - failure when commiting transaction.');
+			throw new DibiDriverException('Unable to handle operation - failure when commiting transaction.');
 		}
 
 		$this->inTransaction = FALSE;
@@ -207,11 +207,11 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	public function rollback($savepoint = NULL)
 	{
 		if ($savepoint !== NULL) {
-			throw new DibiDriverException('Savepoints are not supported in Firebird/Interbase.');
+			throw new NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 
 		if (!ibase_rollback($this->transaction)) {
-			DibiDriverException('Unable to handle operation - failure when rolbacking transaction.');
+			throw new DibiDriverException('Unable to handle operation - failure when rolbacking transaction.');
 		}
 
 		$this->inTransaction = FALSE;
@@ -409,7 +409,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function seek($row)
 	{
-		throw new DibiDriverException("Firebird/Interbase do not support seek in result set.");
+		throw new NotSupportedException("Firebird/Interbase do not support seek in result set.");
 	}
 
 

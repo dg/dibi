@@ -37,12 +37,12 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 
 
 	/**
-	 * @throws DibiException
+	 * @throws NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('mssql')) {
-			throw new DibiDriverException("PHP extension 'mssql' is not loaded.");
+			throw new NotSupportedException("PHP extension 'mssql' is not loaded.");
 		}
 	}
 

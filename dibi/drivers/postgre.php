@@ -43,12 +43,12 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 
 	/**
-	 * @throws DibiException
+	 * @throws NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('pgsql')) {
-			throw new DibiDriverException("PHP extension 'pgsql' is not loaded.");
+			throw new NotSupportedException("PHP extension 'pgsql' is not loaded.");
 		}
 	}
 

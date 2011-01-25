@@ -44,12 +44,12 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 
 	/**
-	 * @throws DibiException
+	 * @throws NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('oci8')) {
-			throw new DibiDriverException("PHP extension 'oci8' is not loaded.");
+			throw new NotSupportedException("PHP extension 'oci8' is not loaded.");
 		}
 	}
 

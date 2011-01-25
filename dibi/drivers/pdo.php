@@ -42,12 +42,12 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 
 
 	/**
-	 * @throws DibiException
+	 * @throws NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('pdo')) {
-			throw new DibiDriverException("PHP extension 'pdo' is not loaded.");
+			throw new NotSupportedException("PHP extension 'pdo' is not loaded.");
 		}
 	}
 
@@ -434,7 +434,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 		for ($i = 0; $i < $count; $i++) {
 			$row = @$this->resultSet->getColumnMeta($i); // intentionally @
 			if ($row === FALSE) {
-				throw new DibiDriverException('Driver does not support meta data.');
+				throw new NotSupportedException('Driver does not support meta data.');
 			}
 			// PHP < 5.2.3 compatibility
 			// @see: http://php.net/manual/en/pdostatement.getcolumnmeta.php#pdostatement.getcolumnmeta.changelog

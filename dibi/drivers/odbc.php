@@ -42,12 +42,12 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 
 
 	/**
-	 * @throws DibiException
+	 * @throws NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('odbc')) {
-			throw new DibiDriverException("PHP extension 'odbc' is not loaded.");
+			throw new NotSupportedException("PHP extension 'odbc' is not loaded.");
 		}
 	}
 
@@ -313,7 +313,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
 		}
 
-		if ($offset) throw new InvalidArgumentException('Offset is not implemented in driver odbc.');
+		if ($offset) throw new NotSupportedException('Offset is not implemented in driver odbc.');
 	}
 
 

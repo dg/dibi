@@ -46,12 +46,12 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 
 	/**
-	 * @throws DibiException
+	 * @throws NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('sqlite3')) {
-			throw new DibiDriverException("PHP extension 'sqlite3' is not loaded.");
+			throw new NotSupportedException("PHP extension 'sqlite3' is not loaded.");
 		}
 	}
 
