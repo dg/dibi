@@ -18,7 +18,7 @@
  * @author     David Grudl
  * @internal
  */
-abstract class DibiLazyStorageBase
+abstract class DibiHashMapBase
 {
 	private $callback;
 
@@ -50,7 +50,7 @@ abstract class DibiLazyStorageBase
 
 
 
-final class DibiLazyStorage extends DibiLazyStorageBase
+final class DibiHashMap extends DibiHashMapBase
 {
 
 	public function __set($nm, $val)

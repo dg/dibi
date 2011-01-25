@@ -532,7 +532,7 @@ class DibiColumnInfo extends DibiObject
 	public function getType()
 	{
 		if (self::$types === NULL) {
-			self::$types = new DibiLazyStorage(array(__CLASS__, 'detectType'));
+			self::$types = new DibiHashMap(array(__CLASS__, 'detectType'));
 		}
 		return self::$types->{$this->info['nativetype']};
 	}

@@ -94,7 +94,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	/** @var array */
 	private $cursor;
 
-	/** @var DibiLazyStorage  normalized clauses */
+	/** @var DibiHashMap  normalized clauses */
 	private static $normalizer;
 
 
@@ -107,7 +107,7 @@ class DibiFluent extends DibiObject implements IDataSource
 		$this->connection = $connection;
 
 		if (self::$normalizer === NULL) {
-			self::$normalizer = new DibiLazyStorage(array(__CLASS__, '_formatClause'));
+			self::$normalizer = new DibiHashMap(array(__CLASS__, '_formatClause'));
 		}
 	}
 

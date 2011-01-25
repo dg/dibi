@@ -66,7 +66,7 @@ class DibiPcreException extends Exception {
 require_once dirname(__FILE__) . '/libs/interfaces.php';
 require_once dirname(__FILE__) . '/libs/DibiDateTime.php';
 require_once dirname(__FILE__) . '/libs/DibiObject.php';
-require_once dirname(__FILE__) . '/libs/DibiLazyStorage.php';
+require_once dirname(__FILE__) . '/libs/DibiHashMap.php';
 require_once dirname(__FILE__) . '/libs/DibiException.php';
 require_once dirname(__FILE__) . '/libs/DibiConnection.php';
 require_once dirname(__FILE__) . '/libs/DibiResult.php';
@@ -612,7 +612,7 @@ class dibi
 
 	/**
 	 * Returns substitution hashmap - Monostate for DibiConnection::getSubstitutes().
-	 * @return DibiLazyStorage
+	 * @return DibiHashMap
 	 */
 	public static function getSubstitutes()
 	{

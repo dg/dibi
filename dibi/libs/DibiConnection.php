@@ -42,7 +42,7 @@ class DibiConnection extends DibiObject
 	/** @var bool  Is connected? */
 	private $connected = FALSE;
 
-	/** @var DibiLazyStorage Substitutes for identifiers */
+	/** @var DibiHashMap Substitutes for identifiers */
 	private $substitutes;
 
 
@@ -122,7 +122,7 @@ class DibiConnection extends DibiObject
 			$this->setProfiler(new $class($profilerCfg));
 		}
 
-		$this->substitutes = new DibiLazyStorage(create_function('$expr', 'return ":$expr:";'));
+		$this->substitutes = new DibiHashMap(create_function('$expr', 'return ":$expr:";'));
 		if (!empty($config['substitutes'])) {
 			foreach ($config['substitutes'] as $key => $value) {
 				$this->substitutes->$key = $value;
@@ -582,7 +582,7 @@ class DibiConnection extends DibiObject
 
 	/**
 	 * Returns substitution hashmap.
-	 * @return DibiLazyStorage
+	 * @return DibiHashMap
 	 */
 	public function getSubstitutes()
 	{

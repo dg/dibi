@@ -49,7 +49,7 @@ final class DibiTranslator extends DibiObject
 	/** @var int */
 	private $offset;
 
-	/** @var DibiLazyStorage */
+	/** @var DibiHashMap */
 	private $identifiers;
 
 
@@ -69,7 +69,7 @@ final class DibiTranslator extends DibiObject
 	 */
 	public function translate(array $args)
 	{
-		$this->identifiers = new DibiLazyStorage(array($this, 'delimite'));
+		$this->identifiers = new DibiHashMap(array($this, 'delimite'));
 		$this->driver = $this->connection->getDriver();
 
 		$args = array_values($args);
