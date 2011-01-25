@@ -271,16 +271,6 @@ class DibiConnection extends DibiObject
 
 
 
-	/** @deprecated */
-	function sql($args)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use translate() instead.', E_USER_NOTICE);
-		$args = func_get_args();
-		return $this->translateArgs($args);
-	}
-
-
-
 	/**
 	 * Generates and prints SQL query.
 	 * @param  array|mixed  one or more arguments
