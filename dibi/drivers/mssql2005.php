@@ -62,6 +62,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 		DibiConnection::alias($config, 'options|UID', 'username');
 		DibiConnection::alias($config, 'options|PWD', 'password');
 		DibiConnection::alias($config, 'options|Database', 'database');
+		DibiConnection::alias($config, 'options|CharacterSet', 'charset');
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
