@@ -147,9 +147,6 @@ class dibi
 	/** @var DibiConnection  Current connection */
 	private static $connection;
 
-	/** @var DibiLazyStorage  Substitutions for identifiers */
-	public static $substs;
-
 	/** @var array  @see addHandler */
 	private static $handlers = array();
 
@@ -611,6 +608,17 @@ class dibi
 
 
 	/**
+	 * Returns substitution hashmap - Monostate for DibiConnection::getSubstitutes().
+	 * @return DibiLazyStorage
+	 */
+	public static function getSubstitutes()
+	{
+		return self::getConnection()->getSubstitutes();
+	}
+
+
+
+	/**
 	 * Create a new substitution pair for indentifiers.
 	 * @param  string from
 	 * @param  string to
@@ -618,7 +626,7 @@ class dibi
 	 */
 	public static function addSubst($expr, $subst)
 	{
-		self::$substs->$expr = $subst;
+		self::getSubstitutes()->$expr = $subst;
 	}
 
 
@@ -630,10 +638,13 @@ class dibi
 	 */
 	public static function removeSubst($expr)
 	{
+		$substitutes = self::getSubstitutes();
 		if ($expr === TRUE) {
-			self::$substs = new DibiLazyStorage(self::$substs->getCallback());
+			foreach ($substitutes as $expr => $foo) {
+				unset($substitutes->$expr);
+			}
 		} else {
-			unset(self::$substs->$expr);
+			unset($substitutes->$expr);
 		}
 	}
 
@@ -646,19 +657,7 @@ class dibi
 	 */
 	public static function setSubstFallback($callback)
 	{
-		self::$substs->setCallback($callback);
-	}
-
-
-
-	/**
-	 * Default substitution fallback handler.
-	 * @param  string
-	 * @return mixed
-	 */
-	public static function defaultSubstFallback($expr)
-	{
-		return ":$expr:";
+		self::getSubstitutes()->setCallback($callback);
 	}
 
 
@@ -730,8 +729,3 @@ class dibi
 	}
 
 }
-
-
-
-// static constructor
-dibi::$substs = new DibiLazyStorage(array('dibi', 'defaultSubstFallback'));

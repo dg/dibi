@@ -42,6 +42,9 @@ class DibiConnection extends DibiObject
 	/** @var bool  Is connected? */
 	private $connected = FALSE;
 
+	/** @var DibiLazyStorage Substitutes for identifiers */
+	private $substitutes;
+
 
 
 	/**
@@ -99,7 +102,7 @@ class DibiConnection extends DibiObject
 		$config['name'] = $name;
 		$this->config = $config;
 		$this->driver = new $class;
-		$this->translator = new DibiTranslator($this->driver);
+		$this->translator = new DibiTranslator($this);
 
 		// profiler
 		$profilerCfg = & $config['profiler'];
@@ -119,9 +122,10 @@ class DibiConnection extends DibiObject
 			$this->setProfiler(new $class($profilerCfg));
 		}
 
+		$this->substitutes = new DibiLazyStorage(create_function('$expr', 'return ":$expr:";'));
 		if (!empty($config['substitutes'])) {
 			foreach ($config['substitutes'] as $key => $value) {
-				dibi::addSubst($key, $value);
+				$this->substitutes->$key = $value;
 			}
 		}
 
@@ -578,6 +582,42 @@ class DibiConnection extends DibiObject
 	public function getProfiler()
 	{
 		return $this->profiler;
+	}
+
+
+
+	/********************* substitutions ****************d*g**/
+
+
+
+	/**
+	 * Returns substitution hashmap.
+	 * @return DibiLazyStorage
+	 */
+	public function getSubstitutes()
+	{
+		return $this->substitutes;
+	}
+
+
+
+	/**
+	 * Provides substitution.
+	 * @return string
+	 */
+	public function substitute($value)
+	{
+		return strpos($value, ':') === FALSE ? $value : preg_replace_callback('#:([^:\s]*):#', array($this, 'subCb'), $value);
+	}
+
+
+
+	/**
+	 * Substitution callback.
+	 */
+	private function subCb($m)
+	{
+		return $this->substitutes->{$m[1]};
 	}
 
 

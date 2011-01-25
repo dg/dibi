@@ -19,6 +19,9 @@
  */
 final class DibiTranslator extends DibiObject
 {
+	/** @var DibiConnection */
+	private $connection;
+
 	/** @var IDibiDriver */
 	private $driver;
 
@@ -51,9 +54,9 @@ final class DibiTranslator extends DibiObject
 
 
 
-	public function __construct(IDibiDriver $driver)
+	public function __construct(DibiConnection $connection)
 	{
-		$this->driver = $driver;
+		$this->connection = $connection;
 	}
 
 
@@ -67,6 +70,8 @@ final class DibiTranslator extends DibiObject
 	public function translate(array $args)
 	{
 		$this->identifiers = new DibiLazyStorage(array($this, 'delimite'));
+		$this->driver = $this->connection->getDriver();
+
 		$args = array_values($args);
 		while (count($args) === 1 && is_array($args[0])) { // implicit array expansion
 			$args = array_values($args[0]);
@@ -302,7 +307,7 @@ final class DibiTranslator extends DibiObject
 
 			case 'ex':
 			case 'sql':
-				$translator = new self($this->driver);
+				$translator = new self($this->connection);
 				return $translator->translate($value);
 
 			default:  // value, value, value - all with the same modifier
@@ -555,7 +560,8 @@ final class DibiTranslator extends DibiObject
 
 		if ($matches[8]) { // SQL identifier substitution
 			$m = substr($matches[8], 0, -1);
-			return $matches[9] == '' ? $this->formatValue(dibi::$substs->$m, FALSE) : dibi::$substs->$m . $matches[9]; // value or identifier
+			$m = $this->connection->getSubstitutes()->$m;
+			return $matches[9] == '' ? $this->formatValue($m, FALSE) : $m . $matches[9]; // value or identifier
 		}
 
 		die('this should be never executed');
@@ -571,38 +577,12 @@ final class DibiTranslator extends DibiObject
 	 */
 	public function delimite($value)
 	{
-		$value = self::substitute($value);
+		$value = $this->connection->substitute($value);
 		$parts = explode('.', $value);
 		foreach ($parts as & $v) {
 			if ($v !== '*') $v = $this->driver->escape($v, dibi::IDENTIFIER);
 		}
 		return implode('.', $parts);
-	}
-
-
-
-	/**
-	 * Provides substitution.
-	 * @return string
-	 */
-	public static function substitute($value)
-	{
-		if (strpos($value, ':') !== FALSE) { // provide substitution
-			return preg_replace_callback('#:([^:\s]*):#', array(__CLASS__, 'subCb'), $value);
-		}
-		return $value;
-	}
-
-
-
-	/**
-	 * Substitution callback.
-	 * @param  array
-	 * @return string
-	 */
-	private static function subCb($m)
-	{
-		return dibi::$substs->{$m[1]};
 	}
 
 }
