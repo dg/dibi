@@ -24,7 +24,7 @@ dibi::test('
 	SELECT COUNT(*) as [count]
 	FROM [comments]
 	WHERE [ip] LIKE %s', $ipMask, '
-	AND [date] > ', dibi::date($timestamp)
+	AND [date] > ', new DibiDateTime($timestamp)
 );
 // -> SELECT COUNT(*) as [count] FROM [comments] WHERE [ip] LIKE '192.168.%' AND [date] > 876693600
 

@@ -164,6 +164,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function rowCount()
 	{
+		trigger_error(__METHOD__ . '() is deprecated; use count($res) or $res->getRowCount() instead.', E_USER_WARNING);
 		return $this->getDriver()->getRowCount();
 	}
 
@@ -633,6 +634,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	public function getColumnNames($fullNames = FALSE)
 	{
+		trigger_error(__METHOD__ . '() is deprecated; use $res->getInfo()->getColumnNames() instead.', E_USER_WARNING);
 		return $this->getInfo()->getColumnNames($fullNames);
 	}
 

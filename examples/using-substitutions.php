@@ -17,7 +17,7 @@ dibi::connect(array(
 
 
 // create new substitution :blog:  ==>  wp_
-dibi::addSubst('blog', 'wp_');
+dibi::getSubstitutes()->blog = 'wp_';
 
 dibi::test("SELECT * FROM [:blog:items]");
 // -> SELECT * FROM [wp_items]
@@ -27,7 +27,7 @@ dibi::test("SELECT * FROM [:blog:items]");
 
 
 // create new substitution :: (empty)  ==>  my_
-dibi::addSubst('', 'my_');
+dibi::getSubstitutes()->{''} = 'my_';
 
 dibi::test("UPDATE ::table SET [text]='Hello World'");
 // -> UPDATE my_table SET [text]='Hello World'
@@ -48,7 +48,7 @@ function substFallBack($expr)
 }
 
 // define callback
-dibi::setSubstFallBack('substFallBack');
+dibi::getSubstitutes()->setCallback('substFallBack');
 
 // define substitutes as constants
 define('SUBST_ACCOUNT', 'eshop_');

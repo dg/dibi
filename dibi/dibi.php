@@ -88,6 +88,7 @@ class DibiVariable extends DibiDateTime
 	function __construct($val)
 	{
 		parent::__construct($val);
+		trigger_error(__CLASS__ . ' is deprecated; use class DateTime instead.', E_USER_WARNING);
 	}
 }
 
@@ -584,11 +585,12 @@ class dibi
 
 
 	/**
-	 * @deprecated
+	 * @return DibiDateTime
 	 */
 	public static function datetime($time = NULL)
 	{
-		return new DibiDateTime(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
+		trigger_error(__METHOD__ . '() is deprecated; create DibiDateTime object instead.', E_USER_WARNING);
+		return new DibiDateTime($time);
 	}
 
 
@@ -598,7 +600,8 @@ class dibi
 	 */
 	public static function date($date = NULL)
 	{
-		return new DibiDateTime(is_numeric($date) ? date('Y-m-d', $date) : $date);
+		trigger_error(__METHOD__ . '() is deprecated; create DibiDateTime object instead.', E_USER_WARNING);
+		return new DibiDateTime($date);
 	}
 
 
@@ -618,26 +621,19 @@ class dibi
 
 
 
-	/**
-	 * Create a new substitution pair for indentifiers.
-	 * @param  string from
-	 * @param  string to
-	 * @return void
-	 */
+	/** @deprecated */
 	public static function addSubst($expr, $subst)
 	{
+		trigger_error(__METHOD__ . '() is deprecated; use dibi::getSubstitutes()->expr = val; instead.', E_USER_WARNING);
 		self::getSubstitutes()->$expr = $subst;
 	}
 
 
 
-	/**
-	 * Remove substitution pair.
-	 * @param  mixed from or TRUE
-	 * @return void
-	 */
+	/** @deprecated */
 	public static function removeSubst($expr)
 	{
+		trigger_error(__METHOD__ . '() is deprecated; use unset(dibi::getSubstitutes()->expr) instead.', E_USER_WARNING);
 		$substitutes = self::getSubstitutes();
 		if ($expr === TRUE) {
 			foreach ($substitutes as $expr => $foo) {
@@ -650,13 +646,10 @@ class dibi
 
 
 
-	/**
-	 * Sets substitution fallback handler.
-	 * @param  callback
-	 * @return void
-	 */
+	/** @deprecated */
 	public static function setSubstFallback($callback)
 	{
+		trigger_error(__METHOD__ . '() is deprecated; use dibi::getSubstitutes()->setCallback() instead.', E_USER_WARNING);
 		self::getSubstitutes()->setCallback($callback);
 	}
 
