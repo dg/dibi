@@ -1,12 +1,13 @@
 <?php
 
 /**
- * dibi - smart database abstraction layer.
+ * dibi - smart database abstraction layer (http://dibiphp.com)
  *
  * Copyright (c) 2005, 2010 David Grudl (http://davidgrudl.com)
  *
- * This source file is subject to the "dibi license", and/or
- * GPL license. For more information please see http://dibiphp.com
+ * For the full copyright and license information, please view
+ * the file license.txt that was distributed with this source code.
+ *
  * @package    dibi
  */
 
