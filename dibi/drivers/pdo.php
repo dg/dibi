@@ -12,6 +12,10 @@
  */
 
 
+require_once dirname(__FILE__) . '/mysql.reflector.php';
+require_once dirname(__FILE__) . '/sqlite.reflector.php';
+
+
 /**
  * The dibi driver for PDO.
  *
@@ -217,7 +221,17 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	 */
 	public function getReflector()
 	{
-		throw new NotSupportedException;
+		switch ($this->driverName) {
+		case 'mysql':
+			return new DibiMySqlReflector($this);
+
+		case 'sqlite':
+		case 'sqlite2':
+			return new DibiSqliteReflector($this);
+
+		default:
+			throw new NotSupportedException;
+		}
 	}
 
 
