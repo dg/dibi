@@ -572,7 +572,7 @@ class DibiResult extends DibiObject implements IDataSource
 			return $this->getDriver()->unescape($value, $type);
 
 		case dibi::INTEGER:
-			return (int) $value;
+			return is_float($tmp = $value * 1) ? $value : $tmp;
 
 		case dibi::FLOAT:
 			return (float) $value;
