@@ -112,7 +112,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 	{
 		if ($event & self::QUERY) dibi::$numOfQueries++;
 		dibi::$elapsedTime = FALSE;
-		self::$tickets[] = array($connection, $event, trim($sql), -microtime(TRUE), NULL, NULL);
+		self::$tickets[] = array($connection, $event, trim($sql), -microtime(TRUE), NULL);
 		end(self::$tickets);
 		return key(self::$tickets);
 	}
@@ -154,15 +154,6 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 					$count,
 					$connection->getConfig('driver') . '/' . $connection->getConfig('name')
 				);
-
-				if ($this->explainQuery && $event === self::SELECT) {
-					$tmpSql = dibi::$sql;
-					try {
-						$ticket[5] = dibi::dump($connection->setProfiler(NULL)->nativeQuery('EXPLAIN ' . $sql), TRUE);
-					} catch (DibiException $e) {}
-					$connection->setProfiler($this);
-					dibi::$sql = $tmpSql;
-				}
 
 				if ($this->useFirebug && !headers_sent()) {
 					header('X-Wf-Protocol-dibi: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');
@@ -282,8 +273,17 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 ";
 		$i = 0; $classes = array('class="nette-alt"', '');
 		foreach (self::$tickets as $ticket) {
-			list($connection, $event, $sql, $time, $count, $explain) = $ticket;
+			list($connection, $event, $sql, $time, $count) = $ticket;
 			if (!($event & self::QUERY)) continue;
+
+			$explain = NULL; // EXPLAIN is called here to work SELECT FOUND_ROWS()
+			if ($this->explainQuery && $event === self::SELECT) {
+				try {
+					$explain = dibi::dump($connection->setProfiler(NULL)->nativeQuery('EXPLAIN ' . $sql), TRUE);
+				} catch (DibiException $e) {}
+				$connection->setProfiler($this);
+			}
+
 			$content .= "
 <tr {$classes[++$i%2]}>
 	<td>" . sprintf('%0.3f', $time * 1000) . ($explain ? "
