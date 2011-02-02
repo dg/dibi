@@ -109,7 +109,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 					}
 				}
 			}
-			@mysqli_real_connect($this->connection, $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['flags']); // intentionally @
+			@mysqli_real_connect($this->connection, (empty($config['persistent']) ? '' : 'p:') . $config['host'], $config['username'], $config['password'], $config['database'], $config['port'], $config['socket'], $config['flags']); // intentionally @
 
 			if ($errno = mysqli_connect_errno()) {
 				throw new DibiDriverException(mysqli_connect_error(), $errno);
