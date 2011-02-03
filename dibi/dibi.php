@@ -124,14 +124,14 @@ class dibi
 	/**#@+
 	 * @deprecated column types
 	 */
-	const FIELD_TEXT = self::TEXT;
-	const FIELD_BINARY = self::BINARY;
-	const FIELD_BOOL = self::BOOL;
-	const FIELD_INTEGER = self::INTEGER;
-	const FIELD_FLOAT = self::FLOAT;
-	const FIELD_DATE = self::DATE;
-	const FIELD_DATETIME = self::DATETIME;
-	const FIELD_TIME = self::TIME;
+	const FIELD_TEXT = dibi::TEXT;
+	const FIELD_BINARY = dibi::BINARY;
+	const FIELD_BOOL = dibi::BOOL;
+	const FIELD_INTEGER = dibi::INTEGER;
+	const FIELD_FLOAT = dibi::FLOAT;
+	const FIELD_DATE = dibi::DATE;
+	const FIELD_DATETIME = dibi::DATETIME;
+	const FIELD_TIME = dibi::TIME;
 	/**#@-*/
 
 	/**#@+
