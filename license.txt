@@ -4,15 +4,15 @@ Licenses
 Good news! You may use Dibi under the terms of either the New BSD License
 or the GNU General Public License (GPL) version 2 or 3.
 
-The BSD License is recommended for most projects. It's easy to understand, and it
+The BSD License is recommended for most projects. It is easy to understand and it
 places almost no restrictions on what you can do with the library. If the GPL
 fits better to your project, you can use the Dibi under this license.
 
-You don't have anyone to notify which license you are using. You can freely
+You don't have to notify anyone which license you are using. You can freely
 use Dibi in commercial projects as long as the copyright header
 remains intact.
 
-Please, do not use "Dibi" in the name of your project or top-level domain,
+Please do not use word "Dibi" in the name of your project or top-level domain,
 and choose a name that stands on its own merits. If your stuff is good,
 it will not take long to establish a reputation for yourselves.
 
@@ -54,7 +54,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 GNU General Public License
 --------------------------
 
-GPL licenses are very very long, so instead of the full text here are just some URL.
+GPL licenses are very very long, so instead of including them here we offer
+you URLs with full text:
 
 - GPL version 2: http://www.gnu.org/licenses/gpl-2.0.html
 - GPL version 3: http://www.gnu.org/licenses/gpl-3.0.html
