@@ -264,7 +264,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 	 */
 	public function toFluent()
 	{
-		return $this->connection->select('*')->from('(%SQL) AS t', $this->__toString());
+		return $this->connection->select('*')->from('(%SQL) t', $this->__toString());
 	}
 
 
@@ -310,7 +310,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 		if ($this->count === NULL) {
 			$this->count = $this->conds || $this->offset || $this->limit
 				? (int) $this->connection->nativeQuery(
-					'SELECT COUNT(*) FROM (' . $this->__toString() . ') AS t'
+					'SELECT COUNT(*) FROM (' . $this->__toString() . ') t'
 				)->fetchSingle()
 				: $this->getTotalCount();
 		}
