@@ -33,37 +33,8 @@ if (interface_exists('Nette\\IDebugPanel')) {
 	interface IDebugPanel {}
 }
 
-if (!defined('NETTE')) {
-	/**#@+ @package exceptions */
-	class NotImplementedException extends LogicException {}
-	class NotSupportedException extends LogicException {}
-	class MemberAccessException extends LogicException {}
-	class InvalidStateException extends RuntimeException {}
-	class IOException extends RuntimeException {}
-	class FileNotFoundException extends IOException {}
-	/**#@-*/
-}
 
 
-class DibiPcreException extends Exception {
-
-	public function __construct($message = '%msg.')
-	{
-		static $messages = array(
-			PREG_INTERNAL_ERROR => 'Internal error',
-			PREG_BACKTRACK_LIMIT_ERROR => 'Backtrack limit was exhausted',
-			PREG_RECURSION_LIMIT_ERROR => 'Recursion limit was exhausted',
-			PREG_BAD_UTF8_ERROR => 'Malformed UTF-8 data',
-			5 => 'Offset didn\'t correspond to the begin of a valid UTF-8 code point', // PREG_BAD_UTF8_OFFSET_ERROR
-		);
-		$code = preg_last_error();
-		parent::__construct(str_replace('%msg', isset($messages[$code]) ? $messages[$code] : 'Unknown error', $message), $code);
-	}
-}
-
-
-
-// dibi libraries
 require_once dirname(__FILE__) . '/libs/interfaces.php';
 require_once dirname(__FILE__) . '/libs/DibiDateTime.php';
 require_once dirname(__FILE__) . '/libs/DibiObject.php';
@@ -107,41 +78,35 @@ class DibiVariable extends DibiDateTime
  */
 class dibi
 {
-	/**#@+
-	 * dibi data type
-	 */
-	const TEXT =       's'; // as 'string'
-	const BINARY =     'bin';
-	const BOOL =       'b';
-	const INTEGER =    'i';
-	const FLOAT =      'f';
-	const DATE =       'd';
-	const DATETIME =   't';
-	const TIME =       't';
+	/** column type */
+	const TEXT = 's', // as 'string'
+		BINARY = 'bin',
+		BOOL = 'b',
+		INTEGER = 'i',
+		FLOAT = 'f',
+		DATE = 'd',
+		DATETIME = 't',
+		TIME = 't';
+
 	const IDENTIFIER = 'n';
-	/**#@-*/
 
-	/**#@+
-	 * @deprecated column types
-	 */
-	const FIELD_TEXT = dibi::TEXT;
-	const FIELD_BINARY = dibi::BINARY;
-	const FIELD_BOOL = dibi::BOOL;
-	const FIELD_INTEGER = dibi::INTEGER;
-	const FIELD_FLOAT = dibi::FLOAT;
-	const FIELD_DATE = dibi::DATE;
-	const FIELD_DATETIME = dibi::DATETIME;
-	const FIELD_TIME = dibi::TIME;
-	/**#@-*/
+	/** @deprecated */
+	const FIELD_TEXT = dibi::TEXT,
+		FIELD_BINARY = dibi::BINARY,
+		FIELD_BOOL = dibi::BOOL,
+		FIELD_INTEGER = dibi::INTEGER,
+		FIELD_FLOAT = dibi::FLOAT,
+		FIELD_DATE = dibi::DATE,
+		FIELD_DATETIME = dibi::DATETIME,
+		FIELD_TIME = dibi::TIME;
 
-	/**#@+
-	 * dibi version
-	 */
-	const VERSION = '1.5-rc1';
-	const REVISION = '$WCREV$ released on $WCDATE$';
-	/**#@-*/
+	/** version */
+	const VERSION = '1.5-rc1',
+		REVISION = '$WCREV$ released on $WCDATE$';
 
-	const ASC = 'ASC', DESC = 'DESC';
+	/** sorting order */
+	const ASC = 'ASC',
+		DESC = 'DESC';
 
 	/** @var DibiConnection[]  Connection registry storage for DibiConnection objects */
 	private static $registry = array();

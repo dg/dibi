@@ -13,7 +13,7 @@
 
 
 
-/**#@+
+/**
  * Lazy cached storage.
  *
  * @author     David Grudl
@@ -51,6 +51,12 @@ abstract class DibiHashMapBase
 
 
 
+/**
+ * Lazy cached storage.
+ *
+ * @author     David Grudl
+ * @internal
+ */
 final class DibiHashMap extends DibiHashMapBase
 {
 
@@ -75,4 +81,3 @@ final class DibiHashMap extends DibiHashMapBase
 	}
 
 }
-/**#@-*/

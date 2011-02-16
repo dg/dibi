@@ -15,7 +15,6 @@
 
 /**
  * Provides an interface between a dataset and data-aware components.
- * @package dibi
  */
 interface IDataSource extends Countable, IteratorAggregate
 {
@@ -27,7 +26,6 @@ interface IDataSource extends Countable, IteratorAggregate
 
 /**
  * Object that is able to generate SQL.
- * @package dibi
  */
 interface IDibiVariable
 {
@@ -40,24 +38,22 @@ interface IDibiVariable
 
 /**
  * Defines method that must profiler implement.
- * @package dibi
  */
 interface IDibiProfiler
 {
-	/**#@+ event type */
-	const CONNECT = 1;
-	const SELECT = 4;
-	const INSERT = 8;
-	const DELETE = 16;
-	const UPDATE = 32;
-	const QUERY = 60; // SELECT | INSERT | DELETE | UPDATE
-	const BEGIN = 64;
-	const COMMIT = 128;
-	const ROLLBACK = 256;
-	const TRANSACTION = 448; // BEGIN | COMMIT | ROLLBACK
-	const EXCEPTION = 512;
-	const ALL = 1023;
-	/**#@-*/
+	/** event type */
+	const CONNECT = 1,
+		SELECT = 4,
+		INSERT = 8,
+		DELETE = 16,
+		UPDATE = 32,
+		QUERY = 60, // SELECT | INSERT | DELETE | UPDATE
+		BEGIN = 64,
+		COMMIT = 128,
+		ROLLBACK = 256,
+		TRANSACTION = 448, // BEGIN | COMMIT | ROLLBACK
+		EXCEPTION = 512,
+		ALL = 1023;
 
 	/**
 	 * Before event notification.
@@ -91,8 +87,6 @@ interface IDibiProfiler
 
 /**
  * dibi driver interface.
- *
- * @author     David Grudl
  */
 interface IDibiDriver
 {
@@ -202,8 +196,6 @@ interface IDibiDriver
 
 /**
  * dibi result set driver interface.
- *
- * @author     David Grudl
  */
 interface IDibiResultDriver
 {
