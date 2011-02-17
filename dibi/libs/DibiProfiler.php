@@ -110,9 +110,18 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 	 */
 	public function before(DibiConnection $connection, $event, $sql = NULL)
 	{
+		$rc = new ReflectionClass('dibi');
+		$dibiDir = dirname($rc->getFileName()) . DIRECTORY_SEPARATOR;
+		$source = NULL;
+		foreach (debug_backtrace(FALSE) as $row) {
+			if (isset($row['file']) && is_file($row['file']) && strpos($row['file'], $dibiDir) !== 0) {
+				$source = array($row['file'], (int) $row['line']);
+				break;
+			}
+		}
 		if ($event & self::QUERY) dibi::$numOfQueries++;
 		dibi::$elapsedTime = FALSE;
-		self::$tickets[] = array($connection, $event, trim($sql), -microtime(TRUE), NULL);
+		self::$tickets[] = array($connection, $event, trim($sql), -microtime(TRUE), NULL, $source);
 		end(self::$tickets);
 		return key(self::$tickets);
 	}
@@ -254,26 +263,10 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 	 */
 	public function getPanel()
 	{
-		if (!dibi::$numOfQueries) return;
-
-		$content = "
-<h1>Queries: " . dibi::$numOfQueries . (dibi::$totalTime === NULL ? '' : ', time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms') . "</h1>
-
-<style>
-	#nette-debug-DibiProfiler td.dibi-sql { background: white }
-	#nette-debug-DibiProfiler .nette-alt td.dibi-sql { background: #F5F5F5 }
-	#nette-debug-DibiProfiler .dibi-sql div { display: none; margin-top: 10px; max-height: 150px; overflow:auto }
-</style>
-
-<div class='nette-inner'>
-<table>
-<tr>
-	<th>Time</th><th>SQL Statement</th><th>Rows</th><th>Connection</th>
-</tr>
-";
-		$i = 0; $classes = array('class="nette-alt"', '');
+		$s = NULL;
+		$h = 'htmlSpecialChars';
 		foreach (self::$tickets as $ticket) {
-			list($connection, $event, $sql, $time, $count) = $ticket;
+			list($connection, $event, $sql, $time, $count, $source) = $ticket;
 			if (!($event & self::QUERY)) continue;
 
 			$explain = NULL; // EXPLAIN is called here to work SELECT FOUND_ROWS()
@@ -284,19 +277,34 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 				$connection->setProfiler($this);
 			}
 
-			$content .= "
-<tr {$classes[++$i%2]}>
-	<td>" . sprintf('%0.3f', $time * 1000) . ($explain ? "
-	<br /><a href='#' class='nette-toggler' rel='#nette-debug-DibiProfiler-row-$i'>explain&nbsp;&#x25ba;</a>" : '') . "</td>
-	<td class='dibi-sql'>" . dibi::dump(strlen($sql) > self::$maxLength ? substr($sql, 0, self::$maxLength) . '...' : $sql, TRUE) . ($explain ? "
-	<div id='nette-debug-DibiProfiler-row-$i'>{$explain}</div>" : '') . "</td>
-	<td>{$count}</td>
-	<td>" . htmlSpecialChars($connection->getConfig('driver') . '/' . $connection->getConfig('name')) . "</td>
-</tr>
-";
+			$s .= '<tr><td>' . sprintf('%0.3f', $time * 1000);
+			if ($explain) {
+				$s .= "<br /><a href='#' class='nette-toggler' rel='#nette-debug-DibiProfiler-row-$i'>explain&nbsp;&#x25ba;</a>";
+			}
+
+			$s .= '</td><td class="dibi-sql">' . dibi::dump(strlen($sql) > self::$maxLength ? substr($sql, 0, self::$maxLength) . '...' : $sql, TRUE);
+			if ($explain) {
+				$s .= "<div id='nette-debug-DibiProfiler-row-$i' class='nette-collapsed'>{$explain}</div>";
+			}
+			if ($source) {
+				list($file, $line) = $source;
+				$s .= "<span class='dibi-source' title='{$h($file)}:$line'>{$h(basename(dirname($file)) . '/' . basename($file))}:$line</span>";
+			}
+
+			$s .= "</td><td>{$count}</td><td>{$h($connection->getConfig('driver') . '/' . $connection->getConfig('name'))}</td></tr>";
 		}
-		$content .= '</table></div>';
-		return $content;
+
+		return $s === NULL ? '' :
+			'<style> #nette-debug-DibiProfiler td.dibi-sql { background: white !important }
+			#nette-debug-DibiProfiler .dibi-source { color: #BBB !important }
+			#nette-debug-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
+
+			<h1>Queries: ' . dibi::$numOfQueries . (dibi::$totalTime === NULL ? '' : ', time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms') . '</h1>
+			<div class="nette-inner">
+			<table>
+				<th>Time</th><th>SQL Statement</th><th>Rows</th><th>Connection</th>' . $s . '
+			</table>
+			</div>';
 	}
 
 
