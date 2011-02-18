@@ -265,7 +265,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 	{
 		$s = NULL;
 		$h = 'htmlSpecialChars';
-		foreach (self::$tickets as $ticket) {
+		foreach (self::$tickets as $i => $ticket) {
 			list($connection, $event, $sql, $time, $count, $source) = $ticket;
 			if (!($event & self::QUERY)) continue;
 
