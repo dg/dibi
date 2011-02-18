@@ -265,6 +265,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 	{
 		$s = NULL;
 		$h = 'htmlSpecialChars';
+		$i=1;
 		foreach (self::$tickets as $ticket) {
 			list($connection, $event, $sql, $time, $count, $source) = $ticket;
 			if (!($event & self::QUERY)) continue;
@@ -292,6 +293,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 			}
 
 			$s .= "</td><td>{$count}</td><td>{$h($connection->getConfig('driver') . '/' . $connection->getConfig('name'))}</td></tr>";
+			$i++;
 		}
 
 		return $s === NULL ? '' :
