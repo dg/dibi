@@ -142,7 +142,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 
 		$ticket = & self::$tickets[$ticket];
 		$ticket[3] += microtime(TRUE);
-		list($connection, $event, $sql, $time) = $ticket;
+		list($connection, $event, $sql, $time, , $source) = $ticket;
 
 		dibi::$elapsedTime = $time;
 		dibi::$totalTime += $time;
@@ -189,6 +189,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 					"OK: " . $sql
 					. ($res instanceof DibiResult ? ";\n-- rows: " . $count : '')
 					. "\n-- takes: " . sprintf('%0.3f', $time * 1000) . ' ms'
+					. "\n-- source: " . implode(':', $source)
 					. "\n-- driver: " . $connection->getConfig('driver') . '/' . $connection->getConfig('name')
 					. "\n-- " . date('Y-m-d H:i:s')
 					. "\n\n"
