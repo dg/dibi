@@ -22,7 +22,7 @@
  *
  * @author     David Grudl
  */
-class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
+class DibiProfiler extends DibiObject implements IDibiProfiler, IBarPanel
 {
 	/** maximum number of rows */
 	static public $maxQueries = 30;
@@ -52,12 +52,17 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 
 	public function __construct(array $config)
 	{
-		if (is_callable('Nette\Debug::addPanel')) {
-			call_user_func('Nette\Debug::addPanel', $this);
-		} elseif (is_callable('NDebug::addPanel')) {
-			NDebug::addPanel($this);
-		} elseif (is_callable('Debug::addPanel')) {
-			Debug::addPanel($this);
+		if (is_callable('Nette\Diagnostics\Debugger::enable')) {
+			eval('$tmp = Nette\Diagnostics\Debugger::$bar;');
+			$tmp->addPanel($this);
+			eval('$tmp = Nette\Diagnostics\Debugger::$blueScreen;');
+			$tmp->addPanel(array($this, 'renderException'), __CLASS__);
+		} elseif (is_callable('NDebugger::enable')) {
+			NDebugger::$bar->addPanel($this);
+			NDebugger::$blueScreen->addPanel(array($this, 'renderException'), __CLASS__);
+		} elseif (is_callable('Debugger::enable')) {
+			Debugger::$bar->addPanel($this);
+			Debugger::$blueScreen->addPanel(array($this, 'renderException'), __CLASS__);
 		}
 
 		$this->useFirebug = isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'FirePHP/');
@@ -72,6 +77,18 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 
 		if (isset($config['explain'])) {
 			$this->explainQuery = (bool) $config['explain'];
+		}
+	}
+
+
+
+	public function renderException($e)
+	{
+		if ($e instanceof DibiException && $e->getSql()) {
+			return array(
+				'tab' => 'SQL',
+				'panel' => dibi::dump($e->getSql(), TRUE),
+			);
 		}
 	}
 
@@ -242,7 +259,7 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 
 
 
-	/********************* interface Nette\IDebugPanel ****************d*g**/
+	/********************* interface Nette\Diagnostics\IBarPanel ****************d*g**/
 
 
 
@@ -306,17 +323,6 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IDebugPanel
 				<th>Time</th><th>SQL Statement</th><th>Rows</th><th>Connection</th>' . $s . '
 			</table>
 			</div>';
-	}
-
-
-
-	/**
-	 * Returns panel ID.
-	 * @return string
-	 */
-	public function getId()
-	{
-		return get_class($this);
 	}
 
 }
