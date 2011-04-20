@@ -26,11 +26,11 @@ if (version_compare(PHP_VERSION, '5.2.0', '<')) {
 /**
  * Compatibility with Nette
  */
-if (interface_exists('Nette\\IDebugPanel')) {
-	class_alias('Nette\\IDebugPanel', 'IDebugPanel');
+if (interface_exists('Nette\Diagnostics\IBarPanel')) {
+	class_alias('Nette\Diagnostics\IBarPanel', 'IBarPanel');
 
-} elseif (!interface_exists('IDebugPanel')) {
-	interface IDebugPanel {}
+} elseif (!interface_exists('IBarPanel')) {
+	interface IBarPanel {}
 }
 
 

@@ -29,7 +29,7 @@ if (!defined('NETTE')) {
  *
  * @author     David Grudl
  */
-class DibiException extends Exception implements IDebugPanel
+class DibiException extends Exception
 {
 	/** @var string */
 	private $sql;
@@ -66,43 +66,6 @@ class DibiException extends Exception implements IDebugPanel
 	public function __toString()
 	{
 		return parent::__toString() . ($this->sql ? "\nSQL: " . $this->sql : '');
-	}
-
-
-
-	/********************* interface Nette\IDebugPanel ****************d*g**/
-
-
-
-	/**
-	 * Returns HTML code for custom tab.
-	 * @return mixed
-	 */
-	public function getTab()
-	{
-		return 'SQL';
-	}
-
-
-
-	/**
-	 * Returns HTML code for custom panel.
-	 * @return mixed
-	 */
-	public function getPanel()
-	{
-		return $this->sql ? dibi::dump($this->sql, TRUE) : NULL;
-	}
-
-
-
-	/**
-	 * Returns panel ID.
-	 * @return string
-	 */
-	public function getId()
-	{
-		return __CLASS__;
 	}
 
 }

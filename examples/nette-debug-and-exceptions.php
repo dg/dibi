@@ -1,8 +1,8 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Nette\Debug & SQL Exceptions | dibi</h1>
+<h1>Nette Debugger & SQL Exceptions | dibi</h1>
 
-<p>Dibi can display and log exceptions via Nette\Debug, part of Nette Framework.</p>
+<p>Dibi can display and log exceptions via Nette Debugger, part of Nette Framework.</p>
 
 <ul>
 	<li>Nette Framework: http://nette.org
@@ -10,12 +10,12 @@
 
 <?php
 
-require_once 'Nette/Debug.php';
+require_once 'Nette/Debugger.php';
 require_once '../dibi/dibi.php';
 
 
-// enable Nette\Debug
-Debug::enable();
+// enable Nette Debugger
+Debugger::enable();
 
 
 dibi::connect(array(
