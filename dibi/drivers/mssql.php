@@ -9,6 +9,7 @@
  * the file license.txt that was distributed with this source code.
  */
 
+require_once dirname(__FILE__) . '/mssql.reflector.php';
 
 /**
  * The dibi driver for MS SQL database.
@@ -187,7 +188,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function getReflector()
 	{
-		throw new DibiNotSupportedException;
+		return new DibiMsSqlReflector($this);
 	}
 
 
