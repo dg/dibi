@@ -11,6 +11,7 @@
  * @package    dibi\drivers
  */
 
+require_once dirname(__FILE__) . '/mssql.reflector.php';
 
 /**
  * The dibi driver for MS SQL database.
@@ -189,7 +190,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function getReflector()
 	{
-		throw new NotSupportedException;
+		return new DibiMsSqlReflector($this);
 	}
 
 

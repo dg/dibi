@@ -325,7 +325,13 @@ class DibiTableInfo extends DibiObject
 	 */
 	protected function initForeignKeys()
 	{
-		throw new NotImplementedException;
+		if ($this->foreignKeys === NULL) {
+			$this->foreignKeys = array();
+			
+			foreach ((array)$this->reflector->getForeignKeys($this->name) as $info) {
+				$this->foreignKeys[strtolower($info['name'])] = new DibiIndexInfo($info);
+			}
+		}
 	}
 
 }
