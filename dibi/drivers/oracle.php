@@ -269,7 +269,9 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function escapeLike($value, $pos)
 	{
-		throw new NotImplementedException;
+          $value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\\%_");
+          $value = str_replace("'", "''", $value);
+          return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
 
