@@ -300,27 +300,26 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IBarPanel
 				$s .= "<br /><a href='#' class='nette-toggler' rel='#nette-debug-DibiProfiler-row-$i'>explain&nbsp;&#x25ba;</a>";
 			}
 
-			$s .= '</td><td class="dibi-sql">' . dibi::dump(strlen($sql) > self::$maxLength ? substr($sql, 0, self::$maxLength) . '...' : $sql, TRUE);
+			$s .= '</td><td class="nette-DibiProfiler-sql">' . dibi::dump(strlen($sql) > self::$maxLength ? substr($sql, 0, self::$maxLength) . '...' : $sql, TRUE);
 			if ($explain) {
 				$s .= "<div id='nette-debug-DibiProfiler-row-$i' class='nette-collapsed'>{$explain}</div>";
 			}
 			if ($source) {
 				list($file, $line) = $source;
-				$s .= "<span class='dibi-source' title='{$h($file)}:$line'>{$h(basename(dirname($file)) . '/' . basename($file))}:$line</span>";
+				$s .= "<span class='nette-DibiProfiler-source' title='{$h($file)}:$line'>{$h(basename(dirname($file)) . '/' . basename($file))}:$line</span>";
 			}
 
 			$s .= "</td><td>{$count}</td><td>{$h($connection->getConfig('driver') . '/' . $connection->getConfig('name'))}</td></tr>";
 		}
 
 		return $s === NULL ? '' :
-			'<style> #nette-debug-DibiProfiler td.dibi-sql { background: white !important }
-			#nette-debug-DibiProfiler .dibi-source { color: #BBB !important }
-			#nette-debug-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
-
+			'<style> #nette-debug td.nette-DibiProfiler-sql { background: white !important }
+			#nette-debug .nette-DibiProfiler-source { color: #999 !important }
+			#nette-debug nette-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
 			<h1>Queries: ' . dibi::$numOfQueries . (dibi::$totalTime === NULL ? '' : ', time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms') . '</h1>
-			<div class="nette-inner">
+			<div class="nette-inner nette-DibiProfiler">
 			<table>
-				<th>Time</th><th>SQL Statement</th><th>Rows</th><th>Connection</th>' . $s . '
+				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Rows</th><th>Connection</th></tr>' . $s . '
 			</table>
 			</div>';
 	}
