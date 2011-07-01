@@ -6,7 +6,7 @@
 
 <?php
 
-require_once 'Nette/Debug.php';
+require_once 'Nette/Debugger.php';
 require_once '../dibi/dibi.php';
 
 

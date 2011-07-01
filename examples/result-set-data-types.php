@@ -4,7 +4,7 @@
 
 <?php
 
-require_once 'Nette/Debug.php';
+require_once 'Nette/Debugger.php';
 require_once '../dibi/dibi.php';
 
 date_default_timezone_set('Europe/Prague');
@@ -22,7 +22,7 @@ $res = dibi::query('SELECT * FROM [customers]');
 $res->setType('customer_id', Dibi::INTEGER)
 	->setType('added', Dibi::DATETIME, 'H:i j.n.Y');
 
-Debug::dump( $res->fetch() );
+Debugger::dump( $res->fetch() );
 // outputs:
 // object(DibiRow)#3 (3) {
 //     customer_id => int(1)
@@ -37,7 +37,7 @@ $res = dibi::query('SELECT * FROM [customers]');
 
 $res->detectTypes();
 
-Debug::dump( $res->fetch() );
+Debugger::dump( $res->fetch() );
 // outputs:
 // object(DibiRow)#3 (3) {
 //     customer_id => int(1)

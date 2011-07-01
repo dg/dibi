@@ -16,12 +16,6 @@ h2 {
 	font-size: 150%;
 }
 
-pre.dump {
-	border: 1px solid silver;
-	padding: 1em;
-	margin: 1em 0;
-}
-
 a {
 	color: #000080;
 }
@@ -44,4 +38,27 @@ table.dump th {
 	font-size: 80%;
 	color: #525b37;
 	background: #e3e9ba;
+}
+
+/* dump() */
+pre.nette-dump, pre.dump {
+	color: #444; background: white;
+	border: 1px solid silver;
+	padding: 1em;
+	margin: 1em 0;
+}
+pre.nette-dump .php-array, pre.nette-dump .php-object {
+	color: #C22;
+}
+pre.nette-dump .php-string {
+	color: #080;
+}
+pre.nette-dump .php-int, pre.nette-dump .php-float {
+	color: #37D;
+}
+pre.nette-dump .php-null, pre.nette-dump .php-bool {
+	color: black;
+}
+pre.nette-dump .php-visibility {
+	font-size: 85%; color: #999;
 }
