@@ -44,12 +44,12 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 
 	/**
-	 * @throws NotSupportedException
+	 * @throws DibiNotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('pgsql')) {
-			throw new NotSupportedException("PHP extension 'pgsql' is not loaded.");
+			throw new DibiNotSupportedException("PHP extension 'pgsql' is not loaded.");
 		}
 	}
 
@@ -323,7 +323,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			$value = pg_escape_string($this->connection, $value);
 		} else {
 			$value = pg_escape_string($value);
-		}
+	}
 		
 		$value = strtr($value, array( '%' => '\\\\%', '_' => '\\\\_'));
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
@@ -578,7 +578,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 }

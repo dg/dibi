@@ -38,12 +38,12 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 
 
 	/**
-	 * @throws NotSupportedException
+	 * @throws DibiNotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('mssql')) {
-			throw new NotSupportedException("PHP extension 'mssql' is not loaded.");
+			throw new DibiNotSupportedException("PHP extension 'mssql' is not loaded.");
 		}
 	}
 
@@ -189,7 +189,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function getReflector()
 	{
-		throw new NotSupportedException;
+		throw new DibiNotSupportedException;
 	}
 
 
@@ -292,7 +292,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 		}
 
 		if ($offset) {
-			throw new NotImplementedException('Offset is not implemented.');
+			throw new DibiNotImplementedException('Offset is not implemented.');
 		}
 	}
 

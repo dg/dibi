@@ -150,7 +150,7 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 	public function getForeignKeys($table)
 	{
 		if (!($this->driver instanceof DibiSqlite3Driver)) {
-			// throw new NotSupportedException; // @see http://www.sqlite.org/foreignkeys.html
+			// throw new DibiNotSupportedException; // @see http://www.sqlite.org/foreignkeys.html
 		}
 		$res = $this->driver->query("PRAGMA foreign_key_list([$table])");
 		$keys = array();

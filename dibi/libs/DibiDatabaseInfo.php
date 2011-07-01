@@ -325,7 +325,7 @@ class DibiTableInfo extends DibiObject
 	 */
 	protected function initForeignKeys()
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 }

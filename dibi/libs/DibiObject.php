@@ -87,14 +87,14 @@ abstract class DibiObject
 	 * @param  string  method name
 	 * @param  array   arguments
 	 * @return mixed
-	 * @throws \MemberAccessException
+	 * @throws \LogicException
 	 */
 	public function __call($name, $args)
 	{
 		$class = get_class($this);
 
 		if ($name === '') {
-			throw new MemberAccessException("Call to class '$class' method without name.");
+			throw new LogicException("Call to class '$class' method without name.");
 		}
 
 		// event functionality
@@ -122,7 +122,7 @@ abstract class DibiObject
 			return call_user_func_array($cb, $args);
 		}
 
-		throw new MemberAccessException("Call to undefined method $class::$name().");
+		throw new LogicException("Call to undefined method $class::$name().");
 	}
 
 
@@ -132,12 +132,12 @@ abstract class DibiObject
 	 * @param  string  method name (in lower case!)
 	 * @param  array   arguments
 	 * @return mixed
-	 * @throws \MemberAccessException
+	 * @throws \LogicException
 	 */
 	public static function __callStatic($name, $args)
 	{
 		$class = get_called_class();
-		throw new MemberAccessException("Call to undefined static method $class::$name().");
+		throw new LogicException("Call to undefined static method $class::$name().");
 	}
 
 
@@ -208,14 +208,14 @@ abstract class DibiObject
 	 * Returns property value. Do not call directly.
 	 * @param  string  property name
 	 * @return mixed   property value
-	 * @throws \MemberAccessException if the property is not defined.
+	 * @throws \LogicException if the property is not defined.
 	 */
 	public function &__get($name)
 	{
 		$class = get_class($this);
 
 		if ($name === '') {
-			throw new MemberAccessException("Cannot read a class '$class' property without name.");
+			throw new LogicException("Cannot read a class '$class' property without name.");
 		}
 
 		// property getter support
@@ -236,7 +236,7 @@ abstract class DibiObject
 		}
 
 		$name = func_get_arg(0);
-		throw new MemberAccessException("Cannot read an undeclared property $class::\$$name.");
+		throw new LogicException("Cannot read an undeclared property $class::\$$name.");
 	}
 
 
@@ -246,14 +246,14 @@ abstract class DibiObject
 	 * @param  string  property name
 	 * @param  mixed   property value
 	 * @return void
-	 * @throws \MemberAccessException if the property is not defined or is read-only
+	 * @throws \LogicException if the property is not defined or is read-only
 	 */
 	public function __set($name, $value)
 	{
 		$class = get_class($this);
 
 		if ($name === '') {
-			throw new MemberAccessException("Cannot assign to a class '$class' property without name.");
+			throw new LogicException("Cannot assign to a class '$class' property without name.");
 		}
 
 		// property setter support
@@ -266,12 +266,12 @@ abstract class DibiObject
 
 			} else {
 				$name = func_get_arg(0);
-				throw new MemberAccessException("Cannot assign to a read-only property $class::\$$name.");
+				throw new LogicException("Cannot assign to a read-only property $class::\$$name.");
 			}
 		}
 
 		$name = func_get_arg(0);
-		throw new MemberAccessException("Cannot assign to an undeclared property $class::\$$name.");
+		throw new LogicException("Cannot assign to an undeclared property $class::\$$name.");
 	}
 
 
@@ -293,12 +293,12 @@ abstract class DibiObject
 	 * Access to undeclared property.
 	 * @param  string  property name
 	 * @return void
-	 * @throws \MemberAccessException
+	 * @throws \LogicException
 	 */
 	public function __unset($name)
 	{
 		$class = get_class($this);
-		throw new MemberAccessException("Cannot unset the property $class::\$$name.");
+		throw new LogicException("Cannot unset the property $class::\$$name.");
 	}
 
 

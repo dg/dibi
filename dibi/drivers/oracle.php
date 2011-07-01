@@ -45,12 +45,12 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 
 	/**
-	 * @throws NotSupportedException
+	 * @throws DibiNotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('oci8')) {
-			throw new NotSupportedException("PHP extension 'oci8' is not loaded.");
+			throw new DibiNotSupportedException("PHP extension 'oci8' is not loaded.");
 		}
 	}
 
@@ -124,7 +124,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getAffectedRows()
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 
@@ -269,7 +269,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function escapeLike($value, $pos)
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 
@@ -332,7 +332,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getRowCount()
 	{
-		throw new NotSupportedException('Row count is not available for unbuffered queries.');
+		throw new DibiNotSupportedException('Row count is not available for unbuffered queries.');
 	}
 
 
@@ -356,7 +356,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function seek($row)
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 
@@ -437,7 +437,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getColumns($table)
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 
@@ -449,7 +449,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getIndexes($table)
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 
@@ -461,7 +461,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 }

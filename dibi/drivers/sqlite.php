@@ -52,12 +52,12 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 
 	/**
-	 * @throws NotSupportedException
+	 * @throws DibiNotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('sqlite')) {
-			throw new NotSupportedException("PHP extension 'sqlite' is not loaded.");
+			throw new DibiNotSupportedException("PHP extension 'sqlite' is not loaded.");
 		}
 	}
 
@@ -279,7 +279,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function escapeLike($value, $pos)
 	{
-		throw new NotSupportedException;
+		throw new DibiNotSupportedException;
 	}
 
 
@@ -327,7 +327,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function getRowCount()
 	{
 		if (!$this->buffered) {
-			throw new NotSupportedException('Row count is not available for unbuffered queries.');
+			throw new DibiNotSupportedException('Row count is not available for unbuffered queries.');
 		}
 		return sqlite_num_rows($this->resultSet);
 	}
@@ -367,7 +367,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function seek($row)
 	{
 		if (!$this->buffered) {
-			throw new NotSupportedException('Cannot seek an unbuffered result set.');
+			throw new DibiNotSupportedException('Cannot seek an unbuffered result set.');
 		}
 		return sqlite_seek($this->resultSet, $row);
 	}

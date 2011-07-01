@@ -47,12 +47,12 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 
 	/**
-	 * @throws NotSupportedException
+	 * @throws DibiNotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('sqlite3')) {
-			throw new NotSupportedException("PHP extension 'sqlite3' is not loaded.");
+			throw new DibiNotSupportedException("PHP extension 'sqlite3' is not loaded.");
 		}
 	}
 
@@ -327,11 +327,11 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 	/**
 	 * Returns the number of rows in a result set.
 	 * @return int
-	 * @throws NotSupportedException
+	 * @throws DibiNotSupportedException
 	 */
 	public function getRowCount()
 	{
-		throw new NotSupportedException('Row count is not available for unbuffered queries.');
+		throw new DibiNotSupportedException('Row count is not available for unbuffered queries.');
 	}
 
 
@@ -364,11 +364,11 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
 	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
-	 * @throws NotSupportedException
+	 * @throws DibiNotSupportedException
 	 */
 	public function seek($row)
 	{
-		throw new NotSupportedException('Cannot seek an unbuffered result set.');
+		throw new DibiNotSupportedException('Cannot seek an unbuffered result set.');
 	}
 
 

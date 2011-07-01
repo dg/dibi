@@ -689,7 +689,7 @@ class DibiConnection extends DibiObject
 
 		$handle = @fopen($file, 'r'); // intentionally @
 		if (!$handle) {
-			throw new FileNotFoundException("Cannot open file '$file'.");
+			throw new RuntimeException("Cannot open file '$file'.");
 		}
 
 		$count = 0;
@@ -726,7 +726,7 @@ class DibiConnection extends DibiObject
 	 */
 	public function __wakeup()
 	{
-		throw new NotSupportedException('You cannot serialize or unserialize ' . $this->getClass() . ' instances.');
+		throw new DibiNotSupportedException('You cannot serialize or unserialize ' . $this->getClass() . ' instances.');
 	}
 
 
@@ -736,7 +736,7 @@ class DibiConnection extends DibiObject
 	 */
 	public function __sleep()
 	{
-		throw new NotSupportedException('You cannot serialize or unserialize ' . $this->getClass() . ' instances.');
+		throw new DibiNotSupportedException('You cannot serialize or unserialize ' . $this->getClass() . ' instances.');
 	}
 
 }

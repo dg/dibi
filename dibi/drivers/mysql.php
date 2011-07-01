@@ -54,12 +54,12 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 
 
 	/**
-	 * @throws NotSupportedException
+	 * @throws DibiNotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('mysql')) {
-			throw new NotSupportedException("PHP extension 'mysql' is not loaded.");
+			throw new DibiNotSupportedException("PHP extension 'mysql' is not loaded.");
 		}
 	}
 
@@ -398,7 +398,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	public function getRowCount()
 	{
 		if (!$this->buffered) {
-			throw new NotSupportedException('Row count is not available for unbuffered queries.');
+			throw new DibiNotSupportedException('Row count is not available for unbuffered queries.');
 		}
 		return mysql_num_rows($this->resultSet);
 	}
@@ -426,7 +426,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	public function seek($row)
 	{
 		if (!$this->buffered) {
-			throw new NotSupportedException('Cannot seek an unbuffered result set.');
+			throw new DibiNotSupportedException('Cannot seek an unbuffered result set.');
 		}
 
 		return mysql_data_seek($this->resultSet, $row);

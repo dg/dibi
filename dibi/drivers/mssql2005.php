@@ -42,12 +42,12 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 
 
 	/**
-	 * @throws NotSupportedException
+	 * @throws DibiNotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('sqlsrv')) {
-			throw new NotSupportedException("PHP extension 'sqlsrv' is not loaded.");
+			throw new DibiNotSupportedException("PHP extension 'sqlsrv' is not loaded.");
 		}
 	}
 
@@ -197,7 +197,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getReflector()
 	{
-		throw new NotSupportedException;
+		throw new DibiNotSupportedException;
 	}
 
 
@@ -300,7 +300,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 		}
 
 		if ($offset) {
-			throw new NotImplementedException('Offset is not implemented.');
+			throw new DibiNotImplementedException('Offset is not implemented.');
 		}
 	}
 
@@ -327,7 +327,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getRowCount()
 	{
-		throw new NotSupportedException('Row count is not available for unbuffered queries.');
+		throw new DibiNotSupportedException('Row count is not available for unbuffered queries.');
 	}
 
 
@@ -351,7 +351,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function seek($row)
 	{
-		throw new NotSupportedException('Cannot seek an unbuffered result set.');
+		throw new DibiNotSupportedException('Cannot seek an unbuffered result set.');
 	}
 
 

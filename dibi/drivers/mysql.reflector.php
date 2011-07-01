@@ -125,7 +125,7 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 }

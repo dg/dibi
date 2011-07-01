@@ -43,12 +43,12 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 
 
 	/**
-	 * @throws NotSupportedException
+	 * @throws DibiNotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('odbc')) {
-			throw new NotSupportedException("PHP extension 'odbc' is not loaded.");
+			throw new DibiNotSupportedException("PHP extension 'odbc' is not loaded.");
 		}
 	}
 
@@ -133,7 +133,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	 */
 	public function getInsertId($sequence)
 	{
-		throw new NotSupportedException('ODBC does not support autoincrementing.');
+		throw new DibiNotSupportedException('ODBC does not support autoincrementing.');
 	}
 
 
@@ -314,7 +314,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
 		}
 
-		if ($offset) throw new NotSupportedException('Offset is not implemented in driver odbc.');
+		if ($offset) throw new DibiNotSupportedException('Offset is not implemented in driver odbc.');
 	}
 
 
@@ -484,7 +484,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	 */
 	public function getIndexes($table)
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 
@@ -496,7 +496,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 }

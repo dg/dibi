@@ -45,12 +45,12 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 
 
 	/**
-	 * @throws NotSupportedException
+	 * @throws DibiNotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('interbase')) {
-			throw new NotSupportedException("PHP extension 'interbase' is not loaded.");
+			throw new DibiNotSupportedException("PHP extension 'interbase' is not loaded.");
 		}
 	}
 
@@ -170,7 +170,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	public function begin($savepoint = NULL)
 	{
 		if ($savepoint !== NULL) {
-			throw new NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
+			throw new DibiNotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 		$this->transaction = ibase_trans($this->resource);
 		$this->inTransaction = TRUE;
@@ -187,7 +187,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	public function commit($savepoint = NULL)
 	{
 		if ($savepoint !== NULL) {
-			throw new NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
+			throw new DibiNotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 
 		if (!ibase_commit($this->transaction)) {
@@ -208,7 +208,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	public function rollback($savepoint = NULL)
 	{
 		if ($savepoint !== NULL) {
-			throw new NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
+			throw new DibiNotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 
 		if (!ibase_rollback($this->transaction)) {
@@ -312,7 +312,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function escapeLike($value, $pos)
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 
@@ -410,7 +410,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function seek($row)
 	{
-		throw new NotSupportedException("Firebird/Interbase do not support seek in result set.");
+		throw new DibiNotSupportedException("Firebird/Interbase do not support seek in result set.");
 	}
 
 
@@ -444,7 +444,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getResultColumns()
 	{
-		throw new NotImplementedException;
+		throw new DibiNotImplementedException;
 	}
 
 
