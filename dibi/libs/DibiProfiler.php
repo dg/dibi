@@ -54,7 +54,9 @@ class DibiProfiler extends DibiObject implements IDibiProfiler, IBarPanel
 	{
 		if (is_callable('Nette\Diagnostics\Debugger::enable')) {
 			eval('$tmp = Nette\Diagnostics\Debugger::$bar;');
-			$tmp->addPanel($this);
+			if ($tmp instanceof \Nette\Diagnostics\Debugger) { 
+				$tmp->addPanel($this);
+			}
 			eval('$tmp = Nette\Diagnostics\Debugger::$blueScreen;');
 			$tmp->addPanel(array($this, 'renderException'), __CLASS__);
 		} elseif (is_callable('NDebugger::enable')) {
