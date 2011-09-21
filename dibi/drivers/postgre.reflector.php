@@ -15,7 +15,7 @@
 /**
  * The dibi reflector for PostgreSQL databases.
  *
- * @author     David Grudl
+ * @author     David Grudl, Miloslav Hůla
  * @package    dibi\drivers
  * @internal
  */
@@ -31,8 +31,8 @@ class DibiPostgreReflector extends DibiObject implements IDibiReflector
 		$this->driver = $driver;
 
 		$version = pg_parameter_status($driver->getResource(), 'server_version'); // safer then the pg_version()
-		if ($version < 8) {
-			throw new DibiDriverException('Reflection requires PostgreSQL 8.');
+		if ($version < 7.4) {
+			throw new DibiDriverException('Reflection requires PostgreSQL 7.4.');
 		}
 	}
 
@@ -45,9 +45,16 @@ class DibiPostgreReflector extends DibiObject implements IDibiReflector
 	public function getTables()
 	{
 		$res = $this->driver->query("
-			SELECT table_name as name, CAST(table_type = 'VIEW' AS INTEGER) as view
-			FROM information_schema.tables
-			WHERE table_schema = current_schema()
+			SELECT
+				table_name AS name,
+				CASE table_type
+					WHEN 'VIEW' THEN 1
+					ELSE 0
+				END AS view
+			FROM
+				information_schema.tables
+			WHERE
+				table_schema = current_schema()
 		");
 		$tables = pg_fetch_all($res->resultResource);
 		return $tables ? $tables : array();
@@ -145,7 +152,49 @@ class DibiPostgreReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new DibiNotImplementedException;
+		$_table = $this->driver->escape($table, dibi::TEXT);
+
+		// Not for multi-column foreign keys
+		$res = $this->driver->query("
+			SELECT
+				c.conname AS name,
+				lt.attname AS local,
+				c.confrelid::regclass AS table,
+				ft.attname AS foreign,
+
+				CASE confupdtype
+					WHEN 'a' THEN 'NO ACTION'
+					WHEN 'r' THEN 'RESTRICT'
+					WHEN 'c' THEN 'CASCADE'
+					WHEN 'n' THEN 'SET NULL'
+					WHEN 'd' THEN 'SET DEFAULT'
+					ELSE 'UNKNOWN'
+				END AS \"onUpdate\",
+
+				CASE confdeltype
+					WHEN 'a' THEN 'NO ACTION'
+					WHEN 'r' THEN 'RESTRICT'
+					WHEN 'c' THEN 'CASCADE'
+					WHEN 'n' THEN 'SET NULL'
+					WHEN 'd' THEN 'SET DEFAULT'
+					ELSE 'UNKNOWN'
+				END AS \"onDelete\"
+			FROM
+				pg_constraint c
+				JOIN pg_attribute lt ON c.conrelid  = lt.attrelid AND lt.attnum = conkey[1]
+				JOIN pg_attribute ft ON c.confrelid = ft.attrelid AND ft.attnum = confkey[1]
+			WHERE
+				c.contype = 'f'
+				AND
+				c.conrelid = $_table::regclass
+		");
+
+		$fKeys = array();
+		while ($row = $res->fetch(TRUE)) {
+			$fKeys[$row['name']] = $row;
+		}
+
+		return $fKeys;
 	}
 
 }
