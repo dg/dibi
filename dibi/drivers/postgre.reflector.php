@@ -29,6 +29,11 @@ class DibiPostgreReflector extends DibiObject implements IDibiReflector
 	public function __construct(IDibiDriver $driver)
 	{
 		$this->driver = $driver;
+
+		$version = pg_parameter_status($driver->getResource(), 'server_version'); // safer then the pg_version()
+		if ($version < 8) {
+			throw new DibiDriverException('Reflection requires PostgreSQL 8.');
+		}
 	}
 
 
@@ -39,11 +44,6 @@ class DibiPostgreReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getTables()
 	{
-		$version = pg_version($this->driver->resource);
-		if ($version['server'] < 8) {
-			throw new DibiDriverException('Reflection requires PostgreSQL 8.');
-		}
-
 		$res = $this->driver->query("
 			SELECT table_name as name, CAST(table_type = 'VIEW' AS INTEGER) as view
 			FROM information_schema.tables
