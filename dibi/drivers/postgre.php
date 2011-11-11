@@ -282,10 +282,13 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 		switch ($type) {
 		case dibi::TEXT:
 			if ($this->escMethod) {
-				return "'" . pg_escape_string($this->connection, $value) . "'";
+				$value = "'" . pg_escape_string($this->connection, $value) . "'";
 			} else {
-				return "'" . pg_escape_string($value) . "'";
+				$value = "'" . pg_escape_string($value) . "'";
 			}
+
+			// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-STRINGS
+			return strpos($value, '\\') === false ? $value : 'E' . $value;
 
 		case dibi::BINARY:
 			if ($this->escMethod) {
