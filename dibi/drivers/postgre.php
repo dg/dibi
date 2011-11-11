@@ -44,6 +44,9 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	/** @var bool  Escape method */
 	private $escMethod = FALSE;
 
+	/** @var bool  Prefix escaped string constant */
+	private $prefixEscaped = FALSE;
+
 
 
 	/**
@@ -109,6 +112,8 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 		}
 
 		$this->escMethod = version_compare(PHP_VERSION , '5.2.0', '>=');
+
+		$this->prefixEscaped = pg_parameter_status($this->connection, 'server_version') >= 8.1;
 	}
 
 
@@ -288,7 +293,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			}
 
 			// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-STRINGS
-			return strpos($value, '\\') === false ? $value : 'E' . $value;
+			return ($this->prefixEscaped && strpos($value, '\\') !== false) ? 'E' . $value : $value;
 
 		case dibi::BINARY:
 			if ($this->escMethod) {
