@@ -23,18 +23,6 @@ if (version_compare(PHP_VERSION, '5.2.0', '<')) {
 
 
 
-/**
- * Compatibility with Nette
- */
-if (interface_exists('Nette\Diagnostics\IBarPanel')) {
-	class_alias('Nette\Diagnostics\IBarPanel', 'IBarPanel');
-
-} elseif (!interface_exists('IBarPanel')) {
-	interface IBarPanel {}
-}
-
-
-
 require_once dirname(__FILE__) . '/libs/interfaces.php';
 require_once dirname(__FILE__) . '/libs/DibiDateTime.php';
 require_once dirname(__FILE__) . '/libs/DibiObject.php';
@@ -48,7 +36,10 @@ require_once dirname(__FILE__) . '/libs/DibiTranslator.php';
 require_once dirname(__FILE__) . '/libs/DibiDataSource.php';
 require_once dirname(__FILE__) . '/libs/DibiFluent.php';
 require_once dirname(__FILE__) . '/libs/DibiDatabaseInfo.php';
-require_once dirname(__FILE__) . '/libs/DibiProfiler.php';
+require_once dirname(__FILE__) . '/libs/DibiEvent.php';
+require_once dirname(__FILE__) . '/libs/DibiFileLogger.php';
+require_once dirname(__FILE__) . '/libs/DibiFirePhpLogger.php';
+require_once dirname(__FILE__) . '/Nette/DibiNettePanel.php';
 
 
 
@@ -230,18 +221,6 @@ class dibi
 	public static function activate($name)
 	{
 		self::$connection = self::getConnection($name);
-	}
-
-
-
-	/**
-	 * Retrieve active connection profiler.
-	 * @return IDibiProfiler
-	 * @throws DibiException
-	 */
-	public static function getProfiler()
-	{
-		return self::getConnection()->getProfiler();
 	}
 
 

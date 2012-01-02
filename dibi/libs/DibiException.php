@@ -42,7 +42,6 @@ class DibiException extends Exception
 	{
 		parent::__construct($message, (int) $code);
 		$this->sql = $sql;
-		// TODO: add $profiler->exception($this);
 	}
 
 

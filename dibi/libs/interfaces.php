@@ -37,55 +37,6 @@ interface IDibiVariable
 
 
 /**
- * Defines method that must profiler implement.
- */
-interface IDibiProfiler
-{
-	/** event type */
-	const CONNECT = 1,
-		SELECT = 4,
-		INSERT = 8,
-		DELETE = 16,
-		UPDATE = 32,
-		QUERY = 60, // SELECT | INSERT | DELETE | UPDATE
-		BEGIN = 64,
-		COMMIT = 128,
-		ROLLBACK = 256,
-		TRANSACTION = 448, // BEGIN | COMMIT | ROLLBACK
-		EXCEPTION = 512,
-		ALL = 1023;
-
-	/**
-	 * Before event notification.
-	 * @param  DibiConnection
-	 * @param  int     event name
-	 * @param  string  sql
-	 * @return int
-	 */
-	function before(DibiConnection $connection, $event, $sql = NULL);
-
-	/**
-	 * After event notification.
-	 * @param  int
-	 * @param  DibiResult
-	 * @return void
-	 */
-	function after($ticket, $result = NULL);
-
-	/**
-	 * After exception notification.
-	 * @param  DibiDriverException
-	 * @return void
-	 */
-	function exception(DibiDriverException $exception);
-
-}
-
-
-
-
-
-/**
  * dibi driver interface.
  */
 interface IDibiDriver

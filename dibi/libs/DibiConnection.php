@@ -23,11 +23,13 @@
  * @property-read IDibiDriver $driver
  * @property-read int $affectedRows
  * @property-read int $insertId
- * @property IDibiProfiler $profiler
  * @property-read DibiDatabaseInfo $databaseInfo
  */
 class DibiConnection extends DibiObject
 {
+	/** @var array of function(DibiEvent $event); Occurs after query is executed */
+	public $onEvent;
+
 	/** @var array  Current connection configuration */
 	private $config;
 
@@ -36,9 +38,6 @@ class DibiConnection extends DibiObject
 
 	/** @var DibiTranslator */
 	private $translator;
-
-	/** @var IDibiProfiler */
-	private $profiler;
 
 	/** @var bool  Is connected? */
 	private $connected = FALSE;
@@ -56,7 +55,7 @@ class DibiConnection extends DibiObject
 	 *       - formatDateTime => date-time format (if empty, DateTime objects will be returned)
 	 *   - profiler (array or bool)
 	 *       - run (bool) => enable profiler?
-	 *       - class => profiler class name (default is DibiProfiler)
+	 *       - file => file to log
 	 *   - substitutes (array) => map of driver specific substitutes (under development)
 
 	 * @param  mixed   connection parameters
@@ -107,20 +106,22 @@ class DibiConnection extends DibiObject
 
 		// profiler
 		$profilerCfg = & $config['profiler'];
-		if (is_scalar($profilerCfg)) { // back compatibility
-			$profilerCfg = array(
-				'run' => (bool) $profilerCfg,
-				'class' => strlen($profilerCfg) > 1 ? $profilerCfg : NULL,
-			);
+		if (is_scalar($profilerCfg)) {
+			$profilerCfg = array('run' => (bool) $profilerCfg);
 		}
-
 		if (!empty($profilerCfg['run'])) {
-			class_exists('dibi'); // ensure dibi.php is processed
-			$class = isset($profilerCfg['class']) ? $profilerCfg['class'] : 'DibiProfiler';
-			if (!class_exists($class)) {
-				throw new DibiException("Unable to create instance of dibi profiler '$class'.");
+			$filter = isset($profilerCfg['filter']) ? $profilerCfg['filter'] : DibiEvent::QUERY;
+
+			if (isset($profilerCfg['file'])) {
+				$this->onEvent[] = array(new DibiFileLogger($profilerCfg['file'], $filter), 'logEvent');
 			}
-			$this->setProfiler(new $class($profilerCfg));
+
+			if (DibiFirePhpLogger::isAvailable()) {
+				$this->onEvent[] = array(new DibiFirePhpLogger($filter), 'logEvent');
+			}
+
+			$panel = new DibiNettePanel(isset($profilerCfg['explain']) ? $profilerCfg['explain'] : TRUE, $filter);
+			$panel->register($this);
 		}
 
 		$this->substitutes = new DibiHashMap(create_function('$expr', 'return ":$expr:";'));
@@ -155,13 +156,15 @@ class DibiConnection extends DibiObject
 	 */
 	final public function connect()
 	{
-		if ($this->profiler !== NULL) {
-			$ticket = $this->profiler->before($this, IDibiProfiler::CONNECT);
-		}
-		$this->driver->connect($this->config);
-		$this->connected = TRUE;
-		if (isset($ticket)) {
-			$this->profiler->after($ticket);
+		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::CONNECT) : NULL;
+		try {
+			$this->driver->connect($this->config);
+			$this->connected = TRUE;
+			$event && $this->onEvent($event->done());
+
+		} catch (DibiException $e) {
+			$event && $this->onEvent($event->done($e));
+			throw $e;
 		}
 	}
 
@@ -329,28 +332,24 @@ class DibiConnection extends DibiObject
 	{
 		$this->connected || $this->connect();
 
-		if ($this->profiler !== NULL) {
-			$event = IDibiProfiler::QUERY;
-			if (preg_match('#\s*(SELECT|UPDATE|INSERT|DELETE)#iA', $sql, $matches)) {
-				static $events = array(
-					'SELECT' => IDibiProfiler::SELECT, 'UPDATE' => IDibiProfiler::UPDATE,
-					'INSERT' => IDibiProfiler::INSERT, 'DELETE' => IDibiProfiler::DELETE,
-				);
-				$event = $events[strtoupper($matches[1])];
-			}
-			$ticket = $this->profiler->before($this, $event, $sql);
+		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::QUERY, $sql) : NULL;
+		dibi::$numOfQueries++;
+		dibi::$sql = $sql;
+		try {
+			$res = $this->driver->query($sql);
+
+		} catch (DibiException $e) {
+			$event && $this->onEvent($event->done($e));
+			throw $e;
 		}
 
-		dibi::$sql = $sql;
-		if ($res = $this->driver->query($sql)) { // intentionally =
+		if ($res) {
 			$res = $this->createResultSet($res);
 		} else {
 			$res = $this->driver->getAffectedRows();
 		}
 
-		if (isset($ticket)) {
-			$this->profiler->after($ticket, $res);
-		}
+		$event && $this->onEvent($event->done($res));
 		return $res;
 	}
 
@@ -420,12 +419,14 @@ class DibiConnection extends DibiObject
 	public function begin($savepoint = NULL)
 	{
 		$this->connected || $this->connect();
-		if ($this->profiler !== NULL) {
-			$ticket = $this->profiler->before($this, IDibiProfiler::BEGIN, $savepoint);
-		}
-		$this->driver->begin($savepoint);
-		if (isset($ticket)) {
-			$this->profiler->after($ticket);
+		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::BEGIN, $savepoint) : NULL;
+		try {
+			$this->driver->begin($savepoint);
+			$event && $this->onEvent($event->done());
+
+		} catch (DibiException $e) {
+			$event && $this->onEvent($event->done($e));
+			throw $e;
 		}
 	}
 
@@ -439,12 +440,14 @@ class DibiConnection extends DibiObject
 	public function commit($savepoint = NULL)
 	{
 		$this->connected || $this->connect();
-		if ($this->profiler !== NULL) {
-			$ticket = $this->profiler->before($this, IDibiProfiler::COMMIT, $savepoint);
-		}
-		$this->driver->commit($savepoint);
-		if (isset($ticket)) {
-			$this->profiler->after($ticket);
+		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::COMMIT, $savepoint) : NULL;
+		try {
+			$this->driver->commit($savepoint);
+			$event && $this->onEvent($event->done());
+
+		} catch (DibiException $e) {
+			$event && $this->onEvent($event->done($e));
+			throw $e;
 		}
 	}
 
@@ -458,12 +461,14 @@ class DibiConnection extends DibiObject
 	public function rollback($savepoint = NULL)
 	{
 		$this->connected || $this->connect();
-		if ($this->profiler !== NULL) {
-			$ticket = $this->profiler->before($this, IDibiProfiler::ROLLBACK, $savepoint);
-		}
-		$this->driver->rollback($savepoint);
-		if (isset($ticket)) {
-			$this->profiler->after($ticket);
+		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::ROLLBACK, $savepoint) : NULL;
+		try {
+			$this->driver->rollback($savepoint);
+			$event && $this->onEvent($event->done());
+
+		} catch (DibiException $e) {
+			$event && $this->onEvent($event->done($e));
+			throw $e;
 		}
 	}
 
@@ -547,32 +552,6 @@ class DibiConnection extends DibiObject
 	public function delete($table)
 	{
 		return $this->command()->delete()->from('%n', $table);
-	}
-
-
-
-	/********************* profiler ****************d*g**/
-
-
-
-	/**
-	 * @param  IDibiProfiler
-	 * @return DibiConnection  provides a fluent interface
-	 */
-	public function setProfiler(IDibiProfiler $profiler = NULL)
-	{
-		$this->profiler = $profiler;
-		return $this;
-	}
-
-
-
-	/**
-	 * @return IDibiProfiler
-	 */
-	public function getProfiler()
-	{
-		return $this->profiler;
 	}
 
 

@@ -13,12 +13,12 @@ date_default_timezone_set('Europe/Prague');
 dibi::connect(array(
 	'driver'   => 'sqlite',
 	'database' => 'data/sample.sdb',
-	'profiler' => TRUE,
+	// enable query logging to this file
+	'profiler' => array(
+		'run' => TRUE,
+		'file' => 'data/log.sql',
+	),
 ));
-
-
-// enable query logging to this file
-dibi::getProfiler()->setFile('data/log.sql');
 
 
 
