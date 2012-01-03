@@ -153,7 +153,7 @@ class DibiPcreException extends Exception {
 /**
  * @package    dibi
  */
-class DibiNotImplementedException extends LogicException
+class DibiNotImplementedException extends DibiException
 {}
 
 
@@ -161,5 +161,5 @@ class DibiNotImplementedException extends LogicException
 /**
  * @package    dibi
  */
-class DibiNotSupportedException extends LogicException
+class DibiNotSupportedException extends DibiException
 {}
