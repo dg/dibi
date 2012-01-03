@@ -7,8 +7,6 @@
  *
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
- *
- * @package    dibi\reflection
  */
 
 
@@ -17,6 +15,7 @@
  * Reflection metadata class for a database.
  *
  * @author     David Grudl
+ * @package    dibi\reflection
  *
  * @property-read string $name
  * @property-read array $tables
@@ -131,6 +130,7 @@ class DibiDatabaseInfo extends DibiObject
  * Reflection metadata class for a database table.
  *
  * @author     David Grudl
+ * @package    dibi\reflection
  *
  * @property-read string $name
  * @property-read bool $view
@@ -337,6 +337,7 @@ class DibiTableInfo extends DibiObject
  * Reflection metadata class for a result set.
  *
  * @author     David Grudl
+ * @package    dibi\reflection
  *
  * @property-read array $columns
  * @property-read array $columnNames
@@ -441,6 +442,7 @@ class DibiResultInfo extends DibiObject
  * Reflection metadata class for a table or result set column.
  *
  * @author     David Grudl
+ * @package    dibi\reflection
  *
  * @property-read string $name
  * @property-read string $fullName
@@ -647,6 +649,7 @@ class DibiColumnInfo extends DibiObject
  * Reflection metadata class for a foreign key.
  *
  * @author     David Grudl
+ * @package    dibi\reflection
  * @todo
  *
  * @property-read string $name
@@ -697,6 +700,7 @@ class DibiForeignKeyInfo extends DibiObject
  * Reflection metadata class for a index or primary key.
  *
  * @author     David Grudl
+ * @package    dibi\reflection
  *
  * @property-read string $name
  * @property-read array $columns

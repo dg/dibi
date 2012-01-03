@@ -15,6 +15,7 @@
  * Dibi extension for Nette Framework. Creates 'connection' service.
  *
  * @author     David Grudl
+ * @package    dibi\nette
  * @phpversion 5.3
  */
 class DibiNetteExtension extends Nette\Config\CompilerExtension

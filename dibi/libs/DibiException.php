@@ -7,17 +7,7 @@
  *
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
- *
- * @package    dibi\exceptions
  */
-
-
-
-class DibiNotImplementedException extends LogicException
-{}
-
-class DibiNotSupportedException extends LogicException
-{}
 
 
 
@@ -25,6 +15,7 @@ class DibiNotSupportedException extends LogicException
  * dibi common exception.
  *
  * @author     David Grudl
+ * @package    dibi
  */
 class DibiException extends Exception
 {
@@ -73,6 +64,7 @@ class DibiException extends Exception
  * database server exception.
  *
  * @author     David Grudl
+ * @package    dibi
  */
 class DibiDriverException extends DibiException
 {
@@ -138,6 +130,7 @@ class DibiDriverException extends DibiException
  * PCRE exception.
  *
  * @author     David Grudl
+ * @package    dibi
  */
 class DibiPcreException extends Exception {
 
@@ -154,3 +147,22 @@ class DibiPcreException extends Exception {
 		parent::__construct(str_replace('%msg', isset($messages[$code]) ? $messages[$code] : 'Unknown error', $message), $code);
 	}
 }
+
+
+
+/**
+ * @package    dibi
+ */
+class DibiNotImplementedException extends LogicException
+{}
+
+
+
+/**
+ * @package    dibi
+ */
+class DibiNotSupportedException extends LogicException
+{}
+
+
+

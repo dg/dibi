@@ -7,14 +7,13 @@
  *
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
- *
- * @package    dibi
  */
 
 
 
 /**
  * Provides an interface between a dataset and data-aware components.
+ * @package    dibi
  */
 interface IDataSource extends Countable, IteratorAggregate
 {
@@ -26,6 +25,7 @@ interface IDataSource extends Countable, IteratorAggregate
 
 /**
  * Object that is able to generate SQL.
+ * @package    dibi
  */
 interface IDibiVariable
 {
@@ -38,6 +38,7 @@ interface IDibiVariable
 
 /**
  * dibi driver interface.
+ * @package    dibi
  */
 interface IDibiDriver
 {
@@ -147,6 +148,7 @@ interface IDibiDriver
 
 /**
  * dibi result set driver interface.
+ * @package    dibi
  */
 interface IDibiResultDriver
 {
@@ -211,6 +213,7 @@ interface IDibiResultDriver
  * dibi driver reflection.
  *
  * @author     David Grudl
+ * @package    dibi
  */
 interface IDibiReflector
 {

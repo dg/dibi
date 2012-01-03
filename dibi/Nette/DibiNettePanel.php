@@ -21,6 +21,7 @@ if (interface_exists('Nette\Diagnostics\IBarPanel')) {
  * Dibi panel for Nette\Diagnostics.
  *
  * @author     David Grudl
+ * @package    dibi\nette
  */
 class DibiNettePanel extends DibiObject implements IBarPanel
 {

@@ -7,8 +7,6 @@
  *
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
- *
- * @package    dibi
  */
 
 
@@ -17,6 +15,7 @@
  * DateTime with serialization and timestamp support for PHP 5.2.
  *
  * @author     David Grudl
+ * @package    dibi
  */
 class DibiDateTime extends DateTime
 {
