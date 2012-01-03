@@ -163,6 +163,3 @@ class DibiNotImplementedException extends LogicException
  */
 class DibiNotSupportedException extends LogicException
 {}
-
-
-
