@@ -442,7 +442,18 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getResultColumns()
 	{
-		throw new DibiNotImplementedException;
+		$count = ibase_num_fields($this->resultSet);
+		$columns = array();
+		for ($i = 0; $i < $count; $i++) {
+			$row = (array) ibase_field_info($this->resultSet, $i);
+			$columns[] = array(
+				'name' => $row['name'],
+				'fullname' => $row['name'],
+				'table' => $row['relation'],
+				'nativetype' => $row['type'],
+			);
+		}
+		return $columns;
 	}
 
 
