@@ -19,7 +19,7 @@ dibi::connect(array(
 
 // execute some queries...
 for ($i=0; $i<20; $i++) {
-	$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] < %i', $i);
+	$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] < ?', $i);
 }
 
 // display output

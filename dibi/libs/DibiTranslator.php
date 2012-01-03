@@ -102,7 +102,7 @@ final class DibiTranslator extends DibiObject
 			// simple string means SQL
 			if (is_string($arg)) {
 				// speed-up - is regexp required?
-				$toSkip = strcspn($arg, '`[\'":%');
+				$toSkip = strcspn($arg, '`[\'":%?');
 
 				if (strlen($arg) === $toSkip) { // needn't be translated
 					$sql[] = $arg;

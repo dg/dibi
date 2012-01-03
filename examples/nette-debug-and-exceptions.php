@@ -28,4 +28,4 @@ dibi::connect(array(
 
 
 // throws error because SQL is bad
-dibi::query('SELECT FROM customers WHERE customer_id < %i', 38);
+dibi::query('SELECT FROM customers WHERE customer_id < ?', 38);

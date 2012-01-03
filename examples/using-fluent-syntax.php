@@ -54,7 +54,7 @@ dibi::insert('products', $record)
 
 // UPDATE ...
 dibi::update('products', $record)
-	->where('product_id = %d', $id)
+	->where('product_id = ?', $id)
 	->test();
 // -> UPDATE [products] SET [title]='Super product', [price]=318, [active]=1 WHERE product_id = 10
 
@@ -62,7 +62,7 @@ dibi::update('products', $record)
 
 // DELETE ...
 dibi::delete('products')
-	->where('product_id = %d', $id)
+	->where('product_id = ?', $id)
 	->test();
 // -> DELETE FROM [products] WHERE product_id = 10
 
@@ -71,7 +71,7 @@ dibi::delete('products')
 // custom commands
 dibi::command()
 	->update('products')
-	->where('product_id = %d', $id)
+	->where('product_id = ?', $id)
 	->set($record)
 	->test();
 // -> UPDATE [products] SET [title]='Super product', [price]=318, [active]=1 WHERE product_id = 10

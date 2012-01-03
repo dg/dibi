@@ -23,7 +23,7 @@ $timestamp = mktime(0, 0, 0, 10, 13, 1997);
 dibi::test('
 	SELECT COUNT(*) as [count]
 	FROM [comments]
-	WHERE [ip] LIKE %s', $ipMask, '
+	WHERE [ip] LIKE ?', $ipMask, '
 	AND [date] > ', new DibiDateTime($timestamp)
 );
 // -> SELECT COUNT(*) as [count] FROM [comments] WHERE [ip] LIKE '192.168.%' AND [date] > 876693600
@@ -59,7 +59,7 @@ dibi::test("
 		'color' => 'blue',
 		'order' => 12,
 	), "
-	WHERE id=%i", 123);
+	WHERE id=?", 123);
 // -> UPDATE colors SET [color]='blue', [order]=12 WHERE id=123
 
 
@@ -69,7 +69,7 @@ $array = array(1, 2, 3);
 dibi::test("
 	SELECT *
 	FROM people
-	WHERE id IN (%i)", $array
+	WHERE id IN (?)", $array
 );
 // -> SELECT * FROM people WHERE id IN ( 1, 2, 3 )
 
