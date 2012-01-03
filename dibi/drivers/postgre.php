@@ -10,6 +10,9 @@
  */
 
 
+require_once dirname(__FILE__) . '/postgre.reflector.php';
+
+
 /**
  * The dibi driver for PostgreSQL database.
  *
@@ -25,7 +28,7 @@
  * @author     David Grudl
  * @package    dibi\drivers
  */
-class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 {
 	/** @var resource  Connection resource */
 	private $connection;
@@ -38,6 +41,9 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 	/** @var bool  Escape method */
 	private $escMethod = FALSE;
+
+	/** @var bool  Prefix escaped string constant */
+	private $prefixEscaped = FALSE;
 
 
 
@@ -104,6 +110,8 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 		}
 
 		$this->escMethod = version_compare(PHP_VERSION , '5.2.0', '>=');
+
+		$this->prefixEscaped = pg_parameter_status($this->connection, 'server_version') >= 8.1;
 	}
 
 
@@ -242,7 +250,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getReflector()
 	{
-		return $this;
+		return new DibiPostgreReflector($this);
 	}
 
 
@@ -277,10 +285,13 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 		switch ($type) {
 		case dibi::TEXT:
 			if ($this->escMethod) {
-				return "'" . pg_escape_string($this->connection, $value) . "'";
+				$value = "'" . pg_escape_string($this->connection, $value) . "'";
 			} else {
-				return "'" . pg_escape_string($value) . "'";
+				$value = "'" . pg_escape_string($value) . "'";
 			}
+
+			// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-STRINGS
+			return ($this->prefixEscaped && strpos($value, '\\') !== false) ? 'E' . $value : $value;
 
 		case dibi::BINARY:
 			if ($this->escMethod) {
@@ -456,127 +467,6 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	public function getResultResource()
 	{
 		return $this->resultSet;
-	}
-
-
-
-	/********************* IDibiReflector ****************d*g**/
-
-
-
-	/**
-	 * Returns list of tables.
-	 * @return array
-	 */
-	public function getTables()
-	{
-		$version = pg_version($this->connection);
-		if ($version['server'] < 8) {
-			throw new DibiDriverException('Reflection requires PostgreSQL 8.');
-		}
-
-		$res = $this->query("
-			SELECT table_name as name, CAST(table_type = 'VIEW' AS INTEGER) as view
-			FROM information_schema.tables
-			WHERE table_schema = current_schema()
-		");
-		$tables = pg_fetch_all($res->resultSet);
-		return $tables ? $tables : array();
-	}
-
-
-
-	/**
-	 * Returns metadata for all columns in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getColumns($table)
-	{
-		$_table = $this->escape($table, dibi::TEXT);
-		$res = $this->query("
-			SELECT indkey
-			FROM pg_class
-			LEFT JOIN pg_index on pg_class.oid = pg_index.indrelid AND pg_index.indisprimary
-			WHERE pg_class.relname = $_table
-		");
-		$primary = (int) pg_fetch_object($res->resultSet)->indkey;
-
-		$res = $this->query("
-			SELECT *
-			FROM information_schema.columns
-			WHERE table_name = $_table AND table_schema = current_schema()
-			ORDER BY ordinal_position
-		");
-		$columns = array();
-		while ($row = $res->fetch(TRUE)) {
-			$size = (int) max($row['character_maximum_length'], $row['numeric_precision']);
-			$columns[] = array(
-				'name' => $row['column_name'],
-				'table' => $table,
-				'nativetype' => strtoupper($row['udt_name']),
-				'size' => $size ? $size : NULL,
-				'nullable' => $row['is_nullable'] === 'YES',
-				'default' => $row['column_default'],
-				'autoincrement' => (int) $row['ordinal_position'] === $primary && substr($row['column_default'], 0, 7) === 'nextval',
-				'vendor' => $row,
-			);
-		}
-		return $columns;
-	}
-
-
-
-	/**
-	 * Returns metadata for all indexes in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getIndexes($table)
-	{
-		$_table = $this->escape($table, dibi::TEXT);
-		$res = $this->query("
-			SELECT ordinal_position, column_name
-			FROM information_schema.columns
-			WHERE table_name = $_table AND table_schema = current_schema()
-			ORDER BY ordinal_position
-		");
-
-		$columns = array();
-		while ($row = $res->fetch(TRUE)) {
-			$columns[$row['ordinal_position']] = $row['column_name'];
-		}
-
-		$res = $this->query("
-			SELECT pg_class2.relname, indisunique, indisprimary, indkey
-			FROM pg_class
-			LEFT JOIN pg_index on pg_class.oid = pg_index.indrelid
-			INNER JOIN pg_class as pg_class2 on pg_class2.oid = pg_index.indexrelid
-			WHERE pg_class.relname = $_table
-		");
-
-		$indexes = array();
-		while ($row = $res->fetch(TRUE)) {
-			$indexes[$row['relname']]['name'] = $row['relname'];
-			$indexes[$row['relname']]['unique'] = $row['indisunique'] === 't';
-			$indexes[$row['relname']]['primary'] = $row['indisprimary'] === 't';
-			foreach (explode(' ', $row['indkey']) as $index) {
-				$indexes[$row['relname']]['columns'][] = $columns[$index];
-			}
-		}
-		return array_values($indexes);
-	}
-
-
-
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 * @param  string
-	 * @return array
-	 */
-	public function getForeignKeys($table)
-	{
-		throw new DibiNotImplementedException;
 	}
 
 }
