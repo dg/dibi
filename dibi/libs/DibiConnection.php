@@ -119,8 +119,10 @@ class DibiConnection extends DibiObject
 				$this->onEvent[] = array(new DibiFirePhpLogger($filter), 'logEvent');
 			}
 
-			$panel = new DibiNettePanel(isset($profilerCfg['explain']) ? $profilerCfg['explain'] : TRUE, $filter);
-			$panel->register($this);
+			if (interface_exists('Nette\Diagnostics\IBarPanel') || interface_exists('IBarPanel')) {
+				$panel = new DibiNettePanel(isset($profilerCfg['explain']) ? $profilerCfg['explain'] : TRUE, $filter);
+				$panel->register($this);
+			}
 		}
 
 		$this->substitutes = new DibiHashMap(create_function('$expr', 'return ":$expr:";'));
