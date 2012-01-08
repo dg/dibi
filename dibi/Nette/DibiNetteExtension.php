@@ -23,7 +23,7 @@ class DibiNetteExtension extends Nette\Config\CompilerExtension
 
 	public function loadConfiguration()
 	{
-		$container = $this->getContainer();
+		$container = $this->getContainerBuilder();
 		$config = $this->getConfig();
 
 		$useProfiler = isset($config['profiler'])
