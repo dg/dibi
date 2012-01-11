@@ -620,12 +620,12 @@ class DibiColumnInfo extends DibiObject
 	{
 		static $patterns = array(
 			'BYTEA|BLOB|BIN' => dibi::BINARY,
-			'TEXT|CHAR|BIGINT|LONGLONG' => dibi::TEXT,
-			'BYTE|COUNTER|SERIAL|INT|LONG' => dibi::INTEGER,
+			'TEXT|CHAR' => dibi::TEXT,
+			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG' => dibi::INTEGER,
 			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => dibi::FLOAT,
 			'^TIME$' => dibi::TIME,
 			'TIME' => dibi::DATETIME, // DATETIME, TIMESTAMP
-			'YEAR|DATE' => dibi::DATE,
+			'DATE' => dibi::DATE,
 			'BOOL|BIT' => dibi::BOOL,
 		);
 
