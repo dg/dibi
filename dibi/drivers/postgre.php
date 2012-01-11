@@ -470,15 +470,22 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getTables()
 	{
-		$version = pg_version($this->connection);
-		if ($version['server'] < 8) {
-			throw new DibiDriverException('Reflection requires PostgreSQL 8.');
+		$version = pg_parameter_status($this->resource, 'server_version');
+		if ($version < 7.4) {
+			throw new DibiDriverException('Reflection requires PostgreSQL 7.4 and newer.');
 		}
 
 		$res = $this->query("
-			SELECT table_name as name, CAST(table_type = 'VIEW' AS INTEGER) as view
-			FROM information_schema.tables
-			WHERE table_schema = current_schema()
+			SELECT
+				table_name AS name,
+				CASE table_type
+					WHEN 'VIEW' THEN 1
+					ELSE 0
+				END AS view
+			FROM
+				information_schema.tables
+			WHERE
+				table_schema = current_schema()
 		");
 		$tables = pg_fetch_all($res->resultSet);
 		return $tables ? $tables : array();
@@ -576,7 +583,72 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new DibiNotImplementedException;
+		$_table = $this->escape($table, dibi::TEXT);
+
+		$res = $this->query("
+			SELECT
+				c.conname AS name,
+				lt.attname AS local,
+				c.confrelid::regclass AS table,
+				ft.attname AS foreign,
+
+				CASE c.confupdtype
+					WHEN 'a' THEN 'NO ACTION'
+					WHEN 'r' THEN 'RESTRICT'
+					WHEN 'c' THEN 'CASCADE'
+					WHEN 'n' THEN 'SET NULL'
+					WHEN 'd' THEN 'SET DEFAULT'
+					ELSE 'UNKNOWN'
+				END AS \"onUpdate\",
+
+				CASE c.confdeltype
+					WHEN 'a' THEN 'NO ACTION'
+					WHEN 'r' THEN 'RESTRICT'
+					WHEN 'c' THEN 'CASCADE'
+					WHEN 'n' THEN 'SET NULL'
+					WHEN 'd' THEN 'SET DEFAULT'
+					ELSE 'UNKNOWN'
+				END AS \"onDelete\",
+
+				c.conkey,
+				lt.attnum AS lnum,
+				c.confkey,
+				ft.attnum AS fnum
+			FROM
+				pg_constraint c
+				JOIN pg_attribute lt ON c.conrelid = lt.attrelid AND lt.attnum = ANY (c.conkey)
+				JOIN pg_attribute ft ON c.confrelid = ft.attrelid AND ft.attnum = ANY (c.confkey)
+			WHERE
+				c.contype = 'f'
+				AND
+				c.conrelid = $_table::regclass
+		");
+
+		$fKeys = $references = array();
+		while ($row = $res->fetch(TRUE)) {
+			if (!isset($fKeys[$row['name']])) {
+				$fKeys[$row['name']] = array(
+					'name' => $row['name'],
+					'table' => $row['table'],
+					'local' => array(),
+					'foreign' => array(),
+					'onUpdate' => $row['onUpdate'],
+					'onDelete' => $row['onDelete'],
+				);
+
+				$l = explode(',', trim($row['conkey'], '{}'));
+				$f = explode(',', trim($row['confkey'], '{}'));
+
+				$references[$row['name']] = array_combine($l, $f);
+			}
+
+			if (isset($references[$row['name']][$row['lnum']]) && $references[$row['name']][$row['lnum']] === $row['fnum']) {
+				$fKeys[$row['name']]['local'][] = $row['local'];
+				$fKeys[$row['name']]['foreign'][] = $row['foreign'];
+			}
+		}
+
+		return $fKeys;
 	}
 
 }
