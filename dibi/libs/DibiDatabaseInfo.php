@@ -534,10 +534,7 @@ class DibiColumnInfo extends DibiObject
 	 */
 	public function getType()
 	{
-		if (self::$types === NULL) {
-			self::$types = new DibiHashMap(array(__CLASS__, 'detectType'));
-		}
-		return self::$types->{$this->info['nativetype']};
+		return self::getTypeCache()->{$this->info['nativetype']};
 	}
 
 
@@ -638,6 +635,19 @@ class DibiColumnInfo extends DibiObject
 			}
 		}
 		return dibi::TEXT;
+	}
+
+
+
+	/**
+	 * @internal
+	 */
+	public static function getTypeCache()
+	{
+		if (self::$types === NULL) {
+			self::$types = new DibiHashMap(array(__CLASS__, 'detectType'));
+		}
+		return self::$types;
 	}
 
 }

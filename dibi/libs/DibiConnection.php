@@ -50,7 +50,6 @@ class DibiConnection extends DibiObject
 	 * Connection options: (see driver-specific options too)
 	 *   - lazy (bool) => if TRUE, connection will be established only when required
 	 *   - result (array) => result set options
-	 *       - detectTypes (bool) => detect the types of result set fields?
 	 *       - formatDateTime => date-time format (if empty, DateTime objects will be returned)
 	 *   - profiler (array or bool)
 	 *       - run (bool) => enable profiler?
@@ -81,7 +80,6 @@ class DibiConnection extends DibiObject
 		self::alias($config, 'username', 'user');
 		self::alias($config, 'password', 'pass');
 		self::alias($config, 'host', 'hostname');
-		self::alias($config, 'result|detectTypes', 'resultDetectTypes'); // back compatibility
 		self::alias($config, 'result|formatDateTime', 'resultDateTime');
 
 		if (!isset($config['driver'])) {

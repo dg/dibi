@@ -43,7 +43,7 @@ class DibiResult extends DibiObject implements IDataSource
 	private $driver;
 
 	/** @var array  Translate table */
-	private $types;
+	private $types = array();
 
 	/** @var DibiResultInfo */
 	private $meta;
@@ -66,10 +66,7 @@ class DibiResult extends DibiObject implements IDataSource
 	public function __construct($driver, $config)
 	{
 		$this->driver = $driver;
-
-		if (!empty($config['detectTypes'])) {
-			$this->detectTypes();
-		}
+		$this->detectTypes();
 
 		if (!empty($config['formatDateTime'])) {
 			$this->dateFormat = is_string($config['formatDateTime']) ? $config['formatDateTime'] : '';
@@ -220,19 +217,11 @@ class DibiResult extends DibiObject implements IDataSource
 	final public function fetch()
 	{
 		$row = $this->getDriver()->fetch(TRUE);
-		if (!is_array($row)) return FALSE;
-
-		$this->fetched = TRUE;
-
-		// types-converting?
-		if ($this->types !== NULL) {
-			foreach ($this->types as $col => $type) {
-				if (isset($row[$col])) {
-					$row[$col] = $this->convert($row[$col], $type);
-				}
-			}
+		if (!is_array($row)) {
+			return FALSE;
 		}
-
+		$this->fetched = TRUE;
+		$this->normalize($row);
 		return new $this->rowClass($row);
 	}
 
@@ -245,17 +234,12 @@ class DibiResult extends DibiObject implements IDataSource
 	final public function fetchSingle()
 	{
 		$row = $this->getDriver()->fetch(TRUE);
-		if (!is_array($row)) return FALSE;
-		$this->fetched = TRUE;
-		$value = reset($row);
-
-		// types-converting?
-		$key = key($row);
-		if (isset($this->types[$key])) {
-			return $this->convert($value, $this->types[$key]);
+		if (!is_array($row)) {
+			return FALSE;
 		}
-
-		return $value;
+		$this->fetched = TRUE;
+		$this->normalize($row);
+		return reset($row);
 	}
 
 
@@ -495,7 +479,71 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 
-	/********************* meta info ****************d*g**/
+	/********************* column types ****************d*g**/
+
+
+
+	/**
+	 * Autodetect column types.
+	 * @return void
+	 */
+	private function detectTypes()
+	{
+		$cache = DibiColumnInfo::getTypeCache();
+		try {
+			foreach ($this->getDriver()->getResultColumns() as $col) {
+				$this->types[$col['name']] = $cache->{$col['nativetype']};
+			}
+		} catch (DibiNotSupportedException $e) {}
+	}
+
+
+
+	/**
+	 * Converts values to specified type and format.
+	 * @param  array
+	 * @return void
+	 */
+	private function normalize(array & $row)
+	{
+		foreach ($this->types as $key => $type) {
+			if (!isset($row[$key])) { // NULL
+				continue;
+			}
+			$value = $row[$key];
+			if ($value === FALSE || $type === dibi::TEXT) {
+
+			} elseif ($type === dibi::INTEGER) {
+				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
+
+			} elseif ($type === dibi::FLOAT) {
+				$row[$key] = (string) ($tmp = (float) $value) === $value ? $tmp : $value;
+
+			} elseif ($type === dibi::BOOL) {
+				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
+
+			} elseif ($type === dibi::DATE || $type === dibi::DATETIME) {
+				if ((int) $value === 0) { // '', NULL, FALSE, '0000-00-00', ...
+
+				} elseif ($this->dateFormat === '') { // return DateTime object (default)
+					$row[$key] = new DibiDateTime(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
+
+				} elseif ($this->dateFormat === 'U') { // return timestamp
+					$row[$key] = is_numeric($value) ? (int) $value : strtotime($value);
+
+				} elseif (is_numeric($value)) { // formatted date
+					$row[$key] = date($this->dateFormat, $value);
+
+				} else {
+					$value = new DibiDateTime($value);
+					$row[$key] = $value->format($this->dateFormat);
+				}
+
+			} elseif ($type === dibi::BINARY) {
+				$row[$key] = $this->getDriver()->unescape($value, $type);
+			}
+		}
+	}
 
 
 
@@ -514,33 +562,6 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * Autodetect column types.
-	 * @return void
-	 */
-	final public function detectTypes()
-	{
-		foreach ($this->getInfo()->getColumns() as $col) {
-			$this->types[$col->getName()] = $col->getType();
-		}
-	}
-
-
-
-	/**
-	 * Define multiple columns types.
-	 * @param  array
-	 * @return DibiResult  provides a fluent interface
-	 * @internal
-	 */
-	final public function setTypes(array $types)
-	{
-		$this->types = $types;
-		return $this;
-	}
-
-
-
-	/**
 	 * Returns column type.
 	 * @return string
 	 */
@@ -551,57 +572,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 
-	/**
-	 * Converts value to specified type and format.
-	 * @param  mixed  value
-	 * @param  int    type
-	 * @return mixed
-	 */
-	protected function convert($value, $type)
-	{
-		if ($value === NULL || $value === FALSE) {
-			return NULL;
-		}
-
-		switch ($type) {
-		case dibi::TEXT:
-			return (string) $value;
-
-		case dibi::BINARY:
-			return $this->getDriver()->unescape($value, $type);
-
-		case dibi::INTEGER:
-			return is_float($tmp = $value * 1) ? $value : $tmp;
-
-		case dibi::FLOAT:
-			return (float) $value;
-
-		case dibi::DATE:
-		case dibi::DATETIME:
-			if ((int) $value === 0) { // '', NULL, FALSE, '0000-00-00', ...
-				return NULL;
-
-			} elseif ($this->dateFormat === '') { // return DateTime object (default)
-				return new DibiDateTime(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
-
-			} elseif ($this->dateFormat === 'U') { // return timestamp
-				return is_numeric($value) ? (int) $value : strtotime($value);
-
-			} elseif (is_numeric($value)) { // formatted date
-				return date($this->dateFormat, $value);
-
-			} else {
-				$value = new DibiDateTime($value);
-				return $value->format($this->dateFormat);
-			}
-
-		case dibi::BOOL:
-			return ((bool) $value) && $value !== 'f' && $value !== 'F';
-
-		default:
-			return $value;
-		}
-	}
+	/********************* meta info ****************d*g**/
 
 
 
@@ -629,9 +600,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 
-	/**
-	 * @deprecated
-	 */
+	/** @deprecated */
 	public function getColumnNames($fullNames = FALSE)
 	{
 		trigger_error(__METHOD__ . '() is deprecated; use $res->getInfo()->getColumnNames() instead.', E_USER_WARNING);
