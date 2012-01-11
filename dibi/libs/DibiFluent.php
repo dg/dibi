@@ -181,10 +181,7 @@ class DibiFluent extends DibiObject implements IDataSource
 			} elseif (is_string($arg) && preg_match('#^[a-z:_][a-z0-9_.:]*$#i', $arg)) { // identifier
 				$args = array('%n', $arg);
 
-			} elseif ($arg instanceof self) {
-				$args = array_merge(array('('), $arg->_export(), array(')'));
-
-			} elseif (is_array($arg) || $arg instanceof Traversable) { // any array
+			} elseif (is_array($arg) || ($arg instanceof Traversable && !$arg instanceof self)) { // any array
 				if (isset(self::$modifiers[$clause])) {
 					$args = array(self::$modifiers[$clause], $arg);
 
@@ -194,7 +191,12 @@ class DibiFluent extends DibiObject implements IDataSource
 			} // case $arg === FALSE is handled above
 		}
 
-		foreach ($args as $arg) $this->cursor[] = $arg;
+		foreach ($args as $arg) {
+			if ($arg instanceof self) {
+				$arg = "($arg)";
+			}
+			$this->cursor[] = $arg;
+		}
 
 		return $this;
 	}
