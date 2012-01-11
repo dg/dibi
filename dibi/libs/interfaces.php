@@ -24,19 +24,6 @@ interface IDataSource extends Countable, IteratorAggregate
 
 
 /**
- * Object that is able to generate SQL.
- * @package    dibi
- */
-interface IDibiVariable
-{
-
-	function toSql();
-
-}
-
-
-
-/**
  * dibi driver interface.
  * @package    dibi
  */

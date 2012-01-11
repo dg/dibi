@@ -24,6 +24,7 @@ if (version_compare(PHP_VERSION, '5.2.0', '<')) {
 require_once dirname(__FILE__) . '/libs/interfaces.php';
 require_once dirname(__FILE__) . '/libs/DibiDateTime.php';
 require_once dirname(__FILE__) . '/libs/DibiObject.php';
+require_once dirname(__FILE__) . '/libs/DibiLiteral.php';
 require_once dirname(__FILE__) . '/libs/DibiHashMap.php';
 require_once dirname(__FILE__) . '/libs/DibiException.php';
 require_once dirname(__FILE__) . '/libs/DibiConnection.php';
@@ -39,20 +40,6 @@ require_once dirname(__FILE__) . '/libs/DibiFileLogger.php';
 require_once dirname(__FILE__) . '/libs/DibiFirePhpLogger.php';
 if (interface_exists('Nette\Diagnostics\IBarPanel') || interface_exists('IBarPanel')) {
 	require_once dirname(__FILE__) . '/Nette/DibiNettePanel.php';
-}
-
-
-
-/**
- * @deprecated
- */
-class DibiVariable extends DibiDateTime
-{
-	function __construct($val)
-	{
-		parent::__construct($val);
-		trigger_error(__CLASS__ . ' is deprecated; use class DateTime instead.', E_USER_WARNING);
-	}
 }
 
 

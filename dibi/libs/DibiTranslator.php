@@ -438,8 +438,8 @@ final class DibiTranslator extends DibiObject
 		} elseif ($value instanceof DateTime) {
 			return $this->driver->escape($value, dibi::DATETIME);
 
-		} elseif ($value instanceof IDibiVariable) {
-			return (string) $value->toSql();
+		} elseif ($value instanceof DibiLiteral) {
+			return (string) $value;
 
 		} else {
 			$this->hasError = TRUE;
