@@ -43,11 +43,13 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	public function asDateTime($key, $format = NULL)
 	{
 		$time = $this[$key];
-		if ((int) $time === 0) { // '', NULL, FALSE, '0000-00-00', ...
-			return NULL;
+		if (!$time instanceof DibiDateTime) {
+			if ((int) $time === 0) { // '', NULL, FALSE, '0000-00-00', ...
+				return NULL;
+			}
+			$time = new DibiDateTime(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
 		}
-		$dt = new DibiDateTime(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
-		return $format === NULL ? $dt : $dt->format($format);
+		return $format === NULL ? $time : $time->format($format);
 	}
 
 
@@ -59,6 +61,7 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	 */
 	public function asTimestamp($key)
 	{
+		trigger_error(__METHOD__ . '() is deprecated.', E_USER_WARNING);
 		$time = $this[$key];
 		return (int) $time === 0 // '', NULL, FALSE, '0000-00-00', ...
 			? NULL
@@ -74,13 +77,8 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	 */
 	public function asBool($key)
 	{
-		$value = $this[$key];
-		if ($value === NULL || $value === FALSE) {
-			return $value;
-
-		} else {
-			return ((bool) $value) && $value !== 'f' && $value !== 'F';
-		}
+		trigger_error(__METHOD__ . '() is deprecated.', E_USER_WARNING);
+		return $this[$key];
 	}
 
 
@@ -88,6 +86,7 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	/** @deprecated */
 	public function asDate($key, $format = NULL)
 	{
+		trigger_error(__METHOD__ . '() is deprecated.', E_USER_WARNING);
 		if ($format === NULL) {
 			return $this->asTimestamp($key);
 		} else {
