@@ -34,6 +34,22 @@ class DibiDateTime extends DateTime
 
 
 
+	public function modifyClone($modify = '')
+	{
+		$dolly = clone($this);
+		return $modify ? $dolly->modify($modify) : $dolly;
+	}
+
+
+
+	public function modify($modify)
+	{
+		parent::modify($modify);
+		return $this;
+	}
+
+
+
 	public function __sleep()
 	{
 		$this->fix = array($this->format('Y-m-d H:i:s'), $this->getTimezone()->getName());
@@ -60,6 +76,13 @@ class DibiDateTime extends DateTime
 	public function setTimestamp($timestamp)
 	{
 		return $this->__construct(date('Y-m-d H:i:s', $timestamp), new DateTimeZone($this->getTimezone()->getName())); // getTimeZone() crashes in PHP 5.2.6
+	}
+
+
+
+	public function __toString()
+	{
+		return $this->format('Y-m-d H:i:s');
 	}
 
 }
