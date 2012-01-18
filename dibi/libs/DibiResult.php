@@ -71,12 +71,11 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * Returns the result set resource.
-	 * @return mixed
+	 * @deprecated
 	 */
 	final public function getResource()
 	{
-		return $this->getDriver()->getResultResource();
+		return $this->getResultDriver()->getResultResource();
 	}
 
 
@@ -100,7 +99,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 * @return IDibiResultDriver
 	 * @throws RuntimeException
 	 */
-	private function getDriver()
+	final public function getResultDriver()
 	{
 		if ($this->driver === NULL) {
 			throw new RuntimeException('Result-set was released from memory.');
@@ -123,7 +122,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function seek($row)
 	{
-		return ($row !== 0 || $this->fetched) ? (bool) $this->getDriver()->seek($row) : TRUE;
+		return ($row !== 0 || $this->fetched) ? (bool) $this->getResultDriver()->seek($row) : TRUE;
 	}
 
 
@@ -134,7 +133,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function count()
 	{
-		return $this->getDriver()->getRowCount();
+		return $this->getResultDriver()->getRowCount();
 	}
 
 
@@ -145,7 +144,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function getRowCount()
 	{
-		return $this->getDriver()->getRowCount();
+		return $this->getResultDriver()->getRowCount();
 	}
 
 
@@ -157,7 +156,7 @@ class DibiResult extends DibiObject implements IDataSource
 	final public function rowCount()
 	{
 		trigger_error(__METHOD__ . '() is deprecated; use count($res) or $res->getRowCount() instead.', E_USER_WARNING);
-		return $this->getDriver()->getRowCount();
+		return $this->getResultDriver()->getRowCount();
 	}
 
 
@@ -211,7 +210,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function fetch()
 	{
-		$row = $this->getDriver()->fetch(TRUE);
+		$row = $this->getResultDriver()->fetch(TRUE);
 		if (!is_array($row)) {
 			return FALSE;
 		}
@@ -228,7 +227,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 */
 	final public function fetchSingle()
 	{
-		$row = $this->getDriver()->fetch(TRUE);
+		$row = $this->getResultDriver()->fetch(TRUE);
 		if (!is_array($row)) {
 			return FALSE;
 		}
@@ -486,7 +485,7 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		$cache = DibiColumnInfo::getTypeCache();
 		try {
-			foreach ($this->getDriver()->getResultColumns() as $col) {
+			foreach ($this->getResultDriver()->getResultColumns() as $col) {
 				$this->types[$col['name']] = $cache->{$col['nativetype']};
 			}
 		} catch (DibiNotSupportedException $e) {}
@@ -535,7 +534,7 @@ class DibiResult extends DibiObject implements IDataSource
 				}
 
 			} elseif ($type === dibi::BINARY) {
-				$row[$key] = $this->getDriver()->unescape($value, $type);
+				$row[$key] = $this->getResultDriver()->unescape($value, $type);
 			}
 		}
 	}
@@ -603,7 +602,7 @@ class DibiResult extends DibiObject implements IDataSource
 	public function getInfo()
 	{
 		if ($this->meta === NULL) {
-			$this->meta = new DibiResultInfo($this->getDriver());
+			$this->meta = new DibiResultInfo($this->getResultDriver());
 		}
 		return $this->meta;
 	}
