@@ -54,23 +54,18 @@ class DibiResult extends DibiObject implements IDataSource
 	/** @var string  returned object class */
 	private $rowClass = 'DibiRow';
 
-	/** @var string  date-time format */
-	private $dateFormat = '';
+	/** @var array  format */
+	private $formats = array();
 
 
 
 	/**
 	 * @param  IDibiResultDriver
-	 * @param  array
 	 */
-	public function __construct($driver, $config)
+	public function __construct($driver)
 	{
 		$this->driver = $driver;
 		$this->detectTypes();
-
-		if (!empty($config['formatDateTime'])) {
-			$this->dateFormat = is_string($config['formatDateTime']) ? $config['formatDateTime'] : '';
-		}
 	}
 
 
@@ -525,18 +520,18 @@ class DibiResult extends DibiObject implements IDataSource
 			} elseif ($type === dibi::DATE || $type === dibi::DATETIME) {
 				if ((int) $value === 0) { // '', NULL, FALSE, '0000-00-00', ...
 
-				} elseif ($this->dateFormat === '') { // return DateTime object (default)
+				} elseif (empty($this->formats[$type])) { // return DateTime object (default)
 					$row[$key] = new DibiDateTime(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
 
-				} elseif ($this->dateFormat === 'U') { // return timestamp
+				} elseif ($this->formats[$type] === 'U') { // return timestamp
 					$row[$key] = is_numeric($value) ? (int) $value : strtotime($value);
 
 				} elseif (is_numeric($value)) { // formatted date
-					$row[$key] = date($this->dateFormat, $value);
+					$row[$key] = date($this->formats[$type], $value);
 
 				} else {
 					$value = new DibiDateTime($value);
-					$row[$key] = $value->format($this->dateFormat);
+					$row[$key] = $value->format($this->formats[$type]);
 				}
 
 			} elseif ($type === dibi::BINARY) {
@@ -568,6 +563,31 @@ class DibiResult extends DibiObject implements IDataSource
 	final public function getType($col)
 	{
 		return isset($this->types[$col]) ? $this->types[$col] : NULL;
+	}
+
+
+
+	/**
+	 * Sets data format.
+	 * @param  string  type (use constant Dibi::*)
+	 * @param  string  format
+	 * @return DibiResult  provides a fluent interface
+	 */
+	final public function setFormat($type, $format)
+	{
+		$this->formats[$type] = $format;
+		return $this;
+	}
+
+
+
+	/**
+	 * Returns data format.
+	 * @return string
+	 */
+	final public function getFormat($type)
+	{
+		return isset($this->formats[$type]) ? $this->formats[$type] : NULL;
 	}
 
 

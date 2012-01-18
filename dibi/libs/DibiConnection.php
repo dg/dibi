@@ -480,7 +480,8 @@ class DibiConnection extends DibiObject
 	 */
 	public function createResultSet(IDibiResultDriver $resultDriver)
 	{
-		return new DibiResult($resultDriver, $this->config['result']);
+		$res = new DibiResult($resultDriver);
+		return $res->setFormat(dibi::DATETIME, $this->config['result']['formatDateTime']);
 	}
 
 

@@ -20,7 +20,9 @@ dibi::connect(array(
 $res = dibi::query('SELECT * FROM [customers]');
 
 $res->setType('customer_id', Dibi::INTEGER)
-	->setType('added', Dibi::DATETIME);
+	->setType('added', Dibi::DATETIME)
+	->setFormat(dibi::DATETIME, 'Y-m-d H:i:s');
+
 
 Debugger::dump( $res->fetch() );
 // outputs:
