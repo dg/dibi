@@ -42,7 +42,7 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 	public function __construct($explain = TRUE, $filter = NULL)
 	{
 		$this->filter = $filter ? (int) $filter : DibiEvent::QUERY;
-		$this->explain = (bool) $explain;
+		$this->explain = $explain;
 	}
 
 
@@ -123,7 +123,7 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 				try {
 					$backup = array($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime);
 					$event->connection->onEvent = NULL;
-					$explain = dibi::dump($event->connection->nativeQuery('EXPLAIN ' . $event->sql), TRUE);
+					$explain = dibi::dump($event->connection->nativeQuery((is_string($this->explain) ? $this->explain : 'EXPLAIN') . ' ' . $event->sql), TRUE);
 				} catch (DibiException $e) {}
 				list($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime) = $backup;
 			}
