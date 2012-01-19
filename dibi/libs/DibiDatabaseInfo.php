@@ -619,6 +619,7 @@ class DibiColumnInfo extends DibiObject
 	public static function detectType($type)
 	{
 		static $patterns = array(
+			'^_' => dibi::TEXT, // PostgreSQL arrays
 			'BYTEA|BLOB|BIN' => dibi::BINARY,
 			'TEXT|CHAR' => dibi::TEXT,
 			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG' => dibi::INTEGER,
