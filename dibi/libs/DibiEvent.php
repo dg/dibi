@@ -62,7 +62,7 @@ class DibiEvent
 		$this->sql = trim($sql);
 		$this->time = -microtime(TRUE);
 
-		if ($type === self::QUERY && preg_match('#(SELECT|UPDATE|INSERT|DELETE)#iA', $this->sql, $matches)) {
+		if ($type === self::QUERY && preg_match('#\(?\s*(SELECT|UPDATE|INSERT|DELETE)#iA', $this->sql, $matches)) {
 			static $types = array(
 				'SELECT' => self::SELECT, 'UPDATE' => self::UPDATE,
 				'INSERT' => self::INSERT, 'DELETE' => self::DELETE,
