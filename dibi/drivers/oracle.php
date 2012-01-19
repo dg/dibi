@@ -68,6 +68,12 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
 		$this->fmtDateTime = isset($config['formatDateTime']) ? $config['formatDateTime'] : 'U';
 
+		// profiler - see #45
+		$profilerCfg = & $config['profiler'];
+		if (!empty($profilerCfg['run'])) {
+			$profilerCfg['explain'] = 'EXPLAIN PLAN';
+		}
+
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
 		} else {
