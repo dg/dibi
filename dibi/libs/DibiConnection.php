@@ -80,6 +80,7 @@ class DibiConnection extends DibiObject
 		self::alias($config, 'username', 'user');
 		self::alias($config, 'password', 'pass');
 		self::alias($config, 'host', 'hostname');
+		self::alias($config, 'result|formatDate', 'resultDate');
 		self::alias($config, 'result|formatDateTime', 'resultDateTime');
 
 		if (!isset($config['driver'])) {
@@ -485,7 +486,8 @@ class DibiConnection extends DibiObject
 	public function createResultSet(IDibiResultDriver $resultDriver)
 	{
 		$res = new DibiResult($resultDriver);
-		return $res->setFormat(dibi::DATETIME, $this->config['result']['formatDateTime']);
+		return $res->setFormat(dibi::DATE, $this->config['result']['formatDate'])
+			->setFormat(dibi::DATETIME, $this->config['result']['formatDateTime']);
 	}
 
 
