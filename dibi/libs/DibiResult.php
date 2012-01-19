@@ -216,7 +216,10 @@ class DibiResult extends DibiObject implements IDataSource
 		}
 		$this->fetched = TRUE;
 		$this->normalize($row);
-		return new $this->rowClass($row);
+		if ($this->rowClass) {
+			$row = new $this->rowClass($row);
+		}
+		return $row;
 	}
 
 
