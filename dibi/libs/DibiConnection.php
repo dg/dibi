@@ -287,7 +287,11 @@ class DibiConnection extends DibiObject
 			return TRUE;
 
 		} catch (DibiException $e) {
-			dibi::dump($e->getSql());
+			if ($e->getSql()) {
+				dibi::dump($e->getSql());
+			} else {
+				echo get_class($e) . ': ' . $e->getMessage() . (PHP_SAPI === 'cli' ? "\n" : '<br>');
+			}
 			return FALSE;
 		}
 	}
