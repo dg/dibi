@@ -150,7 +150,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function begin($savepoint = NULL)
 	{
-		$this->query('BEGIN TRANSACTION');
+		sqlsrv_begin_transaction($this->connection);
 	}
 
 
@@ -163,7 +163,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function commit($savepoint = NULL)
 	{
-		$this->query('COMMIT');
+		sqlsrv_commit($this->connection);
 	}
 
 
@@ -176,7 +176,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function rollback($savepoint = NULL)
 	{
-		$this->query('ROLLBACK');
+		sqlsrv_rollback($this->connection);
 	}
 
 
