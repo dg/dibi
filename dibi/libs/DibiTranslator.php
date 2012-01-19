@@ -218,7 +218,16 @@ final class DibiTranslator extends DibiObject
 
 						} else {
 							$v = $this->formatValue($v, $pair[1]);
-							$vx[] = $k . ($pair[1] === 'l' || $pair[1] === 'in' ? 'IN ' : ($v === 'NULL' ? 'IS ' : '= ')) . $v;
+							if ($pair[1] === 'l' || $pair[1] === 'in')	{
+								$op = 'IN ';
+							} elseif (strpos($pair[1], 'like') !== FALSE) {
+								$op = 'LIKE ';
+							} elseif ($v === 'NULL') {
+								$op = 'IS ';
+							} else {
+								$op = '= ';
+							}
+							$vx[] = $k . $op . $v;
 						}
 
 					} else {
