@@ -287,11 +287,11 @@ class DibiDataSource extends DibiObject implements IDataSource
 	{
 		try {
 			return $this->connection->translate('
-				SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
-				FROM %SQL', $this->sql, '
-				%ex', $this->conds ? array('WHERE %and', $this->conds) : NULL, '
-				%ex', $this->sorting ? array('ORDER BY %by', $this->sorting) : NULL, '
-				%ofs %lmt', $this->offset, $this->limit
+SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
+FROM %SQL', $this->sql, '
+%ex', $this->conds ? array('WHERE %and', $this->conds) : NULL, '
+%ex', $this->sorting ? array('ORDER BY %by', $this->sorting) : NULL, '
+%ofs %lmt', $this->offset, $this->limit
 			);
 		} catch (Exception $e) {
 			trigger_error($e->getMessage(), E_USER_ERROR);
