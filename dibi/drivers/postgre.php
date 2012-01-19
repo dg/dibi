@@ -277,6 +277,9 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 		switch ($type) {
 		case dibi::TEXT:
 			if ($this->escMethod) {
+				if (!is_resource($this->connection)) {
+					throw new DibiException('Lost connection to server.');
+				}
 				return "'" . pg_escape_string($this->connection, $value) . "'";
 			} else {
 				return "'" . pg_escape_string($value) . "'";
@@ -284,6 +287,9 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 		case dibi::BINARY:
 			if ($this->escMethod) {
+				if (!is_resource($this->connection)) {
+					throw new DibiException('Lost connection to server.');
+				}
 				return "'" . pg_escape_bytea($this->connection, $value) . "'";
 			} else {
 				return "'" . pg_escape_bytea($value) . "'";

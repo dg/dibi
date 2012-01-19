@@ -300,9 +300,15 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	{
 		switch ($type) {
 		case dibi::TEXT:
+			if (!is_resource($this->connection)) {
+				throw new DibiException('Lost connection to server.');
+			}
 			return "'" . mysql_real_escape_string($value, $this->connection) . "'";
 
 		case dibi::BINARY:
+			if (!is_resource($this->connection)) {
+				throw new DibiException('Lost connection to server.');
+			}
 			return "_binary'" . mysql_real_escape_string($value, $this->connection) . "'";
 
 		case dibi::IDENTIFIER:
