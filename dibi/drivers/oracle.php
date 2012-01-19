@@ -191,7 +191,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getResource()
 	{
-		return $this->connection;
+		return is_resource($this->connection) ? $this->connection : NULL;
 	}
 
 
@@ -321,7 +321,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function __destruct()
 	{
-		$this->resultSet && @$this->free();
+		$this->getResultResource() && $this->free();
 	}
 
 
@@ -400,7 +400,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getResultResource()
 	{
-		return $this->resultSet;
+		return is_resource($this->resultSet) ? $this->resultSet : NULL;
 	}
 
 

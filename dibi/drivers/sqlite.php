@@ -202,7 +202,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getResource()
 	{
-		return $this->connection;
+		return is_resource($this->connection) ? $this->connection : NULL;
 	}
 
 
@@ -412,7 +412,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getResultResource()
 	{
-		return $this->resultSet;
+		return is_resource($this->resultSet) ? $this->resultSet : NULL;
 	}
 
 

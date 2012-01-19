@@ -144,7 +144,7 @@ class DibiConnection extends DibiObject
 	public function __destruct()
 	{
 		// disconnects and rolls back transaction - do not rely on auto-disconnect and rollback!
-		$this->connected && $this->disconnect();
+		$this->connected && $this->driver->getResource() && $this->disconnect();
 	}
 
 

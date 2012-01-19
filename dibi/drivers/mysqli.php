@@ -252,7 +252,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getResource()
 	{
-		return $this->connection;
+		return @$this->connection->thread_id ? $this->connection : NULL;
 	}
 
 
@@ -380,7 +380,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function __destruct()
 	{
-		$this->resultSet && @$this->free();
+		$this->getResultResource() && $this->free();
 	}
 
 
@@ -479,7 +479,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getResultResource()
 	{
-		return $this->resultSet;
+		return @$this->resultSet->type === NULL ? NULL : $this->resultSet;
 	}
 
 }

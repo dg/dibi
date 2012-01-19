@@ -13,7 +13,9 @@ require_once '../dibi/dibi.php';
 dibi::connect(array(
 	'driver'   => 'sqlite',
 	'database' => 'data/sample.sdb',
-	'profiler' => TRUE,
+	'profiler' => array(
+		'run' => TRUE,
+	)
 ));
 
 
