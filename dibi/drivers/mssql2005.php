@@ -34,6 +34,9 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	/** @var resource  Resultset resource */
 	private $resultSet;
 
+	/** @var bool */
+	private $autoFree = TRUE;
+
 	/** @var int|FALSE  Affected rows */
 	private $affectedRows = FALSE;
 
@@ -314,7 +317,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function __destruct()
 	{
-		$this->getResultResource() && $this->free();
+		$this->autoFree && $this->getResultResource() && $this->free();
 	}
 
 
@@ -393,6 +396,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getResultResource()
 	{
+		$this->autoFree = FALSE;
 		return is_resource($this->resultSet) ? $this->resultSet : NULL;
 	}
 

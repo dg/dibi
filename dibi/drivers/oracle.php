@@ -35,6 +35,9 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	private $resultSet;
 
 	/** @var bool */
+	private $autoFree = TRUE;
+
+	/** @var bool */
 	private $autocommit = TRUE;
 
 	/** @var string  Date and datetime format */
@@ -321,7 +324,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function __destruct()
 	{
-		$this->getResultResource() && $this->free();
+		$this->autoFree && $this->getResultResource() && $this->free();
 	}
 
 
@@ -400,6 +403,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getResultResource()
 	{
+		$this->autoFree = FALSE;
 		return is_resource($this->resultSet) ? $this->resultSet : NULL;
 	}
 

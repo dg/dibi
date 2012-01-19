@@ -36,6 +36,9 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 	/** @var SQLite3Result  Resultset resource */
 	private $resultSet;
 
+	/** @var bool */
+	private $autoFree = TRUE;
+
 	/** @var string  Date and datetime format */
 	private $fmtDate, $fmtDateTime;
 
@@ -317,7 +320,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function __destruct()
 	{
-		$this->resultSet && @$this->free();
+		$this->autoFree && $this->resultSet && @$this->free();
 	}
 
 
@@ -411,6 +414,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getResultResource()
 	{
+		$this->autoFree = FALSE;
 		return $this->resultSet;
 	}
 

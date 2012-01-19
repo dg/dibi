@@ -33,6 +33,9 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	/** @var resource  Resultset resource */
 	private $resultSet;
 
+	/** @var bool */
+	private $autoFree = TRUE;
+
 	/** @var int|FALSE  Affected rows */
 	private $affectedRows = FALSE;
 
@@ -380,7 +383,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function __destruct()
 	{
-		$this->getResultResource() && $this->free();
+		$this->autoFree && $this->getResultResource() && $this->free();
 	}
 
 
@@ -461,6 +464,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getResultResource()
 	{
+		$this->autoFree = FALSE;
 		return is_resource($this->resultSet) ? $this->resultSet : NULL;
 	}
 

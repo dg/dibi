@@ -35,6 +35,9 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	/** @var resource  Resultset resource */
 	private $resultSet;
 
+	/** @var bool */
+	private $autoFree = TRUE;
+
 	/** @var resource  Resultset resource */
 	private $transaction;
 
@@ -359,7 +362,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function __destruct()
 	{
-		$this->getResultResource() && $this->free();
+		$this->autoFree && $this->getResultResource() && $this->free();
 	}
 
 
@@ -431,6 +434,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getResultResource()
 	{
+		$this->autoFree = FALSE;
 		return is_resource($this->resultSet) ? $this->resultSet : NULL;
 	}
 

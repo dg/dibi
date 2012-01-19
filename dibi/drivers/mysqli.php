@@ -47,6 +47,9 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	/** @var mysqli_result  Resultset resource */
 	private $resultSet;
 
+	/** @var bool */
+	private $autoFree = TRUE;
+
 	/** @var bool  Is buffered (seekable and countable)? */
 	private $buffered;
 
@@ -380,7 +383,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function __destruct()
 	{
-		$this->getResultResource() && $this->free();
+		$this->autoFree && $this->getResultResource() && @$this->free();
 	}
 
 
@@ -479,6 +482,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getResultResource()
 	{
+		$this->autoFree = FALSE;
 		return @$this->resultSet->type === NULL ? NULL : $this->resultSet;
 	}
 
