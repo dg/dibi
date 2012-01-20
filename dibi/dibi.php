@@ -38,6 +38,7 @@ require_once dirname(__FILE__) . '/libs/DibiDatabaseInfo.php';
 require_once dirname(__FILE__) . '/libs/DibiEvent.php';
 require_once dirname(__FILE__) . '/libs/DibiFileLogger.php';
 require_once dirname(__FILE__) . '/libs/DibiFirePhpLogger.php';
+require_once dirname(__FILE__) . '/libs/adapters.php';
 if (interface_exists('Nette\Diagnostics\IBarPanel') || interface_exists('IBarPanel')) {
 	require_once dirname(__FILE__) . '/Nette/DibiNettePanel.php';
 }

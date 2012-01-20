@@ -26,7 +26,7 @@
  * @author     David Grudl
  * @package    dibi\drivers
  */
-class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class DibiOracleDriver extends DibiDriverAdapter
 {
 	/** @var resource  Connection resource */
 	private $connection;
@@ -55,7 +55,14 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		}
 	}
 
-
+	public function config(array &$config)
+	{
+		// profiler
+		$profilerCfg = & $config['profiler'];
+		if (!empty($profilerCfg['run'])) {
+			$profilerCfg['explain'] = 'EXPLAIN PLAN';
+		}
+	}
 
 	/**
 	 * Connects to a database.
