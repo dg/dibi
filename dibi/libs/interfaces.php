@@ -31,6 +31,14 @@ interface IDibiDriver
 {
 
 	/**
+	 * Initial configuration of database parameters.
+	 * @param  array
+	 * @return void
+	 * @throws DibiException
+	 */
+	function config(array &$config);
+
+	/**
 	 * Connects to a database.
 	 * @param  array
 	 * @return void

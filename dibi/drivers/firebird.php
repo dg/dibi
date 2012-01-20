@@ -25,7 +25,7 @@
  * @author     Tomáš Kraina, Roman Sklenář
  * @package    dibi\drivers
  */
-class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class DibiFirebirdDriver extends DibiDriverAdapter
 {
 	const ERROR_EXCEPTION_THROWN = -836;
 

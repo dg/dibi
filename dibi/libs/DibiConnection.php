@@ -98,7 +98,7 @@ class DibiConnection extends DibiObject
 		}
 
 		$config['name'] = $name;
-		$this->config = $config;
+		$this->config = & $config;
 		$this->driver = new $class;
 		$this->translator = new DibiTranslator($this);
 
@@ -107,6 +107,27 @@ class DibiConnection extends DibiObject
 		if (is_scalar($profilerCfg)) {
 			$profilerCfg = array('run' => (bool) $profilerCfg);
 		}
+
+		// substitutes
+		$this->substitutes = new DibiHashMap(create_function('$expr', 'return ":$expr:";'));
+		if (!empty($config['substitutes'])) {
+			foreach ($config['substitutes'] as $key => $value) {
+				$this->substitutes->$key = $value;
+			}
+		}
+
+		$this->driver->config($config);
+
+		if ($profilerCfg !== null) {
+			$this->setupProfiler($profilerCfg);
+		}
+
+		if (empty($config['lazy'])) {
+			$this->connect();
+		}
+	}
+
+	private function setupProfiler(array $profilerCfg) {
 		if (!empty($profilerCfg['run'])) {
 			$filter = isset($profilerCfg['filter']) ? $profilerCfg['filter'] : DibiEvent::QUERY;
 
@@ -123,20 +144,7 @@ class DibiConnection extends DibiObject
 				$panel->register($this);
 			}
 		}
-
-		$this->substitutes = new DibiHashMap(create_function('$expr', 'return ":$expr:";'));
-		if (!empty($config['substitutes'])) {
-			foreach ($config['substitutes'] as $key => $value) {
-				$this->substitutes->$key = $value;
-			}
-		}
-
-		if (empty($config['lazy'])) {
-			$this->connect();
-		}
 	}
-
-
 
 	/**
 	 * Automatically frees the resources allocated for this result set.

@@ -28,7 +28,7 @@ require_once dirname(__FILE__) . '/sqlite.reflector.php';
  * @author     David Grudl
  * @package    dibi\drivers
  */
-class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
+class DibiPdoDriver extends DibiDriverAdapter
 {
 	/** @var PDO  Connection resource */
 	private $connection;

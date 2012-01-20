@@ -24,7 +24,7 @@
  * @author     David Grudl
  * @package    dibi\drivers
  */
-class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class DibiOdbcDriver extends DibiDriverAdapter
 {
 	/** @var resource  Connection resource */
 	private $connection;

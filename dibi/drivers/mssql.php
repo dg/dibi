@@ -26,7 +26,7 @@ require_once dirname(__FILE__) . '/mssql.reflector.php';
  * @author     David Grudl
  * @package    dibi\drivers
  */
-class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
+class DibiMsSqlDriver extends DibiDriverAdapter
 {
 	/** @var resource  Connection resource */
 	private $connection;

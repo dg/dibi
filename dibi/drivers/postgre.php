@@ -25,7 +25,7 @@
  * @author     David Grudl
  * @package    dibi\drivers
  */
-class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class DibiPostgreDriver extends DibiDriverAdapter
 {
 	/** @var resource  Connection resource */
 	private $connection;

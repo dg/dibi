@@ -35,7 +35,7 @@ require_once dirname(__FILE__) . '/mysql.reflector.php';
  * @author     David Grudl
  * @package    dibi\drivers
  */
-class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
+class DibiMySqliDriver extends DibiDriverAdapter
 {
 	const ERROR_ACCESS_DENIED = 1045;
 	const ERROR_DUPLICATE_ENTRY = 1062;
