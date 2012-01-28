@@ -239,7 +239,7 @@ final class DibiTranslator extends DibiObject
 			case 'n':  // key, key, ... identifier names
 				foreach ($value as $k => $v) {
 					if (is_string($k)) {
-						$vx[] = $this->identifiers->$k . (empty($v) ? '' : ' AS ' . $v);
+						$vx[] = $this->identifiers->$k . (empty($v) ? '' : ' AS ' . $this->identifiers->$v);
 					} else {
 						$pair = explode('%', $v, 2); // split into identifier & modifier
 						$vx[] = $this->identifiers->{$pair[0]};
