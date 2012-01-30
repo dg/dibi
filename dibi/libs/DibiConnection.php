@@ -12,7 +12,7 @@
 
 
 if (interface_exists('Nette\Diagnostics\IBarPanel') || interface_exists('IBarPanel')) {
-	require_once dirname(__FILE__) . '/Nette/DibiNettePanel.php';
+	require_once dirname(__FILE__) . '/../Nette/DibiNettePanel.php';
 }
 
 
