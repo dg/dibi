@@ -62,6 +62,8 @@ class DibiConnection extends DibiObject
 	 */
 	public function __construct($config, $name = NULL)
 	{
+		class_exists('dibi'); // ensure class dibi is loaded
+
 		// DSN string
 		if (is_string($config)) {
 			parse_str($config, $config);
