@@ -7,6 +7,7 @@
 require_once 'Nette/Debugger.php';
 require_once '../dibi/dibi.php';
 
+ndebug();
 date_default_timezone_set('Europe/Prague');
 
 
@@ -24,7 +25,7 @@ $res->setType('customer_id', Dibi::INTEGER)
 	->setFormat(dibi::DATETIME, 'Y-m-d H:i:s');
 
 
-Debugger::dump( $res->fetch() );
+dump( $res->fetch() );
 // outputs:
 // object(DibiRow)#3 (3) {
 //     customer_id => int(1)
@@ -37,7 +38,7 @@ Debugger::dump( $res->fetch() );
 // using auto-detection (works well with MySQL or other strictly typed databases)
 $res = dibi::query('SELECT * FROM [customers]');
 
-Debugger::dump( $res->fetch() );
+dump( $res->fetch() );
 // outputs:
 // object(DibiRow)#3 (3) {
 //     customer_id => int(1)

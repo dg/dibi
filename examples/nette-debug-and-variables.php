@@ -15,7 +15,7 @@ require_once '../dibi/dibi.php';
 
 
 // enable Nette Debugger
-Debugger::enable();
+NDebugger::enable();
 
 
 dibi::connect(array(
@@ -27,4 +27,4 @@ dibi::connect(array(
 ));
 
 
-Debugger::barDump( dibi::fetchAll('SELECT * FROM customers WHERE customer_id < ?', 38), '[customers]' );
+NDebugger::barDump( dibi::fetchAll('SELECT * FROM customers WHERE customer_id < ?', 38), '[customers]' );
