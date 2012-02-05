@@ -96,6 +96,7 @@ class DibiEvent
 		$this->time += microtime(TRUE);
 		dibi::$elapsedTime = $this->time;
 		dibi::$totalTime += $this->time;
+		$this->connection->totalTime += $this->time;
 		return $this;
 	}
 

@@ -44,6 +44,12 @@ class DibiConnection extends DibiObject
 	/** @var DibiHashMap Substitutes for identifiers */
 	private $substitutes;
 
+	/** @var int  Elapsed time for all queries */
+	public $totalTime = 0;
+
+	/** @var int  Number or queries */
+	public $numOfQueries = 0;
+
 
 
 	/**
@@ -339,6 +345,7 @@ class DibiConnection extends DibiObject
 		$this->connected || $this->connect();
 
 		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::QUERY, $sql) : NULL;
+		$this->numOfQueries++;
 		dibi::$numOfQueries++;
 		dibi::$sql = $sql;
 		try {

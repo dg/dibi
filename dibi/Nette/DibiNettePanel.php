@@ -101,9 +101,11 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 	 */
 	public function getTab()
 	{
+		$event = reset($this->events);
+
 		return '<span title="dibi"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEYSURBVBgZBcHPio5hGAfg6/2+R980k6wmJgsJ5U/ZOAqbSc2GnXOwUg7BESgLUeIQ1GSjLFnMwsKGGg1qxJRmPM97/1zXFAAAAEADdlfZzr26miup2svnelq7d2aYgt3rebl585wN6+K3I1/9fJe7O/uIePP2SypJkiRJ0vMhr55FLCA3zgIAOK9uQ4MS361ZOSX+OrTvkgINSjS/HIvhjxNNFGgQsbSmabohKDNoUGLohsls6BaiQIMSs2FYmnXdUsygQYmumy3Nhi6igwalDEOJEjPKP7CA2aFNK8Bkyy3fdNCg7r9/fW3jgpVJbDmy5+PB2IYp4MXFelQ7izPrhkPHB+P5/PjhD5gCgCenx+VR/dODEwD+A3T7nqbxwf1HAAAAAElFTkSuQmCC" />'
-			. dibi::$numOfQueries . ' queries'
-			. (dibi::$totalTime ? ' / ' . sprintf('%0.1f', dibi::$totalTime * 1000) . 'ms' : '')
+			. ($event ? $event->connection->numOfQueries : 0) . ' queries'
+			. ($event && $event->connection->totalTime ? ' / ' . sprintf('%0.1f', $event->connection->totalTime * 1000) . 'ms' : '')
 			. '</span>';
 	}
 
@@ -121,12 +123,12 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 			$explain = NULL; // EXPLAIN is called here to work SELECT FOUND_ROWS()
 			if ($this->explain && $event->type === DibiEvent::SELECT) {
 				try {
-					$backup = array($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime);
+					$backup = array($event->connection->onEvent, $event->connection->numOfQueries, $event->connection->totalTime, dibi::$numOfQueries, dibi::$totalTime);
 					$event->connection->onEvent = NULL;
 					$cmd = is_string($this->explain) ? $this->explain : ($event->connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN' : 'EXPLAIN');
 					$explain = dibi::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);
 				} catch (DibiException $e) {}
-				list($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime) = $backup;
+				list($event->connection->onEvent, $event->connection->numOfQueries, $event->connection->totalTime, dibi::$numOfQueries, dibi::$totalTime) = $backup;
 			}
 
 			$s .= '<tr><td>' . sprintf('%0.3f', $event->time * 1000);
@@ -155,7 +157,7 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 			'<style> #nette-debug td.nette-DibiProfiler-sql { background: white !important }
 			#nette-debug .nette-DibiProfiler-source { color: #999 !important }
 			#nette-debug nette-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
-			<h1>Queries: ' . dibi::$numOfQueries . (dibi::$totalTime === NULL ? '' : ', time: ' . sprintf('%0.3f', dibi::$totalTime * 1000) . ' ms') . '</h1>
+			<h1>Queries: ' . (isset($event) ? $event->connection->numOfQueries : 0) . (isset($event) && $event->connection->totalTime === NULL ? '' : ', time: ' . sprintf('%0.3f', $event->connection->totalTime * 1000) . ' ms') . '</h1>
 			<div class="nette-inner nette-DibiProfiler">
 			<table>
 				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Rows</th><th>Connection</th></tr>' . $s . '
