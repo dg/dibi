@@ -28,4 +28,18 @@ dibi::connect(array(
 
 
 // throws error because SQL is bad
+dibi::query('SELECT * FROM customers WHERE customer_id < ?', 38);
+
+
+
+dibi::connect(array(
+	'driver'   => 'sqlite',
+	'database' => 'data/sample.sdb',
+	'profiler' => array(
+		'run' => TRUE,
+	)
+));
+
+
+// throws error because SQL is bad
 dibi::query('SELECT FROM customers WHERE customer_id < ?', 38);
