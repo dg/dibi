@@ -376,7 +376,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	public function getResultColumns()
 	{
 		$columns = array();
-		foreach ((array) sqlsrv_field_metadata($this->resultSet) AS $fieldMetadata) {
+		foreach ((array) sqlsrv_field_metadata($this->resultSet) as $fieldMetadata) {
 			$columns[] = array(
 				'name' => $fieldMetadata['Name'],
 				'fullname' => $fieldMetadata['Name'],
