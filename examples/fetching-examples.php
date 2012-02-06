@@ -7,6 +7,7 @@
 require_once 'Nette/Debugger.php';
 require_once '../dibi/dibi.php';
 
+ndebug();
 
 dibi::connect(array(
 	'driver'   => 'sqlite',
@@ -29,38 +30,38 @@ product_id | title
 // fetch a single row
 echo "<h2>fetch()</h2>\n";
 $row = dibi::fetch('SELECT title FROM products');
-Debugger::dump($row); // Chair
+dump($row); // Chair
 
 
 // fetch a single value
 echo "<h2>fetchSingle()</h2>\n";
 $value = dibi::fetchSingle('SELECT title FROM products');
-Debugger::dump($value); // Chair
+dump($value); // Chair
 
 
 // fetch complete result set
 echo "<h2>fetchAll()</h2>\n";
 $all = dibi::fetchAll('SELECT * FROM products');
-Debugger::dump($all);
+dump($all);
 
 
 // fetch complete result set like association array
 echo "<h2>fetchAssoc('title')</h2>\n";
 $res = dibi::query('SELECT * FROM products');
 $assoc = $res->fetchAssoc('title'); // key
-Debugger::dump($assoc);
+dump($assoc);
 
 
 // fetch complete result set like pairs key => value
 echo "<h2>fetchPairs('product_id', 'title')</h2>\n";
 $pairs = $res->fetchPairs('product_id', 'title');
-Debugger::dump($pairs);
+dump($pairs);
 
 
 // fetch row by row
 echo "<h2>using foreach</h2>\n";
 foreach ($res as $n => $row) {
-	Debugger::dump($row);
+	dump($row);
 }
 
 
@@ -74,12 +75,12 @@ $res = dibi::query('
 
 echo "<h2>fetchAssoc('customers.name|products.title')</h2>\n";
 $assoc = $res->fetchAssoc('customers.name|products.title'); // key
-Debugger::dump($assoc);
+dump($assoc);
 
 echo "<h2>fetchAssoc('customers.name[]products.title')</h2>\n";
 $assoc = $res->fetchAssoc('customers.name[]products.title'); // key
-Debugger::dump($assoc);
+dump($assoc);
 
 echo "<h2>fetchAssoc('customers.name->products.title')</h2>\n";
 $assoc = $res->fetchAssoc('customers.name->products.title'); // key
-Debugger::dump($assoc);
+dump($assoc);

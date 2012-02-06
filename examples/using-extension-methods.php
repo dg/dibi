@@ -7,6 +7,7 @@
 require_once 'Nette/Debugger.php';
 require_once '../dibi/dibi.php';
 
+ndebug();
 
 dibi::connect(array(
 	'driver'   => 'sqlite',
@@ -27,4 +28,4 @@ function DibiResult_prototype_fetchShuffle(DibiResult $obj)
 // fetch complete result set shuffled
 $res = dibi::query('SELECT * FROM [customers]');
 $all = $res->fetchShuffle();
-Debugger::dump($all);
+dump($all);
