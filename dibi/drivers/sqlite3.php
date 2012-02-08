@@ -252,10 +252,10 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 			return $value ? 1 : 0;
 
 		case dibi::DATE:
-			return $value instanceof DateTime ? $value->format($this->fmtDate) : date($this->fmtDate, $value);
+			return $this->escape($value instanceof DateTime ? $value->format($this->fmtDate) : date($this->fmtDate, $value), dibi::TEXT);
 
 		case dibi::DATETIME:
-			return $value instanceof DateTime ? $value->format($this->fmtDateTime) : date($this->fmtDateTime, $value);
+			return $this->escape($value instanceof DateTime ? $value->format($this->fmtDateTime) : date($this->fmtDateTime, $value), dibi::TEXT);
 
 		default:
 			throw new InvalidArgumentException('Unsupported type.');
