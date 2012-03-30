@@ -1,1 +1,1 @@
-Dibi 2.0 (revision $WCREV$ released on $WCDATE$)
+Dibi 2.0.1 (revision $WCREV$ released on $WCDATE$)
