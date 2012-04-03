@@ -688,6 +688,10 @@ class DibiConnection extends DibiObject
 				$count++;
 			}
 		}
+		if (trim($sql) !== '') {
+			$this->driver->query($sql);
+			$count++;
+		}
 		fclose($handle);
 		return $count;
 	}
