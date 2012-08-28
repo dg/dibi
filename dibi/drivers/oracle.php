@@ -21,6 +21,7 @@
  *   - formatDate => how to format date in SQL (@see date)
  *   - formatDateTime => how to format datetime in SQL (@see date)
  *   - resource (resource) => existing connection resource
+ *   - persistent => Creates persistent connections with oci_pconnect instead of oci_new_connect
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @author     David Grudl
@@ -70,8 +71,10 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
-		} else {
+		} elseif (empty($config['persistent'])) {
 			$this->connection = @oci_new_connect($config['username'], $config['password'], $config['database'], $config['charset']); // intentionally @
+		} else {
+			$this->connection = @oci_pconnect($config['username'], $config['password'], $config['database'], $config['charset']); // intentionally @
 		}
 
 		if (!$this->connection) {
