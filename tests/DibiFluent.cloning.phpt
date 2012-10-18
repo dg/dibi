@@ -4,17 +4,15 @@
  * Test: Cloning of DibiFluent
  *
  * @author     David Grudl
- * @category   Dibi
- * @subpackage UnitTests
  */
 
 
 
-require dirname(__FILE__) . '/initialize.php';
+require dirname(__FILE__) . '/bootstrap.php';
 
 
 
-dibi::connect($config['sqlite']);
+dibi::connect($config['sqlite3']);
 
 
 $fluent = new DibiFluent(dibi::getConnection());
@@ -23,8 +21,8 @@ $dolly = clone $fluent;
 $dolly->where('y=1');
 $dolly->clause('FOO');
 
-$fluent->test();
-$dolly->test();
+Assert::same( 'SELECT * FROM [table] WHERE x=1', (string) $fluent );
+Assert::same( 'SELECT * FROM [table] WHERE x=1 AND y=1 FOO', (string) $dolly );
 
 
 
@@ -32,8 +30,8 @@ $fluent = dibi::select('id')->from('table')->where('id = %i',1);
 $dolly = clone $fluent;
 $dolly->where('cd = %i',5);
 
-$fluent->test();
-$dolly->test();
+Assert::same( 'SELECT [id] FROM [table] WHERE id = 1', (string) $fluent );
+Assert::same( 'SELECT [id] FROM [table] WHERE id = 1 AND cd = 5', (string) $dolly );
 
 
 
@@ -41,32 +39,5 @@ $fluent = dibi::select("*")->from("table");
 $dolly = clone $fluent;
 $dolly->removeClause("select")->select("count(*)");
 
-$fluent->test();
-$dolly->test();
-
-
-
-__halt_compiler() ?>
-
-------EXPECT------
-SELECT *
-FROM [table]
-WHERE x=1
-
-SELECT *
-FROM [table]
-WHERE x=1 AND y=1 FOO
-
-SELECT [id]
-FROM [table]
-WHERE id = 1
-
-SELECT [id]
-FROM [table]
-WHERE id = 1 AND cd = 5
-
-SELECT *
-FROM [table]
-
-SELECT count(*)
-FROM [table]
+Assert::same( 'SELECT * FROM [table]', (string) $fluent );
+Assert::same( 'SELECT count(*) FROM [table]', (string) $dolly );
