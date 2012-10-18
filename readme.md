@@ -16,3 +16,9 @@ Refer to the `examples` directory for examples. Dibi documentation is
 available on the [homepage](http://dibiphp.com).
 
 Dibi requires PHP 5.2.0 or later. It has been tested with PHP 5.5 too.
+
+
+
+-----
+
+[![Build Status](https://secure.travis-ci.org/dg/dibi.png?branch=master)](http://travis-ci.org/dg/dibi)

@@ -8,8 +8,7 @@
 
 
 
-require dirname(__FILE__) . '/bootstrap.php';
-
+require __DIR__ . '/bootstrap.php';
 
 
 dibi::connect($config['sqlite3']);
