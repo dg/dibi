@@ -353,7 +353,7 @@ final class DibiTranslator extends DibiObject
 			case 'i':  // signed int
 			case 'u':  // unsigned int, ignored
 				// support for long numbers - keep them unchanged
-				if (is_string($value) && preg_match('#[+-]?\d++(e\d+)?$#A', $value)) {
+				if (is_string($value) && preg_match('#[+-]?\d++(e\d+)?\z#A', $value)) {
 					return $value;
 				} else {
 					return $value === NULL ? 'NULL' : (string) (int) ($value + 0);
