@@ -69,7 +69,7 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 		$columns = array();
 		while ($row = $res->fetch(TRUE)) {
 			$column = $row['name'];
-			$pattern = "/(\"$column\"|\[$column\]|$column)\s+[^,]+\s+PRIMARY\s+KEY\s+AUTOINCREMENT/Ui";
+			$pattern = "/(\"$column\"|\[$column\]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
 			$type = explode('(', $row['type']);
 			$columns[] = array(
 				'name' => $column,

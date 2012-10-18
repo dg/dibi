@@ -181,7 +181,7 @@ class DibiFluent extends DibiObject implements IDataSource
 			if ($arg === TRUE) { // flag
 				return $this;
 
-			} elseif (is_string($arg) && preg_match('#^[a-z:_][a-z0-9_.:]*$#i', $arg)) { // identifier
+			} elseif (is_string($arg) && preg_match('#^[a-z:_][a-z0-9_.:]*\z#i', $arg)) { // identifier
 				$args = array('%n', $arg);
 
 			} elseif (is_array($arg) || ($arg instanceof Traversable && !$arg instanceof self)) { // any array
