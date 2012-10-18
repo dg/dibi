@@ -9,8 +9,8 @@ require dirname(__FILE__) . '/../dibi/dibi.php';
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite',
-	'database' => 'data/sample.sdb',
+	'driver'   => 'sqlite3',
+	'database' => 'data/sample.s3db',
 ));
 
 
