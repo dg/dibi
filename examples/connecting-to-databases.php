@@ -12,8 +12,8 @@ require dirname(__FILE__) . '/../dibi/dibi.php';
 echo '<p>Connecting to Sqlite: ';
 try {
 	dibi::connect(array(
-		'driver'   => 'sqlite',
-		'database' => 'data/sample.sdb',
+		'driver'   => 'sqlite3',
+		'database' => 'data/sample.s3db',
 	));
 	echo 'OK';
 
@@ -27,8 +27,8 @@ echo "</p>\n";
 echo '<p>Connecting to Sqlite: ';
 try {
 	$connection = new DibiConnection(array(
-		'driver'   => 'sqlite',
-		'database' => 'data/sample.sdb',
+		'driver'   => 'sqlite3',
+		'database' => 'data/sample.s3db',
 	));
 	echo 'OK';
 

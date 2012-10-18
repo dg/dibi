@@ -19,8 +19,8 @@ ndebug();
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite',
-	'database' => 'data/sample.sdb',
+	'driver'   => 'sqlite3',
+	'database' => 'data/sample.s3db',
 	'profiler' => array(
 		'run' => TRUE,
 	)
@@ -32,8 +32,8 @@ dibi::query('SELECT * FROM customers WHERE customer_id < ?', 38);
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite',
-	'database' => 'data/sample.sdb',
+	'driver'   => 'sqlite3',
+	'database' => 'data/sample.s3db',
 	'profiler' => array(
 		'run' => TRUE,
 	)
