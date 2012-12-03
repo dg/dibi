@@ -198,7 +198,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getReflector()
 	{
-		throw new DibiNotSupportedException;
+		return new DibiMssql2005Reflector($this);
 	}
 
 
