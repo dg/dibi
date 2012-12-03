@@ -10,6 +10,9 @@
  */
 
 
+require_once dirname(__FILE__) . '/mssql2005.reflector.php';
+
+
 /**
  * The dibi driver for MS SQL Driver 2005 database.
  *
@@ -198,7 +201,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getReflector()
 	{
-		throw new DibiNotSupportedException;
+		return new DibiMssql2005Reflector($this);
 	}
 
 
