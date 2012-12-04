@@ -1,5 +1,7 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
+<style> html { background: url(data/arrow.png) no-repeat bottom right; height: 100%; } </style>
+
 <h1>Nette Debugger & Variables | dibi</h1>
 
 <p>Dibi can dump variables via Nette Debugger, part of Nette Framework.</p>

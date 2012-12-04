@@ -15,7 +15,7 @@ require_once '../dibi/dibi.php';
 
 
 // enable Nette Debugger
-ndebug();
+debug();
 
 
 dibi::connect(array(
