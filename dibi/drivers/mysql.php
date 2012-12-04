@@ -80,6 +80,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 			// default values
 			DibiConnection::alias($config, 'flags', 'options');
 			if (!isset($config['charset'])) $config['charset'] = 'utf8';
+			if (!isset($config['timezone'])) $config['timezone'] = date('P');
 			if (!isset($config['username'])) $config['username'] = ini_get('mysql.default_user');
 			if (!isset($config['password'])) $config['password'] = ini_get('mysql.default_password');
 			if (!isset($config['host'])) {
@@ -131,7 +132,9 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 			$this->query("SET sql_mode='$config[sqlmode]'");
 		}
 
-		$this->query("SET time_zone='" . date('P') . "'");
+		if (isset($config['timezone'])) {
+			$this->query("SET time_zone='$config[timezone]'");
+		}
 
 		$this->buffered = empty($config['unbuffered']);
 	}
