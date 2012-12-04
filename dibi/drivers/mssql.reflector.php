@@ -65,18 +65,16 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 		if (empty($table)) {
 			return false;
 		}
-		$table = $this->driver->escape($table, dibi::TEXT);
-
 		$result = $this->driver->query("
 			SELECT MAX(rowcnt)
 			FROM sys.sysindexes
-			WHERE id=OBJECT_ID({$table})
+			WHERE id=OBJECT_ID({$this->driver->escape($table, dibi::IDENTIFIER)})
 		");
 		$row = $result->fetch(FALSE);
 
 		if (!is_array($row) || count($row) < 1) {
 			if ($fallback) {
-				$row = $this->driver->query("SELECT COUNT(*) FROM {$table}")->fetch(FALSE);
+				$row = $this->driver->query("SELECT COUNT(*) FROM {$this->driver->escape($table, dibi::IDENTIFIER)}")->fetch(FALSE);
 				$count = intval($row[0]);
 			} else {
 				$count = false;
@@ -100,7 +98,7 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 		$res = $this->driver->query("
 			SELECT * FROM
 			INFORMATION_SCHEMA.COLUMNS
-			WHERE TABLE_NAME = '{$table}'
+			WHERE TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}
 			ORDER BY TABLE_NAME, ORDINAL_POSITION
 		");
 		$columns = array();
@@ -148,8 +146,6 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getIndexes($table)
 	{
-		$table = $this->driver->escape($table, dibi::TEXT);
-
 		$res = $this->driver->query(
 			"SELECT ind.name index_name, ind.index_id, ic.index_column_id,
 					col.name column_name, ind.is_unique, ind.is_primary_key
@@ -160,7 +156,7 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 				(ic.object_id = col.object_id and ic.column_id = col.column_id)
 			INNER JOIN sys.tables t ON
 				(ind.object_id = t.object_id)
-			WHERE t.name = {$table}
+			WHERE t.name = {$this->driver->escape($table, dibi::TEXT)}
 				AND t.is_ms_shipped = 0
 			ORDER BY
 				t.name, ind.name, ind.index_id, ic.index_column_id
@@ -192,8 +188,6 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getForeignKeys($table)
 	{
-		$table = $this->driver->escape($table, dibi::TEXT);
-
 		$res = $this->driver->query("
 			SELECT f.name AS foreign_key,
 			OBJECT_NAME(f.parent_object_id) AS table_name,
@@ -206,7 +200,7 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 			FROM sys.foreign_keys AS f
 			INNER JOIN sys.foreign_key_columns AS fc
 			ON f.OBJECT_ID = fc.constraint_object_id
-			WHERE OBJECT_NAME(f.parent_object_id)={$table}
+			WHERE OBJECT_NAME(f.parent_object_id) = {$this->driver->escape($table, dibi::TEXT)}
 		");
 
 		$keys = array();
