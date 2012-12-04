@@ -73,7 +73,6 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
 			WHERE C.TABLE_NAME = '$table'");
 		$columns = array();
 		while ($row = $res->fetch(TRUE)) {
-			//$type = explode('(', $row['Type']);
 			$columns[] = array(
 				'name' => $row['COLUMN_NAME'],
 				'table' => $table,
@@ -82,7 +81,7 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
 				'unsigned' => true,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
-				'autoincrement' => (bool)$row["IsPartOfPrimaryKey"] && strtoupper($row["DATA_TYPE"])=="INT",
+				'autoincrement' => (bool)$row["IsPartOfPrimaryKey"] && strtoupper($row["DATA_TYPE"])==="INT",
 				'vendor' => $row,
 			);
 		}
@@ -103,7 +102,7 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
 		while( $row = $keyUsagesRes->fetch(TRUE) )  {
 			$keyUsages[$row["CONSTRAINT_NAME"]][(int) $row["ORDINAL_POSITION"]-1] = $row["COLUMN_NAME"];
 		}
-		dump($keyUsages);
+		
 		$res = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = '$table'");
 		$indexes = array();
 		while ($row = $res->fetch(TRUE)) {
@@ -112,7 +111,6 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
 			$indexes[$row['CONSTRAINT_NAME']]['primary'] = $row['CONSTRAINT_TYPE'] === 'PRIMARY KEY';
 			$indexes[$row['CONSTRAINT_NAME']]['columns'] =  isset($keyUsages[$row["CONSTRAINT_NAME"]]) ? $keyUsages[$row["CONSTRAINT_NAME"]] : array();
 		}
-		dump($indexes);
 		return array_values($indexes);
 	}
 
