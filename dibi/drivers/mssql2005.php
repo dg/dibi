@@ -10,7 +10,7 @@
  */
 
 
-require_once dirname(__FILE__) . '/mssql.reflector.php';
+require_once dirname(__FILE__) . '/mssql2005.reflector.php';
 
 
 /**
