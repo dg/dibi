@@ -70,7 +70,7 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
 					And TC.CONSTRAINT_TYPE = 'PRIMARY KEY'
 					And CCU.COLUMN_NAME = C.COLUMN_NAME
 					) As Z
-			WHERE C.TABLE_NAME = '$table'"
+			WHERE C.TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}"
 		);
 		$columns = array();
 		while ($row = $res->fetch(TRUE)) {
@@ -98,13 +98,13 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
 	 */
 	public function getIndexes($table)
 	{
-		$keyUsagesRes = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '$table'");
+		$keyUsagesRes = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}");
 		$keyUsages = array();
 		while( $row = $keyUsagesRes->fetch(TRUE) ) {
 			$keyUsages[$row['CONSTRAINT_NAME']][(int) $row['ORDINAL_POSITION'] - 1] = $row['COLUMN_NAME'];
 		}
 
-		$res = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = '$table'");
+		$res = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}");
 		$indexes = array();
 		while ($row = $res->fetch(TRUE)) {
 			$indexes[$row['CONSTRAINT_NAME']]['name'] = $row['CONSTRAINT_NAME'];
