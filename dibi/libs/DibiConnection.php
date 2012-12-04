@@ -338,6 +338,7 @@ class DibiConnection extends DibiObject
 	{
 		$this->connected || $this->connect();
 
+		dibi::$sql = $sql;
 		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::QUERY, $sql) : NULL;
 		try {
 			$res = $this->driver->query($sql);
