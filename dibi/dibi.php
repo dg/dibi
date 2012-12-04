@@ -620,12 +620,17 @@ class dibi
 			$sql = wordwrap($sql, 100);
 			$sql = preg_replace("#([ \t]*\r?\n){2,}#", "\n", $sql);
 
+			// syntax highlight
+			$highlighter = "#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is";
 			if (PHP_SAPI === 'cli') {
+				if (substr(getenv('TERM'), 0, 5) === 'xterm') {
+					$sql = preg_replace_callback($highlighter, array('dibi', 'cliHighlightCallback'), $sql);
+				}
 				echo trim($sql) . "\n\n";
+
 			} else {
-				// syntax highlight
 				$sql = htmlSpecialChars($sql);
-				$sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is", array('dibi', 'highlightCallback'), $sql);
+				$sql = preg_replace_callback($highlighter, array('dibi', 'highlightCallback'), $sql);
 				echo '<pre class="dump">', trim($sql), "</pre>\n";
 			}
 		}
@@ -652,6 +657,23 @@ class dibi
 
 		if (!empty($matches[4])) // other keywords
 			return '<strong style="color:green">' . $matches[4] . '</strong>';
+	}
+
+
+
+	private static function cliHighlightCallback($matches)
+	{
+		if (!empty($matches[1])) // comment
+			return "\033[1;30m" . $matches[1] . "\033[0m";
+
+		if (!empty($matches[2])) // error
+			return "\033[1;31m" . $matches[2] . "\033[0m";
+
+		if (!empty($matches[3])) // most important keywords
+			return "\033[1;34m" . $matches[3] . "\033[0m";
+
+		if (!empty($matches[4])) // other keywords
+			return "\033[1;32m" . $matches[4] . "\033[0m";
 	}
 
 }
