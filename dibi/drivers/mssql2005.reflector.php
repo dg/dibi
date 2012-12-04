@@ -64,12 +64,7 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
 	 */
 	public function getColumns($table)
 	{
-		/*$table = $this->escape($table, dibi::TEXT);
-		$this->query("
-			SELECT *
-			FROM INFORMATION_SCHEMA.COLUMNS
-			WHERE TABLE_NAME = $table AND TABLE_SCHEMA = DATABASE()
-		");*/
+		
 		$res = $this->driver->query("SELECT
                         C.COLUMN_NAME, C.DATA_TYPE, C.CHARACTER_MAXIMUM_LENGTH , C.COLUMN_DEFAULT  , C.NUMERIC_PRECISION, C.NUMERIC_SCALE , C.IS_NULLABLE, Case When Z.CONSTRAINT_NAME Is Null Then 0 Else 1 End As IsPartOfPrimaryKey 
                         FROM INFORMATION_SCHEMA.COLUMNS As C
@@ -82,21 +77,18 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
                     And TC.TABLE_NAME = C.TABLE_NAME
                     And TC.CONSTRAINT_TYPE = 'PRIMARY KEY'
                     And CCU.COLUMN_NAME = C.COLUMN_NAME
-                ) As Z
-WHERE C.TABLE_NAME = '$table'");
+                ) As Z WHERE C.TABLE_NAME = '$table'");
 		$columns = array();
 		while ($row = $res->fetch(TRUE)) {
-			//$type = explode('(', $row['Type']);
 			$columns[] = array(
 				'name' => $row['COLUMN_NAME'],
 				'table' => $table,
-				//'nativetype' => strtoupper($type[0]),
                                 'nativetype' => strtoupper($row["DATA_TYPE"]),
 				'size' => $row["CHARACTER_MAXIMUM_LENGTH"],
 				'unsigned' => true,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
-				'autoincrement' => (bool)$row["IsPartOfPrimaryKey"] && strtoupper($row["DATA_TYPE"])=="INT",
+				'autoincrement' => (bool)$row["IsPartOfPrimaryKey"] && strtoupper($row["DATA_TYPE"])==="INT",
 				'vendor' => $row,
 			);
 		}
@@ -112,21 +104,12 @@ WHERE C.TABLE_NAME = '$table'");
 	 */
 	public function getIndexes($table)
 	{
-		/*$table = $this->escape($table, dibi::TEXT);
-		$this->query("
-			SELECT *
-			FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
-			WHERE TABLE_NAME = $table AND TABLE_SCHEMA = DATABASE()
-			AND REFERENCED_COLUMN_NAME IS NULL
-		");*/
-		//$res = $this->driver->query("SHOW INDEX FROM `$table`");
-                
+		
                 $keyUsagesRes = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '$table'");
                 $keyUsages =array();
                 while( $row = $keyUsagesRes->fetch(TRUE) )  {
                     $keyUsages[$row["CONSTRAINT_NAME"]][(int) $row["ORDINAL_POSITION"]-1] = $row["COLUMN_NAME"];
                 }
-                dump($keyUsages);
                 $res = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = '$table'");
 		$indexes = array();
 		while ($row = $res->fetch(TRUE)) {
@@ -135,7 +118,6 @@ WHERE C.TABLE_NAME = '$table'");
 			$indexes[$row['CONSTRAINT_NAME']]['primary'] = $row['CONSTRAINT_TYPE'] === 'PRIMARY KEY';
                         $indexes[$row['CONSTRAINT_NAME']]['columns'] =  isset($keyUsages[$row["CONSTRAINT_NAME"]]) ? $keyUsages[$row["CONSTRAINT_NAME"]] : array();                        
 		}
-                dump($indexes);
 		return array_values($indexes);
 	}
 
