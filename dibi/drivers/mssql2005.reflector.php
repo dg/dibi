@@ -78,7 +78,7 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
 				'name' => $row['COLUMN_NAME'],
 				'table' => $table,
 				'nativetype' => strtoupper($row['DATA_TYPE']),
-				'size' => $row['CHARACTER_MAXIMUM_LENGTH'],
+				'size' => $row['CHARACTER_MAXIMUM_LENGTH'] ? $row['CHARACTER_MAXIMUM_LENGTH'] : NULL,
 				'unsigned' => TRUE,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
