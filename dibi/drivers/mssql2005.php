@@ -300,7 +300,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	{
 		// offset support is missing
 		if ($limit >= 0) {
-			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
+			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') AS T ';
 		}
 
 		if ($offset) {
