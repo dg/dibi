@@ -65,7 +65,18 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
 	public function getColumns($table)
 	{
 		
-		$res = $this->driver->query("SELECT
+                $autoIncrementRes = $this->driver->query("SELECT
+                        c.name as COLUMN_NAME, c.is_identity AS AUTO_INCREMENT
+                    FROM sys.columns c
+                    INNER JOIN sys.tables t ON c.object_id = t.object_id
+                    WHERE t.name = '$table'");
+                
+                $autoIncrements = array();                
+                while ($row = $autoIncrementRes->fetch(TRUE)) {
+                    $autoIncrements[ $row["COLUMN_NAME"] ] = (bool) $row["AUTO_INCREMENT"];
+                }
+                
+		$columnRes = $this->driver->query("SELECT
                         C.COLUMN_NAME, C.DATA_TYPE, C.CHARACTER_MAXIMUM_LENGTH , C.COLUMN_DEFAULT  , C.NUMERIC_PRECISION, C.NUMERIC_SCALE , C.IS_NULLABLE, Case When Z.CONSTRAINT_NAME Is Null Then 0 Else 1 End As IsPartOfPrimaryKey 
                         FROM INFORMATION_SCHEMA.COLUMNS As C
                  Outer Apply (
@@ -77,9 +88,9 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
                     And TC.TABLE_NAME = C.TABLE_NAME
                     And TC.CONSTRAINT_TYPE = 'PRIMARY KEY'
                     And CCU.COLUMN_NAME = C.COLUMN_NAME
-                ) As Z WHERE C.TABLE_NAME = '$table'");
+                ) As Z WHERE C.TABLE_NAME = '$table'"); 
 		$columns = array();
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $columnRes->fetch(TRUE)) {
 			$columns[] = array(
 				'name' => $row['COLUMN_NAME'],
 				'table' => $table,
@@ -88,7 +99,7 @@ class DibiMssql2005Reflector extends DibiObject implements IDibiReflector
 				'unsigned' => true,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
-				'autoincrement' => (bool)$row["IsPartOfPrimaryKey"] && strtoupper($row["DATA_TYPE"])==="INT",
+				'autoincrement' => $autoIncrements[ $row["COLUMN_NAME"] ],
 				'vendor' => $row,
 			);
 		}
