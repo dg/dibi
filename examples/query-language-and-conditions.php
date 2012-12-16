@@ -9,8 +9,8 @@ require_once '../dibi/dibi.php';
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite',
-	'database' => 'data/sample.sdb',
+	'driver'   => 'sqlite3',
+	'database' => 'data/sample.s3db',
 ));
 
 
@@ -55,4 +55,12 @@ dibi::test('
 			%if', $cond2, 'AND admin=1 %end
 		%else 1 LIMIT 10 %end'
 );
+// -> SELECT * FROM customers WHERE LIMIT 10
+
+
+
+// IF()
+dibi::test('UPDATE products SET', array(
+	'price' => array('IF(price_fixed, price, ?)', 123),
+));
 // -> SELECT * FROM customers WHERE LIMIT 10
