@@ -13,9 +13,6 @@
 	"require-dev": {
 		"nette/tester": "@dev"
 	},
-	"config": {
-		"vendor-dir": "tools"
-	},
 	"autoload": {
 		"classmap": ["dibi/"]
 	}

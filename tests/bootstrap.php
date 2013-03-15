@@ -7,7 +7,7 @@
  * @package    Nette\Test
  */
 
-require dirname(__FILE__) . '/../tools/nette/tester/Tester/bootstrap.php';
+require dirname(__FILE__) . '/../vendor/nette/tester/Tester/bootstrap.php';
 require dirname(__FILE__) . '/../dibi/dibi.php';
 
 date_default_timezone_set('Europe/Prague');
