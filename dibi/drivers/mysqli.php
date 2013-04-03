@@ -197,7 +197,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getAffectedRows()
 	{
-		return mysqli_affected_rows($this->connection);
+		return mysqli_affected_rows($this->connection) === -1 ? FALSE : mysqli_affected_rows($this->connection);
 	}
 
 
