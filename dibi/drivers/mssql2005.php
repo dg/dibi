@@ -73,6 +73,9 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 			$this->connection = $config['resource'];
 
 		} else {
+			// Default values
+			if (!isset($config['options']['CharacterSet'])) $config['options']['CharacterSet'] = 'UTF-8';
+
 			$this->connection = sqlsrv_connect($config['host'], (array) $config['options']);
 		}
 
