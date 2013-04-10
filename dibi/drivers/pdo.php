@@ -285,6 +285,9 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 			case 'mssql':
 				return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
+			case 'sqlsrv':
+				return '[' . str_replace(']', ']]', $value) . ']';
+
 			default:
 				return $value;
 			}
