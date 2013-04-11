@@ -390,7 +390,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 
 		if (DibiDriverException::catchError($msg)) {
 			if (ibase_errcode() == self::ERROR_EXCEPTION_THROWN) {
-				preg_match('/exception (\d+) (\w+) (.*)/i', ibase_errmsg(), $match);
+				preg_match('/exception (\d+) (\w+) (.*)/is', ibase_errmsg(), $match);
 				throw new DibiProcedureException($match[3], $match[1], $match[2], dibi::$sql);
 
 			} else {
