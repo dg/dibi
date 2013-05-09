@@ -60,6 +60,8 @@ class dibi
 	/** column type */
 	const TEXT = 's', // as 'string'
 		BINARY = 'bin',
+		BLOB = 'blob',
+		CLOB = 'clob',
 		BOOL = 'b',
 		INTEGER = 'i',
 		FLOAT = 'f',
@@ -607,7 +609,7 @@ class dibi
 		} else {
 			if ($sql === NULL) $sql = self::$sql;
 
-			static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
+			static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE|RETURNING';
 			static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|LIKE|RLIKE|REGEXP|TRUE|FALSE';
 
 			// insert new lines
