@@ -146,6 +146,10 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 				if ($lobsOK) {
 					$this->commit();
 				}
+				foreach ($this->lobs as $obj) {
+					$obj['descriptor']->free();
+				}
+				$this->lobs = array();
 			}
 
 			if ($err) {
@@ -421,10 +425,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function free()
 	{
 		oci_free_statement($this->resultSet);
-		foreach ($this->lobs as $obj) {
-			$obj['descriptor']->free();
-		}
-		$this->lobs = NULL;
+		$this->lobs = array();
 		$this->resultSet = NULL;
 	}
 
