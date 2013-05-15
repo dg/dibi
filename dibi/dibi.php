@@ -67,7 +67,8 @@ class dibi
 		DATETIME = 't',
 		TIME = 't';
 
-	const IDENTIFIER = 'n';
+	const IDENTIFIER = 'n',
+		AFFECTED = 'a';
 
 	/** @deprecated */
 	const FIELD_TEXT = dibi::TEXT,
