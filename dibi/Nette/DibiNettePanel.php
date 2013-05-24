@@ -140,7 +140,7 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 			if ($explain) {
 				static $counter;
 				$counter++;
-				$s .= "<br /><a href='#' class='nette-toggler' rel='#nette-debug-DibiProfiler-row-$counter'>explain&nbsp;&#x25ba;</a>";
+				$s .= "<br /><a href='#nette-debug-DibiProfiler-row-$counter' class='nette-toggle-collapsed'>explain</a>";
 			}
 
 			$s .= '</td><td class="nette-DibiProfiler-sql">' . dibi::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, TRUE);
