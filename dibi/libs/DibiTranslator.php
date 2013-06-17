@@ -337,6 +337,8 @@ final class DibiTranslator extends DibiObject
 
 			switch ($modifier) {
 			case 's':  // string
+			case 'blob': // blob
+			case 'clob': // clob
 			case 'bin':// binary
 			case 'b':  // boolean
 				return $value === NULL ? 'NULL' : $this->driver->escape($value, $modifier);

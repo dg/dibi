@@ -23,8 +23,20 @@
  *   - resource (resource) => existing connection resource
  *   - persistent => Creates persistent connections with oci_pconnect instead of oci_new_connect
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
+ * 
+ * CLOB/BLOB support example:
+ * 
+ * $key = dibi::getConnection()->getDriver()->bindData($rawBinaryData);
+ * $key2 = dibi::getConnection()->getDriver()->bindData('...super long text...');
+ * dibi::insert('BINTEST', array(
+ *         'BLOB1%blob' => $key,
+ *         'CLOB1%clob' => $key2,
+ *     ))
+ *     ->returning('%n, %n INTO %sql, %sql', 'BLOB1', 'CLOB1', $key, $key2)
+ *     ->execute();
  *
  * @author     David Grudl
+ * @author     Jiri Chadima
  * @package    dibi\drivers
  */
 class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
@@ -44,6 +56,8 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	/** @var string  Date and datetime format */
 	private $fmtDate, $fmtDateTime;
 
+	/** @var array  OCI-Lobs and their metadata */
+	protected $lobs = array();
 
 
 	/**
@@ -105,9 +119,39 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function query($sql)
 	{
 		$res = oci_parse($this->connection, $sql);
+		if ($this->lobs) {
+			foreach($this->lobs as $key => $obj) {
+				$this->lobs[$key]['descriptor'] = oci_new_descriptor($this->connection, OCI_D_LOB);
+				oci_bind_by_name($res, $key, $this->lobs[$key]['descriptor'], -1, ($obj['type'] === dibi::CLOB ? OCI_B_CLOB : OCI_B_BLOB));
+			}
+		}
 		if ($res) {
+			if ($this->lobs) {
+				$this->begin();
+			}
 			oci_execute($res, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
 			$err = oci_error($res);
+			
+			if ($this->lobs && !$err) {
+				$lobsOK = true;
+				foreach($this->lobs as $obj) {
+					if (!@$obj['descriptor']->save($obj['data'])) { // @ suppresses warning during update on inexistent record
+						$lobsOK = false;
+						$err = oci_error($res);
+						$this->rollback();
+						break;
+					}
+				}
+			
+				if ($lobsOK) {
+					$this->commit();
+				}
+				foreach ($this->lobs as $obj) {
+					$obj['descriptor']->free();
+				}
+				$this->lobs = array();
+			}
+
 			if ($err) {
 				throw new DibiDriverException($err['message'], $err['code'], $sql);
 
@@ -244,7 +288,14 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		case dibi::TEXT:
 		case dibi::BINARY:
 			return "'" . str_replace("'", "''", $value) . "'"; // TODO: not tested
-
+		case dibi::BLOB:
+		case dibi::CLOB:
+			if (!array_key_exists($value, $this->lobs)) {
+				throw new InvalidArgumentException("Unbound data '$value'!");
+			}
+			$this->lobs[$value]['type'] = $type;
+			return 'EMPTY_' . strtoupper($type) .  '()';
+			
 		case dibi::IDENTIFIER:
 			// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
 			return '"' . str_replace('"', '""', $value) . '"';
@@ -289,7 +340,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function unescape($value, $type)
 	{
-		if ($type === dibi::BINARY) {
+		if ($type === dibi::BINARY || $type === dibi::BLOB || $type === dibi::CLOB) {
 			return $value;
 		}
 		throw new InvalidArgumentException('Unsupported type.');
@@ -350,7 +401,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function fetch($assoc)
 	{
-		return oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS);
+		return oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC+OCI_RETURN_LOBS : OCI_NUM+OCI_RETURN_LOBS) | OCI_RETURN_NULLS);
 	}
 
 
@@ -374,6 +425,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function free()
 	{
 		oci_free_statement($this->resultSet);
+		$this->lobs = array();
 		$this->resultSet = NULL;
 	}
 
@@ -469,6 +521,30 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function getForeignKeys($table)
 	{
 		throw new DibiNotImplementedException;
+	}
+	
+	/**
+	 * Returns pseudo-unique 10 character identifier
+	 * @return string
+	 */
+	private function generateLobKey()
+	{
+		return ':' . substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 10);
+	}
+	
+	/**
+	 * Stores binary data into internal array and returns metakey that is used
+	 * in query.
+	 * @param binary $data
+	 * @return string
+	 */
+	public function bindData($data)
+	{
+		$key = $this->generateLobKey();
+		$this->lobs[$key] = array(
+				'data' => $data
+			);
+		return $key;
 	}
 
 }
