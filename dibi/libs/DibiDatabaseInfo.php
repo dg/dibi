@@ -621,13 +621,13 @@ class DibiColumnInfo extends DibiObject
 		static $patterns = array(
 			'^_' => dibi::TEXT, // PostgreSQL arrays
 			'BYTEA|BLOB|BIN' => dibi::BINARY,
-			'TEXT|CHAR' => dibi::TEXT,
-			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG' => dibi::INTEGER,
+			'TEXT|CHAR|POINT|INTERVAL' => dibi::TEXT,
+			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT' => dibi::INTEGER,
 			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => dibi::FLOAT,
 			'^TIME$' => dibi::TIME,
 			'TIME' => dibi::DATETIME, // DATETIME, TIMESTAMP
 			'DATE' => dibi::DATE,
-			'BOOL|BIT' => dibi::BOOL,
+			'BOOL' => dibi::BOOL,
 		);
 
 		foreach ($patterns as $s => $val) {
