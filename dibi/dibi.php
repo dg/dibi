@@ -631,7 +631,7 @@ class dibi
 			} else {
 				$sql = htmlSpecialChars($sql);
 				$sql = preg_replace_callback($highlighter, array('dibi', 'highlightCallback'), $sql);
-				echo '<pre class="dump">', trim($sql), "</pre>\n";
+				echo '<pre class="dump">', trim($sql), "</pre>\n\n";
 			}
 		}
 
@@ -646,34 +646,36 @@ class dibi
 
 	private static function highlightCallback($matches)
 	{
-		if (!empty($matches[1])) // comment
+		if (!empty($matches[1])) { // comment
 			return '<em style="color:gray">' . $matches[1] . '</em>';
 
-		if (!empty($matches[2])) // error
+		} elseif (!empty($matches[2])) { // error
 			return '<strong style="color:red">' . $matches[2] . '</strong>';
 
-		if (!empty($matches[3])) // most important keywords
+		} elseif (!empty($matches[3])) { // most important keywords
 			return '<strong style="color:blue">' . $matches[3] . '</strong>';
 
-		if (!empty($matches[4])) // other keywords
+		} elseif (!empty($matches[4])) { // other keywords
 			return '<strong style="color:green">' . $matches[4] . '</strong>';
+		}
 	}
 
 
 
 	private static function cliHighlightCallback($matches)
 	{
-		if (!empty($matches[1])) // comment
+		if (!empty($matches[1])) { // comment
 			return "\033[1;30m" . $matches[1] . "\033[0m";
 
-		if (!empty($matches[2])) // error
+		} elseif (!empty($matches[2])) { // error
 			return "\033[1;31m" . $matches[2] . "\033[0m";
 
-		if (!empty($matches[3])) // most important keywords
+		} elseif (!empty($matches[3])) { // most important keywords
 			return "\033[1;34m" . $matches[3] . "\033[0m";
 
-		if (!empty($matches[4])) // other keywords
+		} elseif (!empty($matches[4])) { // other keywords
 			return "\033[1;32m" . $matches[4] . "\033[0m";
+		}
 	}
 
 }

@@ -12,8 +12,8 @@
 
 <?php
 
-require_once 'Nette/Debugger.php';
-require_once '../dibi/dibi.php';
+require dirname(__FILE__) . '/Nette/Debugger.php';
+require dirname(__FILE__) . '/../dibi/dibi.php';
 
 
 // enable Nette Debugger

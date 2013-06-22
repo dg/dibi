@@ -4,8 +4,8 @@
 
 <?php
 
-require_once 'Nette/Debugger.php';
-require_once '../dibi/dibi.php';
+require dirname(__FILE__) . '/Nette/Debugger.php';
+require dirname(__FILE__) . '/../dibi/dibi.php';
 
 ndebug();
 date_default_timezone_set('Europe/Prague');
@@ -27,11 +27,10 @@ $res->setType('customer_id', Dibi::INTEGER)
 
 dump( $res->fetch() );
 // outputs:
-// object(DibiRow)#3 (3) {
-//     customer_id => int(1)
-//     name =>  string(11) "Dave Lister"
-//     added =>  object(DateTime53) {}
-// }
+// DibiRow(3) {
+//    customer_id => 1
+//    name => "Dave Lister" (11)
+//    added => "2007-03-11 17:20:03" (19)
 
 
 
@@ -40,8 +39,7 @@ $res = dibi::query('SELECT * FROM [customers]');
 
 dump( $res->fetch() );
 // outputs:
-// object(DibiRow)#3 (3) {
-//     customer_id => int(1)
-//     name =>  string(11) "Dave Lister"
-//     added =>  string(15) "17:20 11.3.2007"
-// }
+// DibiRow(3) {
+//    customer_id => 1
+//    name => "Dave Lister" (11)
+//    added => "2007-03-11 17:20:03" (19)
