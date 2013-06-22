@@ -49,20 +49,24 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 
 	public function register(DibiConnection $connection)
 	{
-		static $done;
 		if (is_callable('Nette\Diagnostics\Debugger::enable') && !class_exists('NDebugger')) {
 			class_alias('Nette\Diagnostics\Debugger', 'NDebugger'); // PHP 5.2 code compatibility
 		}
-		if (is_callable('NDebugger::enable')) {
-			NDebugger::$bar && NDebugger::$bar->addPanel($this);
-			NDebugger::$blueScreen && !$done && NDebugger::$blueScreen->addPanel(array($this, 'renderException'), __CLASS__);
+		if (is_callable('NDebugger::enable') && is_callable('NDebugger::getBlueScreen')) { // Nette Framework 2.1
+			NDebugger::getBar()->addPanel($this);
+			NDebugger::getBlueScreen()->addPanel(array(__CLASS__, 'renderException'));
 			$connection->onEvent[] = array($this, 'logEvent');
-		} elseif (is_callable('Debugger::enable')) {
+
+		} elseif (is_callable('NDebugger::enable')) { // Nette Framework 2.0 (for PHP 5.3 or PHP 5.2 prefixed)
+			NDebugger::$bar && NDebugger::$bar->addPanel($this);
+			NDebugger::$blueScreen && NDebugger::$blueScreen->addPanel(array(__CLASS__, 'renderException'), __CLASS__);
+			$connection->onEvent[] = array($this, 'logEvent');
+
+		} elseif (is_callable('Debugger::enable') && !is_callable('Debugger::getBlueScreen')) { // Nette Framework 2.0 for PHP 5.2 non-prefixed
 			Debugger::$bar && Debugger::$bar->addPanel($this);
-			Debugger::$blueScreen && !$done && Debugger::$blueScreen->addPanel(array($this, 'renderException'), __CLASS__);
+			Debugger::$blueScreen && Debugger::$blueScreen->addPanel(array(__CLASS__, 'renderException'), __CLASS__);
 			$connection->onEvent[] = array($this, 'logEvent');
 		}
-		$done = TRUE;
 	}
 
 
@@ -85,7 +89,7 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 	 * Returns blue-screen custom tab.
 	 * @return mixed
 	 */
-	public function renderException($e)
+	public static function renderException($e)
 	{
 		if ($e instanceof DibiException && $e->getSql()) {
 			return array(
@@ -140,7 +144,7 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 			if ($explain) {
 				static $counter;
 				$counter++;
-				$s .= "<br /><a href='#nette-debug-DibiProfiler-row-$counter' class='nette-toggle-collapsed'>explain</a>";
+				$s .= "<br /><a href='#nette-debug-DibiProfiler-row-$counter' class='nette-toggler nette-toggle-collapsed' rel='#nette-debug-DibiProfiler-row-$counter'>explain</a>";
 			}
 
 			$s .= '</td><td class="nette-DibiProfiler-sql">' . dibi::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, TRUE);
