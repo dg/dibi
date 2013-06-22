@@ -18,7 +18,7 @@
  * @package    dibi\nette
  * @phpversion 5.3
  */
-class DibiNetteExtension extends Nette\Config\CompilerExtension
+class DibiNetteExtension extends Nette\DI\CompilerExtension
 {
 
 	public function loadConfiguration()
