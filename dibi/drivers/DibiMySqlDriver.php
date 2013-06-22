@@ -9,25 +9,37 @@
  * the file license.txt that was distributed with this source code.
  */
 
-require_once dirname(__FILE__) . '/mssql.reflector.php';
+
+require_once dirname(__FILE__) . '/DibiMySqlReflector.php';
+
 
 /**
- * The dibi driver for MS SQL database.
+ * The dibi driver for MySQL database.
  *
  * Driver options:
- *   - host => the MS SQL server host name. It can also include a port number (hostname:port)
+ *   - host => the MySQL server host name
+ *   - port (int) => the port number to attempt to connect to the MySQL server
+ *   - socket => the socket or named pipe
  *   - username (or user)
  *   - password (or pass)
  *   - database => the database name to select
+ *   - flags (int) => driver specific constants (MYSQL_CLIENT_*)
+ *   - charset => character encoding to set (default is utf8)
  *   - persistent (bool) => try to find a persistent link?
+ *   - unbuffered (bool) => sends query without fetching and buffering the result rows automatically?
+ *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - resource (resource) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @author     David Grudl
  * @package    dibi\drivers
  */
-class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
+class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 {
+	const ERROR_ACCESS_DENIED = 1045;
+	const ERROR_DUPLICATE_ENTRY = 1062;
+	const ERROR_DATA_TRUNCATED = 1265;
+
 	/** @var resource  Connection resource */
 	private $connection;
 
@@ -37,6 +49,9 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	/** @var bool */
 	private $autoFree = TRUE;
 
+	/** @var bool  Is buffered (seekable and countable)? */
+	private $buffered;
+
 
 
 	/**
@@ -44,8 +59,8 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function __construct()
 	{
-		if (!extension_loaded('mssql')) {
-			throw new DibiNotSupportedException("PHP extension 'mssql' is not loaded.");
+		if (!extension_loaded('mysql')) {
+			throw new DibiNotSupportedException("PHP extension 'mysql' is not loaded.");
 		}
 	}
 
@@ -60,19 +75,68 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	{
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
-		} elseif (empty($config['persistent'])) {
-			$this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE); // intentionally @
+
 		} else {
-			$this->connection = @mssql_pconnect($config['host'], $config['username'], $config['password']); // intentionally @
+			// default values
+			DibiConnection::alias($config, 'flags', 'options');
+			if (!isset($config['charset'])) $config['charset'] = 'utf8';
+			if (!isset($config['timezone'])) $config['timezone'] = date('P');
+			if (!isset($config['username'])) $config['username'] = ini_get('mysql.default_user');
+			if (!isset($config['password'])) $config['password'] = ini_get('mysql.default_password');
+			if (!isset($config['host'])) {
+				$host = ini_get('mysql.default_host');
+				if ($host) {
+					$config['host'] = $host;
+					$config['port'] = ini_get('mysql.default_port');
+				} else {
+					if (!isset($config['socket'])) $config['socket'] = ini_get('mysql.default_socket');
+					$config['host'] = NULL;
+				}
+			}
+
+			if (empty($config['socket'])) {
+				$host = $config['host'] . (empty($config['port']) ? '' : ':' . $config['port']);
+			} else {
+				$host = ':' . $config['socket'];
+			}
+
+			if (empty($config['persistent'])) {
+				$this->connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['flags']); // intentionally @
+			} else {
+				$this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['flags']); // intentionally @
+			}
 		}
 
 		if (!is_resource($this->connection)) {
-			throw new DibiDriverException("Can't connect to DB.");
+			throw new DibiDriverException(mysql_error(), mysql_errno());
 		}
 
-		if (isset($config['database']) && !@mssql_select_db($this->escape($config['database'], dibi::IDENTIFIER), $this->connection)) { // intentionally @
-			throw new DibiDriverException("Can't select DB '$config[database]'.");
+		if (isset($config['charset'])) {
+			$ok = FALSE;
+			if (function_exists('mysql_set_charset')) {
+				// affects the character set used by mysql_real_escape_string() (was added in MySQL 5.0.7 and PHP 5.2.3)
+				$ok = @mysql_set_charset($config['charset'], $this->connection); // intentionally @
+			}
+			if (!$ok) {
+				$this->query("SET NAMES '$config[charset]'");
+			}
 		}
+
+		if (isset($config['database'])) {
+			if (!@mysql_select_db($config['database'], $this->connection)) { // intentionally @
+				throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection));
+			}
+		}
+
+		if (isset($config['sqlmode'])) {
+			$this->query("SET sql_mode='$config[sqlmode]'");
+		}
+
+		if (isset($config['timezone'])) {
+			$this->query("SET time_zone='$config[timezone]'");
+		}
+
+		$this->buffered = empty($config['unbuffered']);
 	}
 
 
@@ -83,7 +147,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function disconnect()
 	{
-		mssql_close($this->connection);
+		mysql_close($this->connection);
 	}
 
 
@@ -96,14 +160,36 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function query($sql)
 	{
-		$res = @mssql_query($sql, $this->connection); // intentionally @
+		if ($this->buffered) {
+			$res = @mysql_query($sql, $this->connection); // intentionally @
+		} else {
+			$res = @mysql_unbuffered_query($sql, $this->connection); // intentionally @
+		}
 
-		if ($res === FALSE) {
-			throw new DibiDriverException(mssql_get_last_message(), 0, $sql);
+		if (mysql_errno($this->connection)) {
+			throw new DibiDriverException(mysql_error($this->connection), mysql_errno($this->connection), $sql);
 
 		} elseif (is_resource($res)) {
 			return $this->createResultDriver($res);
 		}
+	}
+
+
+
+	/**
+	 * Retrieves information about the most recently executed query.
+	 * @return array
+	 */
+	public function getInfo()
+	{
+		$res = array();
+		preg_match_all('#(.+?): +(\d+) *#', mysql_info($this->connection), $matches, PREG_SET_ORDER);
+		if (preg_last_error()) throw new DibiPcreException;
+
+		foreach ($matches as $m) {
+			$res[$m[1]] = (int) $m[2];
+		}
+		return $res;
 	}
 
 
@@ -114,7 +200,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function getAffectedRows()
 	{
-		return mssql_rows_affected($this->connection);
+		return mysql_affected_rows($this->connection);
 	}
 
 
@@ -125,12 +211,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function getInsertId($sequence)
 	{
-		$res = mssql_query('SELECT @@IDENTITY', $this->connection);
-		if (is_resource($res)) {
-			$row = mssql_fetch_row($res);
-			return $row[0];
-		}
-		return FALSE;
+		return mysql_insert_id($this->connection);
 	}
 
 
@@ -143,7 +224,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function begin($savepoint = NULL)
 	{
-		$this->query('BEGIN TRANSACTION');
+		$this->query($savepoint ? "SAVEPOINT $savepoint" : 'START TRANSACTION');
 	}
 
 
@@ -156,7 +237,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function commit($savepoint = NULL)
 	{
-		$this->query('COMMIT');
+		$this->query($savepoint ? "RELEASE SAVEPOINT $savepoint" : 'COMMIT');
 	}
 
 
@@ -169,7 +250,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function rollback($savepoint = NULL)
 	{
-		$this->query('ROLLBACK');
+		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT $savepoint" : 'ROLLBACK');
 	}
 
 
@@ -191,7 +272,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function getReflector()
 	{
-		return new DibiMsSqlReflector($this);
+		return new DibiMySqlReflector($this);
 	}
 
 
@@ -225,12 +306,20 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	{
 		switch ($type) {
 		case dibi::TEXT:
+			if (!is_resource($this->connection)) {
+				throw new DibiException('Lost connection to server.');
+			}
+			return "'" . mysql_real_escape_string($value, $this->connection) . "'";
+
 		case dibi::BINARY:
-			return "'" . str_replace("'", "''", $value) . "'";
+			if (!is_resource($this->connection)) {
+				throw new DibiException('Lost connection to server.');
+			}
+			return "_binary'" . mysql_real_escape_string($value, $this->connection) . "'";
 
 		case dibi::IDENTIFIER:
-			// @see http://msdn.microsoft.com/en-us/library/ms176027.aspx
-			return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
+			// @see http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
+			return '`' . str_replace('`', '``', $value) . '`';
 
 		case dibi::BOOL:
 			return $value ? 1 : 0;
@@ -256,7 +345,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function escapeLike($value, $pos)
 	{
-		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
@@ -288,14 +377,11 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
-		// offset support is missing
-		if ($limit >= 0) {
-			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
-		}
+		if ($limit < 0 && $offset < 1) return;
 
-		if ($offset) {
-			throw new DibiNotImplementedException('Offset is not implemented.');
-		}
+		// see http://dev.mysql.com/doc/refman/5.0/en/select.html
+		$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
+			. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
 	}
 
 
@@ -321,7 +407,10 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function getRowCount()
 	{
-		return mssql_num_rows($this->resultSet);
+		if (!$this->buffered) {
+			throw new DibiNotSupportedException('Row count is not available for unbuffered queries.');
+		}
+		return mysql_num_rows($this->resultSet);
 	}
 
 
@@ -333,7 +422,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function fetch($assoc)
 	{
-		return mssql_fetch_array($this->resultSet, $assoc ? MSSQL_ASSOC : MSSQL_NUM);
+		return mysql_fetch_array($this->resultSet, $assoc ? MYSQL_ASSOC : MYSQL_NUM);
 	}
 
 
@@ -342,10 +431,15 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
 	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+	 * @throws DibiException
 	 */
 	public function seek($row)
 	{
-		return mssql_data_seek($this->resultSet, $row);
+		if (!$this->buffered) {
+			throw new DibiNotSupportedException('Cannot seek an unbuffered result set.');
+		}
+
+		return mysql_data_seek($this->resultSet, $row);
 	}
 
 
@@ -356,7 +450,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function free()
 	{
-		mssql_free_result($this->resultSet);
+		mysql_free_result($this->resultSet);
 		$this->resultSet = NULL;
 	}
 
@@ -368,15 +462,16 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function getResultColumns()
 	{
-		$count = mssql_num_fields($this->resultSet);
+		$count = mysql_num_fields($this->resultSet);
 		$columns = array();
 		for ($i = 0; $i < $count; $i++) {
-			$row = (array) mssql_fetch_field($this->resultSet, $i);
+			$row = (array) mysql_fetch_field($this->resultSet, $i);
 			$columns[] = array(
 				'name' => $row['name'],
-				'fullname' => $row['column_source'] ? $row['column_source'] . '.' . $row['name'] : $row['name'],
-				'table' => $row['column_source'],
-				'nativetype' => $row['type'],
+				'table' => $row['table'],
+				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
+				'nativetype' => strtoupper($row['type']),
+				'vendor' => $row,
 			);
 		}
 		return $columns;
@@ -393,6 +488,5 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 		$this->autoFree = FALSE;
 		return is_resource($this->resultSet) ? $this->resultSet : NULL;
 	}
-
 
 }

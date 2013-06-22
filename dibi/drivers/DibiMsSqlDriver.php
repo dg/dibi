@@ -9,27 +9,24 @@
  * the file license.txt that was distributed with this source code.
  */
 
-
-require_once dirname(__FILE__) . '/mssql2005.reflector.php';
-
+require_once dirname(__FILE__) . '/DibiMsSqlReflector.php';
 
 /**
- * The dibi driver for MS SQL Driver 2005 database.
+ * The dibi driver for MS SQL database.
  *
  * Driver options:
  *   - host => the MS SQL server host name. It can also include a port number (hostname:port)
  *   - username (or user)
  *   - password (or pass)
  *   - database => the database name to select
- *   - options (array) => connection options {@link http://msdn.microsoft.com/en-us/library/cc296161(SQL.90).aspx}
- *   - charset => character encoding to set (default is UTF-8)
+ *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @author     David Grudl
  * @package    dibi\drivers
  */
-class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResultDriver
+class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 {
 	/** @var resource  Connection resource */
 	private $connection;
@@ -40,9 +37,6 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	/** @var bool */
 	private $autoFree = TRUE;
 
-	/** @var int|FALSE  Affected rows */
-	private $affectedRows = FALSE;
-
 
 
 	/**
@@ -50,8 +44,8 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function __construct()
 	{
-		if (!extension_loaded('sqlsrv')) {
-			throw new DibiNotSupportedException("PHP extension 'sqlsrv' is not loaded.");
+		if (!extension_loaded('mssql')) {
+			throw new DibiNotSupportedException("PHP extension 'mssql' is not loaded.");
 		}
 	}
 
@@ -64,24 +58,20 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function connect(array &$config)
 	{
-		DibiConnection::alias($config, 'options|UID', 'username');
-		DibiConnection::alias($config, 'options|PWD', 'password');
-		DibiConnection::alias($config, 'options|Database', 'database');
-		DibiConnection::alias($config, 'options|CharacterSet', 'charset');
-
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
-
+		} elseif (empty($config['persistent'])) {
+			$this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE); // intentionally @
 		} else {
-			// Default values
-			if (!isset($config['options']['CharacterSet'])) $config['options']['CharacterSet'] = 'UTF-8';
-
-			$this->connection = sqlsrv_connect($config['host'], (array) $config['options']);
+			$this->connection = @mssql_pconnect($config['host'], $config['username'], $config['password']); // intentionally @
 		}
 
 		if (!is_resource($this->connection)) {
-			$info = sqlsrv_errors();
-			throw new DibiDriverException($info[0]['message'], $info[0]['code']);
+			throw new DibiDriverException("Can't connect to DB.");
+		}
+
+		if (isset($config['database']) && !@mssql_select_db($this->escape($config['database'], dibi::IDENTIFIER), $this->connection)) { // intentionally @
+			throw new DibiDriverException("Can't select DB '$config[database]'.");
 		}
 	}
 
@@ -93,7 +83,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function disconnect()
 	{
-		sqlsrv_close($this->connection);
+		mssql_close($this->connection);
 	}
 
 
@@ -106,15 +96,12 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function query($sql)
 	{
-		$this->affectedRows = FALSE;
-		$res = sqlsrv_query($this->connection, $sql);
+		$res = @mssql_query($sql, $this->connection); // intentionally @
 
 		if ($res === FALSE) {
-			$info = sqlsrv_errors();
-			throw new DibiDriverException($info[0]['message'], $info[0]['code'], $sql);
+			throw new DibiDriverException(mssql_get_last_message(), 0, $sql);
 
 		} elseif (is_resource($res)) {
-			$this->affectedRows = sqlsrv_rows_affected($res);
 			return $this->createResultDriver($res);
 		}
 	}
@@ -127,7 +114,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getAffectedRows()
 	{
-		return $this->affectedRows;
+		return mssql_rows_affected($this->connection);
 	}
 
 
@@ -138,9 +125,9 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getInsertId($sequence)
 	{
-		$res = sqlsrv_query($this->connection, 'SELECT @@IDENTITY');
+		$res = mssql_query('SELECT @@IDENTITY', $this->connection);
 		if (is_resource($res)) {
-			$row = sqlsrv_fetch_array($res, SQLSRV_FETCH_NUMERIC);
+			$row = mssql_fetch_row($res);
 			return $row[0];
 		}
 		return FALSE;
@@ -156,7 +143,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function begin($savepoint = NULL)
 	{
-		sqlsrv_begin_transaction($this->connection);
+		$this->query('BEGIN TRANSACTION');
 	}
 
 
@@ -169,7 +156,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function commit($savepoint = NULL)
 	{
-		sqlsrv_commit($this->connection);
+		$this->query('COMMIT');
 	}
 
 
@@ -182,7 +169,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function rollback($savepoint = NULL)
 	{
-		sqlsrv_rollback($this->connection);
+		$this->query('ROLLBACK');
 	}
 
 
@@ -204,7 +191,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getReflector()
 	{
-		return new DibiMssql2005Reflector($this);
+		return new DibiMsSqlReflector($this);
 	}
 
 
@@ -243,7 +230,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 
 		case dibi::IDENTIFIER:
 			// @see http://msdn.microsoft.com/en-us/library/ms176027.aspx
-			return '[' . str_replace(']', ']]', $value) . ']';
+			return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
 		case dibi::BOOL:
 			return $value ? 1 : 0;
@@ -303,7 +290,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	{
 		// offset support is missing
 		if ($limit >= 0) {
-			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') AS T ';
+			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
 		}
 
 		if ($offset) {
@@ -334,7 +321,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getRowCount()
 	{
-		throw new DibiNotSupportedException('Row count is not available for unbuffered queries.');
+		return mssql_num_rows($this->resultSet);
 	}
 
 
@@ -346,7 +333,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function fetch($assoc)
 	{
-		return sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC);
+		return mssql_fetch_array($this->resultSet, $assoc ? MSSQL_ASSOC : MSSQL_NUM);
 	}
 
 
@@ -358,7 +345,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function seek($row)
 	{
-		throw new DibiNotSupportedException('Cannot seek an unbuffered result set.');
+		return mssql_data_seek($this->resultSet, $row);
 	}
 
 
@@ -369,7 +356,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function free()
 	{
-		sqlsrv_free_stmt($this->resultSet);
+		mssql_free_result($this->resultSet);
 		$this->resultSet = NULL;
 	}
 
@@ -381,12 +368,15 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getResultColumns()
 	{
+		$count = mssql_num_fields($this->resultSet);
 		$columns = array();
-		foreach ((array) sqlsrv_field_metadata($this->resultSet) as $fieldMetadata) {
+		for ($i = 0; $i < $count; $i++) {
+			$row = (array) mssql_fetch_field($this->resultSet, $i);
 			$columns[] = array(
-				'name' => $fieldMetadata['Name'],
-				'fullname' => $fieldMetadata['Name'],
-				'nativetype' => $fieldMetadata['Type'],
+				'name' => $row['name'],
+				'fullname' => $row['column_source'] ? $row['column_source'] . '.' . $row['name'] : $row['name'],
+				'table' => $row['column_source'],
+				'nativetype' => $row['type'],
 			);
 		}
 		return $columns;
@@ -403,5 +393,6 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 		$this->autoFree = FALSE;
 		return is_resource($this->resultSet) ? $this->resultSet : NULL;
 	}
+
 
 }
