@@ -6,6 +6,8 @@
  *
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
+ *
+ * For more information please see http://nette.org
  * @package Nette\Diagnostics
  */
 
@@ -17,12 +19,8 @@ NDebugBar{private$panels=array();public
 function
 addPanel(IBarPanel$panel,$id=NULL){if($id===NULL){$c=0;do{$id=get_class($panel).($c++?"-$c":'');}while(isset($this->panels[$id]));}$this->panels[$id]=$panel;return$this;}public
 function
-getPanel($id){return
-isset($this->panels[$id])?$this->panels[$id]:NULL;}public
-function
 render(){$obLevel=ob_get_level();$panels=array();foreach($this->panels
-as$id=>$panel){try{$panels[]=array('id'=>preg_replace('#[^a-z0-9]+#i','-',$id),'tab'=>$tab=(string)$panel->getTab(),'panel'=>$tab?(string)$panel->getPanel():NULL);}catch(Exception$e){$panels[]=array('id'=>"error-".preg_replace('#[^a-z0-9]+#i','-',$id),'tab'=>"Error in $id",'panel'=>'<h1>Error: '.$id.'</h1><div class="nette-inner">'.nl2br(htmlSpecialChars($e)).'</div>');while(ob_get_level()>$obLevel){ob_end_clean();}}}@session_start();$session=&$_SESSION['__NF']['debuggerbar'];if(preg_match('#^Location:#im',implode("\n",headers_list()))){$session[]=$panels;return;}foreach(array_reverse((array)$session)as$reqId=>$oldpanels){$panels[]=array('tab'=>'<span title="Previous request before redirect">previous</span>','panel'=>NULL,'previous'=>TRUE);foreach($oldpanels
-as$panel){$panel['id'].='-'.$reqId;$panels[]=$panel;}}$session=NULL;?>
+as$id=>$panel){try{$panels[]=array('id'=>preg_replace('#[^a-z0-9]+#i','-',$id),'tab'=>$tab=(string)$panel->getTab(),'panel'=>$tab?(string)$panel->getPanel():NULL);}catch(Exception$e){$panels[]=array('id'=>"error-$id",'tab'=>"Error: $id",'panel'=>nl2br(htmlSpecialChars((string)$e)));while(ob_get_level()>$obLevel){ob_end_clean();}}}?>
 
 
 
@@ -31,39 +29,38 @@ as$panel){$panel['id'].='-'.$reqId;$panels[]=$panel;}}$session=NULL;?>
 <?php ob_start()?>
 &nbsp;
 
-<style id="nette-debug-style" class="nette-debug">#nette-debug{display:none}body#nette-debug{margin:5px 5px 0;display:block}#nette-debug *{font:inherit;color:inherit;background:transparent;margin:0;padding:0;border:none;text-align:inherit;list-style:inherit;opacity:1;border-radius:0;box-shadow:none}#nette-debug b,#nette-debug strong{font-weight:bold}#nette-debug i,#nette-debug em{font-style:italic}#nette-debug a{color:#125EAE;text-decoration:none}#nette-debug .nette-panel a{color:#125EAE;text-decoration:none}#nette-debug a:hover,#nette-debug a:active,#nette-debug a:focus{background-color:#125EAE;color:white}#nette-debug .nette-panel h2,#nette-debug .nette-panel h3,#nette-debug .nette-panel p{margin:.4em 0}#nette-debug .nette-panel table{border-collapse:collapse;background:#FDF5CE}#nette-debug .nette-panel tr:nth-child(2n) td{background:#F7F0CB}#nette-debug .nette-panel td,#nette-debug .nette-panel th{border:1px solid #E6DFBF;padding:2px 5px;vertical-align:top;text-align:left}#nette-debug .nette-panel th{background:#F4F3F1;color:#655E5E;font-size:90%;font-weight:bold}#nette-debug .nette-panel pre,#nette-debug .nette-panel code{font:9pt/1.5 Consolas,monospace}#nette-debug table .nette-right{text-align:right}#nette-debug-bar{font:normal normal 12px/21px Tahoma,sans-serif;color:#333;border:1px solid #c9c9c9;background:#EDEAE0 url('data:image/png;base64,R0lGODlhAQAVALMAAOTh1/Px6eHe1fHv5e/s4vLw6Ofk2u3q4PPw6PPx6PDt5PLw5+Dd1OXi2Ojm3Orn3iH5BAAAAAAALAAAAAABABUAAAQPMISEyhpYkfOcaQAgCEwEADs=') top;position:fixed;right:0;bottom:0;overflow:auto;min-height:21px;_float:left;min-width:50px;white-space:nowrap;z-index:30000;opacity:.9;border-radius:3px;box-shadow:1px 1px 10px rgba(0,0,0,.15)}#nette-debug-bar:hover{opacity:1}#nette-debug-bar ul{list-style:none none;margin-left:4px;clear:left}#nette-debug-bar li{float:left}#nette-debug-bar ul.nette-previous li{font-size:90%;opacity:.6;background:#F5F3EE}#nette-debug-bar ul.nette-previous li:first-child{width:45px}#nette-debug-bar img{vertical-align:middle;position:relative;top:-1px;margin-right:3px}#nette-debug-bar li a{color:#000;display:block;padding:0 4px}#nette-debug-bar li a:hover{color:black;background:#c3c1b8}#nette-debug-bar li .nette-warning{color:#D32B2B;font-weight:bold}#nette-debug-bar li>span{padding:0 4px}#nette-debug-logo{background:url('data:image/png;base64,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') 0 50% no-repeat;min-width:45px;cursor:move}#nette-debug-logo span{display:none}#nette-debug .nette-panel{font:normal normal 12px/1.5 sans-serif;background:white;color:#333;text-align:left}#nette-debug h1{font:normal normal 23px/1.4 Tahoma,sans-serif;color:#575753;margin:-5px -5px 5px;padding:0 25px 5px 5px}#nette-debug .nette-mode-peek .nette-inner,#nette-debug .nette-mode-float .nette-inner{max-width:700px;max-height:500px;overflow:auto}#nette-debug .nette-panel .nette-icons{display:none}#nette-debug .nette-mode-peek{display:none;position:fixed;right:0;bottom:0;padding:10px;min-width:150px;min-height:50px;border-radius:5px;box-shadow:1px 1px 20px rgba(102,102,102,0.36);border:1px solid rgba(0,0,0,0.1)}#nette-debug .nette-mode-peek h1{cursor:move}#nette-debug .nette-mode-float{position:fixed;right:0;bottom:0;padding:10px;min-width:150px;min-height:50px;border-radius:5px;opacity:.95;box-shadow:1px 1px 30px rgba(102,102,102,0.36);border:1px solid rgba(0,0,0,0.1)}#nette-debug .nette-focused{opacity:1}#nette-debug .nette-mode-float h1{cursor:move}#nette-debug .nette-mode-float .nette-icons{display:block;position:absolute;top:0;right:5px;font-size:18px}#nette-debug .nette-icons a{color:#575753}#nette-debug .nette-icons a:hover{color:white}.nette-collapsed{display:none}.nette-toggle,.nette-toggle-collapsed{cursor:pointer}.nette-toggle:after{content:" ▼";opacity:.4}.nette-toggle-collapsed:after{content:" ►";opacity:.4}pre.nette-dump{color:#444;background:white}pre.nette-dump div,#nette-debug pre.nette-dump div{padding-left:3ex}pre.nette-dump div div,#nette-debug pre.nette-dump div div{border-left:1px solid rgba(0,0,0,.1);margin-left:.5ex}#nette-debug pre.nette-dump{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}#nette-debug table pre.nette-dump{padding:0;margin:0;border:none}.nette-dump-array,.nette-dump-object,#nette-debug .nette-dump-array,#nette-debug .nette-dump-object{color:#C22}.nette-dump-string,#nette-debug .nette-dump-string{color:#35D}.nette-dump-number,#nette-debug .nette-dump-number{color:#090}.nette-dump-null,.nette-dump-bool,#nette-debug .nette-dump-null,#nette-debug .nette-dump-bool{color:#850}.nette-dump-visibility,#nette-debug .nette-dump-visibility{font-size:85%;color:#999}.nette-dump-indent,#nette-debug .nette-dump-indent{display:none}@media print{#nette-debug *{display:none}}</style>
+<style id="nette-debug-style" class="nette">#nette-debug{display:none;position:fixed}body#nette-debug{margin:5px 5px 0;display:block}#nette-debug *{font:inherit;color:inherit;background:transparent;margin:0;padding:0;border:none;text-align:inherit;list-style:inherit}#nette-debug .nette-fixed-coords{position:fixed;_position:absolute;right:0;bottom:0;max-width:100%}#nette-debug a{color:#125EAE;text-decoration:none}#nette-debug .nette-panel a{color:#125EAE;text-decoration:none}#nette-debug a:hover,#nette-debug a:active,#nette-debug a:focus{background-color:#125EAE;color:white}#nette-debug .nette-panel h2,#nette-debug .nette-panel h3,#nette-debug .nette-panel p{margin:.4em 0}#nette-debug .nette-panel table{border-collapse:collapse;background:#FDF5CE}#nette-debug .nette-panel tr:nth-child(2n) td{background:#F7F0CB}#nette-debug .nette-panel td,#nette-debug .nette-panel th{border:1px solid #E6DFBF;padding:2px 5px;vertical-align:top;text-align:left}#nette-debug .nette-panel th{background:#F4F3F1;color:#655E5E;font-size:90%;font-weight:bold}#nette-debug .nette-panel pre,#nette-debug .nette-panel code{font:9pt/1.5 Consolas,monospace}#nette-debug table .nette-right{text-align:right}.nette-hidden,.nette-collapsed{display:none}#nette-debug-bar{font:normal normal 12px/21px Tahoma,sans-serif;color:#333;border:1px solid #c9c9c9;background:#EDEAE0 url('data:image/png;base64,R0lGODlhAQAVALMAAOTh1/Px6eHe1fHv5e/s4vLw6Ofk2u3q4PPw6PPx6PDt5PLw5+Dd1OXi2Ojm3Orn3iH5BAAAAAAALAAAAAABABUAAAQPMISEyhpYkfOcaQAgCEwEADs=') top;position:relative;overflow:auto;min-height:21px;_float:left;min-width:50px;white-space:nowrap;z-index:23181;opacity:.9;border-radius:3px;-moz-border-radius:3px;box-shadow:1px 1px 10px rgba(0,0,0,.15);-moz-box-shadow:1px 1px 10px rgba(0,0,0,.15);-webkit-box-shadow:1px 1px 10px rgba(0,0,0,.15)}#nette-debug-bar:hover{opacity:1}#nette-debug-bar ul{list-style:none none;margin-left:4px}#nette-debug-bar li{float:left}#nette-debug-bar img{vertical-align:middle;position:relative;top:-1px;margin-right:3px}#nette-debug-bar li a{color:#000;display:block;padding:0 4px}#nette-debug-bar li a:hover{color:black;background:#c3c1b8}#nette-debug-bar li .nette-warning{color:#D32B2B;font-weight:bold}#nette-debug-bar li>span{padding:0 4px}#nette-debug-logo{background:url('data:image/png;base64,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') 0 50% no-repeat;min-width:45px;cursor:move}#nette-debug-logo span{display:none}#nette-debug-bar-bgl,#nette-debug-bar-bgx,#nette-debug-bar-bgr{position:absolute;z-index:-1;top:-7px;height:37px}#nette-debug .nette-panel{font:normal normal 12px/1.5 sans-serif;background:white;color:#333}#nette-debug h1{font:normal normal 23px/1.4 Tahoma,sans-serif;color:#575753;background:#EDEAE0;margin:-5px -5px 5px;padding:0 25px 5px 5px}#nette-debug .nette-mode-peek .nette-inner,#nette-debug .nette-mode-float .nette-inner{max-width:700px;max-height:500px;overflow:auto}#nette-debug .nette-panel .nette-icons{display:none}#nette-debug .nette-mode-peek{display:none;position:relative;z-index:23180;padding:5px;min-width:150px;min-height:50px;border:5px solid #EDEAE0;border-radius:5px;-moz-border-radius:5px}#nette-debug .nette-mode-peek h1{cursor:move}#nette-debug .nette-mode-float{position:relative;z-index:23179;padding:5px;min-width:150px;min-height:50px;border:5px solid #EDEAE0;border-radius:5px;-moz-border-radius:5px;opacity:.9;box-shadow:1px 1px 6px #666;-moz-box-shadow:1px 1px 6px rgba(0,0,0,.45);-webkit-box-shadow:1px 1px 6px #666}#nette-debug .nette-focused{z-index:23180;opacity:1}#nette-debug .nette-mode-float h1{cursor:move}#nette-debug .nette-mode-float .nette-icons{display:block;position:absolute;top:0;right:0;font-size:18px}#nette-debug .nette-icons a{color:#575753}#nette-debug .nette-icons a:hover{color:white}pre.nette-dump{color:#444;background:white}pre.nette-dump a,#nette-debug pre.nette-dump a{color:inherit;background:inherit}pre.nette-dump .php-array,pre.nette-dump .php-object,#nette-debug pre.nette-dump .php-array,#nette-debug pre.nette-dump .php-object{color:#C22}pre.nette-dump .php-string,#nette-debug pre.nette-dump .php-string{color:#080}pre.nette-dump .php-int,pre.nette-dump .php-float,#nette-debug pre.nette-dump .php-int,#nette-debug pre.nette-dump .php-float{color:#37D}pre.nette-dump .php-null,pre.nette-dump .php-bool,#nette-debug pre.nette-dump .php-null,#nette-debug pre.nette-dump .php-bool{color:black}pre.nette-dump .php-visibility,#nette-debug pre.nette-dump .php-visibility{font-size:85%;color:#999}</style>
 
-<!--[if lt IE 8]><style class="nette-debug">#nette-debug-bar img{display:none}#nette-debug-bar li{border-left:1px solid #DCD7C8;padding:0 3px}#nette-debug-logo span{background:#edeae0;display:inline}</style><![endif]-->
+<!--[if lt IE 8]><style class="nette">#nette-debug-bar img{display:none}#nette-debug-bar li{border-left:1px solid #DCD7C8;padding:0 3px}#nette-debug-logo span{background:#edeae0;display:inline}</style><![endif]-->
 
 
 <script id="nette-debug-script">/*<![CDATA[*/var Nette=Nette||{};
-(function(){var b=Nette.Query=function(a){if("string"===typeof a)a=this._find(document,a);else if(!a||a.nodeType||void 0===a.length||a===window)a=[a];for(var f=0,b=a.length;f<b;f++)a[f]&&(this[this.length++]=a[f])};b.factory=function(a){return new b(a)};b.prototype.length=0;b.prototype.find=function(a){return new b(this._find(this[0],a))};b.prototype._find=function(a,f){if(!a||!f)return[];if(document.querySelectorAll)return a.querySelectorAll(f);if("#"===f.charAt(0))return[document.getElementById(f.substring(1))];var f=
-f.split("."),b=a.getElementsByTagName(f[0]||"*");if(f[1]){for(var d=[],c=RegExp("(^|\\s)"+f[1]+"(\\s|$)"),g=0,h=b.length;g<h;g++)c.test(b[g].className)&&d.push(b[g]);return d}return b};b.prototype.dom=function(){return this[0]};b.prototype.each=function(a){for(var b=0;b<this.length&&!1!==a.apply(this[b]);b++);return this};b.prototype.bind=function(a,b){if(document.addEventListener&&("mouseenter"===a||"mouseleave"===a))var e=b,a="mouseenter"===a?"mouseover":"mouseout",b=function(a){for(var b=a.relatedTarget;b;b=
-b.parentNode)if(b===this)return;e.call(this,a)};return this.each(function(){var d=this,c=d.nette?d.nette:d.nette={},c=c.events=c.events||{};if(!c[a]){var g=c[a]=[],h=function(a){a.target||(a.target=a.srcElement);a.preventDefault||(a.preventDefault=function(){a.returnValue=!1});a.stopPropagation||(a.stopPropagation=function(){a.cancelBubble=!0});a.stopImmediatePropagation=function(){this.stopPropagation();b=g.length};for(var b=0;b<g.length;b++)g[b].call(d,a)};document.addEventListener?d.addEventListener(a,
-h,!1):document.attachEvent&&d.attachEvent("on"+a,h)}c[a].push(b)})};b.prototype.addClass=function(a){return this.each(function(){this.className=this.className.replace(/^|\s+|$/g," ").replace(" "+a+" "," ")+" "+a})};b.prototype.removeClass=function(a){return this.each(function(){this.className=this.className.replace(/^|\s+|$/g," ").replace(" "+a+" "," ")})};b.prototype.hasClass=function(a){return this[0]&&-1<this[0].className.replace(/^|\s+|$/g," ").indexOf(" "+a+" ")};b.prototype.show=function(){b.displays=
-b.displays||{};return this.each(function(){var a=this.tagName;b.displays[a]||(b.displays[a]=(new b(document.body.appendChild(document.createElement(a)))).css("display"));this.style.display=b.displays[a]})};b.prototype.hide=function(){return this.each(function(){this.style.display="none"})};b.prototype.css=function(a){if(this[0]&&this[0].currentStyle)return this[0].currentStyle[a];if(this[0]&&window.getComputedStyle)return document.defaultView.getComputedStyle(this[0],null).getPropertyValue(a)};b.prototype.data=
-function(){if(this[0])return this[0].nette?this[0].nette:this[0].nette={}};b.prototype.val=function(){var a=this[0];if(a)if(a.nodeName){if("select"===a.nodeName.toLowerCase()){var b=a.selectedIndex,e=a.options;if(0>b)return null;if("select-one"===a.type)return e[b].value;b=0;a=[];for(d=e.length;b<d;b++)e[b].selected&&a.push(e[b].value);return a}if("checkbox"===a.type)return a.checked;if(a.value)return a.value.replace(/^\s+|\s+$/g,"")}else{for(var b=0,d=a.length;b<d;b++)if(this[b].checked)return this[b].value;
-return null}};b.prototype._trav=function(a,f,e){for(f=f.split(".");a&&!(1===a.nodeType&&(!f[0]||a.tagName.toLowerCase()===f[0])&&(!f[1]||(new b(a)).hasClass(f[1])));)a=a[e];return new b(a||[])};b.prototype.closest=function(a){return this._trav(this[0],a,"parentNode")};b.prototype.prev=function(a){return this._trav(this[0]&&this[0].previousSibling,a,"previousSibling")};b.prototype.next=function(a){return this._trav(this[0]&&this[0].nextSibling,a,"nextSibling")};b.prototype.offset=function(a){if(a)return this.each(function(){for(var d=
-this,b=-a.left||0,g=-a.top||0;d=d.offsetParent;)b+=d.offsetLeft,g+=d.offsetTop;this.style.left=-b+"px";this.style.top=-g+"px"});if(this[0]){for(var b=this[0],e={left:b.offsetLeft,top:b.offsetTop};b=b.offsetParent;)e.left+=b.offsetLeft,e.top+=b.offsetTop;return e}};b.prototype.position=function(a){if(a)return this.each(function(){this.nette&&this.nette.onmove&&this.nette.onmove.call(this,a);for(var b in a)this.style[b]=a[b]+"px"});if(this[0])return{left:this[0].offsetLeft,top:this[0].offsetTop,right:this[0].style.right?
-parseInt(this[0].style.right,10):0,bottom:this[0].style.bottom?parseInt(this[0].style.bottom,10):0,width:this[0].offsetWidth,height:this[0].offsetHeight}};b.prototype.draggable=function(a){var f=this[0],e=document.documentElement,d,a=a||{};(a.handle?new b(a.handle):this).bind("mousedown",function(c){var g=new b(a.handle?f:this);c.preventDefault();c.stopPropagation();if(b.dragging)return e.onmouseup(c);var h=g.position(),j=a.rightEdge?h.right+c.clientX:h.left-c.clientX,i=a.bottomEdge?h.bottom+c.clientY:
-h.top-c.clientY;b.dragging=!0;d=!1;e.onmousemove=function(b){b=b||event;d||(a.draggedClass&&g.addClass(a.draggedClass),a.start&&a.start(b,g),d=!0);var c={};c[a.rightEdge?"right":"left"]=a.rightEdge?j-b.clientX:b.clientX+j;c[a.bottomEdge?"bottom":"top"]=a.bottomEdge?i-b.clientY:b.clientY+i;g.position(c);return!1};e.onmouseup=function(c){d&&(a.draggedClass&&g.removeClass(a.draggedClass),a.stop&&a.stop(c||event,g));b.dragging=e.onmousemove=e.onmouseup=null;return!1}}).bind("click",function(a){d&&a.stopImmediatePropagation()});
-return this}})();
-(function(){var b=Nette.Query.factory,a=Nette.DebugPanel=function(a){this.id="nette-debug-panel-"+a;this.elem=b("#"+this.id)};a.PEEK="nette-mode-peek";a.FLOAT="nette-mode-float";a.WINDOW="nette-mode-window";a.FOCUSED="nette-focused";a.zIndex=2E4;a.prototype.init=function(){var a=this;this.elem.data().onmove=function(b){a.moveConstrains(this,b)};this.elem.draggable({rightEdge:!0,bottomEdge:!0,handle:this.elem.find("h1"),stop:function(){a.toFloat()}}).bind("mouseenter",function(){a.focus()}).bind("mouseleave",function(){a.blur()});
-this.elem.find(".nette-icons").find("a").bind("click",function(b){"close"===this.rel?a.toPeek():a.toWindow();b.preventDefault()});this.restorePosition()};a.prototype.is=function(a){return this.elem.hasClass(a)};a.prototype.focus=function(){var b=this.elem;this.is(a.WINDOW)?b.data().win.focus():(clearTimeout(b.data().blurTimeout),b.addClass(a.FOCUSED).show(),b[0].style.zIndex=a.zIndex++)};a.prototype.blur=function(){var b=this.elem;b.removeClass(a.FOCUSED);this.is(a.PEEK)&&(b.data().blurTimeout=setTimeout(function(){b.hide()},
-50))};a.prototype.toFloat=function(){this.elem.removeClass(a.WINDOW).removeClass(a.PEEK).addClass(a.FLOAT).show();this.reposition()};a.prototype.toPeek=function(){this.elem.removeClass(a.WINDOW).removeClass(a.FLOAT).addClass(a.PEEK).hide();document.cookie=this.id+"=; path=/"};a.prototype.toWindow=function(){var d=this.elem.offset();d.left+="number"===typeof window.screenLeft?window.screenLeft:window.screenX+10;d.top+="number"===typeof window.screenTop?window.screenTop:window.screenY+50;var c=window.open("",
-this.id.replace(/-/g,"_"),"left="+d.left+",top="+d.top+",width="+d.width+",height="+(d.height+15)+",resizable=yes,scrollbars=yes");if(c){d=c.document;d.write('<!DOCTYPE html><meta charset="utf-8"><style>'+b("#nette-debug-style").dom().innerHTML+"</style><script>"+b("#nette-debug-script").dom().innerHTML+'<\/script><body id="nette-debug">');d.body.innerHTML='<div class="nette-panel nette-mode-window" id="'+this.id+'">'+this.elem.dom().innerHTML+"</div>";var g=c.Nette.Debug.getPanel(this.id);c.Nette.Debug.initToggle();
-g.reposition();d.title=this.elem.find("h1").dom().innerHTML;var h=this;b([c]).bind("unload",function(){h.toPeek();c.close()});b(d).bind("keyup",function(a){27===a.keyCode&&(!a.shiftKey&&!a.altKey&&!a.ctrlKey&&!a.metaKey)&&c.close()});document.cookie=this.id+"=window; path=/";this.elem.hide().removeClass(a.FLOAT).removeClass(a.PEEK).addClass(a.WINDOW).data().win=c}};a.prototype.reposition=function(){if(this.is(a.WINDOW)){var b=document.documentElement;window.resizeBy(b.scrollWidth-b.clientWidth,b.scrollHeight-
-b.clientHeight)}else b=this.elem.position(),b.width&&(this.elem.position({right:b.right,bottom:b.bottom}),document.cookie=this.id+"="+b.right+":"+b.bottom+"; path=/")};a.prototype.moveConstrains=function(a,b){var g=window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth,h=window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight;b.right=Math.min(Math.max(b.right,-0.2*a.offsetWidth),g-0.8*a.offsetWidth);b.bottom=Math.min(Math.max(b.bottom,-0.2*
-a.offsetHeight),h-a.offsetHeight)};a.prototype.restorePosition=function(){var b=document.cookie.match(RegExp(this.id+"=(window|(-?[0-9]+):(-?[0-9]+))"));b&&b[2]?(this.elem.position({right:b[2],bottom:b[3]}),this.toFloat()):b?this.toWindow():this.elem.addClass(a.PEEK)};var f=Nette.DebugBar=function(){};f.prototype.id="nette-debug-bar";f.prototype.init=function(){var d=b("#"+this.id),c=this;d.data().onmove=function(a){c.moveConstrains(this,a)};d.draggable({rightEdge:!0,bottomEdge:!0,draggedClass:"nette-dragged",
-stop:function(){c.savePosition()}});d.find("a").bind("click",function(b){if("close"===this.rel)c.close();else if(this.rel){var d=e.getPanel(this.rel);b.shiftKey?(d.toFloat(),d.toWindow()):d.is(a.FLOAT)?d.toPeek():(d.toFloat(),d.elem.position({right:d.elem.position().right+Math.round(100*Math.random())+20,bottom:d.elem.position().bottom+Math.round(100*Math.random())+20}))}b.preventDefault()}).bind("mouseenter",function(){if(this.rel&&"close"!==this.rel&&!d.hasClass("nette-dragged")){var c=e.getPanel(this.rel),
-f=b(this);c.focus();c.is(a.PEEK)&&c.elem.position({right:c.elem.position().right-f.offset().left+c.elem.position().width-f.position().width-4+c.elem.offset().left,bottom:c.elem.position().bottom-d.offset().top+c.elem.position().height+4+c.elem.offset().top})}}).bind("mouseleave",function(){this.rel&&("close"!==this.rel&&!d.hasClass("nette-dragged"))&&e.getPanel(this.rel).blur()});this.restorePosition()};f.prototype.close=function(){b("#nette-debug").hide();window.opera&&b("body").show()};f.prototype.moveConstrains=
-function(a,b){var f=window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth,e=window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight;b.right=Math.min(Math.max(b.right,0),f-a.offsetWidth);b.bottom=Math.min(Math.max(b.bottom,0),e-a.offsetHeight)};f.prototype.savePosition=function(){var a=b("#"+this.id).position();document.cookie=this.id+"="+a.right+":"+a.bottom+"; path=/"};f.prototype.restorePosition=function(){var a=document.cookie.match(RegExp(this.id+
-"=(-?[0-9]+):(-?[0-9]+)"));a&&b("#"+this.id).position({right:a[1],bottom:a[2]})};var e=Nette.Debug={};e.init=function(){e.initToggle();e.initResize();(new f).init();b(".nette-panel").each(function(){e.getPanel(this.id).init()})};e.getPanel=function(b){return new a(b.replace("nette-debug-panel-",""))};e.initToggle=function(){b(document.body).bind("click",function(a){for(var c=a.target;c&&(!c.tagName||0>c.className.indexOf("nette-toggle"));c=c.parentNode);if(c){var f=b(c).hasClass("nette-toggle-collapsed"),
-e=c.getAttribute("data-ref")||c.getAttribute("href"),j=e&&"#"!==e?b(e):b(c).next(""),e=b(c).closest(".nette-panel"),i=e.position();c.className="nette-toggle"+(f?"":"-collapsed");j[f?"show":"hide"]();a.preventDefault();a=e.position();e.position({right:a.right-a.width+i.width,bottom:a.bottom-a.height+i.height})}})};e.initResize=function(){b(window).bind("resize",function(){var a=b("#"+f.prototype.id);a.position({right:a.position().right,bottom:a.position().bottom});b(".nette-panel").each(function(){e.getPanel(this.id).reposition()})})}})();/*]]>*/</script>
+(function(){Nette.Class=function(a){var b=a.constructor||function(){},c,f=Object.prototype.hasOwnProperty;delete a.constructor;if(a.Extends){var d=function(){this.constructor=b};d.prototype=a.Extends.prototype;b.prototype=new d;delete a.Extends}if(a.Static){for(c in a.Static)f.call(a.Static,c)&&(b[c]=a.Static[c]);delete a.Static}for(c in a)f.call(a,c)&&(b.prototype[c]=a[c]);return b};Nette.Q=Nette.Class({Static:{factory:function(a){return new Nette.Q(a)},implement:function(a){var b,c=Nette.Q.implement,
+f=Nette.Q.prototype,d=Object.prototype.hasOwnProperty;for(b in a)d.call(a,b)&&(c[b]=a[b],f[b]=function(a){return function(){return this.each(c[a],arguments)}}(b))}},constructor:function(a){if("string"===typeof a)a=this._find(document,a);else if(!a||a.nodeType||void 0===a.length||a===window)a=[a];for(var b=0,c=a.length;b<c;b++)a[b]&&(this[this.length++]=a[b])},length:0,find:function(a){return new Nette.Q(this._find(this[0],a))},_find:function(a,b){if(!a||!b)return[];if(document.querySelectorAll)return a.querySelectorAll(b);
+if("#"===b.charAt(0))return[document.getElementById(b.substring(1))];var b=b.split("."),c=a.getElementsByTagName(b[0]||"*");if(b[1]){for(var f=[],d=RegExp("(^|\\s)"+b[1]+"(\\s|$)"),e=0,g=c.length;e<g;e++)d.test(c[e].className)&&f.push(c[e]);return f}return c},dom:function(){return this[0]},each:function(a,b){for(var c=0,f;c<this.length;c++)if(void 0!==(f=a.apply(this[c],b||[])))return f;return this}});var e=Nette.Q.factory,d=Nette.Q.implement;d({bind:function(a,b){if(document.addEventListener&&("mouseenter"===
+a||"mouseleave"===a))var c=b,a="mouseenter"===a?"mouseover":"mouseout",b=function(a){for(var b=a.relatedTarget;b;b=b.parentNode)if(b===this)return;c.call(this,a)};var f=d.data.call(this),f=f.events=f.events||{};if(!f[a]){var h=this,e=f[a]=[],g=d.bind.genericHandler=function(a){a.target||(a.target=a.srcElement);a.preventDefault||(a.preventDefault=function(){a.returnValue=!1});a.stopPropagation||(a.stopPropagation=function(){a.cancelBubble=!0});a.stopImmediatePropagation=function(){this.stopPropagation();
+b=e.length};for(var b=0;b<e.length;b++)e[b].call(h,a)};document.addEventListener?this.addEventListener(a,g,!1):document.attachEvent&&this.attachEvent("on"+a,g)}f[a].push(b)},addClass:function(a){this.className=this.className.replace(/^|\s+|$/g," ").replace(" "+a+" "," ")+" "+a},removeClass:function(a){this.className=this.className.replace(/^|\s+|$/g," ").replace(" "+a+" "," ")},hasClass:function(a){return-1<this.className.replace(/^|\s+|$/g," ").indexOf(" "+a+" ")},show:function(){var a=d.show.display=
+d.show.display||{},b=this.tagName;if(!a[b]){var c=document.body.appendChild(document.createElement(b));a[b]=d.css.call(c,"display")}this.style.display=a[b]},hide:function(){this.style.display="none"},css:function(a){return this.currentStyle?this.currentStyle[a]:window.getComputedStyle?document.defaultView.getComputedStyle(this,null).getPropertyValue(a):void 0},data:function(){return this.nette?this.nette:this.nette={}},val:function(){var a;if(!this.nodeName){for(a=0,len=this.length;a<len;a++)if(this[a].checked)return this[a].value;
+return null}if("select"===this.nodeName.toLowerCase()){a=this.selectedIndex;var b=this.options;if(0>a)return null;if("select-one"===this.type)return b[a].value;for(a=0,values=[],len=b.length;a<len;a++)b[a].selected&&values.push(b[a].value);return values}return"checkbox"===this.type?this.checked:this.value.replace(/^\s+|\s+$/g,"")},_trav:function(a,b,c){for(b=b.split(".");a&&!(1===a.nodeType&&(!b[0]||a.tagName.toLowerCase()===b[0])&&(!b[1]||d.hasClass.call(a,b[1])));)a=a[c];return e(a)},closest:function(a){return d._trav(this,
+a,"parentNode")},prev:function(a){return d._trav(this.previousSibling,a,"previousSibling")},next:function(a){return d._trav(this.nextSibling,a,"nextSibling")},offset:function(a){for(var b=this,c=a?{left:-a.left||0,top:-a.top||0}:d.position.call(b);b=b.offsetParent;)c.left+=b.offsetLeft,c.top+=b.offsetTop;if(a)d.position.call(this,{left:-c.left,top:-c.top});else return c},position:function(a){if(a)this.nette&&this.nette.onmove&&this.nette.onmove.call(this,a),this.style.left=(a.left||0)+"px",this.style.top=
+(a.top||0)+"px";else return{left:this.offsetLeft,top:this.offsetTop,width:this.offsetWidth,height:this.offsetHeight}},draggable:function(a){var b=e(this),c=document.documentElement,f,a=a||{};e(a.handle||this).bind("mousedown",function(e){e.preventDefault();e.stopPropagation();if(d.draggable.binded)return c.onmouseup(e);var i=b[0].offsetLeft-e.clientX,g=b[0].offsetTop-e.clientY;d.draggable.binded=!0;f=!1;c.onmousemove=function(c){c=c||event;f||(a.draggedClass&&b.addClass(a.draggedClass),a.start&&a.start(c,
+b),f=!0);b.position({left:c.clientX+i,top:c.clientY+g});return!1};c.onmouseup=function(e){f&&(a.draggedClass&&b.removeClass(a.draggedClass),a.stop&&a.stop(e||event,b));d.draggable.binded=c.onmousemove=c.onmouseup=null;return!1}}).bind("click",function(a){f&&(a.stopImmediatePropagation(),preventClick=!1)})}})})();
+(function(){Nette.Debug={};var e=Nette.Q.factory,d=Nette.Debug.Panel=Nette.Class({Extends:Nette.Q,Static:{PEEK:"nette-mode-peek",FLOAT:"nette-mode-float",WINDOW:"nette-mode-window",FOCUSED:"nette-focused",factory:function(a){return new d(a)},_toggle:function(a){var b=a.rel,b="#"===b.charAt(0)?e(b):e(a)["prev"===b?"prev":"next"](b.substring(4));"none"===b.css("display")?(b.show(),a.innerHTML=a.innerHTML.replace("►","▼")):(b.hide(),a.innerHTML=a.innerHTML.replace("▼","►"))}},constructor:function(a){Nette.Q.call(this,
+"#nette-debug-panel-"+a.replace("nette-debug-panel-",""))},reposition:function(){this.hasClass(d.WINDOW)?window.resizeBy(document.documentElement.scrollWidth-document.documentElement.clientWidth,document.documentElement.scrollHeight-document.documentElement.clientHeight):(this.position(this.position()),this.position().width&&(document.cookie=this.dom().id+"="+this.position().left+":"+this.position().top+"; path=/"))},focus:function(){this.hasClass(d.WINDOW)?this.data().win.focus():(clearTimeout(this.data().blurTimeout),
+this.addClass(d.FOCUSED).show())},blur:function(){this.removeClass(d.FOCUSED);if(this.hasClass(d.PEEK)){var a=this;this.data().blurTimeout=setTimeout(function(){a.hide()},50)}},toFloat:function(){this.removeClass(d.WINDOW).removeClass(d.PEEK).addClass(d.FLOAT).show().reposition();return this},toPeek:function(){this.removeClass(d.WINDOW).removeClass(d.FLOAT).addClass(d.PEEK).hide();document.cookie=this.dom().id+"=; path=/"},toWindow:function(){var a=this,b,c;c=this.offset();var f=this.dom().id;c.left+=
+"number"===typeof window.screenLeft?window.screenLeft:window.screenX+10;c.top+="number"===typeof window.screenTop?window.screenTop:window.screenY+50;if(b=window.open("",f.replace(/-/g,"_"),"left="+c.left+",top="+c.top+",width="+c.width+",height="+(c.height+15)+",resizable=yes,scrollbars=yes"))c=b.document,c.write('<!DOCTYPE html><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style>'+e("#nette-debug-style").dom().innerHTML+"</style><script>"+e("#nette-debug-script").dom().innerHTML+
+'<\/script><body id="nette-debug">'),c.body.innerHTML='<div class="nette-panel nette-mode-window" id="'+f+'">'+this.dom().innerHTML+"</div>",b.Nette.Debug.Panel.factory(f).initToggler().reposition(),c.title=a.find("h1").dom().innerHTML,e([b]).bind("unload",function(){a.toPeek();b.close()}),e(c).bind("keyup",function(a){27===a.keyCode&&!a.shiftKey&&!a.altKey&&!a.ctrlKey&&!a.metaKey&&b.close()}),document.cookie=f+"=window; path=/",this.hide().removeClass(d.FLOAT).removeClass(d.PEEK).addClass(d.WINDOW).data().win=
+b},init:function(){var a=this,b;a.data().onmove=function(a){var b=document,d=window.innerWidth||b.documentElement.clientWidth||b.body.clientWidth,b=window.innerHeight||b.documentElement.clientHeight||b.body.clientHeight;a.left=Math.max(Math.min(a.left,0.8*this.offsetWidth),0.2*this.offsetWidth-d);a.top=Math.max(Math.min(a.top,0.8*this.offsetHeight),this.offsetHeight-b)};e(window).bind("resize",function(){a.reposition()});a.draggable({handle:a.find("h1"),stop:function(){a.toFloat()}}).bind("mouseenter",
+function(){a.focus()}).bind("mouseleave",function(){a.blur()});this.initToggler();a.find(".nette-icons").find("a").bind("click",function(b){"close"===this.rel?a.toPeek():a.toWindow();b.preventDefault()});(b=document.cookie.match(RegExp(a.dom().id+"=(window|(-?[0-9]+):(-?[0-9]+))")))?b[2]?a.toFloat().position({left:b[2],top:b[3]}):a.toWindow():a.addClass(d.PEEK)},initToggler:function(){var a=this;this.bind("click",function(b){var c=e(b.target).closest("a").dom();c&&c.rel&&(d._toggle(c),b.preventDefault(),
+a.reposition())});return this}});Nette.Debug.Bar=Nette.Class({Extends:Nette.Q,constructor:function(){Nette.Q.call(this,"#nette-debug-bar")},init:function(){var a=this,b;a.data().onmove=function(a){var b=document,d=window.innerWidth||b.documentElement.clientWidth||b.body.clientWidth,b=window.innerHeight||b.documentElement.clientHeight||b.body.clientHeight;a.left=Math.max(Math.min(a.left,0),this.offsetWidth-d);a.top=Math.max(Math.min(a.top,0),this.offsetHeight-b)};e(window).bind("resize",function(){a.position(a.position())});
+a.draggable({draggedClass:"nette-dragged",stop:function(){document.cookie=a.dom().id+"="+a.position().left+":"+a.position().top+"; path=/"}});a.find("a").bind("click",function(a){if("close"===this.rel)e("#nette-debug").hide(),window.opera&&e("body").show();else if(this.rel){var b=d.factory(this.rel);if(a.shiftKey)b.toFloat().toWindow();else if(b.hasClass(d.FLOAT)){var h=e(this).offset();b.offset({left:h.left-b.position().width+h.width+4,top:h.top-b.position().height-4}).toPeek()}else b.toFloat().position({left:b.position().left-
+Math.round(100*Math.random())-20,top:b.position().top-Math.round(100*Math.random())-20}).reposition()}a.preventDefault()}).bind("mouseenter",function(){if(this.rel&&!("close"===this.rel||a.hasClass("nette-dragged"))){var b=d.factory(this.rel);b.focus();if(b.hasClass(d.PEEK)){var f=e(this).offset();b.offset({left:f.left-b.position().width+f.width+4,top:f.top-b.position().height-4})}}}).bind("mouseleave",function(){this.rel&&!("close"===this.rel||a.hasClass("nette-dragged"))&&d.factory(this.rel).blur()});
+(b=document.cookie.match(RegExp(a.dom().id+"=(-?[0-9]+):(-?[0-9]+)")))&&a.position({left:b[1],top:b[2]});a.find("a").each(function(){this.rel&&"close"!==this.rel&&d.factory(this.rel).init()})}})})();/*]]>*/</script>
 
 
 <?php foreach($panels
 as$id=>$panel):if(!$panel['panel'])continue;?>
+<div class="nette-fixed-coords">
 	<div class="nette-panel" id="nette-debug-panel-<?php echo$panel['id']?>">
 		<?php echo$panel['panel']?>
 		<div class="nette-icons">
@@ -71,52 +68,56 @@ as$id=>$panel):if(!$panel['panel'])continue;?>
 			<a href="#" rel="close" title="close window">&times;</a>
 		</div>
 	</div>
+</div>
 <?php endforeach?>
 
-<div id="nette-debug-bar">
-	<ul>
-		<li id="nette-debug-logo" title="PHP <?php echo
+<div class="nette-fixed-coords">
+	<div id="nette-debug-bar">
+		<ul>
+			<li id="nette-debug-logo" title="PHP <?php echo
 htmlSpecialChars(PHP_VERSION." |\n".(isset($_SERVER['SERVER_SOFTWARE'])?$_SERVER['SERVER_SOFTWARE']." |\n":'').(class_exists('NFramework')?'Nette Framework '.NFramework::VERSION.' ('.substr(NFramework::REVISION,8).')':''))?>">&nbsp;<span>Nette Framework</span></li>
-		<?php foreach($panels
+			<?php foreach($panels
 as$panel):if(!$panel['tab'])continue;?>
-		<?php if(!empty($panel['previous']))echo'</ul><ul class="nette-previous">';?>
-		<li><?php if($panel['panel']):?><a href="#" rel="<?php echo$panel['id']?>"><?php echo
+			<li><?php if($panel['panel']):?><a href="#" rel="<?php echo$panel['id']?>"><?php echo
 trim($panel['tab'])?></a><?php else:echo'<span>',trim($panel['tab']),'</span>';endif?></li>
-		<?php endforeach?>
-		<li><a href="#" rel="close" title="close debug bar">&times;</a></li>
-	</ul>
+			<?php endforeach?>
+			<li><a href="#" rel="close" title="close debug bar">&times;</a></li>
+		</ul>
+	</div>
 </div>
 <?php $output=ob_get_clean();?>
 
 
+<div id="nette-debug"></div>
+
 <script>
-(function(onloadOrig) {
+(function (onloadOrig) {
 	window.onload = function() {
 		if (typeof onloadOrig === 'function') onloadOrig();
-		var debug = document.body.appendChild(document.createElement('div'));
-		debug.id = 'nette-debug';
+		var debug = document.getElementById('nette-debug');
+		document.body.appendChild(debug);
 		debug.innerHTML = <?php echo
 json_encode(@iconv('UTF-16','UTF-8//IGNORE',iconv('UTF-8','UTF-16//IGNORE',$output)))?>;
 		for (var i = 0, scripts = debug.getElementsByTagName('script'); i < scripts.length; i++) eval(scripts[i].innerHTML);
-		Nette.Debug.init();
-		debug.style.display = 'block';
+		(new Nette.Debug.Bar).init();
+		Nette.Q.factory(debug).show();
 	};
 })(window.onload);
 </script>
 
 <!-- /Nette Debug Bar -->
 <?php }}class
-NDebugBlueScreen{private$panels=array();public$collapsePaths=array();public
+NDebugBlueScreen{private$panels=array();public
 function
 addPanel($panel){if(!in_array($panel,$this->panels,TRUE)){$this->panels[]=$panel;}return$this;}public
 function
-render(Exception$exception){$panels=$this->panels;static$errorTypes=array(E_ERROR=>'Fatal Error',E_USER_ERROR=>'User Error',E_RECOVERABLE_ERROR=>'Recoverable Error',E_CORE_ERROR=>'Core Error',E_COMPILE_ERROR=>'Compile Error',E_PARSE=>'Parse Error',E_WARNING=>'Warning',E_CORE_WARNING=>'Core Warning',E_COMPILE_WARNING=>'Compile Warning',E_USER_WARNING=>'User Warning',E_NOTICE=>'Notice',E_USER_NOTICE=>'User Notice',E_STRICT=>'Strict');if(PHP_VERSION_ID>=50300){$errorTypes+=array(E_DEPRECATED=>'Deprecated',E_USER_WARNING=>'User Deprecated');}$title=($exception
+render(Exception$exception){$panels=$this->panels;static$errorTypes=array(E_ERROR=>'Fatal Error',E_USER_ERROR=>'User Error',E_RECOVERABLE_ERROR=>'Recoverable Error',E_CORE_ERROR=>'Core Error',E_COMPILE_ERROR=>'Compile Error',E_PARSE=>'Parse Error',E_WARNING=>'Warning',E_CORE_WARNING=>'Core Warning',E_COMPILE_WARNING=>'Compile Warning',E_USER_WARNING=>'User Warning',E_NOTICE=>'Notice',E_USER_NOTICE=>'User Notice',E_STRICT=>'Strict',E_DEPRECATED=>'Deprecated',E_USER_DEPRECATED=>'User Deprecated');$title=($exception
 instanceof
-FatalErrorException&&isset($errorTypes[$exception->getSeverity()]))?$errorTypes[$exception->getSeverity()]:get_class($exception);$counter=0;?><!DOCTYPE html><!-- "' --></script></style></pre></xmp></table>
+FatalErrorException&&isset($errorTypes[$exception->getSeverity()]))?$errorTypes[$exception->getSeverity()]:get_class($exception);$expandPath=NETTE_DIR.DIRECTORY_SEPARATOR;$counter=0;?><!DOCTYPE html><!-- "' --></script></style></pre></xmp></table>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="robots" content="noindex">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="robots" content="noindex,noarchive">
 	<meta name="generator" content="Nette Framework">
 
 	<title><?php echo
@@ -125,16 +126,16 @@ $ex=$exception;echo
 htmlspecialchars($ex->getMessage().($ex->getCode()?' #'.$ex->getCode():''));while((method_exists($ex,'getPrevious')&&$ex=$ex->getPrevious())||(isset($ex->previous)&&$ex=$ex->previous))echo
 htmlspecialchars('; caused by '.get_class($ex).' '.$ex->getMessage().($ex->getCode()?' #'.$ex->getCode():''));?> -->
 
-	<style type="text/css" class="nette-debug">html{overflow-y:scroll}body{margin:0 0 2em;padding:0}#netteBluescreen{font:9pt/1.5 Verdana,sans-serif;background:white;color:#333;position:absolute;left:0;top:0;width:100%;text-align:left}#netteBluescreen *{font:inherit;color:inherit;background:transparent;border:none;margin:0;padding:0;text-align:inherit;text-indent:0}#netteBluescreen b{font-weight:bold}#netteBluescreen i{font-style:italic}#netteBluescreen a{text-decoration:none;color:#328ADC;padding:2px 4px;margin:-2px -4px}#netteBluescreen a:hover,#netteBluescreen a:active,#netteBluescreen a:focus{color:#085AA3}#netteBluescreenIcon{position:absolute;right:.5em;top:.5em;z-index:20000;text-decoration:none;background:#CD1818;color:white!important;padding:3px}#netteBluescreenError{background:#CD1818;color:white;font:13pt/1.5 Verdana,sans-serif!important;display:block}#netteBluescreenError #netteBsSearch{color:#CD1818;font-size:.7em}#netteBluescreenError:hover #netteBsSearch{color:#ED8383}#netteBluescreen h1{font-size:18pt;font-weight:normal;text-shadow:1px 1px 0 rgba(0,0,0,.4);margin:.7em 0}#netteBluescreen h2{font:14pt/1.5 sans-serif!important;color:#888;margin:.6em 0}#netteBluescreen h3{font:bold 10pt/1.5 Verdana,sans-serif!important;margin:1em 0;padding:0}#netteBluescreen p,#netteBluescreen pre{margin:.8em 0}#netteBluescreen pre,#netteBluescreen code,#netteBluescreen table{font:9pt/1.5 Consolas,monospace!important}#netteBluescreen pre,#netteBluescreen table{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}#netteBluescreen table pre{padding:0;margin:0;border:none}#netteBluescreen table{border-collapse:collapse;width:100%}#netteBluescreen td,#netteBluescreen th{vertical-align:top;text-align:left;padding:2px 6px;border:1px solid #e6dfbf}#netteBluescreen th{font-weight:bold}#netteBluescreen tr>:first-child{width:20%}#netteBluescreen tr:nth-child(2n),#netteBluescreen tr:nth-child(2n) pre{background-color:#F7F0CB}#netteBluescreen ol{margin:1em 0;padding-left:2.5em}#netteBluescreen ul{font:7pt/1.5 Verdana,sans-serif!important;padding:2em 4em;margin:1em 0 0;color:#777;background:#F6F5F3 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFEAAAAjCAMAAADbuxbOAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRF/fz24d7Y7Onj5uLd9vPu3drUzMvG09LN39zW8e7o2NbQ3NnT29jS0M7J1tXQAAAApvmsFgAAABB0Uk5T////////////////////AOAjXRkAAAKlSURBVHja7FbbsqQgDAwENEgc//9vN+SCWDtbtXPmZR/Wc6o02mlC58LA9ckFAOszvMV8xNgyUjyXhojfMVKvRL0ZHavxXYy5JrmchMdzou8YlTClxajtK8ZGGpWRoBr1+gFjKfHkJPbizabLgzE3pH7Iu4K980xgFvlrVzMZoVBWhtvouCDdcTDmTgMCJdVxJ9MKO6XxnliM7hxi5lbj2ZVM4l8DqYyKoNLYcfqBB1/LpHYxEcfVG6ZpMDgyFUVWY/Q1sSYPpIdSAKWqLWL0XqWiMWc4hpH0OQOMOAgdycY4N9Sb7wWANQs3rsDSdLAYiuxi5siVfOhBWIrtH0G3kNaF/8Q4kCPE1kMucG/ZMUBUCOgiKJkPuWWTLGVgLGpwns1DraUayCtoBqERyaYtVsm85NActRooezvSLO/sKZP/nq8n4+xcyjNsRu8zW6KWpdb7wjiQd4WrtFZYFiKHENSmWp6xshh96c2RQ+c7Lt+qbijyEjHWUJ/pZsy8MGIUuzNiPySK2Gqoh6ZTRF6ko6q3nVTkaA//itIrDpW6l3SLo8juOmqMXkYknu5FdQxWbhCfKHEGDhxxyTVaXJF3ZjSl3jMksjSOOKmne9pI+mcG5QvaUJhI9HpkmRo2NpCrDJvsktRhRE2MM6F2n7dt4OaMUq8bCctk0+PoMRzL+1l5PZ2eyM/Owr86gf8z/tOM53lom5+nVcFuB+eJVzlXwAYy9TZ9s537tfqcsJWbEU4nBngZo6FfO9T9CdhfBtmk2dLiAy8uS4zwOpMx2HqYbTC+amNeAYTpsP4SIgvWfUBWXxn3CMHW3ffd7k3+YIkx7w0t/CVGvcPejoeOlzOWzeGbawOHqXQGUTMZRcfj4XPCgW9y/fuvVn8zD9P1QHzv80uAAQA0i3Jer7Jr7gAAAABJRU5ErkJggg==') 99% 10px no-repeat;border-top:1px solid #DDD}#netteBluescreen div.panel{padding:1px 25px}#netteBluescreen div.inner{background:#F4F3F1;padding:.1em 1em 1em;border-radius:8px;-moz-border-radius:8px;-webkit-border-radius:8px}#netteBluescreen .outer{overflow:auto}#netteBluescreen pre.php div{min-width:100%;float:left;_float:none;white-space:pre}#netteBluescreen .highlight{background:#CD1818;color:white;font-weight:bold;font-style:normal;display:block;padding:0 .4em;margin:0 -.4em}#netteBluescreen .line{color:#9F9C7F;font-weight:normal;font-style:normal}#netteBluescreen a[href^=editor\:]{color:inherit;border-bottom:1px dotted #C1D2E1}html.js #netteBluescreen .nette-collapsed{display:none}#netteBluescreen .nette-toggle,#netteBluescreen .nette-toggle-collapsed{cursor:pointer}#netteBluescreen .nette-toggle:after{content:" ▼";opacity:.4}#netteBluescreen .nette-toggle-collapsed:after{content:" ►";opacity:.4}#netteBluescreen .nette-dump-array,#netteBluescreen .nette-dump-object{color:#C22}#netteBluescreen .nette-dump-string{color:#35D}#netteBluescreen .nette-dump-number{color:#090}#netteBluescreen .nette-dump-null,#netteBluescreen .nette-dump-bool{color:#850}#netteBluescreen .nette-dump-visibility{font-size:85%;color:#998}#netteBluescreen .nette-dump-indent{display:none}#netteBluescreen pre.nette-dump div{padding-left:3ex}#netteBluescreen pre.nette-dump div div{border-left:1px solid rgba(0,0,0,.1);margin-left:.5ex}</style>
-	<script>document.body.className+=" js";</script>
+	<style type="text/css" class="nette">html{overflow-y:scroll}body{margin:0 0 2em;padding:0}#netteBluescreen{font:9pt/1.5 Verdana,sans-serif;background:white;color:#333;position:absolute;left:0;top:0;width:100%;z-index:23178;text-align:left}#netteBluescreen *{font:inherit;color:inherit;background:transparent;border:none;margin:0;padding:0;text-align:inherit;text-indent:0}#netteBluescreen b{font-weight:bold}#netteBluescreen i{font-style:italic}#netteBluescreen a{text-decoration:none;color:#328ADC;padding:2px 4px;margin:-2px -4px}#netteBluescreen a:hover,#netteBluescreen a:active,#netteBluescreen a:focus{color:#085AA3}#netteBluescreen a abbr{font-family:sans-serif;color:#BBB}#netteBluescreenIcon{position:absolute;right:.5em;top:.5em;z-index:23179;text-decoration:none;background:#CD1818;padding:3px}#netteBluescreenError{background:#CD1818;color:white;font:13pt/1.5 Verdana,sans-serif!important;display:block}#netteBluescreenError #netteBsSearch{color:#CD1818;font-size:.7em}#netteBluescreenError:hover #netteBsSearch{color:#ED8383}#netteBluescreen h1{font-size:18pt;font-weight:normal;text-shadow:1px 1px 0 rgba(0,0,0,.4);margin:.7em 0}#netteBluescreen h2{font:14pt/1.5 sans-serif!important;color:#888;margin:.6em 0}#netteBluescreen h3{font:bold 10pt/1.5 Verdana,sans-serif!important;margin:1em 0;padding:0}#netteBluescreen p,#netteBluescreen pre{margin:.8em 0}#netteBluescreen pre,#netteBluescreen code,#netteBluescreen table{font:9pt/1.5 Consolas,monospace!important}#netteBluescreen pre,#netteBluescreen table{background:#FDF5CE;padding:.4em .7em;border:1px dotted silver;overflow:auto}#netteBluescreen pre div{min-width:100%;float:left;_float:none}#netteBluescreen table pre{padding:0;margin:0;border:none}#netteBluescreen pre .php-array,#netteBluescreen pre .php-object{color:#C22}#netteBluescreen pre .php-string{color:#080}#netteBluescreen pre .php-int,#netteBluescreen pre .php-float,#netteBluescreen pre .php-null,#netteBluescreen pre .php-bool{color:#328ADC}#netteBluescreen pre .php-visibility{font-size:85%;color:#998}#netteBluescreen pre.nette-dump a{color:#333}#netteBluescreen div.panel{padding:1px 25px}#netteBluescreen div.inner{background:#F4F3F1;padding:.1em 1em 1em;border-radius:8px;-moz-border-radius:8px;-webkit-border-radius:8px}#netteBluescreen table{border-collapse:collapse;width:100%}#netteBluescreen .outer{overflow:auto}#netteBluescreen td,#netteBluescreen th{vertical-align:top;text-align:left;padding:2px 6px;border:1px solid #e6dfbf}#netteBluescreen th{font-weight:bold}#netteBluescreen tr>:first-child{width:20%}#netteBluescreen tr:nth-child(2n),#netteBluescreen tr:nth-child(2n) pre{background-color:#F7F0CB}#netteBluescreen ol{margin:1em 0;padding-left:2.5em}#netteBluescreen ul{font:7pt/1.5 Verdana,sans-serif!important;padding:2em 4em;margin:1em 0 0;color:#777;background:#F6F5F3 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFEAAAAjCAMAAADbuxbOAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRF/fz24d7Y7Onj5uLd9vPu3drUzMvG09LN39zW8e7o2NbQ3NnT29jS0M7J1tXQAAAApvmsFgAAABB0Uk5T////////////////////AOAjXRkAAAKlSURBVHja7FbbsqQgDAwENEgc//9vN+SCWDtbtXPmZR/Wc6o02mlC58LA9ckFAOszvMV8xNgyUjyXhojfMVKvRL0ZHavxXYy5JrmchMdzou8YlTClxajtK8ZGGpWRoBr1+gFjKfHkJPbizabLgzE3pH7Iu4K980xgFvlrVzMZoVBWhtvouCDdcTDmTgMCJdVxJ9MKO6XxnliM7hxi5lbj2ZVM4l8DqYyKoNLYcfqBB1/LpHYxEcfVG6ZpMDgyFUVWY/Q1sSYPpIdSAKWqLWL0XqWiMWc4hpH0OQOMOAgdycY4N9Sb7wWANQs3rsDSdLAYiuxi5siVfOhBWIrtH0G3kNaF/8Q4kCPE1kMucG/ZMUBUCOgiKJkPuWWTLGVgLGpwns1DraUayCtoBqERyaYtVsm85NActRooezvSLO/sKZP/nq8n4+xcyjNsRu8zW6KWpdb7wjiQd4WrtFZYFiKHENSmWp6xshh96c2RQ+c7Lt+qbijyEjHWUJ/pZsy8MGIUuzNiPySK2Gqoh6ZTRF6ko6q3nVTkaA//itIrDpW6l3SLo8juOmqMXkYknu5FdQxWbhCfKHEGDhxxyTVaXJF3ZjSl3jMksjSOOKmne9pI+mcG5QvaUJhI9HpkmRo2NpCrDJvsktRhRE2MM6F2n7dt4OaMUq8bCctk0+PoMRzL+1l5PZ2eyM/Owr86gf8z/tOM53lom5+nVcFuB+eJVzlXwAYy9TZ9s537tfqcsJWbEU4nBngZo6FfO9T9CdhfBtmk2dLiAy8uS4zwOpMx2HqYbTC+amNeAYTpsP4SIgvWfUBWXxn3CMHW3ffd7k3+YIkx7w0t/CVGvcPejoeOlzOWzeGbawOHqXQGUTMZRcfj4XPCgW9y/fuvVn8zD9P1QHzv80uAAQA0i3Jer7Jr7gAAAABJRU5ErkJggg==') 99% 10px no-repeat;border-top:1px solid #DDD}#netteBluescreen .highlight{background:#CD1818;color:white;font-weight:bold;font-style:normal;display:block;padding:0 .4em;margin:0 -.4em}#netteBluescreen .line{color:#9F9C7F;font-weight:normal;font-style:normal}#netteBluescreen a[href^=editor\:]{color:inherit;border-bottom:1px dotted #C1D2E1}</style>
 </head>
 
 
 
 <body>
 <div id="netteBluescreen">
-	<a id="netteBluescreenIcon" href="#" class="nette-toggle"></a>
-	<div>
+	<a id="netteBluescreenIcon" href="#" rel="next"><abbr>&#x25bc;</abbr></a
+
+	><div>
 		<div id="netteBluescreenError" class="panel">
 			<h1><?php echo
 htmlspecialchars($title),($exception->getCode()?' #'.$exception->getCode():'')?></h1>
@@ -151,7 +152,7 @@ urlencode($title.' '.preg_replace('#\'.*\'|".*"#Us','',$exception->getMessage())
 
 			<?php if($level++):?>
 			<div class="panel">
-			<h2><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle<?php echo($collapsed=$level>2)?'-collapsed':''?>">Caused by</a></h2>
+			<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>">Caused by <abbr><?php echo($collapsed=$level>2)?'&#x25ba;':'&#x25bc;'?></abbr></a></h2>
 
 			<div id="netteBsPnl<?php echo$counter?>" class="<?php echo$collapsed?'nette-collapsed ':''?>inner">
 				<div class="panel">
@@ -170,8 +171,8 @@ as$panel):?>
 			<?php $panel=call_user_func($panel,$ex);if(empty($panel['tab'])||empty($panel['panel']))continue;?>
 			<?php if(!empty($panel['bottom'])){continue;}?>
 			<div class="panel">
-				<h2><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle"><?php echo
-htmlSpecialChars($panel['tab'])?></a></h2>
+				<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>"><?php echo
+htmlSpecialChars($panel['tab'])?> <abbr>&#x25bc;</abbr></a></h2>
 
 				<div id="netteBsPnl<?php echo$counter?>" class="inner">
 				<?php echo$panel['panel']?>
@@ -181,15 +182,15 @@ htmlSpecialChars($panel['tab'])?></a></h2>
 
 
 			<?php $stack=$ex->getTrace();$expanded=NULL?>
-			<?php if($this->isCollapsed($ex->getFile())){foreach($stack
-as$key=>$row){if(isset($row['file'])&&!$this->isCollapsed($row['file'])){$expanded=$key;break;}}}?>
+			<?php if(strpos($ex->getFile(),$expandPath)===0){foreach($stack
+as$key=>$row){if(isset($row['file'])&&strpos($row['file'],$expandPath)!==0){$expanded=$key;break;}}}?>
 
 			<div class="panel">
-			<h2><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle<?php echo($collapsed=$expanded!==NULL)?'-collapsed':''?>">Source file</a></h2>
+			<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>">Source file <abbr><?php echo($collapsed=$expanded!==NULL)?'&#x25ba;':'&#x25bc;'?></abbr></a></h2>
 
 			<div id="netteBsPnl<?php echo$counter?>" class="<?php echo$collapsed?'nette-collapsed ':''?>inner">
 				<p><b>File:</b> <?php echo
-NDebugHelpers::editorLink($ex->getFile(),$ex->getLine())?></p>
+NDebugHelpers::editorLink($ex->getFile(),$ex->getLine())?> &nbsp; <b>Line:</b> <?php echo$ex->getLine()?></p>
 				<?php if(is_file($ex->getFile())):?><?php echo
 self::highlightFile($ex->getFile(),$ex->getLine(),15,isset($ex->context)?$ex->context:NULL)?><?php endif?>
 			</div></div>
@@ -199,7 +200,7 @@ self::highlightFile($ex->getFile(),$ex->getLine(),15,isset($ex->context)?$ex->co
 			<?php if(isset($stack[0]['class'])&&$stack[0]['class']==='NDebugger'&&($stack[0]['function']==='_shutdownHandler'||$stack[0]['function']==='_errorHandler'))unset($stack[0])?>
 			<?php if($stack):?>
 			<div class="panel">
-				<h2><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle">Call stack</a></h2>
+				<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>">Call stack <abbr>&#x25bc;</abbr></a></h2>
 
 				<div id="netteBsPnl<?php echo$counter?>" class="inner">
 				<ol>
@@ -209,19 +210,19 @@ as$key=>$row):?>
 
 					<?php if(isset($row['file'])&&is_file($row['file'])):?>
 						<?php echo
-NDebugHelpers::editorLink($row['file'],$row['line'])?>
+NDebugHelpers::editorLink($row['file'],$row['line']),':',$row['line']?>
 					<?php else:?>
 						<i>inner-code</i><?php if(isset($row['line']))echo':',$row['line']?>
 					<?php endif?>
 
-					<?php if(isset($row['file'])&&is_file($row['file'])):?><a href="#netteBsSrc<?php echo"$level-$key"?>" class="nette-toggle-collapsed">source</a>&nbsp; <?php endif?>
+					<?php if(isset($row['file'])&&is_file($row['file'])):?><a href="#" rel="netteBsSrc<?php echo"$level-$key"?>">source <abbr>&#x25ba;</abbr></a>&nbsp; <?php endif?>
 
 					<?php if(isset($row['class']))echo
 htmlspecialchars($row['class'].$row['type'])?>
 					<?php echo
 htmlspecialchars($row['function'])?>
 
-					(<?php if(!empty($row['args'])):?><a href="#netteBsArgs<?php echo"$level-$key"?>" class="nette-toggle-collapsed">arguments</a><?php endif?>)
+					(<?php if(!empty($row['args'])):?><a href="#" rel="netteBsArgs<?php echo"$level-$key"?>">arguments <abbr>&#x25ba;</abbr></a><?php endif?>)
 					</p>
 
 					<?php if(!empty($row['args'])):?>
@@ -232,7 +233,7 @@ htmlspecialchars($row['function'])?>
 try{$r=isset($row['class'])?new
 ReflectionMethod($row['class'],$row['function']):new
 ReflectionFunction($row['function']);$params=$r->getParameters();}catch(Exception$e){$params=array();}foreach($row['args']as$k=>$v){echo'<tr><th>',htmlspecialchars(isset($params[$k])?'$'.$params[$k]->name:"#$k"),'</th><td>';echo
-NDebugDumper::toHtml($v);echo"</td></tr>\n";}?>
+NDebugHelpers::clickableDump($v);echo"</td></tr>\n";}?>
 						</table>
 						</div>
 					<?php endif?>
@@ -253,7 +254,7 @@ self::highlightFile($row['file'],$row['line'])?></div>
 
 			<?php if(isset($ex->context)&&is_array($ex->context)):?>
 			<div class="panel">
-			<h2><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle-collapsed">Variables</a></h2>
+			<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>">Variables <abbr>&#x25ba;</abbr></a></h2>
 
 			<div id="netteBsPnl<?php echo$counter?>" class="nette-collapsed inner">
 			<div class="outer">
@@ -261,7 +262,7 @@ self::highlightFile($row['file'],$row['line'])?></div>
 			<?php
 
 foreach($ex->context
-as$k=>$v){echo'<tr><th>$',htmlspecialchars($k),'</th><td>',NDebugDumper::toHtml($v),"</td></tr>\n";}?>
+as$k=>$v){echo'<tr><th>$',htmlspecialchars($k),'</th><td>',NDebugHelpers::clickableDump($v),"</td></tr>\n";}?>
 			</table>
 			</div>
 			</div></div>
@@ -278,8 +279,8 @@ as$panel):?>
 		<?php $panel=call_user_func($panel,NULL);if(empty($panel['tab'])||empty($panel['panel']))continue;?>
 		<?php if(!empty($panel['bottom'])){$bottomPanels[]=$panel;continue;}?>
 		<div class="panel">
-			<h2><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle-collapsed"><?php echo
-htmlSpecialChars($panel['tab'])?></a></h2>
+			<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>"><?php echo
+htmlSpecialChars($panel['tab'])?> <abbr>&#x25ba;</abbr></a></h2>
 
 			<div id="netteBsPnl<?php echo$counter?>" class="nette-collapsed inner">
 			<?php echo$panel['panel']?>
@@ -289,61 +290,23 @@ htmlSpecialChars($panel['tab'])?></a></h2>
 
 
 		<div class="panel">
-		<h2><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle-collapsed">Environment</a></h2>
+		<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>">Environment <abbr>&#x25ba;</abbr></a></h2>
 
 		<div id="netteBsPnl<?php echo$counter?>" class="nette-collapsed inner">
-			<h3><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle">$_SERVER</a></h3>
-			<div id="netteBsPnl<?php echo$counter?>" class="outer">
-			<table>
-			<?php
-
-foreach($_SERVER
-as$k=>$v)echo'<tr><th>',htmlspecialchars($k),'</th><td>',NDebugDumper::toHtml($v),"</td></tr>\n";?>
-			</table>
-			</div>
-
-
-			<h3><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle">$_SESSION</a></h3>
-			<div id="netteBsPnl<?php echo$counter?>" class="outer">
-			<?php if(empty($_SESSION)):?>
-			<p><i>empty</i></p>
-			<?php else:?>
-			<table>
-			<?php
-
-foreach($_SESSION
-as$k=>$v)echo'<tr><th>',htmlspecialchars($k),'</th><td>',$k==='__NF'?'<i>Nette Session</i>':NDebugDumper::toHtml($v),"</td></tr>\n";?>
-			</table>
-			<?php endif?>
-			</div>
-
-
-			<?php if(!empty($_SESSION['__NF']['DATA'])):?>
-			<h3><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle">Nette Session</a></h3>
-			<div id="netteBsPnl<?php echo$counter?>" class="outer">
-			<table>
-			<?php
-
-foreach($_SESSION['__NF']['DATA']as$k=>$v)echo'<tr><th>',htmlspecialchars($k),'</th><td>',NDebugDumper::toHtml($v),"</td></tr>\n";?>
-			</table>
-			</div>
-			<?php endif?>
-
-
 			<?php
 $list=get_defined_constants(TRUE);if(!empty($list['user'])):?>
-			<h3><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle-collapsed">Constants</a></h3>
-			<div id="netteBsPnl<?php echo$counter?>" class="outer nette-collapsed">
+			<h3><a href="#" rel="netteBsPnl<?php echo++$counter?>">Constants <abbr>&#x25bc;</abbr></a></h3>
+			<div id="netteBsPnl<?php echo$counter?>" class="outer">
 			<table>
 			<?php
 
-foreach($list['user']as$k=>$v){echo'<tr><th>',htmlspecialchars($k),'</th>';echo'<td>',NDebugDumper::toHtml($v),"</td></tr>\n";}?>
+foreach($list['user']as$k=>$v){echo'<tr><th>',htmlspecialchars($k),'</th>';echo'<td>',NDebugHelpers::clickableDump($v),"</td></tr>\n";}?>
 			</table>
 			</div>
 			<?php endif?>
 
 
-			<h3><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle-collapsed">Included files</a> (<?php echo
+			<h3><a href="#" rel="netteBsPnl<?php echo++$counter?>">Included files <abbr>&#x25ba;</abbr></a> (<?php echo
 count(get_included_files())?>)</h3>
 			<div id="netteBsPnl<?php echo$counter?>" class="outer nette-collapsed">
 			<table>
@@ -354,17 +317,28 @@ foreach(get_included_files()as$v){echo'<tr><td>',htmlspecialchars($v),"</td></tr
 			</div>
 
 
-			<h3><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle-collapsed">Configuration options</a></h3>
+			<h3><a href="#" rel="netteBsPnl<?php echo++$counter?>">Configuration options <abbr>&#x25ba;</abbr></a></h3>
 			<div id="netteBsPnl<?php echo$counter?>" class="outer nette-collapsed">
 			<?php ob_start();@phpinfo(INFO_CONFIGURATION|INFO_MODULES);echo
-preg_replace('#^.+<body>|</body>.+\z#s','',ob_get_clean())?>
+preg_replace('#^.+<body>|</body>.+$#s','',ob_get_clean())?>
+			</div>
+
+
+			<h3><a href="#" rel="netteBsPnl<?php echo++$counter?>">$_SERVER <abbr>&#x25bc;</abbr></a></h3>
+			<div id="netteBsPnl<?php echo$counter?>" class="outer">
+			<table>
+			<?php
+
+foreach($_SERVER
+as$k=>$v)echo'<tr><th>',htmlspecialchars($k),'</th><td>',NDebugHelpers::clickableDump($v),"</td></tr>\n";?>
+			</table>
 			</div>
 		</div></div>
 
 
 
 		<div class="panel">
-		<h2><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle-collapsed">HTTP request</a></h2>
+		<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>">HTTP request <abbr>&#x25ba;</abbr></a></h2>
 
 		<div id="netteBsPnl<?php echo$counter?>" class="nette-collapsed inner">
 			<?php if(function_exists('apache_request_headers')):?>
@@ -389,7 +363,7 @@ htmlspecialchars($name)?></h3>
 			<table>
 			<?php
 
-foreach($GLOBALS[$name]as$k=>$v)echo'<tr><th>',htmlspecialchars($k),'</th><td>',NDebugDumper::toHtml($v),"</td></tr>\n";?>
+foreach($GLOBALS[$name]as$k=>$v)echo'<tr><th>',htmlspecialchars($k),'</th><td>',NDebugHelpers::clickableDump($v),"</td></tr>\n";?>
 			</table>
 			</div>
 			<?php endif?>
@@ -399,7 +373,7 @@ foreach($GLOBALS[$name]as$k=>$v)echo'<tr><th>',htmlspecialchars($k),'</th><td>',
 
 
 		<div class="panel">
-		<h2><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle-collapsed">HTTP response</a></h2>
+		<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>">HTTP response <abbr>&#x25ba;</abbr></a></h2>
 
 		<div id="netteBsPnl<?php echo$counter?>" class="nette-collapsed inner">
 			<h3>Headers</h3>
@@ -418,8 +392,8 @@ htmlspecialchars($s),'<br>';?></pre>
 		<?php foreach($bottomPanels
 as$panel):?>
 		<div class="panel">
-			<h2><a href="#netteBsPnl<?php echo++$counter?>" class="nette-toggle"><?php echo
-htmlSpecialChars($panel['tab'])?></a></h2>
+			<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>"><?php echo
+htmlSpecialChars($panel['tab'])?> <abbr>&#x25bc;</abbr></a></h2>
 
 			<div id="netteBsPnl<?php echo$counter?>" class="inner">
 			<?php echo$panel['panel']?>
@@ -449,10 +423,10 @@ htmlSpecialChars(NFramework::REVISION)?>)</i></li><?php endif?>
 	</div>
 </div>
 
-<script type="text/javascript">/*<![CDATA[*/var bs=document.getElementById("netteBluescreen");document.body.appendChild(bs);document.onkeyup=function(b){b=b||window.event;27==b.keyCode&&(!b.shiftKey&&!b.altKey&&!b.ctrlKey&&!b.metaKey)&&document.getElementById("netteBluescreenIcon").click()};
-for(var i=0,styles=document.styleSheets;i<styles.length;i++)"nette-debug"!==(styles[i].owningElement||styles[i].ownerNode).className?(styles[i].oldDisabled=styles[i].disabled,styles[i].disabled=!0):styles[i].addRule?styles[i].addRule(".nette-collapsed","display: none"):styles[i].insertRule(".nette-collapsed { display: none }",0);
-bs.onclick=function(b){for(var b=b||window.event,a=b.target||b.srcElement;a&&(!a.tagName||0>a.className.indexOf("nette-toggle"));a=a.parentNode);if(!a)return!0;var d=-1<a.className.indexOf("nette-toggle-collapsed"),c=a.getAttribute("data-ref")||a.getAttribute("href");if(c&&"#"!==c)dest=document.getElementById(c.substring(1));else for(dest=a.nextSibling;dest&&1!==dest.nodeType;dest=dest.nextSibling);a.className="nette-toggle"+(d?"":"-collapsed");dest.style.display=d?"div"===dest.tagName.toLowerCase()?
-"block":"inline":"none";if("netteBluescreenIcon"===a.id){a=0;for(c=document.styleSheets;a<c.length;a++)if("nette-debug"!==(c[a].owningElement||c[a].ownerNode).className)c[a].disabled=d?!0:c[a].oldDisabled}b.preventDefault?b.preventDefault():b.returnValue=!1;b.stopPropagation?b.stopPropagation():b.cancelBubble=!0};/*]]>*/</script>
+<script type="text/javascript">/*<![CDATA[*/var bs=document.getElementById("netteBluescreen");document.body.appendChild(bs);document.onkeyup=function(b){b=b||window.event;if(27==b.keyCode&&!b.shiftKey&&!b.altKey&&!b.ctrlKey&&!b.metaKey)bs.onclick({target:document.getElementById("netteBluescreenIcon")})};
+for(var i=0,styles=document.styleSheets;i<styles.length;i++)"nette"!==(styles[i].owningElement||styles[i].ownerNode).className?(styles[i].oldDisabled=styles[i].disabled,styles[i].disabled=!0):styles[i].addRule?styles[i].addRule(".nette-collapsed","display: none"):styles[i].insertRule(".nette-collapsed { display: none }",0);
+bs.onclick=function(b){for(var b=b||window.event,a=b.target||b.srcElement;a&&a.tagName&&"a"!==a.tagName.toLowerCase();)a=a.parentNode;if(!a||!a.rel)return!0;for(var d=a.getElementsByTagName("abbr")[0],c="next"===a.rel?a.nextSibling:document.getElementById(a.rel);1!==c.nodeType;)c=c.nextSibling;b=c.currentStyle?"none"==c.currentStyle.display:"none"==getComputedStyle(c,null).display;try{d.innerHTML=String.fromCharCode(b?9660:9658)}catch(e){}c.style.display=b?"code"===c.tagName.toLowerCase()?"inline":
+"block":"none";if("netteBluescreenIcon"===a.id){a=0;for(d=document.styleSheets;a<d.length;a++)if("nette"!==(d[a].owningElement||d[a].ownerNode).className)d[a].disabled=b?!0:d[a].oldDisabled}return!1};/*]]>*/</script>
 </body>
 </html>
 <?php }public
@@ -463,81 +437,11 @@ self::highlightPhp($source,$line,$lines,$vars);}}public
 static
 function
 highlightPhp($source,$line,$lines=15,$vars=array()){if(function_exists('ini_set')){ini_set('highlight.comment','#998; font-style: italic');ini_set('highlight.default','#000');ini_set('highlight.html','#06B');ini_set('highlight.keyword','#D24; font-weight: bold');ini_set('highlight.string','#080');}$source=str_replace(array("\r\n","\r"),"\n",$source);$source=explode("\n",highlight_string($source,TRUE));$spans=1;$out=$source[0];$source=explode('<br />',$source[1]);array_unshift($source,NULL);$start=$i=max(1,$line-floor($lines*2/3));while(--$i>=1){if(preg_match('#.*(</?span[^>]*>)#',$source[$i],$m)){if($m[1]!=='</span>'){$spans++;$out.=$m[1];}break;}}$source=array_slice($source,$start,$lines,TRUE);end($source);$numWidth=strlen((string)key($source));foreach($source
-as$n=>$s){$spans+=substr_count($s,'<span')-substr_count($s,'</span');$s=str_replace(array("\r","\n"),array('',''),$s);preg_match_all('#<[^>]+>#',$s,$tags);if($n==$line){$out.=sprintf("<span class='highlight'>%{$numWidth}s:    %s\n</span>%s",$n,strip_tags($s),implode('',$tags[0]));}else{$out.=sprintf("<span class='line'>%{$numWidth}s:</span>    %s\n",$n,$s);}}$out.=str_repeat('</span>',$spans).'</code>';$out=preg_replace_callback('#">\$(\w+)(&nbsp;)?</span>#',create_function('$m','extract($GLOBALS[0]['.array_push($GLOBALS[0],array('vars'=>$vars)).'-1], EXTR_REFS);
+as$n=>$s){$spans+=substr_count($s,'<span')-substr_count($s,'</span');$s=str_replace(array("\r","\n"),array('',''),$s);preg_match_all('#<[^>]+>#',$s,$tags);if($n==$line){$out.=sprintf("<span class='highlight'>%{$numWidth}s:    %s\n</span>%s",$n,strip_tags($s),implode('',$tags[0]));}else{$out.=sprintf("<span class='line'>%{$numWidth}s:</span>    %s\n",$n,$s);}}$out.=str_repeat('</span>',$spans).'</code>';$out=preg_replace_callback('#">\$(\w+)(&nbsp;)?</span>#',create_function('$m','extract(NCFix::$vars['.NCFix::uses(array('vars'=>$vars)).'], EXTR_REFS);
 			return isset($vars[$m[1]])
-				? \'" title="\' . str_replace(\'"\', \'&quot;\', strip_tags(NDebugDumper::toHtml($vars[$m[1]]))) . $m[0]
+				? \'" title="\' . str_replace(\'"\', \'&quot;\', strip_tags(NDebugHelpers::htmlDump($vars[$m[1]]))) . $m[0]
 				: $m[0];
-		'),$out);return"<pre class='php'><div>$out</div></pre>";}public
-function
-isCollapsed($file){foreach($this->collapsePaths
-as$path){if(strpos(strtr($file,'\\','/'),strtr("$path/",'\\','/'))===0){return
-TRUE;}}return
-FALSE;}}class
-NDebugDumper{const
-DEPTH='depth',TRUNCATE='truncate',COLLAPSE='collapse',COLLAPSE_COUNT='collapsecount',LOCATION='location';public
-static$terminalColors=array('bool'=>'1;33','null'=>'1;33','number'=>'1;32','string'=>'1;36','array'=>'1;31','key'=>'1;37','object'=>'1;31','visibility'=>'1;30','resource'=>'1;37','indent'=>'1;30');public
-static$resources=array('stream'=>'stream_get_meta_data','stream-context'=>'stream_context_get_options','curl'=>'curl_getinfo');public
-static
-function
-dump($var,array$options=NULL){if(preg_match('#^Content-Type: text/html#im',implode("\n",headers_list()))){echo
-self::toHtml($var,$options);}elseif(self::$terminalColors&&substr(getenv('TERM'),0,5)==='xterm'){echo
-self::toTerminal($var,$options);}else{echo
-self::toText($var,$options);}return$var;}public
-static
-function
-toHtml($var,array$options=NULL){list($file,$line,$code)=empty($options[self::LOCATION])?NULL:self::findLocation();return'<pre class="nette-dump"'.($file?' title="'.htmlspecialchars("$code\nin file $file on line $line").'">':'>').self::dumpVar($var,(array)$options+array(self::DEPTH=>4,self::TRUNCATE=>150,self::COLLAPSE=>FALSE,self::COLLAPSE_COUNT=>7)).($file?'<small>in <a href="editor://open/?file='.rawurlencode($file)."&amp;line=$line\">".htmlspecialchars($file).":$line</a></small>":'')."</pre>\n";}public
-static
-function
-toText($var,array$options=NULL){return
-htmlspecialchars_decode(strip_tags(self::toHtml($var,$options)),ENT_QUOTES);}public
-static
-function
-toTerminal($var,array$options=NULL){return
-htmlspecialchars_decode(strip_tags(preg_replace_callback('#<span class="nette-dump-(\w+)">|</span>#',create_function('$m','
-			return "\\033[" . (isset($m[1], NDebugDumper::$terminalColors[$m[1]]) ? NDebugDumper::$terminalColors[$m[1]] : \'0\') . "m";
-		'),self::toHtml($var,$options))),ENT_QUOTES);}private
-static
-function
-dumpVar(&$var,array$options,$level=0){if(method_exists(__CLASS__,$m='dump'.gettype($var))){return
-call_user_func_array(array(__CLASS__,$m),array(&$var,$options,$level));}else{return"<span>unknown type</span>\n";}}private
-static
-function
-dumpNull(){return"<span class=\"nette-dump-null\">NULL</span>\n";}private
-static
-function
-dumpBoolean(&$var){return'<span class="nette-dump-bool">'.($var?'TRUE':'FALSE')."</span>\n";}private
-static
-function
-dumpInteger(&$var){return"<span class=\"nette-dump-number\">$var</span>\n";}private
-static
-function
-dumpDouble(&$var){$var=var_export($var,TRUE);return'<span class="nette-dump-number">'.$var.(strpos($var,'.')===FALSE?'.0':'')."</span>\n";}private
-static
-function
-dumpString(&$var,$options){return'<span class="nette-dump-string">'.self::encodeString($options[self::TRUNCATE]&&strlen($var)>$options[self::TRUNCATE]?substr($var,0,$options[self::TRUNCATE]).' ... ':$var).'</span>'.(strlen($var)>1?' ('.strlen($var).')':'')."\n";}private
-static
-function
-dumpArray(&$var,$options,$level){static$marker;if($marker===NULL){$marker=uniqid("\x00",TRUE);}$out='<span class="nette-dump-array">array</span> (';if(empty($var)){return$out."0)\n";}elseif(isset($var[$marker])){return$out.(count($var)-1).") [ <i>RECURSION</i> ]\n";}elseif(!$options[self::DEPTH]||$level<$options[self::DEPTH]){$collapsed=$level?count($var)>=$options[self::COLLAPSE_COUNT]:$options[self::COLLAPSE];$out='<span class="nette-toggle'.($collapsed?'-collapsed">':'">').$out.count($var).")</span>\n<div".($collapsed?' class="nette-collapsed"':'').">";$var[$marker]=TRUE;foreach($var
-as$k=>&$v){if($k!==$marker){$out.='<span class="nette-dump-indent">   '.str_repeat('|  ',$level).'</span>'.'<span class="nette-dump-key">'.(preg_match('#^\w+\z#',$k)?$k:self::encodeString($k)).'</span> => '.self::dumpVar($v,$options,$level+1);}}unset($var[$marker]);return$out.'</div>';}else{return$out.count($var).") [ ... ]\n";}}private
-static
-function
-dumpObject(&$var,$options,$level){if($var
-instanceof
-Closure){$rc=new
-ReflectionFunction($var);$fields=array();foreach($rc->getParameters()as$param){$fields[]='$'.$param->getName();}$fields=array('file'=>$rc->getFileName(),'line'=>$rc->getStartLine(),'parameters'=>implode(', ',$fields));}else{$fields=(array)$var;}static$list=array();$out='<span class="nette-dump-object">'.get_class($var)."</span> (".count($fields).')';if(empty($fields)){return$out."\n";}elseif(in_array($var,$list,TRUE)){return$out." { <i>RECURSION</i> }\n";}elseif(!$options[self::DEPTH]||$level<$options[self::DEPTH]||$var
-instanceof
-Closure){$collapsed=$level?count($fields)>=$options[self::COLLAPSE_COUNT]:$options[self::COLLAPSE];$out='<span class="nette-toggle'.($collapsed?'-collapsed">':'">').$out."</span>\n<div".($collapsed?' class="nette-collapsed"':'').">";$list[]=$var;foreach($fields
-as$k=>&$v){$vis='';if($k[0]==="\x00"){$vis=' <span class="nette-dump-visibility">'.($k[1]==='*'?'protected':'private').'</span>';$k=substr($k,strrpos($k,"\x00")+1);}$out.='<span class="nette-dump-indent">   '.str_repeat('|  ',$level).'</span>'.'<span class="nette-dump-key">'.(preg_match('#^\w+\z#',$k)?$k:self::encodeString($k))."</span>$vis => ".self::dumpVar($v,$options,$level+1);}array_pop($list);return$out.'</div>';}else{return$out." { ... }\n";}}private
-static
-function
-dumpResource(&$var,$options,$level){$type=get_resource_type($var);$out='<span class="nette-dump-resource">'.htmlSpecialChars($type).' resource</span>';if(isset(self::$resources[$type])){$out="<span class=\"nette-toggle-collapsed\">$out</span>\n<div class=\"nette-collapsed\">";foreach(call_user_func(self::$resources[$type],$var)as$k=>$v){$out.='<span class="nette-dump-indent">   '.str_repeat('|  ',$level).'</span>'.'<span class="nette-dump-key">'.htmlSpecialChars($k)."</span> => ".self::dumpVar($v,$options,$level+1);}return$out.'</div>';}return"$out\n";}private
-static
-function
-encodeString($s){static$utf,$binary;if($utf===NULL){foreach(range("\x00","\xFF")as$ch){if(ord($ch)<32&&strpos("\r\n\t",$ch)===FALSE){$utf[$ch]=$binary[$ch]='\\x'.str_pad(dechex(ord($ch)),2,'0',STR_PAD_LEFT);}elseif(ord($ch)<127){$utf[$ch]=$binary[$ch]=$ch;}else{$utf[$ch]=$ch;$binary[$ch]='\\x'.dechex(ord($ch));}}$binary["\\"]='\\\\';$binary["\r"]='\\r';$binary["\n"]='\\n';$binary["\t"]='\\t';$utf['\\x']=$binary['\\x']='\\\\x';}$s=strtr($s,preg_match('#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{10FFFF}]#u',$s)||preg_last_error()?$binary:$utf);return'"'.htmlSpecialChars($s,ENT_NOQUOTES).'"';}private
-static
-function
-findLocation(){foreach(PHP_VERSION_ID<50205?debug_backtrace():debug_backtrace(FALSE)as$item){if(isset($item['file'])&&strpos($item['file'],dirname(__FILE__))===0){continue;}elseif(!isset($item['file'],$item['line'])||!is_file($item['file'])){break;}else{$lines=file($item['file']);$line=$lines[$item['line']-1];return
-array($item['file'],$item['line'],preg_match('#\w*dump(er::\w+)?\(.*\)#i',$line,$m)?$m[0]:$line);}}}}final
+		'),$out);return"<pre><div>$out</div></pre>";}}final
 class
 NDefaultBarPanel
 implements
@@ -563,7 +467,7 @@ array_sum($data)?> errors</span>
 ob_get_clean();}public
 function
 getPanel(){ob_start();$data=$this->data;if($this->id==='dumps'){?>
-<style class="nette-debug">#nette-debug .nette-DumpPanel h2{font:11pt/1.5 sans-serif;margin:0;padding:2px 8px;background:#3484d2;color:white}#nette-debug .nette-DumpPanel table{width:100%}</style>
+<style>#nette-debug .nette-DumpPanel h2{font:11pt/1.5 sans-serif;margin:0;padding:2px 8px;background:#3484d2;color:white}#nette-debug .nette-DumpPanel table{width:100%}#nette-debug .nette-DumpPanel a{color:#333;background:transparent}#nette-debug .nette-DumpPanel a abbr{font-family:sans-serif;color:#999}#nette-debug .nette-DumpPanel pre .php-array,#nette-debug .nette-DumpPanel pre .php-object{color:#c16549}</style>
 
 
 <h1>Dumped variables</h1>
@@ -601,7 +505,7 @@ as$item=>$count):list($message,$file,$line)=explode('|',$item)?>
 2?'nette-alt':''?>">
 	<td class="nette-right"><?php echo$count?"$count\xC3\x97":''?></td>
 	<td><pre><?php echo
-htmlspecialchars($message),' in ',NDebugHelpers::editorLink($file,$line)?></pre></td>
+htmlspecialchars($message),' in ',NDebugHelpers::editorLink($file,$line),':',$line?></pre></td>
 </tr>
 <?php endforeach?>
 </table>
@@ -631,34 +535,40 @@ NDebugHelpers{public
 static
 function
 editorLink($file,$line){if(NDebugger::$editor&&is_file($file)){$dir=dirname(strtr($file,'/',DIRECTORY_SEPARATOR));$base=isset($_SERVER['SCRIPT_FILENAME'])?dirname(dirname(strtr($_SERVER['SCRIPT_FILENAME'],'/',DIRECTORY_SEPARATOR))):dirname($dir);if(substr($dir,0,strlen($base))===$base){$dir='...'.substr($dir,strlen($base));}return
-NHtml::el('a')->href(strtr(NDebugger::$editor,array('%file'=>rawurlencode($file),'%line'=>$line)))->title("$file:$line")->setHtml(htmlSpecialChars(rtrim($dir,DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.'<b>'.htmlSpecialChars(basename($file)).'</b>'.($line?":$line":''));}else{return
-NHtml::el('span')->setText($file.($line?":$line":''));}}public
+NHtml::el('a')->href(strtr(NDebugger::$editor,array('%file'=>rawurlencode($file),'%line'=>$line)))->title("$file:$line")->setHtml(htmlSpecialChars(rtrim($dir,DIRECTORY_SEPARATOR)).DIRECTORY_SEPARATOR.'<b>'.htmlSpecialChars(basename($file)).'</b>');}else{return
+NHtml::el('span')->setText($file);}}public
+static
+function
+htmlDump(&$var,$level=0){static$tableUtf,$tableBin,$reBinary='#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{10FFFF}]#u';if($tableUtf===NULL){foreach(range("\x00","\xFF")as$ch){if(ord($ch)<32&&strpos("\r\n\t",$ch)===FALSE){$tableUtf[$ch]=$tableBin[$ch]='\\x'.str_pad(dechex(ord($ch)),2,'0',STR_PAD_LEFT);}elseif(ord($ch)<127){$tableUtf[$ch]=$tableBin[$ch]=$ch;}else{$tableUtf[$ch]=$ch;$tableBin[$ch]='\\x'.dechex(ord($ch));}}$tableBin["\\"]='\\\\';$tableBin["\r"]='\\r';$tableBin["\n"]='\\n';$tableBin["\t"]='\\t';$tableUtf['\\x']=$tableBin['\\x']='\\\\x';}if(is_bool($var)){return'<span class="php-bool">'.($var?'TRUE':'FALSE')."</span>\n";}elseif($var===NULL){return"<span class=\"php-null\">NULL</span>\n";}elseif(is_int($var)){return"<span class=\"php-int\">$var</span>\n";}elseif(is_float($var)){$var=var_export($var,TRUE);if(strpos($var,'.')===FALSE){$var.='.0';}return"<span class=\"php-float\">$var</span>\n";}elseif(is_string($var)){if(NDebugger::$maxLen&&strlen($var)>NDebugger::$maxLen){$s=htmlSpecialChars(substr($var,0,NDebugger::$maxLen),ENT_NOQUOTES,'ISO-8859-1').' ... ';}else{$s=htmlSpecialChars($var,ENT_NOQUOTES,'ISO-8859-1');}$s=strtr($s,preg_match($reBinary,$s)||preg_last_error()?$tableBin:$tableUtf);$len=strlen($var);return"<span class=\"php-string\">\"$s\"</span>".($len>1?" ($len)":"")."\n";}elseif(is_array($var)){$s='<span class="php-array">array</span>('.count($var).") ";$space=str_repeat($space1='   ',$level);$brackets=range(0,count($var)-1)===array_keys($var)?"[]":"{}";static$marker;if($marker===NULL){$marker=uniqid("\x00",TRUE);}if(empty($var)){}elseif(isset($var[$marker])){$brackets=$var[$marker];$s.="$brackets[0] *RECURSION* $brackets[1]";}elseif($level<NDebugger::$maxDepth||!NDebugger::$maxDepth){$s.="<code>$brackets[0]\n";$var[$marker]=$brackets;foreach($var
+as$k=>&$v){if($k===$marker){continue;}$k=strtr($k,preg_match($reBinary,$k)||preg_last_error()?$tableBin:$tableUtf);$k=htmlSpecialChars(preg_match('#^\w+$#',$k)?$k:"\"$k\"");$s.="$space$space1<span class=\"php-key\">$k</span> => ".self::htmlDump($v,$level+1);}unset($var[$marker]);$s.="$space$brackets[1]</code>";}else{$s.="$brackets[0] ... $brackets[1]";}return$s."\n";}elseif(is_object($var)){if($var
+instanceof
+Closure){$rc=new
+ReflectionFunction($var);$arr=array();foreach($rc->getParameters()as$param){$arr[]='$'.$param->getName();}$arr=array('file'=>$rc->getFileName(),'line'=>$rc->getStartLine(),'parameters'=>implode(', ',$arr));}else{$arr=(array)$var;}$s='<span class="php-object">'.get_class($var)."</span>(".count($arr).") ";$space=str_repeat($space1='   ',$level);static$list=array();if(empty($arr)){}elseif(in_array($var,$list,TRUE)){$s.="{ *RECURSION* }";}elseif($level<NDebugger::$maxDepth||!NDebugger::$maxDepth||$var
+instanceof
+Closure){$s.="<code>{\n";$list[]=$var;foreach($arr
+as$k=>&$v){$m='';if($k[0]==="\x00"){$m=' <span class="php-visibility">'.($k[1]==='*'?'protected':'private').'</span>';$k=substr($k,strrpos($k,"\x00")+1);}$k=strtr($k,preg_match($reBinary,$k)||preg_last_error()?$tableBin:$tableUtf);$k=htmlSpecialChars(preg_match('#^\w+$#',$k)?$k:"\"$k\"");$s.="$space$space1<span class=\"php-key\">$k</span>$m => ".self::htmlDump($v,$level+1);}array_pop($list);$s.="$space}</code>";}else{$s.="{ ... }";}return$s."\n";}elseif(is_resource($var)){return'<span class="php-resource">'.htmlSpecialChars(get_resource_type($var))." resource</span>\n";}else{return"<span>unknown type</span>\n";}}public
+static
+function
+clickableDump($dump,$collapsed=FALSE){return'<pre class="nette-dump">'.preg_replace_callback('#^( *)((?>[^(\r\n]{1,200}))\((\d+)\) <code>#m',create_function('$m','extract(NCFix::$vars['.NCFix::uses(array('collapsed'=>$collapsed)).'], EXTR_REFS);
+				return "$m[1]<a href=\'#\' rel=\'next\'>$m[2]($m[3]) "
+					. (($m[1] || !$collapsed) && ($m[3] < 7)
+					? \'<abbr>&#x25bc;</abbr> </a><code>\'
+					: \'<abbr>&#x25ba;</abbr> </a><code class="nette-collapsed">\');
+			'),self::htmlDump($dump)).'</pre>';}public
 static
 function
 findTrace(array$trace,$method,&$index=NULL){$m=explode('::',$method);foreach($trace
-as$i=>$item){if(isset($item['function'])&&$item['function']===end($m)&&isset($item['class'])===isset($m[1])&&(!isset($item['class'])||$item['class']===$m[0]||$m[0]==='*'||is_subclass_of($item['class'],$m[0]))){$index=$i;return$item;}}}public
-static
-function
-htmlDump($var){trigger_error(__METHOD__.'() is deprecated; use NDebugDumper::toHtml() instead.',E_USER_WARNING);return
-NDebugDumper::toHtml($var);}public
-static
-function
-clickableDump($var){trigger_error(__METHOD__.'() is deprecated; use NDebugDumper::toHtml() instead.',E_USER_WARNING);return
-NDebugDumper::toHtml($var);}public
-static
-function
-textDump($var){trigger_error(__METHOD__.'() is deprecated; use NDebugDumper::toText() instead.',E_USER_WARNING);return
-NDebugDumper::toText($var);}}class
+as$i=>$item){if(isset($item['function'])&&$item['function']===end($m)&&isset($item['class'])===isset($m[1])&&(!isset($item['class'])||$item['class']===$m[0]||is_subclass_of($item['class'],$m[0]))){$index=$i;return$item;}}}}class
 NLogger{const
 DEBUG='debug',INFO='info',WARNING='warning',ERROR='error',CRITICAL='critical';public
 static$emailSnooze=172800;public$mailer=array(__CLASS__,'defaultMailer');public$directory;public$email;public
 function
 log($message,$priority=self::INFO){if(!is_dir($this->directory)){throw
 new
-DirectoryNotFoundException("Directory '$this->directory' is not found or is not directory.");}if(is_array($message)){$message=implode(' ',$message);}$res=error_log(trim($message).PHP_EOL,3,$this->directory.'/'.strtolower($priority).'.log');if(($priority===self::ERROR||$priority===self::CRITICAL)&&$this->email&&$this->mailer&&@filemtime($this->directory.'/email-sent')+self::$emailSnooze<time()&&@file_put_contents($this->directory.'/email-sent','sent')){call_user_func($this->mailer,$message,$this->email);}return$res;}public
+DirectoryNotFoundException("Directory '$this->directory' is not found or is not directory.");}if(is_array($message)){$message=implode(' ',$message);}$res=error_log(trim($message).PHP_EOL,3,$this->directory.'/'.strtolower($priority).'.log');if(($priority===self::ERROR||$priority===self::CRITICAL)&&$this->email&&$this->mailer&&@filemtime($this->directory.'/email-sent')+self::$emailSnooze<time()&&@file_put_contents($this->directory.'/email-sent','sent')){call_user_func($this->mailer,$message,$this->email);}return$res;}private
 static
 function
-defaultMailer($message,$email){$host=php_uname('n');foreach(array('HTTP_HOST','SERVER_NAME','HOSTNAME')as$item){if(isset($_SERVER[$item])){$host=$_SERVER[$item];break;}}$parts=str_replace(array("\r\n","\n"),array("\n",PHP_EOL),array('headers'=>implode("\n",array("From: noreply@$host",'X-Mailer: Nette Framework','Content-Type: text/plain; charset=UTF-8','Content-Transfer-Encoding: 8bit'))."\n",'subject'=>"PHP: An error occurred on the server $host",'body'=>"[".@date('Y-m-d H:i:s')."] $message"));mail($email,$parts['subject'],$parts['body'],$parts['headers']);}}class
+defaultMailer($message,$email){$host=isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:(isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:'');$parts=str_replace(array("\r\n","\n"),array("\n",PHP_EOL),array('headers'=>"From: noreply@$host\nX-Mailer: Nette Framework\n",'subject'=>"PHP: An error occurred on the server $host",'body'=>"[".@date('Y-m-d H:i:s')."] $message"));mail($email,$parts['subject'],$parts['body'],$parts['headers']);}}class
 NHtml
 implements
 ArrayAccess,Countable{private$name;private$isEmpty;public$attrs=array();protected$children=array();public
@@ -767,22 +677,20 @@ as$k=>$v){if($v!=NULL){$tmp[]=$v===TRUE?$k:(is_string($k)?$k.':'.$v:$v);}}if($tm
 function
 __clone(){foreach($this->children
 as$key=>$value){if(is_object($value)){$this->children[$key]=clone$value;}}}}function
-debug(){NDebugger::$strictMode=TRUE;NDebugger::enable(NDebugger::DEVELOPMENT);}function
 dump($var){foreach(func_get_args()as$arg){NDebugger::dump($arg);}return$var;}function
-dlog($var=NULL){if(func_num_args()===0){NDebugger::log(new
-Exception,'dlog');}foreach(func_get_args()as$arg){NDebugger::log($arg,'dlog');}return$var;}final
+ndebug(){NDebugger::$strictMode=TRUE;NDebugger::enable(NDebugger::DEVELOPMENT);}final
 class
 NDebugger{public
 static$productionMode;public
 static$consoleMode;public
-static$time;public
+static$time;private
+static$ajaxDetected;public
 static$source;public
 static$editor='editor://open/?file=%file&line=%line';public
 static$browser;public
 static$maxDepth=3;public
 static$maxLen=150;public
-static$showLocation=FALSE;public
-static$consoleColors;const
+static$showLocation=FALSE;const
 DEVELOPMENT=FALSE,PRODUCTION=TRUE,DETECT=NULL;public
 static$blueScreen;public
 static$strictMode=FALSE;public
@@ -807,21 +715,22 @@ new
 NStaticClassException;}public
 static
 function
-_init(){self::$time=isset($_SERVER['REQUEST_TIME_FLOAT'])?$_SERVER['REQUEST_TIME_FLOAT']:microtime(TRUE);self::$productionMode=self::DETECT;if(isset($_SERVER['REQUEST_URI'])){self::$source=(isset($_SERVER['HTTPS'])&&strcasecmp($_SERVER['HTTPS'],'off')?'https://':'http://').(isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:(isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:'')).$_SERVER['REQUEST_URI'];}else{self::$source=empty($_SERVER['argv'])?'CLI':'CLI: '.implode(' ',$_SERVER['argv']);}self::$consoleColors=&NDebugDumper::$terminalColors;self::$logger=new
+_init(){self::$time=microtime(TRUE);self::$consoleMode=PHP_SAPI==='cli';self::$productionMode=self::DETECT;if(self::$consoleMode){self::$source=empty($_SERVER['argv'])?'cli':'cli: '.implode(' ',$_SERVER['argv']);}else{self::$ajaxDetected=isset($_SERVER['HTTP_X_REQUESTED_WITH'])&&$_SERVER['HTTP_X_REQUESTED_WITH']==='XMLHttpRequest';if(isset($_SERVER['REQUEST_URI'])){self::$source=(isset($_SERVER['HTTPS'])&&strcasecmp($_SERVER['HTTPS'],'off')?'https://':'http://').(isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:(isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:'')).$_SERVER['REQUEST_URI'];}}self::$logger=new
 NLogger;self::$logDirectory=&self::$logger->directory;self::$email=&self::$logger->email;self::$mailer=&self::$logger->mailer;self::$emailSnooze=&NLogger::$emailSnooze;self::$fireLogger=new
 NFireLogger;self::$blueScreen=new
-NDebugBlueScreen;self::$blueScreen->collapsePaths[]=NETTE_DIR;self::$blueScreen->addPanel(create_function('$e','
+NDebugBlueScreen;self::$blueScreen->addPanel(create_function('$e','
 			if ($e instanceof NTemplateException) {
 				return array(
 					\'tab\' => \'Template\',
-					\'panel\' => \'<p><b>File:</b> \' . NDebugHelpers::editorLink($e->sourceFile, $e->sourceLine) . \'</p>\'
+					\'panel\' => \'<p><b>File:</b> \' . NDebugHelpers::editorLink($e->sourceFile, $e->sourceLine)
+					. \'&nbsp; <b>Line:</b> \' . ($e->sourceLine ? $e->sourceLine : \'n/a\') . \'</p>\'
 					. ($e->sourceLine ? NDebugBlueScreen::highlightFile($e->sourceFile, $e->sourceLine) : \'\')
 				);
 			} elseif ($e instanceof NNeonException && preg_match(\'#line (\\d+)#\', $e->getMessage(), $m)) {
 				if ($item = NDebugHelpers::findTrace($e->getTrace(), \'NConfigNeonAdapter::load\')) {
 					return array(
 						\'tab\' => \'NEON\',
-						\'panel\' => \'<p><b>File:</b> \' . NDebugHelpers::editorLink($item[\'args\'][0], $m[1]) . \'</p>\'
+						\'panel\' => \'<p><b>File:</b> \' . NDebugHelpers::editorLink($item[\'args\'][0], $m[1]) . \'&nbsp; <b>Line:</b> \' . $m[1] . \'</p>\'
 							. NDebugBlueScreen::highlightFile($item[\'args\'][0], $m[1])
 					);
 				} elseif ($item = NDebugHelpers::findTrace($e->getTrace(), \'NNeon::decode\')) {
@@ -839,10 +748,13 @@ NDefaultBarPanel('errors'));self::$bar->addPanel(self::$dumpPanel=new
 NDefaultBarPanel('dumps'));}public
 static
 function
-enable($mode=NULL,$logDirectory=NULL,$email=NULL){error_reporting(E_ALL|E_STRICT);if(is_bool($mode)){self::$productionMode=$mode;}elseif($mode!==self::DETECT||self::$productionMode===NULL){$list=is_string($mode)?preg_split('#[,\s]+#',$mode):(array)$mode;if(!isset($_SERVER['HTTP_X_FORWARDED_FOR'])){$list[]='127.0.0.1';$list[]='::1';}self::$productionMode=!in_array(isset($_SERVER['REMOTE_ADDR'])?$_SERVER['REMOTE_ADDR']:php_uname('n'),$list,TRUE);}if(is_string($logDirectory)){self::$logDirectory=realpath($logDirectory);if(self::$logDirectory===FALSE){echo
-__METHOD__."() error: Log directory is not found or is not directory.\n";exit(254);}}elseif($logDirectory===FALSE){self::$logDirectory=FALSE;}elseif(self::$logDirectory===NULL){self::$logDirectory=defined('APP_DIR')?APP_DIR.'/../log':getcwd().'/log';}if(self::$logDirectory){ini_set('error_log',self::$logDirectory.'/php_error.log');}if(function_exists('ini_set')){ini_set('display_errors',!self::$productionMode);ini_set('html_errors',FALSE);ini_set('log_errors',FALSE);}elseif(ini_get('display_errors')!=!self::$productionMode&&ini_get('display_errors')!==(self::$productionMode?'stderr':'stdout')){echo
-__METHOD__."() error: Unable to set 'display_errors' because function ini_set() is disabled.\n";exit(254);}if($email){if(!is_string($email)){echo
-__METHOD__."() error: Email address must be a string.\n";exit(254);}self::$email=$email;}if(!self::$enabled){register_shutdown_function(array(__CLASS__,'_shutdownHandler'));set_exception_handler(array(__CLASS__,'_exceptionHandler'));set_error_handler(array(__CLASS__,'_errorHandler'));self::$enabled=TRUE;}}public
+enable($mode=NULL,$logDirectory=NULL,$email=NULL){error_reporting(E_ALL|E_STRICT);if(is_bool($mode)){self::$productionMode=$mode;}elseif($mode!==self::DETECT||self::$productionMode===NULL){$mode=is_string($mode)?preg_split('#[,\s]+#',$mode):array($mode);$mode[]='127.0.0.1';$mode[]='::1';self::$productionMode=!in_array(isset($_SERVER['REMOTE_ADDR'])?$_SERVER['REMOTE_ADDR']:php_uname('n'),$mode,TRUE);}if(is_string($logDirectory)){self::$logDirectory=realpath($logDirectory);if(self::$logDirectory===FALSE){throw
+new
+DirectoryNotFoundException("Directory '$logDirectory' is not found.");}}elseif($logDirectory===FALSE){self::$logDirectory=FALSE;}elseif(self::$logDirectory===NULL){self::$logDirectory=defined('APP_DIR')?APP_DIR.'/../log':getcwd().'/log';}if(self::$logDirectory){ini_set('error_log',self::$logDirectory.'/php_error.log');}if(function_exists('ini_set')){ini_set('display_errors',!self::$productionMode);ini_set('html_errors',FALSE);ini_set('log_errors',FALSE);}elseif(ini_get('display_errors')!=!self::$productionMode&&ini_get('display_errors')!==(self::$productionMode?'stderr':'stdout')){throw
+new
+NotSupportedException('Function ini_set() must be enabled.');}if($email){if(!is_string($email)){throw
+new
+InvalidArgumentException('Email address must be a string.');}self::$email=$email;}if(!defined('E_DEPRECATED')){define('E_DEPRECATED',8192);}if(!defined('E_USER_DEPRECATED')){define('E_USER_DEPRECATED',16384);}if(!self::$enabled){register_shutdown_function(array(__CLASS__,'_shutdownHandler'));set_exception_handler(array(__CLASS__,'_exceptionHandler'));set_error_handler(array(__CLASS__,'_errorHandler'));self::$enabled=TRUE;}}public
 static
 function
 isEnabled(){return
@@ -851,23 +763,23 @@ static
 function
 log($message,$priority=self::INFO){if(self::$logDirectory===FALSE){return;}elseif(!self::$logDirectory){throw
 new
-InvalidStateException('Logging directory is not specified in NDebugger::$logDirectory.');}$exceptionFilename=NULL;if($message
+InvalidStateException('Logging directory is not specified in NDebugger::$logDirectory.');}if($message
 instanceof
 Exception){$exception=$message;$message=($message
 instanceof
 FatalErrorException?'Fatal error: '.$exception->getMessage():get_class($exception).": ".$exception->getMessage())." in ".$exception->getFile().":".$exception->getLine();$hash=md5($exception.(method_exists($exception,'getPrevious')?$exception->getPrevious():(isset($exception->previous)?$exception->previous:'')));$exceptionFilename="exception-".@date('Y-m-d-H-i-s')."-$hash.html";foreach(new
-DirectoryIterator(self::$logDirectory)as$entry){if(strpos($entry,$hash)){$exceptionFilename=$entry;$saved=TRUE;break;}}}elseif(!is_string($message)){$message=NDebugDumper::toText($message);}if($exceptionFilename){$exceptionFilename=self::$logDirectory.'/'.$exceptionFilename;if(empty($saved)&&$logHandle=@fopen($exceptionFilename,'w')){ob_start();ob_start(create_function('$buffer','extract($GLOBALS[0]['.array_push($GLOBALS[0],array('logHandle'=>$logHandle)).'-1], EXTR_REFS); fwrite($logHandle, $buffer); '),4096);self::$blueScreen->render($exception);ob_end_flush();ob_end_clean();fclose($logHandle);}}self::$logger->log(array(@date('[Y-m-d H-i-s]'),trim($message),self::$source?' @  '.self::$source:NULL,$exceptionFilename?' @@  '.basename($exceptionFilename):NULL),$priority);return$exceptionFilename?strtr($exceptionFilename,'\\/',DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR):NULL;}public
+DirectoryIterator(self::$logDirectory)as$entry){if(strpos($entry,$hash)){$exceptionFilename=$entry;$saved=TRUE;break;}}}self::$logger->log(array(@date('[Y-m-d H-i-s]'),$message,self::$source?' @  '.self::$source:NULL,!empty($exceptionFilename)?' @@  '.$exceptionFilename:NULL),$priority);if(!empty($exceptionFilename)){$exceptionFilename=self::$logDirectory.'/'.$exceptionFilename;if(empty($saved)&&$logHandle=@fopen($exceptionFilename,'w')){ob_start();ob_start(create_function('$buffer','extract(NCFix::$vars['.NCFix::uses(array('logHandle'=>$logHandle)).'], EXTR_REFS); fwrite($logHandle, $buffer); '),4096);self::$blueScreen->render($exception);ob_end_flush();ob_end_clean();fclose($logHandle);}return
+strtr($exceptionFilename,'\\/',DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR);}}public
 static
 function
 _shutdownHandler(){if(!self::$enabled){return;}static$types=array(E_ERROR=>1,E_CORE_ERROR=>1,E_COMPILE_ERROR=>1,E_PARSE=>1);$error=error_get_last();if(isset($types[$error['type']])){self::_exceptionHandler(new
-FatalErrorException($error['message'],0,$error['type'],$error['file'],$error['line'],NULL));}if(!connection_aborted()&&self::$bar&&!self::$productionMode&&self::isHtmlMode()){self::$bar->render();}}public
+FatalErrorException($error['message'],0,$error['type'],$error['file'],$error['line'],NULL));}if(self::$bar&&!self::$productionMode&&self::isHtmlMode()){self::$bar->render();}}public
 static
 function
-_exceptionHandler(Exception$exception){if(!headers_sent()){$protocol=isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:'HTTP/1.1';header($protocol.' 500',TRUE,500);}try{if(self::$productionMode){try{self::log($exception,self::ERROR);}catch(Exception$e){echo'FATAL ERROR: unable to log error';}if(self::isHtmlMode()){?>
+_exceptionHandler(Exception$exception){if(!headers_sent()){$protocol=isset($_SERVER['SERVER_PROTOCOL'])?$_SERVER['SERVER_PROTOCOL']:'HTTP/1.1';header($protocol.' 500',TRUE,500);}try{if(self::$productionMode){try{self::log($exception,self::ERROR);}catch(Exception$e){echo'FATAL ERROR: unable to log error';}if(self::$consoleMode){echo"ERROR: the server encountered an internal error and was unable to complete your request.\n";}elseif(self::isHtmlMode()){?>
 <!DOCTYPE html>
-<meta charset="utf-8">
-<meta name=robots content=noindex>
-<meta name=generator content="Nette Framework">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name=robots content=noindex><meta name=generator content="Nette Framework">
 <style>body{color:#333;background:white;width:500px;margin:100px auto}h1{font:bold 47px/1.5 sans-serif;margin:.6em 0}p{font:21px/1.5 Georgia,serif;margin:1.5em 0}small{font-size:70%;color:gray}</style>
 
 <title>Server Error</title>
@@ -877,51 +789,47 @@ _exceptionHandler(Exception$exception){if(!headers_sent()){$protocol=isset($_SER
 <p>We're sorry! The server encountered an internal error and was unable to complete your request. Please try again later.</p>
 
 <p><small>error 500</small></p>
-<?php }else{echo"ERROR: the server encountered an internal error and was unable to complete your request.\n";}}else{if(!connection_aborted()&&self::isHtmlMode()){self::$blueScreen->render($exception);if(self::$bar){self::$bar->render();}}elseif(connection_aborted()||!self::fireLog($exception)){$file=self::log($exception,self::ERROR);if(!headers_sent()){header("X-Nette-Error-Log: $file");}echo"$exception\n".($file?"(stored in $file)\n":'');if(self::$browser){exec(self::$browser.' '.escapeshellarg($file));}}}foreach(self::$onFatalError
+<?php }}else{if(self::$consoleMode){echo"$exception\n";if($file=self::log($exception)){echo"(stored in $file)\n";if(self::$browser){exec(self::$browser.' '.escapeshellarg($file));}}}elseif(self::isHtmlMode()){self::$blueScreen->render($exception);if(self::$bar){self::$bar->render();}}elseif(!self::fireLog($exception,self::ERROR)){$file=self::log($exception);if(!headers_sent()){header("X-Nette-Error-Log: $file");}}}foreach(self::$onFatalError
 as$handler){call_user_func($handler,$exception);}}catch(Exception$e){if(self::$productionMode){echo
-self::isHtmlMode()?'<meta name=robots content=noindex>FATAL ERROR':'FATAL ERROR';}else{echo"FATAL ERROR: thrown ",get_class($e),': ',$e->getMessage(),"\nwhile processing ",get_class($exception),': ',$exception->getMessage(),"\n";}}self::$enabled=FALSE;exit(254);}public
+self::isHtmlMode()?'<meta name=robots content=noindex>FATAL ERROR':'FATAL ERROR';}else{echo"FATAL ERROR: thrown ",get_class($e),': ',$e->getMessage(),"\nwhile processing ",get_class($exception),': ',$exception->getMessage(),"\n";}}self::$enabled=FALSE;exit(255);}public
 static
 function
 _errorHandler($severity,$message,$file,$line,$context){if(self::$scream){error_reporting(E_ALL|E_STRICT);}if(self::$lastError!==FALSE&&($severity&error_reporting())===$severity){self::$lastError=new
 ErrorException($message,0,$severity,$file,$line);return
-NULL;}if($severity===E_RECOVERABLE_ERROR||$severity===E_USER_ERROR){if(NDebugHelpers::findTrace(PHP_VERSION_ID<50205?debug_backtrace():debug_backtrace(FALSE),'*::__toString')){$previous=isset($context['e'])&&$context['e']instanceof
-Exception?$context['e']:NULL;self::_exceptionHandler(new
-FatalErrorException($message,0,$severity,$file,$line,$context,$previous));}throw
+NULL;}if($severity===E_RECOVERABLE_ERROR||$severity===E_USER_ERROR){throw
 new
 FatalErrorException($message,0,$severity,$file,$line,$context);}elseif(($severity&error_reporting())!==$severity){return
 FALSE;}elseif(!self::$productionMode&&(is_bool(self::$strictMode)?self::$strictMode:((self::$strictMode&$severity)===$severity))){self::_exceptionHandler(new
-FatalErrorException($message,0,$severity,$file,$line,$context));}static$types=array(E_WARNING=>'Warning',E_COMPILE_WARNING=>'Warning',E_USER_WARNING=>'Warning',E_NOTICE=>'Notice',E_USER_NOTICE=>'Notice',E_STRICT=>'Strict standards');if(PHP_VERSION_ID>=50300){$types+=array(E_DEPRECATED=>'Deprecated',E_USER_WARNING=>'Deprecated');}$message='PHP '.(isset($types[$severity])?$types[$severity]:'Unknown error').": $message";$count=&self::$errorPanel->data["$message|$file|$line"];if($count++){return
+FatalErrorException($message,0,$severity,$file,$line,$context));}static$types=array(E_WARNING=>'Warning',E_COMPILE_WARNING=>'Warning',E_USER_WARNING=>'Warning',E_NOTICE=>'Notice',E_USER_NOTICE=>'Notice',E_STRICT=>'Strict standards',E_DEPRECATED=>'Deprecated',E_USER_DEPRECATED=>'Deprecated');$message='PHP '.(isset($types[$severity])?$types[$severity]:'Unknown error').": $message";$count=&self::$errorPanel->data["$message|$file|$line"];if($count++){return
 NULL;}elseif(self::$productionMode){self::log("$message in $file:$line",self::ERROR);return
 NULL;}else{$ok=self::fireLog(new
-ErrorException($message,0,$severity,$file,$line));return!self::isHtmlMode()||(!self::$bar&&!$ok)?FALSE:NULL;}return
+ErrorException($message,0,$severity,$file,$line),self::WARNING);return!self::isHtmlMode()||(!self::$bar&&!$ok)?FALSE:NULL;}return
 FALSE;}public
 static
 function
 toStringException(Exception$exception){if(self::$enabled){self::_exceptionHandler($exception);}else{trigger_error($exception->getMessage(),E_USER_ERROR);}}public
 static
 function
-tryError(){trigger_error(__METHOD__.'() is deprecated; use own error handler instead.',E_USER_WARNING);if(!self::$enabled&&self::$lastError===FALSE){set_error_handler(array(__CLASS__,'_errorHandler'));}self::$lastError=NULL;}public
+tryError(){if(!self::$enabled&&self::$lastError===FALSE){set_error_handler(array(__CLASS__,'_errorHandler'));}self::$lastError=NULL;}public
 static
 function
-catchError(&$error){trigger_error(__METHOD__.'() is deprecated; use own error handler instead.',E_USER_WARNING);if(!self::$enabled&&self::$lastError!==FALSE){restore_error_handler();}$error=self::$lastError;self::$lastError=FALSE;return(bool)$error;}public
+catchError(&$error){if(!self::$enabled&&self::$lastError!==FALSE){restore_error_handler();}$error=self::$lastError;self::$lastError=FALSE;return(bool)$error;}public
 static
 function
-dump($var,$return=FALSE){if($return){ob_start();NDebugDumper::dump($var,array(NDebugDumper::DEPTH=>self::$maxDepth,NDebugDumper::TRUNCATE=>self::$maxLen));return
-ob_get_clean();}elseif(!self::$productionMode){NDebugDumper::dump($var,array(NDebugDumper::DEPTH=>self::$maxDepth,NDebugDumper::TRUNCATE=>self::$maxLen,NDebugDumper::LOCATION=>self::$showLocation));}return$var;}public
+dump($var,$return=FALSE){if(!$return&&self::$productionMode){return$var;}$output="<pre class=\"nette-dump\">".NDebugHelpers::htmlDump($var)."</pre>\n";if(!$return){$trace=debug_backtrace();$i=NDebugHelpers::findTrace($trace,'dump')?1:0;if(isset($trace[$i]['file'],$trace[$i]['line'])&&is_file($trace[$i]['file'])){$lines=file($trace[$i]['file']);preg_match('#dump\((.*)\)#',$lines[$trace[$i]['line']-1],$m);$output=substr_replace($output,' title="'.htmlspecialchars((isset($m[0])?"$m[0] \n":'')."in file {$trace[$i]['file']} on line {$trace[$i]['line']}").'"',4,0);if(self::$showLocation){$output=substr_replace($output,' <small>in '.NDebugHelpers::editorLink($trace[$i]['file'],$trace[$i]['line']).":{$trace[$i]['line']}</small>",-8,0);}}}if(self::$consoleMode){$output=htmlspecialchars_decode(strip_tags($output),ENT_QUOTES);}if($return){return$output;}else{echo$output;return$var;}}public
 static
 function
 timer($name=NULL){static$time=array();$now=microtime(TRUE);$delta=isset($time[$name])?$now-$time[$name]:0;$time[$name]=$now;return$delta;}public
 static
 function
-barDump($var,$title=NULL){if(!self::$productionMode){$dump=array();foreach((is_array($var)?$var:array(''=>$var))as$key=>$val){$dump[$key]=NDebugDumper::toHtml($val);}self::$dumpPanel->data[]=array('title'=>$title,'dump'=>$dump);}return$var;}public
+barDump($var,$title=NULL){if(!self::$productionMode){$dump=array();foreach((is_array($var)?$var:array(''=>$var))as$key=>$val){$dump[$key]=NDebugHelpers::clickableDump($val);}self::$dumpPanel->data[]=array('title'=>$title,'dump'=>$dump);}return$var;}public
 static
 function
 fireLog($message){if(!self::$productionMode){return
 self::$fireLogger->log($message);}}private
 static
 function
-isHtmlMode(){return
-empty($_SERVER['HTTP_X_REQUESTED_WITH'])&&preg_match('#^Content-Type: text/html#im',implode("\n",headers_list()));}public
+isHtmlMode(){return!self::$ajaxDetected&&!self::$consoleMode&&!preg_match('#^Content-Type: (?!text/html)#im',implode("\n",headers_list()));}public
 static
 function
 addPanel(IBarPanel$panel,$id=NULL){return
@@ -932,4 +840,8 @@ Exception{private$severity;public
 function
 __construct($message,$code,$severity,$file,$line,$context){parent::__construct($message,$code);$this->severity=$severity;$this->file=$file;$this->line=$line;$this->context=$context;}public
 function
-getSeverity(){return$this->severity;}}$GLOBALS[0]=array();NDebugger::_init();
+getSeverity(){return$this->severity;}}class
+NCFix{static$vars=array();static
+function
+uses($args){self::$vars[]=$args;return
+count(self::$vars)-1;}}NDebugger::_init();
