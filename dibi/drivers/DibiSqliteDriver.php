@@ -10,7 +10,7 @@
  */
 
 
-require_once dirname(__FILE__) . '/sqlite.reflector.php';
+require_once dirname(__FILE__) . '/DibiSqliteReflector.php';
 
 
 /**

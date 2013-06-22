@@ -89,10 +89,9 @@ class DibiConnection extends DibiObject
 			$config['driver'] = dibi::$defaultDriver;
 		}
 
-		$driver = preg_replace('#[^a-z0-9_]#', '_', strtolower($config['driver']));
-		$class = "Dibi" . $driver . "Driver";
+		$class = "Dibi" . preg_replace('#[^a-z0-9_]#', '_', strtolower($config['driver'])) . "Driver";
 		if (!class_exists($class, FALSE)) {
-			include_once dirname(__FILE__) . "/../drivers/$driver.php";
+			include_once dirname(__FILE__) . "/../drivers/$class.php";
 
 			if (!class_exists($class, FALSE)) {
 				throw new DibiException("Unable to create instance of dibi driver '$class'.");
