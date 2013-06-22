@@ -622,7 +622,7 @@ class DibiColumnInfo extends DibiObject
 			'^_' => dibi::TEXT, // PostgreSQL arrays
 			'BYTEA|BLOB|BIN' => dibi::BINARY,
 			'TEXT|CHAR' => dibi::TEXT,
-			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG' => dibi::INTEGER,
+			'YEAR|BYTE|COUNTER|SERIAL|^INT|LONG' => dibi::INTEGER,
 			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => dibi::FLOAT,
 			'^TIME$' => dibi::TIME,
 			'TIME' => dibi::DATETIME, // DATETIME, TIMESTAMP
