@@ -12,13 +12,13 @@
 
 
 /**
- * Dibi extension for Nette Framework. Creates 'connection' service.
+ * Dibi extension for Nette Framework 2.0. Creates 'connection' service.
  *
  * @author     David Grudl
  * @package    dibi\nette
  * @phpversion 5.3
  */
-class DibiNetteExtension extends Nette\Config\CompilerExtension
+class DibiNette20Extension extends Nette\Config\CompilerExtension
 {
 
 	public function loadConfiguration()
