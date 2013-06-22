@@ -1,0 +1,17 @@
+#    Requires Nette Framework 2.0 for PHP 5.3
+#
+#    In bootstrap.php append these lines after line $configurator = new Nette\Config\Configurator;
+#
+#        $configurator->onCompile[] = function($configurator, $compiler) {
+#            $compiler->addExtension('dibi', new DibiNette20Extension);
+#        };
+#
+#    This will create service named 'dibi.connection'.
+
+common:
+	dibi:
+		host: localhost
+		username: root
+		password: ***
+		database: foo
+		lazy: TRUE
