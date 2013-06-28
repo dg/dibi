@@ -4,6 +4,7 @@
  * This file is part of the "dibi" - smart database abstraction layer.
  *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
+ * Copyright (c) 2013 Adam Schubert (http://deadraven.cz)
  *
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
@@ -21,6 +22,7 @@ if (interface_exists('Tracy\IBarPanel')) {
  * Dibi panel for Tracy.
  *
  * @author     David Grudl
+ * @author     Adam Schubert
  * @package    dibi\nette
  */
 class DibiTracyPanel extends DibiObject implements IBarPanel
