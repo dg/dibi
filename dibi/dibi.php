@@ -41,7 +41,9 @@ require_once dirname(__FILE__) . '/libs/DibiFirePhpLogger.php';
 if (interface_exists('Nette\Diagnostics\IBarPanel') || interface_exists('IBarPanel')) {
 	require_once dirname(__FILE__) . '/bridges/Nette/DibiNettePanel.php';
 }
-
+else if (interface_exists('Tracy\IBarPanel') || interface_exists('IBarPanel')) {
+	require_once dirname(__FILE__) . '/bridges/Tracy/DibiTracyPanel.php';
+}
 
 
 
