@@ -10,11 +10,9 @@
  */
 
 
-
 if (interface_exists('Nette\Diagnostics\IBarPanel')) {
 	class_alias('Nette\Diagnostics\IBarPanel', 'IBarPanel');
 }
-
 
 
 /**
@@ -38,13 +36,11 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 	private $events = array();
 
 
-
 	public function __construct($explain = TRUE, $filter = NULL)
 	{
 		$this->filter = $filter ? (int) $filter : DibiEvent::QUERY;
 		$this->explain = $explain;
 	}
-
 
 
 	public function register(DibiConnection $connection)
@@ -70,7 +66,6 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 	}
 
 
-
 	/**
 	 * After event notification.
 	 * @return void
@@ -82,7 +77,6 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 		}
 		$this->events[] = $event;
 	}
-
 
 
 	/**
@@ -100,7 +94,6 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 	}
 
 
-
 	/**
 	 * Returns HTML code for custom tab. (Nette\Diagnostics\IBarPanel)
 	 * @return mixed
@@ -116,7 +109,6 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 			. ($totalTime ? ' / ' . sprintf('%0.1f', $totalTime * 1000) . 'ms' : '')
 			. '</span>';
 	}
-
 
 
 	/**

@@ -10,7 +10,6 @@ require dirname(__FILE__) . '/../dibi/dibi.php';
 date_default_timezone_set('Europe/Prague');
 
 
-
 // CHANGE TO REAL PARAMETERS!
 dibi::connect(array(
 	'driver'   => 'sqlite',
@@ -18,7 +17,6 @@ dibi::connect(array(
 	'formatDate' => "'Y-m-d'",
 	'formatDateTime' => "'Y-m-d H-i-s'",
 ));
-
 
 
 // generate and dump SQL

@@ -10,7 +10,6 @@
  */
 
 
-
 /**
  * Dibi extension for Nette Framework 2.0. Creates 'connection' service.
  *

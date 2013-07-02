@@ -1,4 +1,4 @@
-<?php ob_start(1) // needed by FirePHP ?>
+<?php ob_start() // needed by FirePHP ?>
 
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 

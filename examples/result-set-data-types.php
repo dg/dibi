@@ -33,7 +33,6 @@ dump( $res->fetch() );
 //    added => "2007-03-11 17:20:03" (19)
 
 
-
 // using auto-detection (works well with MySQL or other strictly typed databases)
 $res = dibi::query('SELECT * FROM [customers]');
 

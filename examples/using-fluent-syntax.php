@@ -35,13 +35,11 @@ dibi::select('product_id')->as('id')
 //    USING (product_id) INNER JOIN customers USING (customer_id) ORDER BY [title]
 
 
-
 // SELECT ...
 echo dibi::select('title')->as('id')
 	->from('products')
 	->fetchSingle();
 // -> Chair (as result of query: SELECT [title] AS [id] FROM [products])
-
 
 
 // INSERT ...
@@ -51,13 +49,11 @@ dibi::insert('products', $record)
 // -> INSERT IGNORE INTO [products] ([title], [price], [active]) VALUES ('Super product', 318, 1)
 
 
-
 // UPDATE ...
 dibi::update('products', $record)
 	->where('product_id = ?', $id)
 	->test();
 // -> UPDATE [products] SET [title]='Super product', [price]=318, [active]=1 WHERE product_id = 10
-
 
 
 // DELETE ...
@@ -67,7 +63,6 @@ dibi::delete('products')
 // -> DELETE FROM [products] WHERE product_id = 10
 
 
-
 // custom commands
 dibi::command()
 	->update('products')
@@ -75,7 +70,6 @@ dibi::command()
 	->set($record)
 	->test();
 // -> UPDATE [products] SET [title]='Super product', [price]=318, [active]=1 WHERE product_id = 10
-
 
 
 dibi::command()

@@ -10,7 +10,6 @@
  */
 
 
-
 /**
  * dibi file logger.
  *
@@ -26,13 +25,11 @@ class DibiFileLogger extends DibiObject
 	public $filter;
 
 
-
 	public function __construct($file, $filter = NULL)
 	{
 		$this->file = $file;
 		$this->filter = $filter ? (int) $filter : DibiEvent::QUERY;
 	}
-
 
 
 	/**
@@ -46,7 +43,9 @@ class DibiFileLogger extends DibiObject
 		}
 
 		$handle = fopen($this->file, 'a');
-		if (!$handle) return; // or throw exception?
+		if (!$handle) {
+			return; // or throw exception?
+		}
 		flock($handle, LOCK_EX);
 
 		if ($event->result instanceof Exception) {

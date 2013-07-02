@@ -10,7 +10,6 @@
  */
 
 
-
 /**
  * SQL literal value.
  *
@@ -26,7 +25,6 @@ class DibiLiteral extends DibiObject
 	{
 		$this->value = (string) $value;
 	}
-
 
 
 	/**

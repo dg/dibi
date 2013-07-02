@@ -48,7 +48,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	private $dbcharset, $charset;
 
 
-
 	/**
 	 * @throws DibiNotSupportedException
 	 */
@@ -60,13 +59,12 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Connects to a database.
 	 * @return void
 	 * @throws DibiException
 	 */
-	public function connect(array &$config)
+	public function connect(array & $config)
 	{
 		DibiConnection::alias($config, 'database', 'file');
 		$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
@@ -95,7 +93,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Disconnects from a database.
 	 * @return void
@@ -104,7 +101,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		sqlite_close($this->connection);
 	}
-
 
 
 	/**
@@ -134,7 +130,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
 	 * @return int|FALSE  number of rows or FALSE on error
@@ -145,7 +140,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @return int|FALSE  int on success or FALSE on failure
@@ -154,7 +148,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		return sqlite_last_insert_rowid($this->connection);
 	}
-
 
 
 	/**
@@ -169,7 +162,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Commits statements in a transaction.
 	 * @param  string  optional savepoint name
@@ -180,7 +172,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		$this->query('COMMIT');
 	}
-
 
 
 	/**
@@ -195,7 +186,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Returns the connection resource.
 	 * @return mixed
@@ -206,7 +196,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Returns the connection reflector.
 	 * @return IDibiReflector
@@ -215,7 +204,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		return new DibiSqliteReflector($this);
 	}
-
 
 
 	/**
@@ -231,9 +219,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/********************* SQL ****************d*g**/
-
 
 
 	/**
@@ -246,27 +232,26 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function escape($value, $type)
 	{
 		switch ($type) {
-		case dibi::TEXT:
-		case dibi::BINARY:
-			return "'" . sqlite_escape_string($value) . "'";
+			case dibi::TEXT:
+			case dibi::BINARY:
+				return "'" . sqlite_escape_string($value) . "'";
 
-		case dibi::IDENTIFIER:
-			return '[' . strtr($value, '[]', '  ') . ']';
+			case dibi::IDENTIFIER:
+				return '[' . strtr($value, '[]', '  ') . ']';
 
-		case dibi::BOOL:
-			return $value ? 1 : 0;
+			case dibi::BOOL:
+				return $value ? 1 : 0;
 
-		case dibi::DATE:
-			return $value instanceof DateTime ? $value->format($this->fmtDate) : date($this->fmtDate, $value);
+			case dibi::DATE:
+				return $value instanceof DateTime ? $value->format($this->fmtDate) : date($this->fmtDate, $value);
 
-		case dibi::DATETIME:
-			return $value instanceof DateTime ? $value->format($this->fmtDateTime) : date($this->fmtDateTime, $value);
+			case dibi::DATETIME:
+				return $value instanceof DateTime ? $value->format($this->fmtDateTime) : date($this->fmtDateTime, $value);
 
-		default:
-			throw new InvalidArgumentException('Unsupported type.');
+			default:
+				throw new InvalidArgumentException('Unsupported type.');
 		}
 	}
-
 
 
 	/**
@@ -279,7 +264,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		throw new DibiNotSupportedException;
 	}
-
 
 
 	/**
@@ -298,24 +282,19 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string &$sql  The SQL query that will be modified.
-	 * @param  int $limit
-	 * @param  int $offset
 	 * @return void
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(& $sql, $limit, $offset)
 	{
-		if ($limit < 0 && $offset < 1) return;
-		$sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+		if ($limit >= 0 || $offset > 0) {
+			$sql .= ' LIMIT ' . (int) $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+		}
 	}
 
 
-
 	/********************* result set ****************d*g**/
-
 
 
 	/**
@@ -329,7 +308,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		}
 		return sqlite_num_rows($this->resultSet);
 	}
-
 
 
 	/**
@@ -355,7 +333,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
@@ -371,7 +348,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Frees the resources allocated for this result set.
 	 * @return void
@@ -380,7 +356,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		$this->resultSet = NULL;
 	}
-
 
 
 	/**
@@ -405,7 +380,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Returns the result set resource.
 	 * @return mixed
@@ -416,9 +390,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/********************* user defined functions ****************d*g**/
-
 
 
 	/**
@@ -432,7 +404,6 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		sqlite_create_function($this->connection, $name, $callback, $numArgs);
 	}
-
 
 
 	/**

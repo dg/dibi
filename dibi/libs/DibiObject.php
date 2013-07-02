@@ -10,7 +10,6 @@
  */
 
 
-
 /**
  * DibiObject is the ultimate ancestor of all instantiable classes.
  *
@@ -58,7 +57,6 @@ abstract class DibiObject
 	private static $extMethods;
 
 
-
 	/**
 	 * Returns the name of the class of this object.
 	 * @return string
@@ -69,7 +67,6 @@ abstract class DibiObject
 	}
 
 
-
 	/**
 	 * Access to reflection.
 	 * @return \ReflectionObject
@@ -78,7 +75,6 @@ abstract class DibiObject
 	{
 		return new ReflectionObject($this);
 	}
-
 
 
 	/**
@@ -125,7 +121,6 @@ abstract class DibiObject
 	}
 
 
-
 	/**
 	 * Call to undefined static method.
 	 * @param  string  method name (in lower case!)
@@ -138,7 +133,6 @@ abstract class DibiObject
 		$class = get_called_class();
 		throw new LogicException("Call to undefined static method $class::$name().");
 	}
-
 
 
 	/**
@@ -158,7 +152,9 @@ abstract class DibiObject
 					self::$extMethods[$pair[1]][''] = NULL;
 				}
 			}
-			if ($name === NULL) return NULL;
+			if ($name === NULL) {
+				return NULL;
+			}
 		}
 
 		$name = strtolower($name);
@@ -202,14 +198,13 @@ abstract class DibiObject
 	}
 
 
-
 	/**
 	 * Returns property value. Do not call directly.
 	 * @param  string  property name
 	 * @return mixed   property value
 	 * @throws \LogicException if the property is not defined.
 	 */
-	public function &__get($name)
+	public function & __get($name)
 	{
 		$class = get_class($this);
 
@@ -222,8 +217,8 @@ abstract class DibiObject
 		$m = 'get' . $name;
 		if (self::hasAccessor($class, $m)) {
 			// ampersands:
-			// - uses &__get() because declaration should be forward compatible (e.g. with Nette\Web\Html)
-			// - doesn't call &$this->$m because user could bypass property setter by: $x = & $obj->property; $x = 'new value';
+			// - uses & __get() because declaration should be forward compatible (e.g. with Nette\Web\Html)
+			// - doesn't call & $this->$m because user could bypass property setter by: $x = & $obj->property; $x = 'new value';
 			$val = $this->$m();
 			return $val;
 		}
@@ -237,7 +232,6 @@ abstract class DibiObject
 		$name = func_get_arg(0);
 		throw new LogicException("Cannot read an undeclared property $class::\$$name.");
 	}
-
 
 
 	/**
@@ -274,7 +268,6 @@ abstract class DibiObject
 	}
 
 
-
 	/**
 	 * Is property defined?
 	 * @param  string  property name
@@ -285,7 +278,6 @@ abstract class DibiObject
 		$name[0] = $name[0] & "\xDF";
 		return $name !== '' && self::hasAccessor(get_class($this), 'get' . $name);
 	}
-
 
 
 	/**
@@ -299,7 +291,6 @@ abstract class DibiObject
 		$class = get_class($this);
 		throw new LogicException("Cannot unset the property $class::\$$name.");
 	}
-
 
 
 	/**

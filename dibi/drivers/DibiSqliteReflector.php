@@ -23,12 +23,10 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 	private $driver;
 
 
-
 	public function __construct(IDibiDriver $driver)
 	{
 		$this->driver = $driver;
 	}
-
 
 
 	/**
@@ -49,7 +47,6 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 		}
 		return $tables;
 	}
-
 
 
 	/**
@@ -85,7 +82,6 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 		}
 		return $columns;
 	}
-
 
 
 	/**
@@ -137,7 +133,6 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 
 		return array_values($indexes);
 	}
-
 
 
 	/**

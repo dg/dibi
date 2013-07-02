@@ -10,7 +10,6 @@
  */
 
 
-
 /**
  * Result set single row.
  *
@@ -22,16 +21,16 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 
 	public function __construct($arr)
 	{
-		foreach ($arr as $k => $v) $this->$k = $v;
+		foreach ($arr as $k => $v) {
+			$this->$k = $v;
+		}
 	}
-
 
 
 	public function toArray()
 	{
 		return (array) $this;
 	}
-
 
 
 	/**
@@ -53,7 +52,6 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	}
 
 
-
 	/**
 	 * Converts value to UNIX timestamp.
 	 * @param  string key
@@ -69,7 +67,6 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	}
 
 
-
 	/**
 	 * Converts value to boolean.
 	 * @param  string key
@@ -80,7 +77,6 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 		trigger_error(__METHOD__ . '() is deprecated.', E_USER_WARNING);
 		return $this[$key];
 	}
-
 
 
 	/** @deprecated */
@@ -95,9 +91,7 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	}
 
 
-
 	/********************* interfaces ArrayAccess, Countable & IteratorAggregate ****************d*g**/
-
 
 
 	final public function count()
@@ -106,12 +100,10 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	}
 
 
-
 	final public function getIterator()
 	{
 		return new ArrayIterator($this);
 	}
-
 
 
 	final public function offsetSet($nm, $val)
@@ -120,19 +112,16 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	}
 
 
-
 	final public function offsetGet($nm)
 	{
 		return $this->$nm;
 	}
 
 
-
 	final public function offsetExists($nm)
 	{
 		return isset($this->$nm);
 	}
-
 
 
 	final public function offsetUnset($nm)
