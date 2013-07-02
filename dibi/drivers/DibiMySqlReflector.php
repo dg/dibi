@@ -23,12 +23,10 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 	private $driver;
 
 
-
 	public function __construct(IDibiDriver $driver)
 	{
 		$this->driver = $driver;
 	}
-
 
 
 	/**
@@ -52,7 +50,6 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 		}
 		return $tables;
 	}
-
 
 
 	/**
@@ -88,7 +85,6 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 	}
 
 
-
 	/**
 	 * Returns metadata for all indexes in a table.
 	 * @param  string
@@ -113,7 +109,6 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 		}
 		return array_values($indexes);
 	}
-
 
 
 	/**

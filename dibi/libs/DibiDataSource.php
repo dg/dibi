@@ -10,7 +10,6 @@
  */
 
 
-
 /**
  * Default implementation of IDataSource for dibi.
  *
@@ -55,7 +54,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 	private $limit;
 
 
-
 	/**
 	 * @param  string  SQL command or table or view name, as data source
 	 * @param  DibiConnection  connection
@@ -71,12 +69,11 @@ class DibiDataSource extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Selects columns to query.
 	 * @param  string|array  column name or array of column names
 	 * @param  string        column alias
-	 * @return DibiDataSource  provides a fluent interface
+	 * @return self
 	 */
 	public function select($col, $as = NULL)
 	{
@@ -90,11 +87,10 @@ class DibiDataSource extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Adds conditions to query.
 	 * @param  mixed  conditions
-	 * @return DibiDataSource  provides a fluent interface
+	 * @return self
 	 */
 	public function where($cond)
 	{
@@ -109,12 +105,11 @@ class DibiDataSource extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Selects columns to order by.
 	 * @param  string|array  column name or array of column names
 	 * @param  string        sorting direction
-	 * @return DibiDataSource  provides a fluent interface
+	 * @return self
 	 */
 	public function orderBy($row, $sorting = 'ASC')
 	{
@@ -128,12 +123,11 @@ class DibiDataSource extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Limits number of rows.
 	 * @param  int limit
 	 * @param  int offset
-	 * @return DibiDataSource  provides a fluent interface
+	 * @return self
 	 */
 	public function applyLimit($limit, $offset = NULL)
 	{
@@ -142,7 +136,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 		$this->result = $this->count = NULL;
 		return $this;
 	}
-
 
 
 	/**
@@ -155,9 +148,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 	}
 
 
-
 	/********************* executing ****************d*g**/
-
 
 
 	/**
@@ -173,7 +164,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * @return DibiResultIterator
 	 */
@@ -181,7 +171,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 	{
 		return $this->getResult()->getIterator();
 	}
-
 
 
 	/**
@@ -194,7 +183,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Like fetch(), but returns only first field.
 	 * @return mixed  value on success, FALSE if no next record
@@ -203,7 +191,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 	{
 		return $this->getResult()->fetchSingle();
 	}
-
 
 
 	/**
@@ -216,7 +203,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Fetches all records from table and returns associative tree.
 	 * @param  string  associative descriptor
@@ -226,7 +212,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 	{
 		return $this->getResult()->fetchAssoc($assoc);
 	}
-
 
 
 	/**
@@ -241,7 +226,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Discards the internal cache.
 	 * @return void
@@ -252,9 +236,7 @@ class DibiDataSource extends DibiObject implements IDataSource
 	}
 
 
-
 	/********************* exporting ****************d*g**/
-
 
 
 	/**
@@ -267,7 +249,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Returns this data source wrapped in DibiDataSource object.
 	 * @return DibiDataSource
@@ -276,7 +257,6 @@ class DibiDataSource extends DibiObject implements IDataSource
 	{
 		return new self($this->__toString(), $this->connection);
 	}
-
 
 
 	/**
@@ -299,9 +279,7 @@ FROM %SQL', $this->sql, '
 	}
 
 
-
 	/********************* counting ****************d*g**/
-
 
 
 	/**
@@ -319,7 +297,6 @@ FROM %SQL', $this->sql, '
 		}
 		return $this->count;
 	}
-
 
 
 	/**

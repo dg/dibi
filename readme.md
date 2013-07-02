@@ -127,7 +127,6 @@ echo dibi::$totalTime;
 ```
 
 
-
 -----
 
 [![Build Status](https://secure.travis-ci.org/dg/dibi.png?branch=master)](http://travis-ci.org/dg/dibi)

@@ -10,7 +10,6 @@
  */
 
 
-
 /**
  * Lazy cached storage.
  *
@@ -29,7 +28,6 @@ abstract class DibiHashMapBase
 	}
 
 
-
 	public function setCallback($callback)
 	{
 		if (!is_callable($callback)) {
@@ -40,14 +38,12 @@ abstract class DibiHashMapBase
 	}
 
 
-
 	public function getCallback()
 	{
 		return $this->callback;
 	}
 
 }
-
 
 
 /**
@@ -66,7 +62,6 @@ final class DibiHashMap extends DibiHashMapBase
 		}
 		$this->$nm = $val;
 	}
-
 
 
 	public function __get($nm)

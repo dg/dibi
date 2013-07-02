@@ -10,7 +10,6 @@
  */
 
 
-
 /**
  * dibi FirePHP logger.
  *
@@ -38,7 +37,6 @@ class DibiFirePhpLogger extends DibiObject
 	private static $fireTable = array(array('Time', 'SQL Statement', 'Rows', 'Connection'));
 
 
-
 	/**
 	 * @return bool
 	 */
@@ -48,12 +46,10 @@ class DibiFirePhpLogger extends DibiObject
 	}
 
 
-
 	public function __construct($filter = NULL)
 	{
 		$this->filter = $filter ? (int) $filter : DibiEvent::QUERY;
 	}
-
 
 
 	/**

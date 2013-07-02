@@ -23,7 +23,6 @@ render(){$obLevel=ob_get_level();$panels=array();foreach($this->panels
 as$id=>$panel){try{$panels[]=array('id'=>preg_replace('#[^a-z0-9]+#i','-',$id),'tab'=>$tab=(string)$panel->getTab(),'panel'=>$tab?(string)$panel->getPanel():NULL);}catch(Exception$e){$panels[]=array('id'=>"error-$id",'tab'=>"Error: $id",'panel'=>nl2br(htmlSpecialChars((string)$e)));while(ob_get_level()>$obLevel){ob_end_clean();}}}?>
 
 
-
 <!-- Nette Debug Bar -->
 
 <?php ob_start()?>
@@ -130,7 +129,6 @@ htmlspecialchars('; caused by '.get_class($ex).' '.$ex->getMessage().($ex->getCo
 </head>
 
 
-
 <body>
 <div id="netteBluescreen">
 	<a id="netteBluescreenIcon" href="#" rel="next"><abbr>&#x25bc;</abbr></a
@@ -144,7 +142,6 @@ htmlspecialchars($title),($exception->getCode()?' #'.$exception->getCode():'')?>
 htmlspecialchars($exception->getMessage())?> <a href="http://www.google.cz/search?sourceid=nette&amp;q=<?php echo
 urlencode($title.' '.preg_replace('#\'.*\'|".*"#Us','',$exception->getMessage()))?>" id="netteBsSearch">search&#x25ba;</a></p>
 		</div>
-
 
 
 		<?php $ex=$exception;$level=0;?>
@@ -165,7 +162,6 @@ htmlspecialchars($ex->getMessage())?></b></p>
 			<?php endif?>
 
 
-
 			<?php foreach($panels
 as$panel):?>
 			<?php $panel=call_user_func($panel,$ex);if(empty($panel['tab'])||empty($panel['panel']))continue;?>
@@ -178,7 +174,6 @@ htmlSpecialChars($panel['tab'])?> <abbr>&#x25bc;</abbr></a></h2>
 				<?php echo$panel['panel']?>
 			</div></div>
 			<?php endforeach?>
-
 
 
 			<?php $stack=$ex->getTrace();$expanded=NULL?>
@@ -194,7 +189,6 @@ NDebugHelpers::editorLink($ex->getFile(),$ex->getLine())?> &nbsp; <b>Line:</b> <
 				<?php if(is_file($ex->getFile())):?><?php echo
 self::highlightFile($ex->getFile(),$ex->getLine(),15,isset($ex->context)?$ex->context:NULL)?><?php endif?>
 			</div></div>
-
 
 
 			<?php if(isset($stack[0]['class'])&&$stack[0]['class']==='NDebugger'&&($stack[0]['function']==='_shutdownHandler'||$stack[0]['function']==='_errorHandler'))unset($stack[0])?>
@@ -251,7 +245,6 @@ self::highlightFile($row['file'],$row['line'])?></div>
 			<?php endif?>
 
 
-
 			<?php if(isset($ex->context)&&is_array($ex->context)):?>
 			<div class="panel">
 			<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>">Variables <abbr>&#x25ba;</abbr></a></h2>
@@ -272,7 +265,6 @@ as$k=>$v){echo'<tr><th>$',htmlspecialchars($k),'</th><td>',NDebugHelpers::clicka
 		<?php while(--$level)echo'</div></div>'?>
 
 
-
 		<?php $bottomPanels=array()?>
 		<?php foreach($panels
 as$panel):?>
@@ -286,7 +278,6 @@ htmlSpecialChars($panel['tab'])?> <abbr>&#x25ba;</abbr></a></h2>
 			<?php echo$panel['panel']?>
 		</div></div>
 		<?php endforeach?>
-
 
 
 		<div class="panel">
@@ -336,7 +327,6 @@ as$k=>$v)echo'<tr><th>',htmlspecialchars($k),'</th><td>',NDebugHelpers::clickabl
 		</div></div>
 
 
-
 		<div class="panel">
 		<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>">HTTP request <abbr>&#x25ba;</abbr></a></h2>
 
@@ -371,7 +361,6 @@ foreach($GLOBALS[$name]as$k=>$v)echo'<tr><th>',htmlspecialchars($k),'</th><td>',
 		</div></div>
 
 
-
 		<div class="panel">
 		<h2><a href="#" rel="netteBsPnl<?php echo++$counter?>">HTTP response <abbr>&#x25ba;</abbr></a></h2>
 
@@ -388,7 +377,6 @@ htmlspecialchars($s),'<br>';?></pre>
 		</div></div>
 
 
-
 		<?php foreach($bottomPanels
 as$panel):?>
 		<div class="panel">
@@ -399,7 +387,6 @@ htmlSpecialChars($panel['tab'])?> <abbr>&#x25bc;</abbr></a></h2>
 			<?php echo$panel['panel']?>
 		</div></div>
 		<?php endforeach?>
-
 
 
 		<ul>

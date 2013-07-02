@@ -21,7 +21,6 @@ dibi::connect(array(
 ));
 
 
-
 try {
 	$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] = ?', 1);
 

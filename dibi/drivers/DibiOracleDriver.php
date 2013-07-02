@@ -45,7 +45,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	private $fmtDate, $fmtDateTime;
 
 
-
 	/**
 	 * @throws DibiNotSupportedException
 	 */
@@ -57,13 +56,12 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Connects to a database.
 	 * @return void
 	 * @throws DibiException
 	 */
-	public function connect(array &$config)
+	public function connect(array & $config)
 	{
 		$foo = & $config['charset'];
 		$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
@@ -84,7 +82,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Disconnects from a database.
 	 * @return void
@@ -93,7 +90,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		oci_close($this->connection);
 	}
-
 
 
 	/**
@@ -121,7 +117,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
 	 * @return int|FALSE  number of rows or FALSE on error
@@ -130,7 +125,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		throw new DibiNotImplementedException;
 	}
-
 
 
 	/**
@@ -144,7 +138,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Begins a transaction (if supported).
 	 * @param  string  optional savepoint name
@@ -154,7 +147,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		$this->autocommit = FALSE;
 	}
-
 
 
 	/**
@@ -173,7 +165,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Rollback changes in a transaction.
 	 * @param  string  optional savepoint name
@@ -190,7 +181,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Returns the connection resource.
 	 * @return mixed
@@ -201,7 +191,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Returns the connection reflector.
 	 * @return IDibiReflector
@@ -210,7 +199,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		return $this;
 	}
-
 
 
 	/**
@@ -226,9 +214,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/********************* SQL ****************d*g**/
-
 
 
 	/**
@@ -241,28 +227,27 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function escape($value, $type)
 	{
 		switch ($type) {
-		case dibi::TEXT:
-		case dibi::BINARY:
-			return "'" . str_replace("'", "''", $value) . "'"; // TODO: not tested
+			case dibi::TEXT:
+			case dibi::BINARY:
+				return "'" . str_replace("'", "''", $value) . "'"; // TODO: not tested
 
-		case dibi::IDENTIFIER:
-			// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
-			return '"' . str_replace('"', '""', $value) . '"';
+			case dibi::IDENTIFIER:
+				// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
+				return '"' . str_replace('"', '""', $value) . '"';
 
-		case dibi::BOOL:
-			return $value ? 1 : 0;
+			case dibi::BOOL:
+				return $value ? 1 : 0;
 
-		case dibi::DATE:
-			return $value instanceof DateTime ? $value->format($this->fmtDate) : date($this->fmtDate, $value);
+			case dibi::DATE:
+				return $value instanceof DateTime ? $value->format($this->fmtDate) : date($this->fmtDate, $value);
 
-		case dibi::DATETIME:
-			return $value instanceof DateTime ? $value->format($this->fmtDateTime) : date($this->fmtDateTime, $value);
+			case dibi::DATETIME:
+				return $value instanceof DateTime ? $value->format($this->fmtDateTime) : date($this->fmtDateTime, $value);
 
-		default:
-			throw new InvalidArgumentException('Unsupported type.');
+			default:
+				throw new InvalidArgumentException('Unsupported type.');
 		}
 	}
-
 
 
 	/**
@@ -277,7 +262,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		$value = str_replace("'", "''", $value);
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
-
 
 
 	/**
@@ -296,19 +280,17 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string &$sql  The SQL query that will be modified.
-	 * @param  int $limit
-	 * @param  int $offset
 	 * @return void
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(& $sql, $limit, $offset)
 	{
 		if ($offset > 0) {
 			// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
-			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t ' . ($limit >= 0 ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '') . ') WHERE "__rnum" > '. (int) $offset;
+			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
+				. ($limit >= 0 ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
+				. ') WHERE "__rnum" > '. (int) $offset;
 
 		} elseif ($limit >= 0) {
 			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
@@ -316,9 +298,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/********************* result set ****************d*g**/
-
 
 
 	/**
@@ -331,7 +311,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Returns the number of rows in a result set.
 	 * @return int
@@ -340,7 +319,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		throw new DibiNotSupportedException('Row count is not available for unbuffered queries.');
 	}
-
 
 
 	/**
@@ -354,7 +332,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
@@ -366,7 +343,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Frees the resources allocated for this result set.
 	 * @return void
@@ -376,7 +352,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		oci_free_statement($this->resultSet);
 		$this->resultSet = NULL;
 	}
-
 
 
 	/**
@@ -399,7 +374,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Returns the result set resource.
 	 * @return mixed
@@ -411,9 +385,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/********************* IDibiReflector ****************d*g**/
-
 
 
 	/**
@@ -436,7 +408,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Returns metadata for all columns in a table.
 	 * @param  string
@@ -448,7 +419,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Returns metadata for all indexes in a table.
 	 * @param  string
@@ -458,7 +428,6 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		throw new DibiNotImplementedException;
 	}
-
 
 
 	/**

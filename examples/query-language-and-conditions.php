@@ -32,8 +32,6 @@ dibi::test('
 // -> SELECT * FROM customers WHERE name LIKE 'K%'
 
 
-
-
 // if & else & (optional) end
 dibi::test("
 	SELECT *
@@ -43,7 +41,6 @@ dibi::test("
 		%else %if", ($bar > 0), "AND bar=?", $bar, "
 ");
 // -> SELECT * FROM people WHERE id > 0 AND bar=2
-
 
 
 // nested condition
@@ -56,7 +53,6 @@ dibi::test('
 		%else 1 LIMIT 10 %end'
 );
 // -> SELECT * FROM customers WHERE LIMIT 10
-
 
 
 // IF()

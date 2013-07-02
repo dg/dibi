@@ -29,7 +29,6 @@ dibi::test('
 // -> SELECT COUNT(*) as [count] FROM [comments] WHERE [ip] LIKE '192.168.%' AND [date] > 876693600
 
 
-
 // dibi detects INSERT or REPLACE command
 dibi::test('
 	REPLACE INTO products', array(
@@ -38,7 +37,6 @@ dibi::test('
 		'active' => TRUE,
 ));
 // -> REPLACE INTO products ([title], [price], [active]) VALUES ('Super product', 318, 1)
-
 
 
 // multiple INSERT command
@@ -52,7 +50,6 @@ dibi::test("INSERT INTO products", $array, $array, $array);
 // -> INSERT INTO products ([title], [price], [brand], [created]) VALUES ('Super Product', ...) , (...) , (...)
 
 
-
 // dibi detects UPDATE command
 dibi::test("
 	UPDATE colors SET", array(
@@ -63,7 +60,6 @@ dibi::test("
 // -> UPDATE colors SET [color]='blue', [order]=12 WHERE id=123
 
 
-
 // modifier applied to array
 $array = array(1, 2, 3);
 dibi::test("
@@ -72,7 +68,6 @@ dibi::test("
 	WHERE id IN (?)", $array
 );
 // -> SELECT * FROM people WHERE id IN ( 1, 2, 3 )
-
 
 
 // modifier %by for ORDER BY
@@ -86,7 +81,6 @@ dibi::test("
 	ORDER BY %by", $order, "
 ");
 // -> SELECT * FROM people ORDER BY [field1] ASC, [field2] DESC
-
 
 
 // indentifiers and strings syntax mix

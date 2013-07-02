@@ -38,7 +38,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	private $autoFree = TRUE;
 
 
-
 	/**
 	 * @throws DibiNotSupportedException
 	 */
@@ -50,13 +49,12 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/**
 	 * Connects to a database.
 	 * @return void
 	 * @throws DibiException
 	 */
-	public function connect(array &$config)
+	public function connect(array & $config)
 	{
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
@@ -76,7 +74,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/**
 	 * Disconnects from a database.
 	 * @return void
@@ -85,7 +82,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	{
 		mssql_close($this->connection);
 	}
-
 
 
 	/**
@@ -107,7 +103,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
 	 * @return int|FALSE  number of rows or FALSE on error
@@ -116,7 +111,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	{
 		return mssql_rows_affected($this->connection);
 	}
-
 
 
 	/**
@@ -134,7 +128,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/**
 	 * Begins a transaction (if supported).
 	 * @param  string  optional savepoint name
@@ -145,7 +138,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	{
 		$this->query('BEGIN TRANSACTION');
 	}
-
 
 
 	/**
@@ -160,7 +152,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/**
 	 * Rollback changes in a transaction.
 	 * @param  string  optional savepoint name
@@ -173,7 +164,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/**
 	 * Returns the connection resource.
 	 * @return mixed
@@ -184,7 +174,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/**
 	 * Returns the connection reflector.
 	 * @return IDibiReflector
@@ -193,7 +182,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	{
 		return new DibiMsSqlReflector($this);
 	}
-
 
 
 	/**
@@ -209,9 +197,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/********************* SQL ****************d*g**/
-
 
 
 	/**
@@ -224,28 +210,27 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	public function escape($value, $type)
 	{
 		switch ($type) {
-		case dibi::TEXT:
-		case dibi::BINARY:
-			return "'" . str_replace("'", "''", $value) . "'";
+			case dibi::TEXT:
+			case dibi::BINARY:
+				return "'" . str_replace("'", "''", $value) . "'";
 
-		case dibi::IDENTIFIER:
-			// @see http://msdn.microsoft.com/en-us/library/ms176027.aspx
-			return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
+			case dibi::IDENTIFIER:
+				// @see http://msdn.microsoft.com/en-us/library/ms176027.aspx
+				return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
-		case dibi::BOOL:
-			return $value ? 1 : 0;
+			case dibi::BOOL:
+				return $value ? 1 : 0;
 
-		case dibi::DATE:
-			return $value instanceof DateTime ? $value->format("'Y-m-d'") : date("'Y-m-d'", $value);
+			case dibi::DATE:
+				return $value instanceof DateTime ? $value->format("'Y-m-d'") : date("'Y-m-d'", $value);
 
-		case dibi::DATETIME:
-			return $value instanceof DateTime ? $value->format("'Y-m-d H:i:s'") : date("'Y-m-d H:i:s'", $value);
+			case dibi::DATETIME:
+				return $value instanceof DateTime ? $value->format("'Y-m-d H:i:s'") : date("'Y-m-d H:i:s'", $value);
 
-		default:
-			throw new InvalidArgumentException('Unsupported type.');
+			default:
+				throw new InvalidArgumentException('Unsupported type.');
 		}
 	}
-
 
 
 	/**
@@ -259,7 +244,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
-
 
 
 	/**
@@ -278,15 +262,11 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string &$sql  The SQL query that will be modified.
-	 * @param  int $limit
-	 * @param  int $offset
 	 * @return void
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(& $sql, $limit, $offset)
 	{
 		// offset support is missing
 		if ($limit >= 0) {
@@ -299,9 +279,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/********************* result set ****************d*g**/
-
 
 
 	/**
@@ -314,7 +292,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/**
 	 * Returns the number of rows in a result set.
 	 * @return int
@@ -323,7 +300,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	{
 		return mssql_num_rows($this->resultSet);
 	}
-
 
 
 	/**
@@ -337,7 +313,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
@@ -349,7 +324,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	}
 
 
-
 	/**
 	 * Frees the resources allocated for this result set.
 	 * @return void
@@ -359,7 +333,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 		mssql_free_result($this->resultSet);
 		$this->resultSet = NULL;
 	}
-
 
 
 	/**
@@ -381,7 +354,6 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 		}
 		return $columns;
 	}
-
 
 
 	/**

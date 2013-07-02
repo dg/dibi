@@ -10,7 +10,6 @@
  */
 
 
-
 /**
  * Reflection metadata class for a database.
  *
@@ -33,13 +32,11 @@ class DibiDatabaseInfo extends DibiObject
 	private $tables;
 
 
-
 	public function __construct(IDibiReflector $reflector, $name)
 	{
 		$this->reflector = $reflector;
 		$this->name = $name;
 	}
-
 
 
 	/**
@@ -51,7 +48,6 @@ class DibiDatabaseInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return array of DibiTableInfo
 	 */
@@ -60,7 +56,6 @@ class DibiDatabaseInfo extends DibiObject
 		$this->init();
 		return array_values($this->tables);
 	}
-
 
 
 	/**
@@ -75,7 +70,6 @@ class DibiDatabaseInfo extends DibiObject
 		}
 		return $res;
 	}
-
 
 
 	/**
@@ -95,7 +89,6 @@ class DibiDatabaseInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @param  string
 	 * @return bool
@@ -105,7 +98,6 @@ class DibiDatabaseInfo extends DibiObject
 		$this->init();
 		return isset($this->tables[strtolower($name)]);
 	}
-
 
 
 	/**
@@ -122,8 +114,6 @@ class DibiDatabaseInfo extends DibiObject
 	}
 
 }
-
-
 
 
 /**
@@ -164,14 +154,12 @@ class DibiTableInfo extends DibiObject
 	private $primaryKey;
 
 
-
 	public function __construct(IDibiReflector $reflector, array $info)
 	{
 		$this->reflector = $reflector;
 		$this->name = $info['name'];
 		$this->view = !empty($info['view']);
 	}
-
 
 
 	/**
@@ -183,7 +171,6 @@ class DibiTableInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return bool
 	 */
@@ -191,7 +178,6 @@ class DibiTableInfo extends DibiObject
 	{
 		return $this->view;
 	}
-
 
 
 	/**
@@ -202,7 +188,6 @@ class DibiTableInfo extends DibiObject
 		$this->initColumns();
 		return array_values($this->columns);
 	}
-
 
 
 	/**
@@ -217,7 +202,6 @@ class DibiTableInfo extends DibiObject
 		}
 		return $res;
 	}
-
 
 
 	/**
@@ -237,7 +221,6 @@ class DibiTableInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @param  string
 	 * @return bool
@@ -247,7 +230,6 @@ class DibiTableInfo extends DibiObject
 		$this->initColumns();
 		return isset($this->columns[strtolower($name)]);
 	}
-
 
 
 	/**
@@ -260,7 +242,6 @@ class DibiTableInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return array of DibiIndexInfo
 	 */
@@ -271,7 +252,6 @@ class DibiTableInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return DibiIndexInfo
 	 */
@@ -280,7 +260,6 @@ class DibiTableInfo extends DibiObject
 		$this->initIndexes();
 		return $this->primaryKey;
 	}
-
 
 
 	/**
@@ -295,7 +274,6 @@ class DibiTableInfo extends DibiObject
 			}
 		}
 	}
-
 
 
 	/**
@@ -319,7 +297,6 @@ class DibiTableInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return void
 	 */
@@ -329,8 +306,6 @@ class DibiTableInfo extends DibiObject
 	}
 
 }
-
-
 
 
 /**
@@ -354,12 +329,10 @@ class DibiResultInfo extends DibiObject
 	private $names;
 
 
-
 	public function __construct(IDibiResultDriver $driver)
 	{
 		$this->driver = $driver;
 	}
-
 
 
 	/**
@@ -370,7 +343,6 @@ class DibiResultInfo extends DibiObject
 		$this->initColumns();
 		return array_values($this->columns);
 	}
-
 
 
 	/**
@@ -386,7 +358,6 @@ class DibiResultInfo extends DibiObject
 		}
 		return $res;
 	}
-
 
 
 	/**
@@ -406,7 +377,6 @@ class DibiResultInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @param  string
 	 * @return bool
@@ -416,7 +386,6 @@ class DibiResultInfo extends DibiObject
 		$this->initColumns();
 		return isset($this->names[strtolower($name)]);
 	}
-
 
 
 	/**
@@ -434,8 +403,6 @@ class DibiResultInfo extends DibiObject
 	}
 
 }
-
-
 
 
 /**
@@ -467,13 +434,11 @@ class DibiColumnInfo extends DibiObject
 	private $info;
 
 
-
 	public function __construct(IDibiReflector $reflector = NULL, array $info)
 	{
 		$this->reflector = $reflector;
 		$this->info = $info;
 	}
-
 
 
 	/**
@@ -485,7 +450,6 @@ class DibiColumnInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -495,7 +459,6 @@ class DibiColumnInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return bool
 	 */
@@ -503,7 +466,6 @@ class DibiColumnInfo extends DibiObject
 	{
 		return !empty($this->info['table']);
 	}
-
 
 
 	/**
@@ -518,7 +480,6 @@ class DibiColumnInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -526,7 +487,6 @@ class DibiColumnInfo extends DibiObject
 	{
 		return isset($this->info['table']) ? $this->info['table'] : NULL;
 	}
-
 
 
 	/**
@@ -538,7 +498,6 @@ class DibiColumnInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return mixed
 	 */
@@ -546,7 +505,6 @@ class DibiColumnInfo extends DibiObject
 	{
 		return $this->info['nativetype'];
 	}
-
 
 
 	/**
@@ -558,7 +516,6 @@ class DibiColumnInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return bool
 	 */
@@ -566,7 +523,6 @@ class DibiColumnInfo extends DibiObject
 	{
 		return isset($this->info['unsigned']) ? (bool) $this->info['unsigned'] : NULL;
 	}
-
 
 
 	/**
@@ -578,7 +534,6 @@ class DibiColumnInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return bool
 	 */
@@ -586,7 +541,6 @@ class DibiColumnInfo extends DibiObject
 	{
 		return isset($this->info['autoincrement']) ? (bool) $this->info['autoincrement'] : NULL;
 	}
-
 
 
 	/**
@@ -598,7 +552,6 @@ class DibiColumnInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @param  string
 	 * @return mixed
@@ -607,7 +560,6 @@ class DibiColumnInfo extends DibiObject
 	{
 		return isset($this->info['vendor'][$key]) ? $this->info['vendor'][$key] : NULL;
 	}
-
 
 
 	/**
@@ -639,7 +591,6 @@ class DibiColumnInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @internal
 	 */
@@ -652,8 +603,6 @@ class DibiColumnInfo extends DibiObject
 	}
 
 }
-
-
 
 
 /**
@@ -675,13 +624,11 @@ class DibiForeignKeyInfo extends DibiObject
 	private $references;
 
 
-
 	public function __construct($name, array $references)
 	{
 		$this->name = $name;
 		$this->references = $references;
 	}
-
 
 
 	/**
@@ -693,7 +640,6 @@ class DibiForeignKeyInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return array
 	 */
@@ -703,8 +649,6 @@ class DibiForeignKeyInfo extends DibiObject
 	}
 
 }
-
-
 
 
 /**
@@ -730,7 +674,6 @@ class DibiIndexInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return string
 	 */
@@ -738,7 +681,6 @@ class DibiIndexInfo extends DibiObject
 	{
 		return $this->info['name'];
 	}
-
 
 
 	/**
@@ -750,7 +692,6 @@ class DibiIndexInfo extends DibiObject
 	}
 
 
-
 	/**
 	 * @return bool
 	 */
@@ -758,7 +699,6 @@ class DibiIndexInfo extends DibiObject
 	{
 		return !empty($this->info['unique']);
 	}
-
 
 
 	/**

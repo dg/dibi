@@ -14,8 +14,6 @@ dibi::connect(array(
 ));
 
 
-
-
 // create new substitution :blog:  ==>  wp_
 dibi::getSubstitutes()->blog = 'wp_';
 
@@ -23,17 +21,11 @@ dibi::test("SELECT * FROM [:blog:items]");
 // -> SELECT * FROM [wp_items]
 
 
-
-
-
 // create new substitution :: (empty)  ==>  my_
 dibi::getSubstitutes()->{''} = 'my_';
 
 dibi::test("UPDATE ::table SET [text]='Hello World'");
 // -> UPDATE my_table SET [text]='Hello World'
-
-
-
 
 
 // create substitutions using fallback callback
