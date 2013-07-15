@@ -538,7 +538,7 @@ class DibiResult extends DibiObject implements IDataSource
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
 
 			} elseif ($type === dibi::DATE || $type === dibi::DATETIME) {
-				if ((int) $value === 0) { // '', NULL, FALSE, '0000-00-00', ...
+				if ((int) $value === 0 && substr((string) $value, 0, 3) !== '00:') { // '', NULL, FALSE, '0000-00-00', ...
 
 				} elseif (empty($this->formats[$type])) { // return DateTime object (default)
 					$row[$key] = new DibiDateTime(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
