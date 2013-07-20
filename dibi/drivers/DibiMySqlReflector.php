@@ -115,10 +115,40 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 	 * Returns metadata for all foreign keys in a table.
 	 * @param  string
 	 * @return array
+	 * @throws DibiNotSupportedException
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new DibiNotImplementedException;
+		$data = $this->driver->query("SELECT `ENGINE` FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}")->fetch(TRUE);
+		if ($data['ENGINE'] !== 'InnoDB') {
+			throw new DibiNotSupportedException("Foreign keys are not supported in {$data['ENGINE']} tables.");
+		}
+
+		$res = $this->driver->query("
+			SELECT rc.CONSTRAINT_NAME, rc.UPDATE_RULE, rc.DELETE_RULE, kcu.REFERENCED_TABLE_NAME,
+				GROUP_CONCAT(kcu.REFERENCED_COLUMN_NAME ORDER BY kcu.ORDINAL_POSITION) AS REFERENCED_COLUMNS,
+				GROUP_CONCAT(kcu.COLUMN_NAME ORDER BY kcu.ORDINAL_POSITION) AS COLUMNS
+			FROM information_schema.REFERENTIAL_CONSTRAINTS rc
+			INNER JOIN information_schema.KEY_COLUMN_USAGE kcu ON
+				kcu.CONSTRAINT_NAME = rc.CONSTRAINT_NAME
+				AND kcu.CONSTRAINT_SCHEMA = rc.CONSTRAINT_SCHEMA
+			WHERE rc.CONSTRAINT_SCHEMA = DATABASE()
+				AND rc.TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}
+			GROUP BY rc.CONSTRAINT_NAME
+		");
+
+		$foreignKeys = array();
+		while ($row = $res->fetch(TRUE)) {
+			$keyName = $row['CONSTRAINT_NAME'];
+
+			$foreignKeys[$keyName]['name'] = $keyName;
+			$foreignKeys[$keyName]['local'] = explode(",", $row['COLUMNS']);
+			$foreignKeys[$keyName]['table'] = $row['REFERENCED_TABLE_NAME'];
+			$foreignKeys[$keyName]['foreign'] = explode(",", $row['REFERENCED_COLUMNS']);
+			$foreignKeys[$keyName]['onDelete'] = $row['DELETE_RULE'];
+			$foreignKeys[$keyName]['onUpdate'] = $row['UPDATE_RULE'];
+		}
+		return array_values($foreignKeys);
 	}
 
 }
