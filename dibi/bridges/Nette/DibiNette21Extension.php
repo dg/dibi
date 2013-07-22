@@ -45,8 +45,8 @@ class DibiNette21Extension extends Nette\DI\CompilerExtension
 		if ($useProfiler) {
 			$panel = $container->addDefinition($this->prefix('panel'))
 				->setClass('DibiNettePanel')
-				->addSetup('Nette\Diagnostics\Debugger::getBar()->addPanel(?)', array('@self'))
-				->addSetup('Nette\Diagnostics\Debugger::getBlueScreen()->addPanel(?)', array('DibiNettePanel::renderException'));
+				->addSetup('Nette\Diagnostics\Debugger::$bar->addPanel(?)', array('@self'))
+				->addSetup('Nette\Diagnostics\Debugger::$screen->addPanel(?)', array('DibiNettePanel::renderException'));
 
 			$connection->addSetup('$service->onEvent[] = ?', array(array($panel, 'logEvent')));
 		}
