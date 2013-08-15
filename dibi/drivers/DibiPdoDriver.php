@@ -301,7 +301,30 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	 */
 	public function escapeLike($value, $pos)
 	{
-		throw new DibiNotImplementedException;
+		switch ($this->driverName) {
+			case 'mysql':
+				$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
+				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+
+			case 'pgsql':
+				$value = strtr($value, array( '%' => '\\\\%', '_' => '\\\\_'));
+				$value = pg_escape_string($value);
+				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+
+			case 'sqlite':
+			case 'sqlite2':
+				$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
+				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
+
+			case 'odbc':
+			case 'oci': // TODO: not tested
+			case 'mssql':
+				$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+
+			default:
+				throw new DibiNotImplementedException;
+		}
 	}
 
 
