@@ -27,7 +27,7 @@ class DibiNette21Extension extends Nette\DI\CompilerExtension
 
 		$useProfiler = isset($config['profiler'])
 			? $config['profiler']
-			: !$container->parameters['productionMode'];
+			: $container->parameters['debugMode'];
 
 		unset($config['profiler']);
 
