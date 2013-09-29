@@ -475,7 +475,7 @@ class DibiResult extends DibiObject implements IDataSource
 		}
 
 		do {
-			$data[ $row[$key] ] = $row[$value];
+			$data[ (string) $row[$key] ] = $row[$value];
 		} while ($row = $this->fetch());
 
 		return $data;
