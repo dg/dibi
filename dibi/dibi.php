@@ -480,6 +480,7 @@ class dibi
 
 	/**
 	 * @return DibiDateTime
+	 * @deprecated
 	 */
 	public static function datetime($time = NULL)
 	{

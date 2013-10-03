@@ -527,13 +527,7 @@ class DibiResult extends DibiObject implements IDataSource
 				if ((int) $value === 0 && substr((string) $value, 0, 3) !== '00:') { // '', NULL, FALSE, '0000-00-00', ...
 
 				} elseif (empty($this->formats[$type])) { // return DateTime object (default)
-					$row[$key] = new DibiDateTime(is_numeric($value) ? date('Y-m-d H:i:s', $value) : $value);
-
-				} elseif ($this->formats[$type] === 'U') { // return timestamp
-					$row[$key] = is_numeric($value) ? (int) $value : strtotime($value);
-
-				} elseif (is_numeric($value)) { // formatted date
-					$row[$key] = date($this->formats[$type], $value);
+					$row[$key] = new DibiDateTime($value);
 
 				} else {
 					$value = new DibiDateTime($value);
