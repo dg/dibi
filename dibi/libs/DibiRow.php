@@ -46,7 +46,7 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 			if ((int) $time === 0) { // '', NULL, FALSE, '0000-00-00', ...
 				return NULL;
 			}
-			$time = new DibiDateTime(is_numeric($time) ? date('Y-m-d H:i:s', $time) : $time);
+			$time = new DibiDateTime($time);
 		}
 		return $format === NULL ? $time : $time->format($format);
 	}
@@ -61,9 +61,10 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	{
 		trigger_error(__METHOD__ . '() is deprecated.', E_USER_WARNING);
 		$time = $this[$key];
-		return (int) $time === 0 // '', NULL, FALSE, '0000-00-00', ...
-			? NULL
-			: (is_numeric($time) ? (int) $time : strtotime($time));
+		if ((int) $time === 0) // '', NULL, FALSE, '0000-00-00', ...
+			return NULL;
+		$time = new DibiDateTime($time);
+		return $time->format('U');
 	}
 
 

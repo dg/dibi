@@ -22,7 +22,7 @@ class DibiDateTime extends DateTime
 	public function __construct($time = 'now', DateTimeZone $timezone = NULL)
 	{
 		if (is_numeric($time)) {
-			$time = date('Y-m-d H:i:s', $time);
+			$time = "@".$time;
 		}
 		if ($timezone === NULL) {
 			parent::__construct($time);
@@ -68,7 +68,7 @@ class DibiDateTime extends DateTime
 
 	public function setTimestamp($timestamp)
 	{
-		return $this->__construct(date('Y-m-d H:i:s', $timestamp), new DateTimeZone($this->getTimezone()->getName())); // getTimeZone() crashes in PHP 5.2.6
+		return $this->__construct("@".$timestamp, new DateTimeZone($this->getTimezone()->getName())); // getTimeZone() crashes in PHP 5.2.6
 	}
 
 
