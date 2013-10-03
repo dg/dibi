@@ -245,10 +245,11 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 				return $value ? 1 : 0;
 
 			case dibi::DATE:
-				return $value instanceof DateTime ? $value->format("#m/d/Y#") : date("#m/d/Y#", $value);
-
 			case dibi::DATETIME:
-				return $value instanceof DateTime ? $value->format("#m/d/Y H:i:s#") : date("#m/d/Y H:i:s#", $value);
+				if (!$value instanceof DateTime) {
+					$value = new DibiDateTime($value);
+				}
+				return $value->format($type === dibi::DATETIME ? "#m/d/Y H:i:s#" : "#m/d/Y#");
 
 			default:
 				throw new InvalidArgumentException('Unsupported type.');

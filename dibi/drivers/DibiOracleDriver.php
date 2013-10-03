@@ -239,10 +239,11 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 				return $value ? 1 : 0;
 
 			case dibi::DATE:
-				return $value instanceof DateTime ? $value->format($this->fmtDate) : date($this->fmtDate, $value);
-
 			case dibi::DATETIME:
-				return $value instanceof DateTime ? $value->format($this->fmtDateTime) : date($this->fmtDateTime, $value);
+				if (!$value instanceof DateTime) {
+					$value = new DibiDateTime($value);
+				}
+				return $value->format($type === dibi::DATETIME ? $this->fmtDateTime : $this->fmtDate);
 
 			default:
 				throw new InvalidArgumentException('Unsupported type.');
