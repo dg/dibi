@@ -13,6 +13,9 @@
 	"require-dev": {
 		"nette/tester": "@dev"
 	},
+	"replace": {
+		"dg/dibi": "self.version"
+	},
 	"autoload": {
 		"classmap": ["dibi/"]
 	}
