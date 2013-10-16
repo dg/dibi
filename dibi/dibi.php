@@ -479,11 +479,11 @@ class dibi
 
 
 	/**
-	 * @return DibiDateTime
+	 * @deprecated
 	 */
 	public static function datetime($time = NULL)
 	{
-		trigger_error(__METHOD__ . '() is deprecated; create DibiDateTime object instead.', E_USER_WARNING);
+		trigger_error(__METHOD__ . '() is deprecated; create DateTime object instead.', E_USER_WARNING);
 		return new DibiDateTime($time);
 	}
 
@@ -493,7 +493,7 @@ class dibi
 	 */
 	public static function date($date = NULL)
 	{
-		trigger_error(__METHOD__ . '() is deprecated; create DibiDateTime object instead.', E_USER_WARNING);
+		trigger_error(__METHOD__ . '() is deprecated; create DateTime object instead.', E_USER_WARNING);
 		return new DibiDateTime($date);
 	}
 
