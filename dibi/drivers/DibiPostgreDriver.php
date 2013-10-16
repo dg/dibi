@@ -320,7 +320,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			$value = pg_escape_string($this->connection, $value);
 		} else {
 			$value = pg_escape_string($value);
-	}
+		}
 
 		$value = strtr($value, array( '%' => '\\\\%', '_' => '\\\\_'));
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
