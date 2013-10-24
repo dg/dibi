@@ -245,7 +245,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 * Fetches all records from table.
 	 * @param  int  offset
 	 * @param  int  limit
-	 * @return array of DibiRow
+	 * @return DibiRow[]
 	 */
 	final public function fetchAll($offset = NULL, $limit = NULL)
 	{

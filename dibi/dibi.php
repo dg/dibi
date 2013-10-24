@@ -267,7 +267,7 @@ class dibi
 	/**
 	 * Executes SQL query and fetch results - Monostate for DibiConnection::query() & fetchAll().
 	 * @param  array|mixed    one or more arguments
-	 * @return array of DibiRow
+	 * @return DibiRow[]
 	 * @throws DibiException
 	 */
 	public static function fetchAll($args)

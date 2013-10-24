@@ -590,7 +590,7 @@ class DibiConnection extends DibiObject
 	/**
 	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
 	 * @param  array|mixed    one or more arguments
-	 * @return array of DibiRow
+	 * @return DibiRow[]
 	 * @throws DibiException
 	 */
 	public function fetchAll($args)
