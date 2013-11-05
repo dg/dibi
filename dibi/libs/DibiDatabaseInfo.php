@@ -49,7 +49,7 @@ class DibiDatabaseInfo extends DibiObject
 
 
 	/**
-	 * @return array of DibiTableInfo
+	 * @return DibiTableInfo[]
 	 */
 	public function getTables()
 	{
@@ -59,7 +59,7 @@ class DibiDatabaseInfo extends DibiObject
 
 
 	/**
-	 * @return array of string
+	 * @return string[]
 	 */
 	public function getTableNames()
 	{
@@ -181,7 +181,7 @@ class DibiTableInfo extends DibiObject
 
 
 	/**
-	 * @return array of DibiColumnInfo
+	 * @return DibiColumnInfo[]
 	 */
 	public function getColumns()
 	{
@@ -191,7 +191,7 @@ class DibiTableInfo extends DibiObject
 
 
 	/**
-	 * @return array of string
+	 * @return string[]
 	 */
 	public function getColumnNames()
 	{
@@ -233,7 +233,7 @@ class DibiTableInfo extends DibiObject
 
 
 	/**
-	 * @return array of DibiForeignKeyInfo
+	 * @return DibiForeignKeyInfo[]
 	 */
 	public function getForeignKeys()
 	{
@@ -243,7 +243,7 @@ class DibiTableInfo extends DibiObject
 
 
 	/**
-	 * @return array of DibiIndexInfo
+	 * @return DibiIndexInfo[]
 	 */
 	public function getIndexes()
 	{
@@ -336,7 +336,7 @@ class DibiResultInfo extends DibiObject
 
 
 	/**
-	 * @return array of DibiColumnInfo
+	 * @return DibiColumnInfo[]
 	 */
 	public function getColumns()
 	{
@@ -347,7 +347,7 @@ class DibiResultInfo extends DibiObject
 
 	/**
 	 * @param  bool
-	 * @return array of string
+	 * @return string[]
 	 */
 	public function getColumnNames($fullNames = FALSE)
 	{
