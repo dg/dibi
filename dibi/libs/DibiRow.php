@@ -43,7 +43,7 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	{
 		$time = $this[$key];
 		if (!$time instanceof DibiDateTime) {
-			if ((int) $time === 0) { // '', NULL, FALSE, '0000-00-00', ...
+			if ((int) $time === 0 && substr((string) $time, 0, 3) !== '00:') { // '', NULL, FALSE, '0000-00-00', ...
 				return NULL;
 			}
 			$time = new DibiDateTime($time);
@@ -60,11 +60,7 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	public function asTimestamp($key)
 	{
 		trigger_error(__METHOD__ . '() is deprecated.', E_USER_WARNING);
-		$time = $this[$key];
-		if ((int) $time !== 0) { // '', NULL, FALSE, '0000-00-00', ...
-			$time = new DibiDateTime($time);
-			return $time->getTimestamp();
-		}
+		return $this->asDateTime($key, 'U');
 	}
 
 
