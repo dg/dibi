@@ -22,9 +22,11 @@ class DibiDateTime extends DateTime
 	public function __construct($time = 'now', DateTimeZone $timezone = NULL)
 	{
 		if (is_numeric($time)) {
-			$time = date('Y-m-d H:i:s', $time);
-		}
-		if ($timezone === NULL) {
+			$tmp = new self('@' . $time);
+			$tmp->setTimeZone($timezone ? $timezone : new DateTimeZone(date_default_timezone_get()));
+			return $tmp;
+
+		} elseif ($timezone === NULL) {
 			parent::__construct($time);
 		} else {
 			parent::__construct($time, $timezone);
@@ -43,6 +45,28 @@ class DibiDateTime extends DateTime
 	{
 		parent::modify($modify);
 		return $this;
+	}
+
+
+	public function setTimestamp($timestamp)
+	{
+		$zone = PHP_VERSION_ID === 50206 ? new \DateTimeZone($this->getTimezone()->getName()) : $this->getTimezone();
+		$this->__construct('@' . $timestamp);
+		$this->setTimeZone($zone);
+		return $this;
+	}
+
+
+	public function getTimestamp()
+	{
+		$ts = $this->format('U');
+		return is_float($tmp = $ts * 1) ? $ts : $tmp;
+	}
+
+
+	public function __toString()
+	{
+		return $this->format('Y-m-d H:i:s');
 	}
 
 
@@ -66,24 +90,6 @@ class DibiDateTime extends DateTime
 			$this->__construct($this->fix[0]);
 		}
 		unset($this->fix);
-	}
-
-
-	public function getTimestamp()
-	{
-		return (int) $this->format('U');
-	}
-
-
-	public function setTimestamp($timestamp)
-	{
-		return $this->__construct(date('Y-m-d H:i:s', $timestamp), new DateTimeZone($this->getTimezone()->getName())); // getTimeZone() crashes in PHP 5.2.6
-	}
-
-
-	public function __toString()
-	{
-		return $this->format('Y-m-d H:i:s');
 	}
 
 }
