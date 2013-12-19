@@ -4,10 +4,11 @@
 
 <?php
 
-require dirname(__FILE__) . '/Nette/Debugger.php';
-require dirname(__FILE__) . '/../dibi/dibi.php';
+require __DIR__ . '/Tracy/tracy.phar';
+require __DIR__ . '/../dibi/dibi.php';
 
-ndebug();
+Tracy\Debugger::enable();
+
 
 dibi::connect(array(
 	'driver'   => 'sqlite3',
@@ -27,4 +28,4 @@ function DibiResult_prototype_fetchShuffle(DibiResult $obj)
 // fetch complete result set shuffled
 $res = dibi::query('SELECT * FROM [customers]');
 $all = $res->fetchShuffle();
-dump($all);
+Tracy\Dumper::dump($all);

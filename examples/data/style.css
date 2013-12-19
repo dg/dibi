@@ -41,24 +41,24 @@ table.dump th {
 }
 
 /* dump() */
-pre.nette-dump, pre.dump {
+pre.tracy-dump, pre.dump {
 	color: #444; background: white;
 	border: 1px solid silver;
 	padding: 1em;
 	margin: 1em 0;
 }
-pre.nette-dump .php-array, pre.nette-dump .php-object {
+pre.tracy-dump .php-array, pre.tracy-dump .php-object {
 	color: #C22;
 }
-pre.nette-dump .php-string {
+pre.tracy-dump .php-string {
 	color: #080;
 }
-pre.nette-dump .php-int, pre.nette-dump .php-float {
+pre.tracy-dump .php-int, pre.tracy-dump .php-float {
 	color: #37D;
 }
-pre.nette-dump .php-null, pre.nette-dump .php-bool {
+pre.tracy-dump .php-null, pre.tracy-dump .php-bool {
 	color: black;
 }
-pre.nette-dump .php-visibility {
+pre.tracy-dump .php-visibility {
 	font-size: 85%; color: #999;
 }

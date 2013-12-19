@@ -1,3 +1,6 @@
+Tracy - PHP debugger, see http://tracy.nette.org
+
+
 Licenses
 ========
 

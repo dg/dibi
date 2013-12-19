@@ -1,21 +1,20 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Nette Debugger & SQL Exceptions | dibi</h1>
+<h1>Tracy & SQL Exceptions | dibi</h1>
 
-<p>Dibi can display and log exceptions via Nette Debugger, part of Nette Framework.</p>
+<p>Dibi can display and log exceptions via Tracy, part of Nette Framework.</p>
 
 <ul>
-	<li>Nette Framework: http://nette.org
+	<li>Tracy Debugger: http://tracy.nette.org
 </ul>
 
 <?php
 
-require dirname(__FILE__) . '/Nette/Debugger.php';
-require dirname(__FILE__) . '/../dibi/dibi.php';
+require __DIR__ . '/Tracy/tracy.phar';
+require __DIR__ . '/../dibi/dibi.php';
 
 
-// enable Nette Debugger
-ndebug();
+Tracy\Debugger::enable();
 
 
 dibi::connect(array(
