@@ -22,10 +22,8 @@ class DibiDateTime extends DateTime
 	public function __construct($time = 'now', DateTimeZone $timezone = NULL)
 	{
 		if (is_numeric($time)) {
-			$tmp = new self('@' . $time);
-			$tmp->setTimeZone($timezone ? $timezone : new DateTimeZone(date_default_timezone_get()));
-			return $tmp;
-
+			parent::__construct('@' . $time);
+			$this->setTimeZone($timezone ? $timezone : new DateTimeZone(date_default_timezone_get()));
 		} elseif ($timezone === NULL) {
 			parent::__construct($time);
 		} else {
