@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 
@@ -54,7 +50,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	private $buffered;
 
 
-
 	/**
 	 * @throws DibiNotSupportedException
 	 */
@@ -66,13 +61,12 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Connects to a database.
 	 * @return void
 	 * @throws DibiException
 	 */
-	public function connect(array &$config)
+	public function connect(array & $config)
 	{
 		mysqli_report(MYSQLI_REPORT_OFF);
 		if (isset($config['resource'])) {
@@ -138,7 +132,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Disconnects from a database.
 	 * @return void
@@ -147,7 +140,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		mysqli_close($this->connection);
 	}
-
 
 
 	/**
@@ -169,7 +161,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Retrieves information about the most recently executed query.
 	 * @return array
@@ -178,14 +169,15 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		$res = array();
 		preg_match_all('#(.+?): +(\d+) *#', mysqli_info($this->connection), $matches, PREG_SET_ORDER);
-		if (preg_last_error()) throw new DibiPcreException;
+		if (preg_last_error()) {
+			throw new DibiPcreException;
+		}
 
 		foreach ($matches as $m) {
 			$res[$m[1]] = (int) $m[2];
 		}
 		return $res;
 	}
-
 
 
 	/**
@@ -198,7 +190,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @return int|FALSE  int on success or FALSE on failure
@@ -207,7 +198,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		return mysqli_insert_id($this->connection);
 	}
-
 
 
 	/**
@@ -222,7 +212,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Commits statements in a transaction.
 	 * @param  string  optional savepoint name
@@ -233,7 +222,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		$this->query($savepoint ? "RELEASE SAVEPOINT $savepoint" : 'COMMIT');
 	}
-
 
 
 	/**
@@ -248,7 +236,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Returns the connection resource.
 	 * @return mysqli
@@ -259,7 +246,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Returns the connection reflector.
 	 * @return IDibiReflector
@@ -268,7 +254,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		return new DibiMySqlReflector($this);
 	}
-
 
 
 	/**
@@ -284,9 +269,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/********************* SQL ****************d*g**/
-
 
 
 	/**
@@ -299,29 +282,28 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function escape($value, $type)
 	{
 		switch ($type) {
-		case dibi::TEXT:
-			return "'" . mysqli_real_escape_string($this->connection, $value) . "'";
+			case dibi::TEXT:
+				return "'" . mysqli_real_escape_string($this->connection, $value) . "'";
 
-		case dibi::BINARY:
-			return "_binary'" . mysqli_real_escape_string($this->connection, $value) . "'";
+			case dibi::BINARY:
+				return "_binary'" . mysqli_real_escape_string($this->connection, $value) . "'";
 
-		case dibi::IDENTIFIER:
-			return '`' . str_replace('`', '``', $value) . '`';
+			case dibi::IDENTIFIER:
+				return '`' . str_replace('`', '``', $value) . '`';
 
-		case dibi::BOOL:
-			return $value ? 1 : 0;
+			case dibi::BOOL:
+				return $value ? 1 : 0;
 
-		case dibi::DATE:
-			return $value instanceof DateTime ? $value->format("'Y-m-d'") : date("'Y-m-d'", $value);
+			case dibi::DATE:
+				return $value instanceof DateTime ? $value->format("'Y-m-d'") : date("'Y-m-d'", $value);
 
-		case dibi::DATETIME:
-			return $value instanceof DateTime ? $value->format("'Y-m-d H:i:s'") : date("'Y-m-d H:i:s'", $value);
+			case dibi::DATETIME:
+				return $value instanceof DateTime ? $value->format("'Y-m-d H:i:s'") : date("'Y-m-d H:i:s'", $value);
 
-		default:
-			throw new InvalidArgumentException('Unsupported type.');
+			default:
+				throw new InvalidArgumentException('Unsupported type.');
 		}
 	}
-
 
 
 	/**
@@ -335,7 +317,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
-
 
 
 	/**
@@ -354,27 +335,21 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string &$sql  The SQL query that will be modified.
-	 * @param  int $limit
-	 * @param  int $offset
 	 * @return void
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(& $sql, $limit, $offset)
 	{
-		if ($limit < 0 && $offset < 1) return;
-
-		// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-		$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
-			. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+		if ($limit >= 0 || $offset > 0) {
+			// see http://dev.mysql.com/doc/refman/5.0/en/select.html
+			$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
+				. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+		}
 	}
 
 
-
 	/********************* result set ****************d*g**/
-
 
 
 	/**
@@ -385,7 +360,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		$this->autoFree && $this->getResultResource() && @$this->free();
 	}
-
 
 
 	/**
@@ -401,7 +375,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
@@ -411,7 +384,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		return mysqli_fetch_array($this->resultSet, $assoc ? MYSQLI_ASSOC : MYSQLI_NUM);
 	}
-
 
 
 	/**
@@ -429,7 +401,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
-
 	/**
 	 * Frees the resources allocated for this result set.
 	 * @return void
@@ -439,7 +410,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		mysqli_free_result($this->resultSet);
 		$this->resultSet = NULL;
 	}
-
 
 
 	/**
@@ -473,7 +443,6 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		}
 		return $columns;
 	}
-
 
 
 	/**

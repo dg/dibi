@@ -31,7 +31,6 @@ dibi::connect(array(
 dibi::query('SELECT * FROM customers WHERE customer_id < ?', 38);
 
 
-
 dibi::connect(array(
 	'driver'   => 'sqlite',
 	'database' => 'data/sample.sdb',

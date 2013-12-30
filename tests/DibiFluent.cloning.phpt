@@ -9,7 +9,6 @@
  */
 
 
-
 require dirname(__FILE__) . '/initialize.php';
 
 
@@ -27,14 +26,12 @@ $fluent->test();
 $dolly->test();
 
 
-
 $fluent = dibi::select('id')->from('table')->where('id = %i',1);
 $dolly = clone $fluent;
 $dolly->where('cd = %i',5);
 
 $fluent->test();
 $dolly->test();
-
 
 
 $fluent = dibi::select("*")->from("table");

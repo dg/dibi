@@ -14,7 +14,6 @@ dibi::connect(array(
 ));
 
 
-
 // retrieve database reflection
 $database = dibi::getDatabaseInfo();
 
@@ -24,7 +23,6 @@ foreach ($database->getTables() as $table) {
 	echo '<li>', ($table->view ? 'view' : 'table') . " $table->name</li>\n";
 }
 echo "</ul>\n";
-
 
 
 // table reflection
@@ -38,7 +36,6 @@ foreach ($table->getColumns() as $column) {
 	echo "<li>{$column->name} <i>{$column->nativeType}</i> <code>{$column->default}</code></li>\n";
 }
 echo "</ul>\n";
-
 
 
 echo "Indexes";

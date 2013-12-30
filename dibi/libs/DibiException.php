@@ -2,13 +2,8 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
-
 
 
 /**
@@ -36,7 +31,6 @@ class DibiException extends Exception
 	}
 
 
-
 	/**
 	 * @return string  The SQL passed to the constructor
 	 */
@@ -44,7 +38,6 @@ class DibiException extends Exception
 	{
 		return $this->sql;
 	}
-
 
 
 	/**
@@ -56,8 +49,6 @@ class DibiException extends Exception
 	}
 
 }
-
-
 
 
 /**
@@ -72,10 +63,8 @@ class DibiDriverException extends DibiException
 	/********************* error catching ****************d*g**/
 
 
-
 	/** @var string */
 	private static $errorMsg;
-
 
 
 	/**
@@ -87,7 +76,6 @@ class DibiDriverException extends DibiException
 		set_error_handler(array(__CLASS__, '_errorHandler'), E_ALL);
 		self::$errorMsg = NULL;
 	}
-
 
 
 	/**
@@ -102,7 +90,6 @@ class DibiDriverException extends DibiException
 		self::$errorMsg = NULL;
 		return $message !== NULL;
 	}
-
 
 
 	/**
@@ -122,8 +109,6 @@ class DibiDriverException extends DibiException
 	}
 
 }
-
-
 
 
 /**
@@ -149,13 +134,11 @@ class DibiPcreException extends Exception {
 }
 
 
-
 /**
  * @package    dibi
  */
 class DibiNotImplementedException extends DibiException
 {}
-
 
 
 /**

@@ -5,9 +5,6 @@
  *
  * Copyright (c) 2005, 2010 David Grudl (http://davidgrudl.com)
  *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
- *
  * @package    dibi\drivers
  */
 
@@ -25,12 +22,10 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 	private $driver;
 
 
-
 	public function __construct(IDibiDriver $driver)
 	{
 		$this->driver = $driver;
 	}
-
 
 
 	/**
@@ -52,7 +47,6 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 		}
 		return $tables;
 	}
-
 
 
 	/**
@@ -85,7 +79,6 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 
 		return $count;
 	}
-
 
 
 	/**
@@ -138,7 +131,6 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 	}
 
 
-
 	/**
 	 * Returns metadata for all indexes in a table.
 	 * @param  string
@@ -178,7 +170,6 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 
 		return array_values($indexes);
 	}
-
 
 
 	/**

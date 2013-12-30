@@ -2,13 +2,8 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
-
 
 
 /**
@@ -29,7 +24,6 @@ abstract class DibiHashMapBase
 	}
 
 
-
 	public function setCallback($callback)
 	{
 		if (!is_callable($callback)) {
@@ -40,14 +34,12 @@ abstract class DibiHashMapBase
 	}
 
 
-
 	public function getCallback()
 	{
 		return $this->callback;
 	}
 
 }
-
 
 
 /**
@@ -66,7 +58,6 @@ final class DibiHashMap extends DibiHashMapBase
 		}
 		$this->$nm = $val;
 	}
-
 
 
 	public function __get($nm)

@@ -15,7 +15,6 @@ dibi::connect(array(
 ));
 
 
-
 // using the "prototype" to add custom method to class DibiResult
 function DibiResult_prototype_fetchShuffle(DibiResult $obj)
 {

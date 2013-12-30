@@ -2,13 +2,8 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
-
 
 
 /**
@@ -38,7 +33,6 @@ class DibiFirePhpLogger extends DibiObject
 	private static $fireTable = array(array('Time', 'SQL Statement', 'Rows', 'Connection'));
 
 
-
 	/**
 	 * @return bool
 	 */
@@ -48,12 +42,10 @@ class DibiFirePhpLogger extends DibiObject
 	}
 
 
-
 	public function __construct($filter = NULL)
 	{
 		$this->filter = $filter ? (int) $filter : DibiEvent::QUERY;
 	}
-
 
 
 	/**

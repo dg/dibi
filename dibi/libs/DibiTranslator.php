@@ -2,13 +2,8 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
-
 
 
 /**
@@ -53,12 +48,10 @@ final class DibiTranslator extends DibiObject
 	private $identifiers;
 
 
-
 	public function __construct(DibiConnection $connection)
 	{
 		$this->connection = $connection;
 	}
-
 
 
 	/**
@@ -94,8 +87,7 @@ final class DibiTranslator extends DibiObject
 
 		// iterate
 		$sql = array();
-		while ($cursor < count($this->args))
-		{
+		while ($cursor < count($this->args)) {
 			$arg = $this->args[$cursor];
 			$cursor++;
 
@@ -126,7 +118,9 @@ final class DibiTranslator extends DibiObject
 							array($this, 'cb'),
 							substr($arg, $toSkip)
 					);
-					if (preg_last_error()) throw new DibiPcreException;
+					if (preg_last_error()) {
+						throw new DibiPcreException;
+					}
 				}
 				continue;
 			}
@@ -148,7 +142,9 @@ final class DibiTranslator extends DibiObject
 						$commandIns = $commandIns === 'INSERT' || $commandIns === 'REPLAC';
 						$sql[] = $this->formatValue($arg, $commandIns ? 'v' : 'a');
 					} else {
-						if ($lastArr === $cursor - 1) $sql[] = ',';
+						if ($lastArr === $cursor - 1) {
+							$sql[] = ',';
+						}
 						$sql[] = $this->formatValue($arg, $commandIns ? 'l' : 'a');
 					}
 					$lastArr = $cursor;
@@ -161,7 +157,9 @@ final class DibiTranslator extends DibiObject
 		} // while
 
 
-		if ($comment) $sql[] = "*/";
+		if ($comment) {
+			$sql[] = "*/";
+		}
 
 		$sql = implode(' ', $sql);
 
@@ -176,7 +174,6 @@ final class DibiTranslator extends DibiObject
 
 		return $sql;
 	}
-
 
 
 	/**
@@ -199,131 +196,131 @@ final class DibiTranslator extends DibiObject
 		if (is_array($value)) {
 			$vx = $kx = array();
 			switch ($modifier) {
-			case 'and':
-			case 'or':  // key=val AND key IS NULL AND ...
-				if (empty($value)) {
-					return '1=1';
-				}
+				case 'and':
+				case 'or':  // key=val AND key IS NULL AND ...
+					if (empty($value)) {
+						return '1=1';
+					}
 
-				foreach ($value as $k => $v) {
-					if (is_string($k)) {
-						$pair = explode('%', $k, 2); // split into identifier & modifier
-						$k = $this->identifiers->{$pair[0]} . ' ';
-						if (!isset($pair[1])) {
-							$v = $this->formatValue($v, FALSE);
-							$vx[] = $k . ($v === 'NULL' ? 'IS ' : '= ') . $v;
+					foreach ($value as $k => $v) {
+						if (is_string($k)) {
+							$pair = explode('%', $k, 2); // split into identifier & modifier
+							$k = $this->identifiers->{$pair[0]} . ' ';
+							if (!isset($pair[1])) {
+								$v = $this->formatValue($v, FALSE);
+								$vx[] = $k . ($v === 'NULL' ? 'IS ' : '= ') . $v;
 
-						} elseif ($pair[1] === 'ex') { // TODO: this will be removed
-							$vx[] = $k . $this->formatValue($v, 'ex');
+							} elseif ($pair[1] === 'ex') { // TODO: this will be removed
+								$vx[] = $k . $this->formatValue($v, 'ex');
 
-						} else {
-							$v = $this->formatValue($v, $pair[1]);
-							if ($pair[1] === 'l' || $pair[1] === 'in')	{
-								$op = 'IN ';
-							} elseif (strpos($pair[1], 'like') !== FALSE) {
-								$op = 'LIKE ';
-							} elseif ($v === 'NULL') {
-								$op = 'IS ';
 							} else {
-								$op = '= ';
+								$v = $this->formatValue($v, $pair[1]);
+								if ($pair[1] === 'l' || $pair[1] === 'in') {
+									$op = 'IN ';
+								} elseif (strpos($pair[1], 'like') !== FALSE) {
+									$op = 'LIKE ';
+								} elseif ($v === 'NULL') {
+									$op = 'IS ';
+								} else {
+									$op = '= ';
+								}
+								$vx[] = $k . $op . $v;
 							}
-							$vx[] = $k . $op . $v;
+
+						} else {
+							$vx[] = $this->formatValue($v, 'ex');
 						}
-
-					} else {
-						$vx[] = $this->formatValue($v, 'ex');
 					}
-				}
-				return '(' . implode(') ' . strtoupper($modifier) . ' (', $vx) . ')';
+					return '(' . implode(') ' . strtoupper($modifier) . ' (', $vx) . ')';
 
-			case 'n':  // key, key, ... identifier names
-				foreach ($value as $k => $v) {
-					if (is_string($k)) {
-						$vx[] = $this->identifiers->$k . (empty($v) ? '' : ' AS ' . $this->identifiers->$v);
-					} else {
-						$pair = explode('%', $v, 2); // split into identifier & modifier
-						$vx[] = $this->identifiers->{$pair[0]};
+				case 'n':  // key, key, ... identifier names
+					foreach ($value as $k => $v) {
+						if (is_string($k)) {
+							$vx[] = $this->identifiers->$k . (empty($v) ? '' : ' AS ' . $this->identifiers->$v);
+						} else {
+							$pair = explode('%', $v, 2); // split into identifier & modifier
+							$vx[] = $this->identifiers->{$pair[0]};
+						}
 					}
-				}
-				return implode(', ', $vx);
+					return implode(', ', $vx);
 
 
-			case 'a': // key=val, key=val, ...
-				foreach ($value as $k => $v) {
-					$pair = explode('%', $k, 2); // split into identifier & modifier
-					$vx[] = $this->identifiers->{$pair[0]} . '='
-						. $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
-				}
-				return implode(', ', $vx);
+				case 'a': // key=val, key=val, ...
+					foreach ($value as $k => $v) {
+						$pair = explode('%', $k, 2); // split into identifier & modifier
+						$vx[] = $this->identifiers->{$pair[0]} . '='
+							. $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
+					}
+					return implode(', ', $vx);
 
 
-			case 'in':// replaces scalar %in modifier!
-			case 'l': // (val, val, ...)
-				foreach ($value as $k => $v) {
-					$pair = explode('%', $k, 2); // split into identifier & modifier
-					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
-				}
-				return '(' . (($vx || $modifier === 'l') ? implode(', ', $vx) : 'NULL') . ')';
+				case 'in':// replaces scalar %in modifier!
+				case 'l': // (val, val, ...)
+					foreach ($value as $k => $v) {
+						$pair = explode('%', $k, 2); // split into identifier & modifier
+						$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
+					}
+					return '(' . (($vx || $modifier === 'l') ? implode(', ', $vx) : 'NULL') . ')';
 
 
-			case 'v': // (key, key, ...) VALUES (val, val, ...)
-				foreach ($value as $k => $v) {
-					$pair = explode('%', $k, 2); // split into identifier & modifier
-					$kx[] = $this->identifiers->{$pair[0]};
-					$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
-				}
-				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
+				case 'v': // (key, key, ...) VALUES (val, val, ...)
+					foreach ($value as $k => $v) {
+						$pair = explode('%', $k, 2); // split into identifier & modifier
+						$kx[] = $this->identifiers->{$pair[0]};
+						$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
+					}
+					return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
-			case 'm': // (key, key, ...) VALUES (val, val, ...), (val, val, ...), ...
-				foreach ($value as $k => $v) {
-					if (is_array($v)) {
-						if (isset($proto)) {
-							if ($proto !== array_keys($v)) {
-								$this->hasError = TRUE;
-								return '**Multi-insert array "' . $k . '" is different.**';
+				case 'm': // (key, key, ...) VALUES (val, val, ...), (val, val, ...), ...
+					foreach ($value as $k => $v) {
+						if (is_array($v)) {
+							if (isset($proto)) {
+								if ($proto !== array_keys($v)) {
+									$this->hasError = TRUE;
+									return '**Multi-insert array "' . $k . '" is different.**';
+								}
+							} else {
+								$proto = array_keys($v);
 							}
 						} else {
-							$proto = array_keys($v);
+							$this->hasError = TRUE;
+							return '**Unexpected type ' . gettype($v) . '**';
 						}
-					} else {
-						$this->hasError = TRUE;
-						return '**Unexpected type ' . gettype($v) . '**';
+
+						$pair = explode('%', $k, 2); // split into identifier & modifier
+						$kx[] = $this->identifiers->{$pair[0]};
+						foreach ($v as $k2 => $v2) {
+							$vx[$k2][] = $this->formatValue($v2, isset($pair[1]) ? $pair[1] : (is_array($v2) ? 'ex' : FALSE));
+						}
 					}
-
-					$pair = explode('%', $k, 2); // split into identifier & modifier
-					$kx[] = $this->identifiers->{$pair[0]};
-					foreach ($v as $k2 => $v2) {
-						$vx[$k2][] = $this->formatValue($v2, isset($pair[1]) ? $pair[1] : (is_array($v2) ? 'ex' : FALSE));
+					foreach ($vx as $k => $v) {
+						$vx[$k] = '(' . implode(', ', $v) . ')';
 					}
-				}
-				foreach ($vx as $k => $v) {
-					$vx[$k] = '(' . implode(', ', $v) . ')';
-				}
-				return '(' . implode(', ', $kx) . ') VALUES ' . implode(', ', $vx);
+					return '(' . implode(', ', $kx) . ') VALUES ' . implode(', ', $vx);
 
-			case 'by': // key ASC, key DESC
-				foreach ($value as $k => $v) {
-					if (is_array($v)) {
-						$vx[] = $this->formatValue($v, 'ex');
-					} elseif (is_string($k)) {
-						$v = (is_string($v) && strncasecmp($v, 'd', 1)) || $v > 0 ? 'ASC' : 'DESC';
-						$vx[] = $this->identifiers->$k . ' ' . $v;
-					} else {
-						$vx[] = $this->identifiers->$v;
+				case 'by': // key ASC, key DESC
+					foreach ($value as $k => $v) {
+						if (is_array($v)) {
+							$vx[] = $this->formatValue($v, 'ex');
+						} elseif (is_string($k)) {
+							$v = (is_string($v) && strncasecmp($v, 'd', 1)) || $v > 0 ? 'ASC' : 'DESC';
+							$vx[] = $this->identifiers->$k . ' ' . $v;
+						} else {
+							$vx[] = $this->identifiers->$v;
+						}
 					}
-				}
-				return implode(', ', $vx);
+					return implode(', ', $vx);
 
-			case 'ex':
-			case 'sql':
-				$translator = new self($this->connection);
-				return $translator->translate($value);
+				case 'ex':
+				case 'sql':
+					$translator = new self($this->connection);
+					return $translator->translate($value);
 
-			default:  // value, value, value - all with the same modifier
-				foreach ($value as $v) {
-					$vx[] = $this->formatValue($v, $modifier);
-				}
-				return implode(', ', $vx);
+				default:  // value, value, value - all with the same modifier
+					foreach ($value as $v) {
+						$vx[] = $this->formatValue($v, $modifier);
+					}
+					return implode(', ', $vx);
 			}
 		}
 
@@ -336,94 +333,98 @@ final class DibiTranslator extends DibiObject
 			}
 
 			switch ($modifier) {
-			case 's':  // string
-			case 'bin':// binary
-			case 'b':  // boolean
-				return $value === NULL ? 'NULL' : $this->driver->escape($value, $modifier);
+				case 's':  // string
+				case 'bin':// binary
+				case 'b':  // boolean
+					return $value === NULL ? 'NULL' : $this->driver->escape($value, $modifier);
 
-			case 'sN': // string or NULL
-			case 'sn':
-				return $value == '' ? 'NULL' : $this->driver->escape($value, dibi::TEXT); // notice two equal signs
+				case 'sN': // string or NULL
+				case 'sn':
+					return $value == '' ? 'NULL' : $this->driver->escape($value, dibi::TEXT); // notice two equal signs
 
-			case 'iN': // signed int or NULL
-			case 'in': // deprecated
-				if ($value == '') $value = NULL;
-				// intentionally break omitted
-
-			case 'i':  // signed int
-			case 'u':  // unsigned int, ignored
-				// support for long numbers - keep them unchanged
-				if (is_string($value) && preg_match('#[+-]?\d++(e\d+)?\z#A', $value)) {
-					return $value;
-				} else {
-					return $value === NULL ? 'NULL' : (string) (int) ($value + 0);
-				}
-
-			case 'f':  // float
-				// support for extreme numbers - keep them unchanged
-				if (is_string($value) && is_numeric($value) && strpos($value, 'x') === FALSE) {
-					return $value; // something like -9E-005 is accepted by SQL, HEX values are not
-				} else {
-					return $value === NULL ? 'NULL' : rtrim(rtrim(number_format($value + 0, 10, '.', ''), '0'), '.');
-				}
-
-			case 'd':  // date
-			case 't':  // datetime
-				if ($value === NULL) {
-					return 'NULL';
-				} else {
-					if (is_numeric($value)) {
-						$value = (int) $value; // timestamp
-
-					} elseif (is_string($value)) {
-						$value = new DateTime($value);
+				case 'iN': // signed int or NULL
+				case 'in': // deprecated
+					if ($value == '') {
+						$value = NULL;
 					}
-					return $this->driver->escape($value, $modifier);
-				}
+					// intentionally break omitted
 
-			case 'by':
-			case 'n':  // identifier name
-				return $this->identifiers->$value;
+				case 'i':  // signed int
+				case 'u':  // unsigned int, ignored
+					// support for long numbers - keep them unchanged
+					if (is_string($value) && preg_match('#[+-]?\d++(e\d+)?\z#A', $value)) {
+						return $value;
+					} else {
+						return $value === NULL ? 'NULL' : (string) (int) ($value + 0);
+					}
 
-			case 'ex':
-			case 'sql': // preserve as dibi-SQL  (TODO: leave only %ex)
-				$value = (string) $value;
-				// speed-up - is regexp required?
-				$toSkip = strcspn($value, '`[\'":');
-				if (strlen($value) !== $toSkip) {
-					$value = substr($value, 0, $toSkip)
-					. preg_replace_callback(
-						'/(?=[`[\'":])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/s',
-						array($this, 'cb'),
-						substr($value, $toSkip)
-					);
-					if (preg_last_error()) throw new DibiPcreException;
-				}
-				return $value;
+				case 'f':  // float
+					// support for extreme numbers - keep them unchanged
+					if (is_string($value) && is_numeric($value) && strpos($value, 'x') === FALSE) {
+						return $value; // something like -9E-005 is accepted by SQL, HEX values are not
+					} else {
+						return $value === NULL ? 'NULL' : rtrim(rtrim(number_format($value + 0, 10, '.', ''), '0'), '.');
+					}
 
-			case 'SQL': // preserve as real SQL (TODO: rename to %sql)
-				return (string) $value;
+				case 'd':  // date
+				case 't':  // datetime
+					if ($value === NULL) {
+						return 'NULL';
+					} else {
+						if (is_numeric($value)) {
+							$value = (int) $value; // timestamp
 
-			case 'like~':  // LIKE string%
-				return $this->driver->escapeLike($value, 1);
+						} elseif (is_string($value)) {
+							$value = new DateTime($value);
+						}
+						return $this->driver->escape($value, $modifier);
+					}
 
-			case '~like':  // LIKE %string
-				return $this->driver->escapeLike($value, -1);
+				case 'by':
+				case 'n':  // identifier name
+					return $this->identifiers->$value;
 
-			case '~like~': // LIKE %string%
-				return $this->driver->escapeLike($value, 0);
+				case 'ex':
+				case 'sql': // preserve as dibi-SQL  (TODO: leave only %ex)
+					$value = (string) $value;
+					// speed-up - is regexp required?
+					$toSkip = strcspn($value, '`[\'":');
+					if (strlen($value) !== $toSkip) {
+						$value = substr($value, 0, $toSkip)
+						. preg_replace_callback(
+							'/(?=[`[\'":])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/s',
+							array($this, 'cb'),
+							substr($value, $toSkip)
+						);
+						if (preg_last_error()) {
+							throw new DibiPcreException;
+						}
+					}
+					return $value;
 
-			case 'and':
-			case 'or':
-			case 'a':
-			case 'l':
-			case 'v':
-				$this->hasError = TRUE;
-				return '**Unexpected type ' . gettype($value) . '**';
+				case 'SQL': // preserve as real SQL (TODO: rename to %sql)
+					return (string) $value;
 
-			default:
-				$this->hasError = TRUE;
-				return "**Unknown or invalid modifier %$modifier**";
+				case 'like~':  // LIKE string%
+					return $this->driver->escapeLike($value, 1);
+
+				case '~like':  // LIKE %string
+					return $this->driver->escapeLike($value, -1);
+
+				case '~like~': // LIKE %string%
+					return $this->driver->escapeLike($value, 0);
+
+				case 'and':
+				case 'or':
+				case 'a':
+				case 'l':
+				case 'v':
+					$this->hasError = TRUE;
+					return '**Unexpected type ' . gettype($value) . '**';
+
+				default:
+					$this->hasError = TRUE;
+					return "**Unknown or invalid modifier %$modifier**";
 			}
 		}
 
@@ -455,7 +456,6 @@ final class DibiTranslator extends DibiObject
 			return '**Unexpected ' . gettype($value) . '**';
 		}
 	}
-
 
 
 	/**
@@ -536,12 +536,16 @@ final class DibiTranslator extends DibiObject
 				return '';
 
 			} elseif ($mod === 'lmt') { // apply limit
-				if ($this->args[$cursor] !== NULL) $this->limit = (int) $this->args[$cursor];
+				if ($this->args[$cursor] !== NULL) {
+					$this->limit = (int) $this->args[$cursor];
+				}
 				$cursor++;
 				return '';
 
 			} elseif ($mod === 'ofs') { // apply offset
-				if ($this->args[$cursor] !== NULL) $this->offset = (int) $this->args[$cursor];
+				if ($this->args[$cursor] !== NULL) {
+					$this->offset = (int) $this->args[$cursor];
+				}
 				$cursor++;
 				return '';
 
@@ -551,21 +555,23 @@ final class DibiTranslator extends DibiObject
 			}
 		}
 
-		if ($this->comment) return '...';
+		if ($this->comment) {
+			return '...';
+		}
 
-		if ($matches[1])  // SQL identifiers: `ident`
+		if ($matches[1]) { // SQL identifiers: `ident`
 			return $this->identifiers->{$matches[1]};
 
-		if ($matches[2])  // SQL identifiers: [ident]
+		} elseif ($matches[2]) { // SQL identifiers: [ident]
 			return $this->identifiers->{$matches[2]};
 
-		if ($matches[3])  // SQL strings: '...'
+		} elseif ($matches[3]) { // SQL strings: '...'
 			return $this->driver->escape( str_replace("''", "'", $matches[4]), dibi::TEXT);
 
-		if ($matches[5])  // SQL strings: "..."
+		} elseif ($matches[5]) { // SQL strings: "..."
 			return $this->driver->escape( str_replace('""', '"', $matches[6]), dibi::TEXT);
 
-		if ($matches[7]) { // string quote
+		} elseif ($matches[7]) { // string quote
 			$this->hasError = TRUE;
 			return '**Alone quote**';
 		}
@@ -580,7 +586,6 @@ final class DibiTranslator extends DibiObject
 	}
 
 
-
 	/**
 	 * Apply substitutions to indentifier and delimites it.
 	 * @param  string indentifier
@@ -592,7 +597,9 @@ final class DibiTranslator extends DibiObject
 		$value = $this->connection->substitute($value);
 		$parts = explode('.', $value);
 		foreach ($parts as & $v) {
-			if ($v !== '*') $v = $this->driver->escape($v, dibi::IDENTIFIER);
+			if ($v !== '*') {
+				$v = $this->driver->escape($v, dibi::IDENTIFIER);
+			}
 		}
 		return implode('.', $parts);
 	}

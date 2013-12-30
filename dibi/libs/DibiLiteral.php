@@ -2,19 +2,15 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
-
 
 
 /**
  * SQL literal value.
  *
  * @author     David Grudl
+ * @package    dibi
  */
 class DibiLiteral extends DibiObject
 {
@@ -26,7 +22,6 @@ class DibiLiteral extends DibiObject
 	{
 		$this->value = (string) $value;
 	}
-
 
 
 	/**

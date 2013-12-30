@@ -2,13 +2,8 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
-
 
 
 /**
@@ -47,7 +42,6 @@ class DibiResultIterator implements Iterator, Countable
 	}
 
 
-
 	/**
 	 * Rewinds the iterator to the first element.
 	 * @return void
@@ -60,7 +54,6 @@ class DibiResultIterator implements Iterator, Countable
 	}
 
 
-
 	/**
 	 * Returns the key of the current element.
 	 * @return mixed
@@ -71,7 +64,6 @@ class DibiResultIterator implements Iterator, Countable
 	}
 
 
-
 	/**
 	 * Returns the current element.
 	 * @return mixed
@@ -80,7 +72,6 @@ class DibiResultIterator implements Iterator, Countable
 	{
 		return $this->row;
 	}
-
 
 
 	/**
@@ -94,7 +85,6 @@ class DibiResultIterator implements Iterator, Countable
 	}
 
 
-
 	/**
 	 * Checks if there is a current element after calls to rewind() or next().
 	 * @return bool
@@ -103,7 +93,6 @@ class DibiResultIterator implements Iterator, Countable
 	{
 		return !empty($this->row);
 	}
-
 
 
 	/**

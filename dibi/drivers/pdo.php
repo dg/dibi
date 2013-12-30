@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 
@@ -43,7 +39,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	private $driverName;
 
 
-
 	/**
 	 * @throws DibiNotSupportedException
 	 */
@@ -55,13 +50,12 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	}
 
 
-
 	/**
 	 * Connects to a database.
 	 * @return void
 	 * @throws DibiException
 	 */
-	public function connect(array &$config)
+	public function connect(array & $config)
 	{
 		$foo = & $config['dsn'];
 		$foo = & $config['options'];
@@ -85,7 +79,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	}
 
 
-
 	/**
 	 * Disconnects from a database.
 	 * @return void
@@ -94,7 +87,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	{
 		$this->connection = NULL;
 	}
-
 
 
 	/**
@@ -131,7 +123,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	}
 
 
-
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
 	 * @return int|FALSE  number of rows or FALSE on error
@@ -142,7 +133,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	}
 
 
-
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @return int|FALSE  int on success or FALSE on failure
@@ -151,7 +141,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	{
 		return $this->connection->lastInsertId();
 	}
-
 
 
 	/**
@@ -169,7 +158,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	}
 
 
-
 	/**
 	 * Commits statements in a transaction.
 	 * @param  string  optional savepoint name
@@ -183,7 +171,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 			throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
 		}
 	}
-
 
 
 	/**
@@ -201,7 +188,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	}
 
 
-
 	/**
 	 * Returns the connection resource.
 	 * @return PDO
@@ -212,7 +198,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	}
 
 
-
 	/**
 	 * Returns the connection reflector.
 	 * @return IDibiReflector
@@ -220,18 +205,17 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	public function getReflector()
 	{
 		switch ($this->driverName) {
-		case 'mysql':
-			return new DibiMySqlReflector($this);
+			case 'mysql':
+				return new DibiMySqlReflector($this);
 
-		case 'sqlite':
-		case 'sqlite2':
-			return new DibiSqliteReflector($this);
+			case 'sqlite':
+			case 'sqlite2':
+				return new DibiSqliteReflector($this);
 
-		default:
-			throw new DibiNotSupportedException;
+			default:
+				throw new DibiNotSupportedException;
 		}
 	}
-
 
 
 	/**
@@ -247,9 +231,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	}
 
 
-
 	/********************* SQL ****************d*g**/
-
 
 
 	/**
@@ -262,47 +244,46 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	public function escape($value, $type)
 	{
 		switch ($type) {
-		case dibi::TEXT:
-			return $this->connection->quote($value, PDO::PARAM_STR);
+			case dibi::TEXT:
+				return $this->connection->quote($value, PDO::PARAM_STR);
 
-		case dibi::BINARY:
-			return $this->connection->quote($value, PDO::PARAM_LOB);
+			case dibi::BINARY:
+				return $this->connection->quote($value, PDO::PARAM_LOB);
 
-		case dibi::IDENTIFIER:
-			switch ($this->driverName) {
-			case 'mysql':
-				return '`' . str_replace('`', '``', $value) . '`';
+			case dibi::IDENTIFIER:
+				switch ($this->driverName) {
+					case 'mysql':
+						return '`' . str_replace('`', '``', $value) . '`';
 
-			case 'pgsql':
-				return '"' . str_replace('"', '""', $value) . '"';
+					case 'pgsql':
+						return '"' . str_replace('"', '""', $value) . '"';
 
-			case 'sqlite':
-			case 'sqlite2':
-				return '[' . strtr($value, '[]', '  ') . ']';
+					case 'sqlite':
+					case 'sqlite2':
+						return '[' . strtr($value, '[]', '  ') . ']';
 
-			case 'odbc':
-			case 'oci': // TODO: not tested
-			case 'mssql':
-				return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
+					case 'odbc':
+					case 'oci': // TODO: not tested
+					case 'mssql':
+						return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
+
+					default:
+						return $value;
+				}
+
+			case dibi::BOOL:
+				return $this->connection->quote($value, PDO::PARAM_BOOL);
+
+			case dibi::DATE:
+				return $value instanceof DateTime ? $value->format("'Y-m-d'") : date("'Y-m-d'", $value);
+
+			case dibi::DATETIME:
+				return $value instanceof DateTime ? $value->format("'Y-m-d H:i:s'") : date("'Y-m-d H:i:s'", $value);
 
 			default:
-				return $value;
-			}
-
-		case dibi::BOOL:
-			return $this->connection->quote($value, PDO::PARAM_BOOL);
-
-		case dibi::DATE:
-			return $value instanceof DateTime ? $value->format("'Y-m-d'") : date("'Y-m-d'", $value);
-
-		case dibi::DATETIME:
-			return $value instanceof DateTime ? $value->format("'Y-m-d H:i:s'") : date("'Y-m-d H:i:s'", $value);
-
-		default:
-			throw new InvalidArgumentException('Unsupported type.');
+				throw new InvalidArgumentException('Unsupported type.');
 		}
 	}
-
 
 
 	/**
@@ -315,7 +296,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	{
 		throw new DibiNotImplementedException;
 	}
-
 
 
 	/**
@@ -334,59 +314,59 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	}
 
 
-
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string &$sql  The SQL query that will be modified.
-	 * @param  int $limit
-	 * @param  int $offset
 	 * @return void
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(& $sql, $limit, $offset)
 	{
-		if ($limit < 0 && $offset < 1) return;
+		if ($limit < 0 && $offset < 1) {
+			return;
+		}
 
 		switch ($this->driverName) {
-		case 'mysql':
-			$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
-				. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
-			break;
-
-		case 'pgsql':
-			if ($limit >= 0) $sql .= ' LIMIT ' . (int) $limit;
-			if ($offset > 0) $sql .= ' OFFSET ' . (int) $offset;
-			break;
-
-		case 'sqlite':
-		case 'sqlite2':
-			$sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
-			break;
-
-		case 'oci':
-			if ($offset > 0) {
-				$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t ' . ($limit >= 0 ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '') . ') WHERE "__rnum" > '. (int) $offset;
-			} elseif ($limit >= 0) {
-				$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
-			}
-			break;
-
-		case 'odbc':
-		case 'mssql':
-			if ($offset < 1) {
-				$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
+			case 'mysql':
+				$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
+					. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
 				break;
-			}
-			// intentionally break omitted
 
-		default:
-			throw new DibiNotSupportedException('PDO or driver does not support applying limit or offset.');
+			case 'pgsql':
+				if ($limit >= 0) {
+					$sql .= ' LIMIT ' . (int) $limit;
+				}
+				if ($offset > 0) {
+					$sql .= ' OFFSET ' . (int) $offset;
+				}
+				break;
+
+			case 'sqlite':
+			case 'sqlite2':
+				$sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+				break;
+
+			case 'oci':
+				if ($offset > 0) {
+				$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t ' . ($limit >= 0 ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '') . ') WHERE "__rnum" > '. (int) $offset;
+				} elseif ($limit >= 0) {
+					$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
+				}
+				break;
+
+			case 'odbc':
+			case 'mssql':
+				if ($offset < 1) {
+					$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
+					break;
+				}
+				// intentionally break omitted
+
+			default:
+				throw new DibiNotSupportedException('PDO or driver does not support applying limit or offset.');
 		}
 	}
 
 
-
 	/********************* result set ****************d*g**/
-
 
 
 	/**
@@ -397,7 +377,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	{
 		return $this->resultSet->rowCount();
 	}
-
 
 
 	/**
@@ -411,7 +390,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	}
 
 
-
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
@@ -423,7 +401,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	}
 
 
-
 	/**
 	 * Frees the resources allocated for this result set.
 	 * @return void
@@ -432,7 +409,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	{
 		$this->resultSet = NULL;
 	}
-
 
 
 	/**
@@ -466,7 +442,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 		}
 		return $columns;
 	}
-
 
 
 	/**

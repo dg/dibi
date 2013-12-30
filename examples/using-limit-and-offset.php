@@ -19,11 +19,9 @@ dibi::test('SELECT * FROM [products]');
 // -> SELECT * FROM [products]
 
 
-
 // with limit = 2
 dibi::test('SELECT * FROM [products] %lmt', 2);
 // -> SELECT * FROM [products] LIMIT 2
-
 
 
 // with limit = 2, offset = 1

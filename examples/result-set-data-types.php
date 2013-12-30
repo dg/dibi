@@ -34,7 +34,6 @@ dump( $res->fetch() );
 // }
 
 
-
 // using auto-detection (works well with MySQL or other strictly typed databases)
 $res = dibi::query('SELECT * FROM [customers]');
 

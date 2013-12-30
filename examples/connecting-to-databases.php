@@ -23,8 +23,6 @@ try {
 echo "</p>\n";
 
 
-
-
 // connects to SQlite using DibiConnection object
 echo '<p>Connecting to Sqlite: ';
 try {
@@ -40,8 +38,6 @@ try {
 echo "</p>\n";
 
 
-
-
 // connects to MySQL using DSN
 echo '<p>Connecting to MySQL: ';
 try {
@@ -52,8 +48,6 @@ try {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
-
-
 
 
 // connects to MySQLi using array
@@ -78,8 +72,6 @@ try {
 echo "</p>\n";
 
 
-
-
 // connects to ODBC
 echo '<p>Connecting to ODBC: ';
 try {
@@ -95,8 +87,6 @@ try {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
-
-
 
 
 // connects to PostgreSql
@@ -115,8 +105,6 @@ try {
 echo "</p>\n";
 
 
-
-
 // connects to PDO
 echo '<p>Connecting to Sqlite via PDO: ';
 try {
@@ -130,7 +118,6 @@ try {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
-
 
 
 // connects to MS SQL
@@ -150,7 +137,6 @@ try {
 echo "</p>\n";
 
 
-
 // connects to MS SQL 2005
 echo '<p>Connecting to MS SQL 2005: ';
 try {
@@ -167,7 +153,6 @@ try {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
-
 
 
 // connects to Oracle

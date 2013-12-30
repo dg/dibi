@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 
@@ -42,7 +38,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	private $row = 0;
 
 
-
 	/**
 	 * @throws DibiNotSupportedException
 	 */
@@ -54,13 +49,12 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Connects to a database.
 	 * @return void
 	 * @throws DibiException
 	 */
-	public function connect(array &$config)
+	public function connect(array & $config)
 	{
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
@@ -83,7 +77,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Disconnects from a database.
 	 * @return void
@@ -92,7 +85,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	{
 		odbc_close($this->connection);
 	}
-
 
 
 	/**
@@ -116,7 +108,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
 	 * @return int|FALSE  number of rows or FALSE on error
@@ -127,7 +118,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @return int|FALSE  int on success or FALSE on failure
@@ -136,7 +126,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	{
 		throw new DibiNotSupportedException('ODBC does not support autoincrementing.');
 	}
-
 
 
 	/**
@@ -151,7 +140,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 	}
-
 
 
 	/**
@@ -169,7 +157,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Rollback changes in a transaction.
 	 * @param  string  optional savepoint name
@@ -185,7 +172,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Is in transaction?
 	 * @return bool
@@ -194,7 +180,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	{
 		return !odbc_autocommit($this->connection);
 	}
-
 
 
 	/**
@@ -207,7 +192,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Returns the connection reflector.
 	 * @return IDibiReflector
@@ -216,7 +200,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	{
 		return $this;
 	}
-
 
 
 	/**
@@ -232,9 +215,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/********************* SQL ****************d*g**/
-
 
 
 	/**
@@ -247,27 +228,26 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	public function escape($value, $type)
 	{
 		switch ($type) {
-		case dibi::TEXT:
-		case dibi::BINARY:
-			return "'" . str_replace("'", "''", $value) . "'";
+			case dibi::TEXT:
+			case dibi::BINARY:
+				return "'" . str_replace("'", "''", $value) . "'";
 
-		case dibi::IDENTIFIER:
-			return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
+			case dibi::IDENTIFIER:
+				return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
-		case dibi::BOOL:
-			return $value ? 1 : 0;
+			case dibi::BOOL:
+				return $value ? 1 : 0;
 
-		case dibi::DATE:
-			return $value instanceof DateTime ? $value->format("#m/d/Y#") : date("#m/d/Y#", $value);
+			case dibi::DATE:
+				return $value instanceof DateTime ? $value->format("#m/d/Y#") : date("#m/d/Y#", $value);
 
-		case dibi::DATETIME:
-			return $value instanceof DateTime ? $value->format("#m/d/Y H:i:s#") : date("#m/d/Y H:i:s#", $value);
+			case dibi::DATETIME:
+				return $value instanceof DateTime ? $value->format("#m/d/Y H:i:s#") : date("#m/d/Y H:i:s#", $value);
 
-		default:
-			throw new InvalidArgumentException('Unsupported type.');
+			default:
+				throw new InvalidArgumentException('Unsupported type.');
 		}
 	}
-
 
 
 	/**
@@ -281,7 +261,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
-
 
 
 	/**
@@ -300,28 +279,24 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string &$sql  The SQL query that will be modified.
-	 * @param  int $limit
-	 * @param  int $offset
 	 * @return void
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(& $sql, $limit, $offset)
 	{
 		// offset support is missing
 		if ($limit >= 0) {
 			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
 		}
 
-		if ($offset) throw new DibiNotSupportedException('Offset is not implemented in driver odbc.');
+		if ($offset) {
+			throw new DibiNotSupportedException('Offset is not implemented in driver odbc.');
+		}
 	}
 
 
-
 	/********************* result set ****************d*g**/
-
 
 
 	/**
@@ -332,7 +307,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	{
 		$this->autoFree && $this->getResultResource() && $this->free();
 	}
-
 
 
 	/**
@@ -346,7 +320,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
@@ -358,14 +331,15 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 			return odbc_fetch_array($this->resultSet, ++$this->row);
 		} else {
 			$set = $this->resultSet;
-			if (!odbc_fetch_row($set, ++$this->row)) return FALSE;
+			if (!odbc_fetch_row($set, ++$this->row)) {
+				return FALSE;
+			}
 			$count = odbc_num_fields($set);
 			$cols = array();
 			for ($i = 1; $i <= $count; $i++) $cols[] = odbc_result($set, $i);
 			return $cols;
 		}
 	}
-
 
 
 	/**
@@ -380,7 +354,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Frees the resources allocated for this result set.
 	 * @return void
@@ -390,7 +363,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 		odbc_free_result($this->resultSet);
 		$this->resultSet = NULL;
 	}
-
 
 
 	/**
@@ -413,7 +385,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Returns the result set resource.
 	 * @return mixed
@@ -425,9 +396,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/********************* IDibiReflector ****************d*g**/
-
 
 
 	/**
@@ -449,7 +418,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 		odbc_free_result($res);
 		return $tables;
 	}
-
 
 
 	/**
@@ -478,7 +446,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	}
 
 
-
 	/**
 	 * Returns metadata for all indexes in a table.
 	 * @param  string
@@ -488,7 +455,6 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	{
 		throw new DibiNotImplementedException;
 	}
-
 
 
 	/**

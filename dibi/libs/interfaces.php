@@ -2,13 +2,8 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
-
 
 
 /**
@@ -20,7 +15,6 @@ interface IDataSource extends Countable, IteratorAggregate
 	//function IteratorAggregate::getIterator();
 	//function Countable::count();
 }
-
 
 
 /**
@@ -36,7 +30,7 @@ interface IDibiDriver
 	 * @return void
 	 * @throws DibiException
 	 */
-	function connect(array &$config);
+	function connect(array & $config);
 
 	/**
 	 * Disconnects from a database.
@@ -120,17 +114,11 @@ interface IDibiDriver
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string &$sql  The SQL query that will be modified.
-	 * @param  int $limit
-	 * @param  int $offset
 	 * @return void
 	 */
-	function applyLimit(&$sql, $limit, $offset);
+	function applyLimit(& $sql, $limit, $offset);
 
 }
-
-
-
 
 
 /**
@@ -191,9 +179,6 @@ interface IDibiResultDriver
 	function unescape($value, $type);
 
 }
-
-
-
 
 
 /**

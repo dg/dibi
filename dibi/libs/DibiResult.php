@@ -2,13 +2,8 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
-
 
 
 /**
@@ -58,7 +53,6 @@ class DibiResult extends DibiObject implements IDataSource
 	private $formats = array();
 
 
-
 	/**
 	 * @param  IDibiResultDriver
 	 */
@@ -69,7 +63,6 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * @deprecated
 	 */
@@ -77,7 +70,6 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		return $this->getResultDriver()->getResultResource();
 	}
-
 
 
 	/**
@@ -91,7 +83,6 @@ class DibiResult extends DibiObject implements IDataSource
 			$this->driver = $this->meta = NULL;
 		}
 	}
-
 
 
 	/**
@@ -109,9 +100,7 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/********************* rows ****************d*g**/
-
 
 
 	/**
@@ -126,7 +115,6 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Required by the Countable interface.
 	 * @return int
@@ -135,7 +123,6 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		return $this->getResultDriver()->getRowCount();
 	}
-
 
 
 	/**
@@ -148,7 +135,6 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Returns the number of rows in a result set. Alias for getRowCount().
 	 * @deprecated
@@ -158,7 +144,6 @@ class DibiResult extends DibiObject implements IDataSource
 		trigger_error(__METHOD__ . '() is deprecated; use count($res) or $res->getRowCount() instead.', E_USER_WARNING);
 		return $this->getResultDriver()->getRowCount();
 	}
-
 
 
 	/**
@@ -174,22 +159,19 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/********************* fetching rows ****************d*g**/
-
 
 
 	/**
 	 * Set fetched object class. This class should extend the DibiRow class.
 	 * @param  string
-	 * @return DibiResult  provides a fluent interface
+	 * @return self
 	 */
 	public function setRowClass($class)
 	{
 		$this->rowClass = $class;
 		return $this;
 	}
-
 
 
 	/**
@@ -200,7 +182,6 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		return $this->rowClass;
 	}
-
 
 
 	/**
@@ -223,7 +204,6 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Like fetch(), but returns only first field.
 	 * @return mixed  value on success, FALSE if no next record
@@ -240,30 +220,32 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Fetches all records from table.
 	 * @param  int  offset
 	 * @param  int  limit
-	 * @return array of DibiRow
+	 * @return DibiRow[]
 	 */
 	final public function fetchAll($offset = NULL, $limit = NULL)
 	{
 		$limit = $limit === NULL ? -1 : (int) $limit;
 		$this->seek((int) $offset);
 		$row = $this->fetch();
-		if (!$row) return array();  // empty result set
+		if (!$row) {
+			return array();  // empty result set
+		}
 
 		$data = array();
 		do {
-			if ($limit === 0) break;
+			if ($limit === 0) {
+				break;
+			}
 			$limit--;
 			$data[] = $row;
 		} while ($row = $this->fetch());
 
 		return $data;
 	}
-
 
 
 	/**
@@ -285,7 +267,9 @@ class DibiResult extends DibiObject implements IDataSource
 
 		$this->seek(0);
 		$row = $this->fetch();
-		if (!$row) return array();  // empty result set
+		if (!$row) {
+			return array();  // empty result set
+		}
 
 		$data = NULL;
 		$assoc = preg_split('#(\[\]|->|=|\|)#', $assoc, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
@@ -344,7 +328,6 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * @deprecated
 	 */
@@ -352,7 +335,9 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		$this->seek(0);
 		$row = $this->fetch();
-		if (!$row) return array();  // empty result set
+		if (!$row) {
+			return array();  // empty result set
+		}
 
 		$data = NULL;
 		$assoc = explode(',', $assoc);
@@ -417,7 +402,6 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Fetches all records from table like $key => $value pairs.
 	 * @param  string  associative key
@@ -429,7 +413,9 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		$this->seek(0);
 		$row = $this->fetch();
-		if (!$row) return array();  // empty result set
+		if (!$row) {
+			return array();  // empty result set
+		}
 
 		$data = array();
 
@@ -475,9 +461,7 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/********************* column types ****************d*g**/
-
 
 
 	/**
@@ -493,7 +477,6 @@ class DibiResult extends DibiObject implements IDataSource
 			}
 		} catch (DibiNotSupportedException $e) {}
 	}
-
 
 
 	/**
@@ -543,19 +526,17 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Define column type.
 	 * @param  string  column
 	 * @param  string  type (use constant Dibi::*)
-	 * @return DibiResult  provides a fluent interface
+	 * @return self
 	 */
 	final public function setType($col, $type)
 	{
 		$this->types[$col] = $type;
 		return $this;
 	}
-
 
 
 	/**
@@ -568,19 +549,17 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * Sets data format.
 	 * @param  string  type (use constant Dibi::*)
 	 * @param  string  format
-	 * @return DibiResult  provides a fluent interface
+	 * @return self
 	 */
 	final public function setFormat($type, $format)
 	{
 		$this->formats[$type] = $format;
 		return $this;
 	}
-
 
 
 	/**
@@ -593,9 +572,7 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/********************* meta info ****************d*g**/
-
 
 
 	/**
@@ -611,7 +588,6 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/**
 	 * @deprecated
 	 */
@@ -619,7 +595,6 @@ class DibiResult extends DibiObject implements IDataSource
 	{
 		return $this->getInfo()->getColumns();
 	}
-
 
 
 	/** @deprecated */
@@ -630,9 +605,7 @@ class DibiResult extends DibiObject implements IDataSource
 	}
 
 
-
 	/********************* misc tools ****************d*g**/
-
 
 
 	/**
