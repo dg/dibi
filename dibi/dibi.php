@@ -4,9 +4,6 @@
  * dibi - smart database abstraction layer (http://dibiphp.com)
  *
  * Copyright (c) 2005, 2012 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 
