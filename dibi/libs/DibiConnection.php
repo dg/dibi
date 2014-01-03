@@ -646,13 +646,28 @@ class DibiConnection extends DibiObject
 
 		$count = 0;
 		$sql = '';
+		$delimitedSql = NULL;
 		while (!feof($handle)) {
 			$s = fgets($handle);
-			$sql .= $s;
-			if (substr(rtrim($s), -1) === ';') {
-				$this->driver->query($sql);
-				$sql = '';
-				$count++;
+			if (strpos($s, 'DELIMITER') === 0) {
+				if (is_null($delimitedSql)) {
+					$delimitedSql = '';
+				} else {
+					$this->driver->query($delimitedSql);
+					$delimitedSql = NULL;
+				}
+				continue;
+			}
+
+			if (!is_null($delimitedSql)) {
+				$delimitedSql .= $s;
+			} else {
+				$sql .= $s;
+				if (substr(rtrim($s), -1) === ';') {
+					$this->driver->query($sql);
+					$sql = '';
+					$count++;
+				}
 			}
 		}
 		if (trim($sql) !== '') {
