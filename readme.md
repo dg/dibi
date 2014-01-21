@@ -1,4 +1,4 @@
-[Dibi](http://dibiphp.com) - smart database layer for PHP
+[Dibi](http://dibiphp.com/en/download) - smart database layer for PHP
 =========================================================
 
 Database access functions in PHP are not standardised. This library
@@ -19,7 +19,7 @@ Examples
 --------
 
 Refer to the `examples` directory for examples. Dibi documentation is
-available on the [homepage](http://dibiphp.com).
+available on the [Documentation page](http://dibiphp.com/en/documentation).
 
 Connect to database:
 
