@@ -8,8 +8,8 @@ The best way to install Dibi is to use a [Composer](http://getcomposer.org/downl
 
     php composer.phar require dibi/dibi
 
-Or you can download the latest package from http://dibiphp.com. In this
-package is also `Dibi.minified`, shrinked single-file version of whole Dibi,
+Or you can download the latest package from the [Download page](http://dibiphp.com/en/download). 
+In this package is also `Dibi.minified`, shrinked single-file version of whole Dibi,
 useful when you don't want to modify the library, but just use it.
 
 Dibi requires PHP 5.2.0 or later. It has been tested with PHP 5.5 too.
