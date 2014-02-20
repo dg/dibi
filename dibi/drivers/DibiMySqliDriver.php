@@ -458,7 +458,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function getResultResource()
 	{
 		$this->autoFree = FALSE;
-		return @$this->resultSet->type === NULL ? NULL : $this->resultSet;
+		return $this->resultSet === NULL || $this->resultSet->type === NULL ? NULL : $this->resultSet;
 	}
 
 }
