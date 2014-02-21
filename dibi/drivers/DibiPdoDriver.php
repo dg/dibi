@@ -282,7 +282,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 				if (!$value instanceof DateTime) {
 					$value = new DibiDateTime($value);
 				}
-				return $value->format($type === dibi::DATETIME ? "'Y-m-d H:i:s'" : "Y-m-d");
+				return $value->format($type === dibi::DATETIME ? "'Y-m-d H:i:s'" : "'Y-m-d'");
 
 			default:
 				throw new InvalidArgumentException('Unsupported type.');
