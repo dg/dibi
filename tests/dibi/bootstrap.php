@@ -11,4 +11,3 @@ require __DIR__ . '/../../dibi/dibi.php';
 $config = require __DIR__ . '/config.php';
 
 date_default_timezone_set('Europe/Prague');
-class_alias('Tester\Assert', 'Assert');
