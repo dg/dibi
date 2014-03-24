@@ -242,7 +242,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 
 			case dibi::DATE:
 			case dibi::DATETIME:
-				if (!$value instanceof DateTime) {
+				if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
 					$value = new DibiDateTime($value);
 				}
 				return $value->format($type === dibi::DATETIME ? "#m/d/Y H:i:s#" : "#m/d/Y#");

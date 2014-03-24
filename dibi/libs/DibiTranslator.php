@@ -327,7 +327,7 @@ final class DibiTranslator extends DibiObject
 
 		// with modifier procession
 		if ($modifier) {
-			if ($value !== NULL && !is_scalar($value) && !($value instanceof DateTime)) {  // array is already processed
+			if ($value !== NULL && !is_scalar($value) && !($value instanceof DateTime) && !($value instanceof DateTimeInterface)) {  // array is already processed
 				$this->hasError = TRUE;
 				return '**Unexpected type ' . gettype($value) . '**';
 			}
@@ -445,7 +445,7 @@ final class DibiTranslator extends DibiObject
 		} elseif ($value === NULL) {
 			return 'NULL';
 
-		} elseif ($value instanceof DateTime) {
+		} elseif ($value instanceof DateTime || $value instanceof DateTimeInterface) {
 			return $this->driver->escape($value, dibi::DATETIME);
 
 		} elseif ($value instanceof DibiLiteral) {
