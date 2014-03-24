@@ -294,7 +294,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 			case dibi::DATE:
 			case dibi::DATETIME:
-				if (!$value instanceof DateTime) {
+				if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
 					$value = new DibiDateTime($value);
 				}
 				return $value->format($type === dibi::DATETIME ? "'Y-m-d H:i:s'" : "'Y-m-d'");

@@ -240,7 +240,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 			case dibi::DATE:
 			case dibi::DATETIME:
-				if (!$value instanceof DateTime) {
+				if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
 					$value = new DibiDateTime($value);
 				}
 				return $value->format($type === dibi::DATETIME ? $this->fmtDateTime : $this->fmtDate);
