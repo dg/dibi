@@ -51,6 +51,8 @@ final class DibiTranslator extends DibiObject
 	public function __construct(DibiConnection $connection)
 	{
 		$this->connection = $connection;
+		$this->driver = $connection->getDriver();
+		$this->identifiers = new DibiHashMap(array($this, 'delimite'));
 	}
 
 
@@ -62,9 +64,6 @@ final class DibiTranslator extends DibiObject
 	 */
 	public function translate(array $args)
 	{
-		$this->identifiers = new DibiHashMap(array($this, 'delimite'));
-		$this->driver = $this->connection->getDriver();
-
 		$args = array_values($args);
 		while (count($args) === 1 && is_array($args[0])) { // implicit array expansion
 			$args = array_values($args[0]);
