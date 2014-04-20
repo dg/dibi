@@ -8,6 +8,8 @@
 
 if (interface_exists('Nette\Diagnostics\IBarPanel')) {
 	class_alias('Nette\Diagnostics\IBarPanel', 'IBarPanel');
+} else if (interface_exists('Tracy\IBarPanel')) {
+	class_alias('Tracy\IBarPanel', 'IBarPanel');
 }
 
 
