@@ -459,7 +459,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			throw new DibiDriverException('Reflection requires PostgreSQL 7.4 and newer.');
 		}
 
-		$res = $this->query("
+		$query = "
 			SELECT
 				table_name AS name,
 				CASE table_type
@@ -469,8 +469,20 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			FROM
 				information_schema.tables
 			WHERE
-				table_schema = current_schema()
-		");
+				table_schema = current_schema()";
+
+		if ($version >= 9.3) {
+			$query .= "
+				UNION ALL
+				SELECT
+					matviewname, 1
+				FROM
+					pg_matviews
+				WHERE
+					schemaname = current_schema()";
+		}
+
+		$res = $this->query($query);
 		$tables = pg_fetch_all($res->resultSet);
 		return $tables ? $tables : array();
 	}
@@ -498,6 +510,31 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			WHERE table_name = $_table AND table_schema = current_schema()
 			ORDER BY ordinal_position
 		");
+
+		if (!$res->getRowCount()) {
+			$res = $this->query("
+				SELECT
+					a.attname AS column_name,
+					pg_type.typname AS udt_name,
+					a.attlen AS numeric_precision,
+					a.atttypmod-4 AS character_maximum_length,
+					NOT a.attnotnull AS is_nullable,
+					a.attnum AS ordinal_position,
+					adef.adsrc AS column_default
+				FROM
+					pg_attribute a
+					JOIN pg_type ON a.atttypid = pg_type.oid
+					JOIN pg_class cls ON a.attrelid = cls.oid
+					LEFT JOIN pg_attrdef adef ON adef.adnum = a.attnum AND adef.adrelid = a.attrelid
+				WHERE
+					cls.relkind IN ('r', 'v', 'mv')
+					AND a.attrelid = $_table::regclass
+					AND a.attnum > 0
+					AND NOT a.attisdropped
+				ORDER BY ordinal_position
+			");
+		}
+
 		$columns = array();
 		while ($row = $res->fetch(TRUE)) {
 			$size = (int) max($row['character_maximum_length'], $row['numeric_precision']);
@@ -505,8 +542,8 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 				'name' => $row['column_name'],
 				'table' => $table,
 				'nativetype' => strtoupper($row['udt_name']),
-				'size' => $size ? $size : NULL,
-				'nullable' => $row['is_nullable'] === 'YES',
+				'size' => $size > 0 ? $size : NULL,
+				'nullable' => $row['is_nullable'] === 'YES' || $row['is_nullable'] === 't',
 				'default' => $row['column_default'],
 				'autoincrement' => (int) $row['ordinal_position'] === $primary && substr($row['column_default'], 0, 7) === 'nextval',
 				'vendor' => $row,
