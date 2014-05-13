@@ -54,12 +54,14 @@ dump($assoc);
 
 // fetch complete result set like pairs key => value
 echo "<h2>fetchPairs('product_id', 'title')</h2>\n";
+$res = dibi::query('SELECT * FROM products');
 $pairs = $res->fetchPairs('product_id', 'title');
 dump($pairs);
 
 
 // fetch row by row
 echo "<h2>using foreach</h2>\n";
+$res = dibi::query('SELECT * FROM products');
 foreach ($res as $n => $row) {
 	dump($row);
 }
@@ -73,14 +75,16 @@ $res = dibi::query('
 	INNER JOIN customers USING (customer_id)
 ');
 
-echo "<h2>fetchAssoc('customers.name|products.title')</h2>\n";
-$assoc = $res->fetchAssoc('customers.name|products.title'); // key
+echo "<h2>fetchAssoc('name|title')</h2>\n";
+$assoc = $res->fetchAssoc('name|title'); // key
 dump($assoc);
 
-echo "<h2>fetchAssoc('customers.name[]products.title')</h2>\n";
-$assoc = $res->fetchAssoc('customers.name[]products.title'); // key
+echo "<h2>fetchAssoc('name[]title')</h2>\n";
+$res = dibi::query('SELECT * FROM products INNER JOIN orders USING (product_id) INNER JOIN customers USING (customer_id)');
+$assoc = $res->fetchAssoc('name[]title'); // key
 dump($assoc);
 
-echo "<h2>fetchAssoc('customers.name->products.title')</h2>\n";
-$assoc = $res->fetchAssoc('customers.name->products.title'); // key
+echo "<h2>fetchAssoc('name->title')</h2>\n";
+$res = dibi::query('SELECT * FROM products INNER JOIN orders USING (product_id) INNER JOIN customers USING (customer_id)');
+$assoc = $res->fetchAssoc('name->title'); // key
 dump($assoc);
