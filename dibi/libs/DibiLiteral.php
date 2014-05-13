@@ -10,6 +10,7 @@
  * SQL literal value.
  *
  * @author     David Grudl
+ * @package    dibi
  */
 class DibiLiteral extends DibiObject
 {
