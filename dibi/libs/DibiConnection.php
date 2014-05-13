@@ -118,6 +118,10 @@ class DibiConnection extends DibiObject
 				$panel = new DibiNettePanel(isset($profilerCfg['explain']) ? $profilerCfg['explain'] : TRUE, $filter);
 				$panel->register($this);
 			}
+      else if (class_exists('DibiTracyPanel', FALSE)) {
+				$panel = new DibiTracyPanel(isset($profilerCfg['explain']) ? $profilerCfg['explain'] : TRUE, $filter);
+				$panel->register($this);
+			}
 		}
 
 		$this->substitutes = new DibiHashMap(create_function('$expr', 'return ":$expr:";'));
