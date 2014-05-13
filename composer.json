@@ -14,7 +14,7 @@
 		"php": ">=5.2.0"
 	},
 	"require-dev": {
-		"nette/tester": "@dev"
+		"nette/tester": "~1.1"
 	},
 	"replace": {
 		"dg/dibi": "self.version"
