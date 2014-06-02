@@ -35,9 +35,6 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	/** @var int|FALSE  Affected rows */
 	private $affectedRows = FALSE;
 
-	/** @var bool  Escape method */
-	private $escMethod = FALSE;
-
 
 	/**
 	 * @throws DibiNotSupportedException
@@ -103,8 +100,6 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 		if (isset($config['schema'])) {
 			$this->query('SET search_path TO "' . $config['schema'] . '"');
 		}
-
-		$this->escMethod = version_compare(PHP_VERSION , '5.2.0', '>=');
 	}
 
 
@@ -266,24 +261,16 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	{
 		switch ($type) {
 			case dibi::TEXT:
-				if ($this->escMethod) {
-					if (!is_resource($this->connection)) {
-						throw new DibiException('Lost connection to server.');
-					}
-					return "'" . pg_escape_string($this->connection, $value) . "'";
-				} else {
-					return "'" . pg_escape_string($value) . "'";
+				if (!is_resource($this->connection)) {
+					throw new DibiException('Lost connection to server.');
 				}
+				return "'" . pg_escape_string($this->connection, $value) . "'";
 
 			case dibi::BINARY:
-				if ($this->escMethod) {
-					if (!is_resource($this->connection)) {
-						throw new DibiException('Lost connection to server.');
-					}
-					return "'" . pg_escape_bytea($this->connection, $value) . "'";
-				} else {
-					return "'" . pg_escape_bytea($value) . "'";
+				if (!is_resource($this->connection)) {
+					throw new DibiException('Lost connection to server.');
 				}
+				return "'" . pg_escape_bytea($this->connection, $value) . "'";
 
 			case dibi::IDENTIFIER:
 				// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
@@ -313,12 +300,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function escapeLike($value, $pos)
 	{
-		if ($this->escMethod) {
-			$value = pg_escape_string($this->connection, $value);
-		} else {
-			$value = pg_escape_string($value);
-		}
-
+		$value = pg_escape_string($this->connection, $value);
 		$value = strtr($value, array( '%' => '\\\\%', '_' => '\\\\_'));
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
@@ -418,13 +400,12 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getResultColumns()
 	{
-		$hasTable = version_compare(PHP_VERSION , '5.2.0', '>=');
 		$count = pg_num_fields($this->resultSet);
 		$columns = array();
 		for ($i = 0; $i < $count; $i++) {
 			$row = array(
 				'name'      => pg_field_name($this->resultSet, $i),
-				'table'     => $hasTable ? pg_field_table($this->resultSet, $i) : NULL,
+				'table'     => pg_field_table($this->resultSet, $i),
 				'nativetype'=> pg_field_type($this->resultSet, $i),
 			);
 			$row['fullname'] = $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'];

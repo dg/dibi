@@ -203,15 +203,10 @@ class DibiFluent extends DibiObject implements IDataSource
 	 * @param  string clause name
 	 * @return self
 	 */
-	public function clause($clause, $remove = FALSE)
+	public function clause($clause)
 	{
 		$this->cursor = & $this->clauses[self::$normalizer->$clause];
-
-		if ($remove) { // deprecated, use removeClause
-			trigger_error(__METHOD__ . '(..., TRUE) is deprecated; use removeClause() instead.', E_USER_NOTICE);
-			$this->cursor = NULL;
-
-		} elseif ($this->cursor === NULL) {
+		if ($this->cursor === NULL) {
 			$this->cursor = array();
 		}
 

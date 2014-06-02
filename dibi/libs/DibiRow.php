@@ -48,42 +48,6 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	}
 
 
-	/**
-	 * Converts value to UNIX timestamp.
-	 * @param  string key
-	 * @return int
-	 */
-	public function asTimestamp($key)
-	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_WARNING);
-		return $this->asDateTime($key, 'U');
-	}
-
-
-	/**
-	 * Converts value to boolean.
-	 * @param  string key
-	 * @return mixed
-	 */
-	public function asBool($key)
-	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_WARNING);
-		return $this[$key];
-	}
-
-
-	/** @deprecated */
-	public function asDate($key, $format = NULL)
-	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_WARNING);
-		if ($format === NULL) {
-			return $this->asTimestamp($key);
-		} else {
-			return $this->asDateTime($key, $format === TRUE ? NULL : $format);
-		}
-	}
-
-
 	/********************* interfaces ArrayAccess, Countable & IteratorAggregate ****************d*g**/
 
 

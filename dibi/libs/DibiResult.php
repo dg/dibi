@@ -139,25 +139,11 @@ class DibiResult extends DibiObject implements IDataSource
 
 
 	/**
-	 * Returns the number of rows in a result set. Alias for getRowCount().
-	 * @deprecated
-	 */
-	final public function rowCount()
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use count($res) or $res->getRowCount() instead.', E_USER_WARNING);
-		return $this->getResultDriver()->getRowCount();
-	}
-
-
-	/**
 	 * Required by the IteratorAggregate interface.
 	 * @return DibiResultIterator
 	 */
 	final public function getIterator()
 	{
-		if (func_num_args()) {
-			trigger_error(__METHOD__ . ' arguments $offset & $limit have been dropped; use SQL clauses instead.', E_USER_WARNING);
-		}
 		return new DibiResultIterator($this);
 	}
 
@@ -600,14 +586,6 @@ class DibiResult extends DibiObject implements IDataSource
 	final public function getColumns()
 	{
 		return $this->getInfo()->getColumns();
-	}
-
-
-	/** @deprecated */
-	public function getColumnNames($fullNames = FALSE)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use $res->getInfo()->getColumnNames() instead.', E_USER_WARNING);
-		return $this->getInfo()->getColumnNames($fullNames);
 	}
 
 

@@ -438,29 +438,6 @@ class dibi
 	}
 
 
-	/********************* data types ****************d*g**/
-
-
-	/**
-	 * @deprecated
-	 */
-	public static function datetime($time = NULL)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; create DateTime object instead.', E_USER_WARNING);
-		return new DibiDateTime($time);
-	}
-
-
-	/**
-	 * @deprecated
-	 */
-	public static function date($date = NULL)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; create DateTime object instead.', E_USER_WARNING);
-		return new DibiDateTime($date);
-	}
-
-
 	/********************* substitutions ****************d*g**/
 
 
@@ -471,37 +448,6 @@ class dibi
 	public static function getSubstitutes()
 	{
 		return self::getConnection()->getSubstitutes();
-	}
-
-
-	/** @deprecated */
-	public static function addSubst($expr, $subst)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use dibi::getSubstitutes()->expr = val; instead.', E_USER_WARNING);
-		self::getSubstitutes()->$expr = $subst;
-	}
-
-
-	/** @deprecated */
-	public static function removeSubst($expr)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use unset(dibi::getSubstitutes()->expr) instead.', E_USER_WARNING);
-		$substitutes = self::getSubstitutes();
-		if ($expr === TRUE) {
-			foreach ($substitutes as $expr => $foo) {
-				unset($substitutes->$expr);
-			}
-		} else {
-			unset($substitutes->$expr);
-		}
-	}
-
-
-	/** @deprecated */
-	public static function setSubstFallback($callback)
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use dibi::getSubstitutes()->setCallback() instead.', E_USER_WARNING);
-		self::getSubstitutes()->setCallback($callback);
 	}
 
 

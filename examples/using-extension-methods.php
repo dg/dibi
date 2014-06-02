@@ -17,12 +17,12 @@ dibi::connect(array(
 
 
 // using the "prototype" to add custom method to class DibiResult
-function DibiResult_prototype_fetchShuffle(DibiResult $obj)
+DibiResult::extensionMethod('fetchShuffle', function(DibiResult $obj)
 {
 	$all = $obj->fetchAll();
 	shuffle($all);
 	return $all;
-}
+});
 
 
 // fetch complete result set shuffled
