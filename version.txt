@@ -1,1 +1,1 @@
-Dibi 2.2-dev (revision $WCREV$ released on $WCDATE$)
+Dibi 2.2.0 (released on 2014-06-02)
