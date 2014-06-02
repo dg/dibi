@@ -7,11 +7,8 @@
  */
 
 
-/**
- * Check PHP configuration.
- */
-if (version_compare(PHP_VERSION, '5.2.0', '<')) {
-	throw new Exception('dibi needs PHP 5.2.0 or newer.');
+if (PHP_VERSION_ID < 50404) {
+	throw new Exception('Dibi requires PHP 5.4.4 or newer.');
 }
 
 

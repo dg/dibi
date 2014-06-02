@@ -17,7 +17,7 @@ Or you can download the latest package from http://dibiphp.com. In this
 package is also `Dibi.minified`, shrinked single-file version of whole Dibi,
 useful when you don't want to modify the library, but just use it.
 
-Dibi requires PHP 5.2.0 or later. It has been tested with PHP 5.5 too.
+Dibi requires PHP 5.4.4 or later. It has been tested with PHP 7 too.
 
 
 Examples
