@@ -215,7 +215,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 				return new DibiMySqlReflector($this);
 
 			case 'sqlite':
-			case 'sqlite2':
 				return new DibiSqliteReflector($this);
 
 			default:
@@ -276,7 +275,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 				return '"' . str_replace('"', '""', $value) . '"';
 
 			case 'sqlite':
-			case 'sqlite2':
 				return '[' . strtr($value, '[]', '  ') . ']';
 
 			case 'odbc':
@@ -346,7 +344,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 
 			case 'sqlite':
-			case 'sqlite2':
 				$value = addcslashes(substr($this->connection->quote($value, PDO::PARAM_STR), 1, -1), '%_\\');
 				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
 
@@ -407,7 +404,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 				break;
 
 			case 'sqlite':
-			case 'sqlite2':
 				$sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
 				break;
 
@@ -505,8 +501,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 			if ($row === FALSE) {
 				throw new DibiNotSupportedException('Driver does not support meta data.');
 			}
-			// PHP < 5.2.3 compatibility
-			// @see: http://php.net/manual/en/pdostatement.getcolumnmeta.php#pdostatement.getcolumnmeta.changelog
 			$row = $row + array(
 				'table' => NULL,
 				'native_type' => 'VAR_STRING',
