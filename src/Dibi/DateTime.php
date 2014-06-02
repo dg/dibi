@@ -7,7 +7,7 @@
 
 
 /**
- * DateTime with serialization and timestamp support for PHP 5.2.
+ * DateTime.
  *
  * @package    dibi
  */
@@ -34,19 +34,11 @@ class DibiDateTime extends DateTime
 	}
 
 
-	public function modify($modify)
-	{
-		parent::modify($modify);
-		return $this;
-	}
-
-
 	public function setTimestamp($timestamp)
 	{
-		$zone = PHP_VERSION_ID === 50206 ? new DateTimeZone($this->getTimezone()->getName()) : $this->getTimezone();
+		$zone = $this->getTimezone();
 		$this->__construct('@' . $timestamp);
-		$this->setTimeZone($zone);
-		return $this;
+		return $this->setTimeZone($zone);
 	}
 
 
@@ -62,27 +54,4 @@ class DibiDateTime extends DateTime
 		return $this->format('Y-m-d H:i:s');
 	}
 
-
-	public function __sleep()
-	{
-		$zone = $this->getTimezone()->getName();
-		if ($zone[0] === '+') {
-			$this->fix = array($this->format('Y-m-d H:i:sP'));
-		} else {
-			$this->fix = array($this->format('Y-m-d H:i:s'), $zone);
 		}
-		return array('fix');
-	}
-
-
-	public function __wakeup()
-	{
-		if (isset($this->fix[1])) {
-			$this->__construct($this->fix[0], new DateTimeZone($this->fix[1]));
-		} else {
-			$this->__construct($this->fix[0]);
-		}
-		unset($this->fix);
-	}
-
-}

@@ -103,7 +103,7 @@ echo '<p>Connecting to Sqlite via PDO: ';
 try {
 	dibi::connect(array(
 		'driver' => 'pdo',
-		'dsn' => 'sqlite2::memory:',
+		'dsn' => 'sqlite::memory:',
 	));
 	echo 'OK';
 } catch (DibiException $e) {

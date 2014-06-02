@@ -109,12 +109,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 		}
 
 		if (isset($config['charset'])) {
-			$ok = FALSE;
-			if (function_exists('mysql_set_charset')) {
-				// affects the character set used by mysql_real_escape_string() (was added in MySQL 5.0.7 and PHP 5.2.3)
-				$ok = @mysql_set_charset($config['charset'], $this->connection); // intentionally @
-			}
-			if (!$ok) {
+			if (!@mysql_set_charset($config['charset'], $this->connection)) { // intentionally @
 				$this->query("SET NAMES '$config[charset]'");
 			}
 		}

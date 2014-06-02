@@ -10,7 +10,6 @@
  * Dibi extension for Nette Framework 2.1. Creates 'connection' service.
  *
  * @package    dibi\nette
- * @phpversion 5.3
  */
 class DibiNette21Extension extends Nette\DI\CompilerExtension
 {
