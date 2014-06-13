@@ -1,4 +1,4 @@
-[Dibi](http://dibiphp.com) - smart database layer for PHP
+[Dibi](http://dibiphp.com) - smart database layer for PHP  [![Buy me a coffee](http://files.nette.org/images/coffee1s.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9XXL5ZJHAYQUN)
 =========================================================
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/dibi/dibi.svg)](https://packagist.org/packages/dibi/dibi)
