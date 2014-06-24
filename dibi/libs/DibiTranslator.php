@@ -51,8 +51,6 @@ final class DibiTranslator extends DibiObject
 	public function __construct(DibiConnection $connection)
 	{
 		$this->connection = $connection;
-		$this->driver = $connection->getDriver();
-		$this->identifiers = new DibiHashMap(array($this, 'delimite'));
 	}
 
 
@@ -168,7 +166,7 @@ final class DibiTranslator extends DibiObject
 
 		// apply limit
 		if ($this->limit > -1 || $this->offset > 0) {
-			$this->driver->applyLimit($sql, $this->limit, $this->offset);
+			$this->getDriver()->applyLimit($sql, $this->limit, $this->offset);
 		}
 
 		return $sql;
@@ -204,7 +202,7 @@ final class DibiTranslator extends DibiObject
 					foreach ($value as $k => $v) {
 						if (is_string($k)) {
 							$pair = explode('%', $k, 2); // split into identifier & modifier
-							$k = $this->identifiers->{$pair[0]} . ' ';
+							$k = $this->getIdentifiers()->{$pair[0]} . ' ';
 							if (!isset($pair[1])) {
 								$v = $this->formatValue($v, FALSE);
 								$vx[] = $k . ($v === 'NULL' ? 'IS ' : '= ') . $v;
@@ -235,10 +233,10 @@ final class DibiTranslator extends DibiObject
 				case 'n':  // key, key, ... identifier names
 					foreach ($value as $k => $v) {
 						if (is_string($k)) {
-							$vx[] = $this->identifiers->$k . (empty($v) ? '' : ' AS ' . $this->identifiers->$v);
+							$vx[] = $this->getIdentifiers()->$k . (empty($v) ? '' : ' AS ' . $this->getIdentifiers()->$v);
 						} else {
 							$pair = explode('%', $v, 2); // split into identifier & modifier
-							$vx[] = $this->identifiers->{$pair[0]};
+							$vx[] = $this->getIdentifiers()->{$pair[0]};
 						}
 					}
 					return implode(', ', $vx);
@@ -247,7 +245,7 @@ final class DibiTranslator extends DibiObject
 				case 'a': // key=val, key=val, ...
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
-						$vx[] = $this->identifiers->{$pair[0]} . '='
+						$vx[] = $this->getIdentifiers()->{$pair[0]} . '='
 							. $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
 					}
 					return implode(', ', $vx);
@@ -265,7 +263,7 @@ final class DibiTranslator extends DibiObject
 				case 'v': // (key, key, ...) VALUES (val, val, ...)
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
-						$kx[] = $this->identifiers->{$pair[0]};
+						$kx[] = $this->getIdentifiers()->{$pair[0]};
 						$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
 					}
 					return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
@@ -287,7 +285,7 @@ final class DibiTranslator extends DibiObject
 						}
 
 						$pair = explode('%', $k, 2); // split into identifier & modifier
-						$kx[] = $this->identifiers->{$pair[0]};
+						$kx[] = $this->getIdentifiers()->{$pair[0]};
 						foreach ($v as $k2 => $v2) {
 							$vx[$k2][] = $this->formatValue($v2, isset($pair[1]) ? $pair[1] : (is_array($v2) ? 'ex' : FALSE));
 						}
@@ -303,9 +301,9 @@ final class DibiTranslator extends DibiObject
 							$vx[] = $this->formatValue($v, 'ex');
 						} elseif (is_string($k)) {
 							$v = (is_string($v) && strncasecmp($v, 'd', 1)) || $v > 0 ? 'ASC' : 'DESC';
-							$vx[] = $this->identifiers->$k . ' ' . $v;
+							$vx[] = $this->getIdentifiers()->$k . ' ' . $v;
 						} else {
-							$vx[] = $this->identifiers->$v;
+							$vx[] = $this->getIdentifiers()->$v;
 						}
 					}
 					return implode(', ', $vx);
@@ -335,11 +333,11 @@ final class DibiTranslator extends DibiObject
 				case 's':  // string
 				case 'bin':// binary
 				case 'b':  // boolean
-					return $value === NULL ? 'NULL' : $this->driver->escape($value, $modifier);
+					return $value === NULL ? 'NULL' : $this->getDriver()->escape($value, $modifier);
 
 				case 'sN': // string or NULL
 				case 'sn':
-					return $value == '' ? 'NULL' : $this->driver->escape($value, dibi::TEXT); // notice two equal signs
+					return $value == '' ? 'NULL' : $this->getDriver()->escape($value, dibi::TEXT); // notice two equal signs
 
 				case 'iN': // signed int or NULL
 				case 'in': // deprecated
@@ -376,12 +374,12 @@ final class DibiTranslator extends DibiObject
 						} elseif (is_string($value)) {
 							$value = new DateTime($value);
 						}
-						return $this->driver->escape($value, $modifier);
+						return $this->getDriver()->escape($value, $modifier);
 					}
 
 				case 'by':
 				case 'n':  // identifier name
-					return $this->identifiers->$value;
+					return $this->getIdentifiers()->$value;
 
 				case 'ex':
 				case 'sql': // preserve as dibi-SQL  (TODO: leave only %ex)
@@ -405,13 +403,13 @@ final class DibiTranslator extends DibiObject
 					return (string) $value;
 
 				case 'like~':  // LIKE string%
-					return $this->driver->escapeLike($value, 1);
+					return $this->getDriver()->escapeLike($value, 1);
 
 				case '~like':  // LIKE %string
-					return $this->driver->escapeLike($value, -1);
+					return $this->getDriver()->escapeLike($value, -1);
 
 				case '~like~': // LIKE %string%
-					return $this->driver->escapeLike($value, 0);
+					return $this->getDriver()->escapeLike($value, 0);
 
 				case 'and':
 				case 'or':
@@ -430,7 +428,7 @@ final class DibiTranslator extends DibiObject
 
 		// without modifier procession
 		if (is_string($value)) {
-			return $this->driver->escape($value, dibi::TEXT);
+			return $this->getDriver()->escape($value, dibi::TEXT);
 
 		} elseif (is_int($value)) {
 			return (string) $value;
@@ -439,13 +437,13 @@ final class DibiTranslator extends DibiObject
 			return rtrim(rtrim(number_format($value, 10, '.', ''), '0'), '.');
 
 		} elseif (is_bool($value)) {
-			return $this->driver->escape($value, dibi::BOOL);
+			return $this->getDriver()->escape($value, dibi::BOOL);
 
 		} elseif ($value === NULL) {
 			return 'NULL';
 
 		} elseif ($value instanceof DateTime || $value instanceof DateTimeInterface) {
-			return $this->driver->escape($value, dibi::DATETIME);
+			return $this->getDriver()->escape($value, dibi::DATETIME);
 
 		} elseif ($value instanceof DibiLiteral) {
 			return (string) $value;
@@ -559,16 +557,16 @@ final class DibiTranslator extends DibiObject
 		}
 
 		if ($matches[1]) { // SQL identifiers: `ident`
-			return $this->identifiers->{$matches[1]};
+			return $this->getIdentifiers()->{$matches[1]};
 
 		} elseif ($matches[2]) { // SQL identifiers: [ident]
-			return $this->identifiers->{$matches[2]};
+			return $this->getIdentifiers()->{$matches[2]};
 
 		} elseif ($matches[3]) { // SQL strings: '...'
-			return $this->driver->escape( str_replace("''", "'", $matches[4]), dibi::TEXT);
+			return $this->getDriver()->escape( str_replace("''", "'", $matches[4]), dibi::TEXT);
 
 		} elseif ($matches[5]) { // SQL strings: "..."
-			return $this->driver->escape( str_replace('""', '"', $matches[6]), dibi::TEXT);
+			return $this->getDriver()->escape( str_replace('""', '"', $matches[6]), dibi::TEXT);
 
 		} elseif ($matches[7]) { // string quote
 			$this->hasError = TRUE;
@@ -597,10 +595,36 @@ final class DibiTranslator extends DibiObject
 		$parts = explode('.', $value);
 		foreach ($parts as & $v) {
 			if ($v !== '*') {
-				$v = $this->driver->escape($v, dibi::IDENTIFIER);
+				$v = $this->getDriver()->escape($v, dibi::IDENTIFIER);
 			}
 		}
 		return implode('.', $parts);
+	}
+
+
+	/**
+	 * @return IDibiDriver
+	 */
+	protected function getDriver()
+	{
+		if (!$this->driver) {
+			$this->driver = $this->connection->getDriver();
+		}
+
+		return $this->driver;
+	}
+
+
+	/**
+	 * @return DibiHashMap
+	 */
+	protected function getIdentifiers()
+	{
+		if (!$this->identifiers) {
+			$this->identifiers = new DibiHashMap(array($this, 'delimite'));
+		}
+
+		return $this->identifiers;
 	}
 
 }
