@@ -10,8 +10,9 @@
 
 <?php
 
-require __DIR__ . '/Tracy/tracy.phar';
-require __DIR__ . '/../dibi/dibi.php';
+if (@!include __DIR__ . '/../vendor/autoload.php') {
+	die('Install dependencies using `composer install --dev`');
+}
 
 
 Tracy\Debugger::enable();
