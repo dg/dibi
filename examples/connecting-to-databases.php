@@ -4,7 +4,10 @@
 
 <?php
 
-require __DIR__ . '/../dibi/dibi.php';
+if (@!include __DIR__ . '/../vendor/autoload.php') {
+	echo 'Install dependencies using `composer update --dev`';
+	exit(1);
+}
 
 
 // connects to SQlite using dibi class
