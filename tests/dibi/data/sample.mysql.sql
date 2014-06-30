@@ -1,25 +1,10 @@
--- phpMyAdmin SQL Dump
--- version 2.11.1.2
--- http://www.phpmyadmin.net
---
--- Poèítaè: localhost
--- Vygenerováno: Nedìle 02. prosince 2007, 19:49
--- Verze MySQL: 5.0.45
--- Verze PHP: 5.2.1
+-- MySQL: 5.0.45
 
 SET FOREIGN_KEY_CHECKS=0;
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
---
--- Databáze: `dibi`
---
-
 -- --------------------------------------------------------
-
---
--- Struktura tabulky `customers`
---
 
 DROP TABLE IF EXISTS `customers`;
 CREATE TABLE IF NOT EXISTS `customers` (
@@ -28,9 +13,6 @@ CREATE TABLE IF NOT EXISTS `customers` (
   PRIMARY KEY  (`customer_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
---
--- Vypisuji data pro tabulku `customers`
---
 
 INSERT INTO `customers` (`customer_id`, `name`) VALUES
 (1, 'Dave Lister'),
@@ -42,10 +24,6 @@ INSERT INTO `customers` (`customer_id`, `name`) VALUES
 
 -- --------------------------------------------------------
 
---
--- Struktura tabulky `enumtest`
---
-
 DROP TABLE IF EXISTS `enumtest`;
 CREATE TABLE IF NOT EXISTS `enumtest` (
   `id` int(11) NOT NULL auto_increment,
@@ -53,16 +31,8 @@ CREATE TABLE IF NOT EXISTS `enumtest` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
---
--- Vypisuji data pro tabulku `enumtest`
---
-
 
 -- --------------------------------------------------------
-
---
--- Struktura tabulky `orders`
---
 
 DROP TABLE IF EXISTS `orders`;
 CREATE TABLE IF NOT EXISTS `orders` (
@@ -72,9 +42,6 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `amount` float NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
---
--- Vypisuji data pro tabulku `orders`
---
 
 INSERT INTO `orders` (`order_id`, `customer_id`, `product_id`, `amount`) VALUES
 (1, 2, 1, 7),
@@ -84,10 +51,6 @@ INSERT INTO `orders` (`order_id`, `customer_id`, `product_id`, `amount`) VALUES
 
 -- --------------------------------------------------------
 
---
--- Struktura tabulky `products`
---
-
 DROP TABLE IF EXISTS `products`;
 CREATE TABLE IF NOT EXISTS `products` (
   `product_id` int(11) NOT NULL auto_increment,
@@ -95,9 +58,6 @@ CREATE TABLE IF NOT EXISTS `products` (
   PRIMARY KEY  (`product_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
---
--- Vypisuji data pro tabulku `products`
---
 
 INSERT INTO `products` (`product_id`, `title`) VALUES
 (1, 'Chair'),
@@ -106,10 +66,6 @@ INSERT INTO `products` (`product_id`, `title`) VALUES
 
 -- --------------------------------------------------------
 
---
--- Struktura tabulky `settest`
---
-
 DROP TABLE IF EXISTS `settest`;
 CREATE TABLE IF NOT EXISTS `settest` (
   `id` int(11) NOT NULL auto_increment,
@@ -117,16 +73,7 @@ CREATE TABLE IF NOT EXISTS `settest` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
---
--- Vypisuji data pro tabulku `settest`
---
-
-
 -- --------------------------------------------------------
-
---
--- Struktura tabulky `where`
---
 
 DROP TABLE IF EXISTS `where`;
 CREATE TABLE IF NOT EXISTS `where` (
@@ -136,9 +83,6 @@ CREATE TABLE IF NOT EXISTS `where` (
   `quot'n' space` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
---
--- Vypisuji data pro tabulku `where`
---
 
 INSERT INTO `where` (`select`, `dot.dot`, `is`, `quot'n' space`) VALUES
 (1, 2, 3, 4);
@@ -146,4 +90,3 @@ INSERT INTO `where` (`select`, `dot.dot`, `is`, `quot'n' space`) VALUES
 SET FOREIGN_KEY_CHECKS=1;
 
 SET SQL_MODE="STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";
-
