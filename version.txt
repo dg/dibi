@@ -1,1 +1,1 @@
-Dibi 2.2.0 (released on 2014-06-02)
+Dibi 2.2.2 (released on 2014-06-30)
