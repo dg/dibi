@@ -450,7 +450,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			FROM
 				information_schema.tables
 			WHERE
-				table_schema = current_schema()";
+				table_schema = ANY (current_schemas(false))";
 
 		if ($version >= 9.3) {
 			$query .= "
@@ -460,7 +460,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 				FROM
 					pg_matviews
 				WHERE
-					schemaname = current_schema()";
+					schemaname = ANY (current_schemas(false))";
 		}
 
 		$res = $this->query($query);
@@ -481,15 +481,17 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			SELECT indkey
 			FROM pg_class
 			LEFT JOIN pg_index on pg_class.oid = pg_index.indrelid AND pg_index.indisprimary
-			WHERE pg_class.relname = $_table
+			WHERE pg_class.oid = $_table::regclass
 		");
 		$primary = (int) pg_fetch_object($res->resultSet)->indkey;
 
 		$res = $this->query("
 			SELECT *
-			FROM information_schema.columns
-			WHERE table_name = $_table AND table_schema = current_schema()
-			ORDER BY ordinal_position
+			FROM information_schema.columns c
+			JOIN pg_class ON pg_class.relname = c.table_name
+			JOIN pg_namespace nsp ON nsp.oid = pg_class.relnamespace AND nsp.nspname = c.table_schema
+			WHERE pg_class.oid = $_table::regclass
+			ORDER BY c.ordinal_position
 		");
 
 		if (!$res->getRowCount()) {
@@ -543,9 +545,16 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	{
 		$_table = $this->escape($table, dibi::TEXT);
 		$res = $this->query("
-			SELECT ordinal_position, column_name
-			FROM information_schema.columns
-			WHERE table_name = $_table AND table_schema = current_schema()
+			SELECT
+				a.attnum AS ordinal_position,
+				a.attname AS column_name
+			FROM
+				pg_attribute a
+				JOIN pg_class cls ON a.attrelid = cls.oid
+			WHERE
+				a.attrelid = $_table::regclass
+				AND a.attnum > 0
+				AND NOT a.attisdropped
 			ORDER BY ordinal_position
 		");
 
@@ -559,7 +568,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			FROM pg_class
 			LEFT JOIN pg_index on pg_class.oid = pg_index.indrelid
 			INNER JOIN pg_class as pg_class2 on pg_class2.oid = pg_index.indexrelid
-			WHERE pg_class.relname = $_table
+			WHERE pg_class.oid = $_table::regclass
 		");
 
 		$indexes = array();
