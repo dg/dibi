@@ -44,7 +44,7 @@ class DibiDateTime extends DateTime
 
 	public function setTimestamp($timestamp)
 	{
-		$zone = PHP_VERSION_ID === 50206 ? new \DateTimeZone($this->getTimezone()->getName()) : $this->getTimezone();
+		$zone = PHP_VERSION_ID === 50206 ? new DateTimeZone($this->getTimezone()->getName()) : $this->getTimezone();
 		$this->__construct('@' . $timestamp);
 		$this->setTimeZone($zone);
 		return $this;
