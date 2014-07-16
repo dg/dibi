@@ -482,7 +482,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getColumns($table)
 	{
-		$_table = $this->escape($table, dibi::TEXT);
+		$_table = $this->escape($this->escape($table, dibi::IDENTIFIER), dibi::TEXT);
 		$res = $this->query("
 			SELECT indkey
 			FROM pg_class
@@ -522,7 +522,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getIndexes($table)
 	{
-		$_table = $this->escape($table, dibi::TEXT);
+		$_table = $this->escape($this->escape($table, dibi::IDENTIFIER), dibi::TEXT);
 		$res = $this->query("
 			SELECT ordinal_position, column_name
 			FROM information_schema.columns
@@ -563,7 +563,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getForeignKeys($table)
 	{
-		$_table = $this->escape($table, dibi::TEXT);
+		$_table = $this->escape($this->escape($table, dibi::IDENTIFIER), dibi::TEXT);
 
 		$res = $this->query("
 			SELECT
