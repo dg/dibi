@@ -112,6 +112,13 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 		pg_close($this->connection);
 	}
 
+	/**
+	 * Ping database
+	 * @return boolean
+	 */
+	public function ping(){
+		return pg_ping($this->connection);
+	}
 
 	/**
 	 * Executes the SQL query.
