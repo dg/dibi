@@ -543,14 +543,27 @@ final class DibiTranslator extends DibiObject
 
 			} elseif ($mod === 'lmt') { // apply limit
 				if ($this->args[$cursor] !== NULL) {
-					$this->limit = (int) $this->args[$cursor];
+					if (! $this->comment) {
+						$this->limit = (int) $this->args[$cursor];
+					} else {
+						// the limit should be mentioned in the comment
+						// however it's impossible to generate valid commented-out sql
+						// for Mysql, Postgres & SQLite, driver->applyLimit would work here
+						// but for others not so much
+						return sprintf('(limit %d)', (int) $this->args[$cursor]);
+					}
 				}
 				$cursor++;
 				return '';
 
 			} elseif ($mod === 'ofs') { // apply offset
 				if ($this->args[$cursor] !== NULL) {
-					$this->offset = (int) $this->args[$cursor];
+					if (! $this->comment) {
+						$this->offset = (int) $this->args[$cursor];
+					} else {
+						// see the comment on limit above, applies to offset as well
+						return sprintf('(offset %d)', (int) $this->args[$cursor]);
+					}
 				}
 				$cursor++;
 				return '';
