@@ -74,3 +74,15 @@ WHERE
 		%if', FALSE, 'AND [admin]=1 %end
 	%else 1 LIMIT 10 %end'
 ));
+
+
+// limit & offset
+Assert::same(
+	'SELECT * FROM foo /* (limit 3) (offset 5) */',
+	$conn->translate(
+	'SELECT * FROM foo',
+	'%if', FALSE,
+		'%lmt', 3,
+		'%ofs', 5,
+	'%end'
+));

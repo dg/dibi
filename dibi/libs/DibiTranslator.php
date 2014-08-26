@@ -542,17 +542,23 @@ final class DibiTranslator extends DibiObject
 				return '';
 
 			} elseif ($mod === 'lmt') { // apply limit
-				if ($this->args[$cursor] !== NULL) {
-					$this->limit = (int) $this->args[$cursor];
+				$arg = $this->args[$cursor++];
+				if ($arg === NULL) {
+				} elseif ($this->comment) {
+					return "(limit $arg)";
+				} else {
+					$this->limit = (int) $arg;
 				}
-				$cursor++;
 				return '';
 
 			} elseif ($mod === 'ofs') { // apply offset
-				if ($this->args[$cursor] !== NULL) {
-					$this->offset = (int) $this->args[$cursor];
+				$arg = $this->args[$cursor++];
+				if ($arg === NULL) {
+				} elseif ($this->comment) {
+					return "(offset $arg)";
+				} else {
+					$this->offset = (int) $arg;
 				}
-				$cursor++;
 				return '';
 
 			} else { // default processing
