@@ -24,6 +24,8 @@
  * @method DibiFluent orderBy($field)
  * @method DibiFluent limit(int $limit)
  * @method DibiFluent offset(int $offset)
+ * @method DibiFluent leftJoin($table)
+ * @method DibiFluent on($cond)
  */
 class DibiFluent extends DibiObject implements IDataSource
 {
