@@ -61,6 +61,11 @@ class DibiFirePhpLogger extends DibiObject
 			return;
 		}
 
+		if (!$this->numOfQueries) {
+			header('X-Wf-Protocol-dibi: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');
+			header('X-Wf-dibi-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0');
+			header('X-Wf-dibi-Structure-1: http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1');
+		}
 		$this->totalTime += $event->time;
 		$this->numOfQueries++;
 		self::$fireTable[] = array(
@@ -69,10 +74,6 @@ class DibiFirePhpLogger extends DibiObject
 			$event->result instanceof Exception ? 'ERROR' : (string) $event->count,
 			$event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name')
 		);
-
-		header('X-Wf-Protocol-dibi: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');
-		header('X-Wf-dibi-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0');
-		header('X-Wf-dibi-Structure-1: http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1');
 
 		$payload = json_encode(array(
 			array(
