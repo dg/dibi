@@ -20,6 +20,9 @@ class DibiFirePhpLogger extends DibiObject
 	/** maximum SQL length */
 	static public $maxLength = 1000;
 
+	/** size of json stream chunk */
+	static public $streamChunkSize = 4990;
+
 	/** @var int */
 	public $filter;
 
@@ -78,7 +81,7 @@ class DibiFirePhpLogger extends DibiObject
 			),
 			self::$fireTable,
 		));
-		foreach (str_split($payload, 4990) as $num => $s) {
+		foreach (str_split($payload, self::$streamChunkSize) as $num => $s) {
 			$num++;
 			header("X-Wf-dibi-1-1-d$num: |$s|\\"); // protocol-, structure-, plugin-, message-index
 		}
