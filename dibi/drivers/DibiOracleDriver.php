@@ -14,6 +14,7 @@
  *   - username (or user)
  *   - password (or pass)
  *   - charset => character encoding to set
+ *   - schema => alters session schema
  *   - formatDate => how to format date in SQL (@see date)
  *   - formatDateTime => how to format datetime in SQL (@see date)
  *   - resource (resource) => existing connection resource
@@ -74,6 +75,10 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		if (!$this->connection) {
 			$err = oci_error();
 			throw new DibiDriverException($err['message'], $err['code']);
+		}
+
+		if (isset($config['schema'])) {
+			$this->query('ALTER SESSION SET CURRENT_SCHEMA=' . $config['schema']);
 		}
 	}
 
