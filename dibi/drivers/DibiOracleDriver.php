@@ -21,11 +21,39 @@
  *   - persistent => Creates persistent connections with oci_pconnect instead of oci_new_connect
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
+ * Bind data support:
+ *   - functions
+ *     <code>
+ *     dibi::query("select myfunction(%s, %i) as result from dual", 'test', 12);
+ *     -- or
+ *     dibi::query("select myfunction(%sql, %sql) as r from dual", dibi::getDriver()->bindData('asdfasdf', SQLT_CHR), dibi::getDriver()->bindData(21, OCI_B_INT));
+ *     </code>
+ *   - procedures
+ *     <code>
+ *     $out = dibi::getDriver()->bindOutData(0, OCI_B_INT);
+ *     dibi::query("call myprocedure(%sql, %sql)",  dibi::getDriver()->bindData('asdfasdf', SQLT_CHR), $out);
+ *     $data = dibi::getDriver()->getBoundData($out);
+ *     dibi::getDriver()->free(); // free is required only after out parameters are used, if not called subsequent queries will throw errors
+ *     </code>
+ *   - LOBs
+ *     <code>
+ *     $key = dibi::getConnection()->getDriver()->bindData($rawBinaryData, OCI_B_BLOB);
+ *     $key2 = dibi::getConnection()->getDriver()->bindData('...super long text...', OCI_B_CLOB);
+ *     dibi::insert('BINTEST', array(
+ *          'BLOB1%blob' => $key,
+ *          'CLOB1%clob' => $key2,
+ *     ))
+ *     ->returning('%n, %n INTO %sql, %sql', 'BLOB1', 'CLOB1', $key, $key2)
+ *     ->execute();
+ *     </code>
+ *
  * @author     David Grudl
+ * @author     Jiri Chadima
  * @package    dibi\drivers
  */
 class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
 {
+
 	/** @var resource  Connection resource */
 	private $connection;
 
@@ -41,6 +69,8 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	/** @var string  Date and datetime format */
 	private $fmtDate, $fmtDateTime;
 
+	/** @var []  OCI binds and their metadata */
+	protected $binds = array();
 
 	/**
 	 * @throws DibiNotSupportedException
@@ -102,9 +132,48 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function query($sql)
 	{
 		$res = oci_parse($this->connection, $sql);
+		if ($this->binds) {
+			foreach($this->binds as $key => $obj) {
+				if (in_array($obj['datatype'], array(SQLT_RDD, OCI_B_ROWID, SQLT_CLOB, OCI_B_CLOB, SQLT_BLOB, OCI_B_BLOB, SQLT_BFILEE, OCI_B_BFILE))) {
+					$this->binds[$key]['descriptor'] = oci_new_descriptor($this->connection, OCI_D_LOB);
+					if (!$this->binds[$key]['descriptor']) {
+						throw new DibiDriverException("Cannot create oracle descriptor.");
+					}
+					$data = &$this->binds[$key]['descriptor'];
+				} else {
+					$data = &$this->binds[$key]['data'];
+				}
+				if (!oci_bind_by_name($res, $key, $data, -1, $obj['datatype'])) {
+					$error = error_get_last();
+					throw new DibiDriverException($error['message']);
+				}
+			}
+		}
 		if ($res) {
+			if ($this->binds) {
+				$this->begin();
+			}
 			@oci_execute($res, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
 			$err = oci_error($res);
+
+			if ($this->binds && !$err) {
+				$lobsOK = true;
+				foreach($this->binds as $obj) {
+					if (array_key_exists('descriptor', $obj)) {
+						if (!@$obj['descriptor']->save($obj['data'])) { // @ suppresses warning during update on inexistent record
+							$lobsOK = false;
+							$err = oci_error($res);
+							$this->rollback();
+							break;
+						}
+					}
+				}
+
+				if ($lobsOK) {
+					$this->commit();
+				}
+			}
+
 			if ($err) {
 				throw new DibiDriverException($err['message'], $err['code'], $sql);
 
@@ -159,9 +228,11 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function commit($savepoint = NULL)
 	{
 		if (!oci_commit($this->connection)) {
+			$this->unbindInData();
 			$err = oci_error($this->connection);
 			throw new DibiDriverException($err['message'], $err['code']);
 		}
+		$this->unbindInData();
 		$this->autocommit = TRUE;
 	}
 
@@ -175,9 +246,11 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function rollback($savepoint = NULL)
 	{
 		if (!oci_rollback($this->connection)) {
+			$this->unbindInData();
 			$err = oci_error($this->connection);
 			throw new DibiDriverException($err['message'], $err['code']);
 		}
+		$this->unbindInData();
 		$this->autocommit = TRUE;
 	}
 
@@ -231,7 +304,13 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 			case dibi::TEXT:
 			case dibi::BINARY:
 				return "'" . str_replace("'", "''", $value) . "'"; // TODO: not tested
-
+			case dibi::BLOB:
+			case dibi::CLOB:
+				if (!array_key_exists($value, $this->binds)) {
+					throw new InvalidArgumentException("Unbound data '$value'!");
+				}
+				$this->binds[$value]['type'] = $type;
+				return 'EMPTY_' . strtoupper($type) .  '()';
 			case dibi::IDENTIFIER:
 				// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
 				return '"' . str_replace('"', '""', $value) . '"';
@@ -275,7 +354,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function unescape($value, $type)
 	{
-		if ($type === dibi::BINARY) {
+		if ($type === dibi::BINARY || $type === dibi::BLOB || $type === dibi::CLOB) {
 			return $value;
 		}
 		throw new InvalidArgumentException('Unsupported type.');
@@ -330,7 +409,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function fetch($assoc)
 	{
-		return oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS);
+		return oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC+OCI_RETURN_LOBS : OCI_NUM+OCI_RETURN_LOBS) | OCI_RETURN_NULLS);
 	}
 
 
@@ -351,7 +430,15 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function free()
 	{
-		oci_free_statement($this->resultSet);
+		if ($this->resultSet) {
+			oci_free_statement($this->resultSet);
+		}
+		foreach ($this->binds as $obj) {
+			if (array_key_exists('descriptor', $obj)) {
+				$obj['descriptor']->free();
+			}
+		}
+		$this->binds = array();
 		$this->resultSet = NULL;
 	}
 
@@ -441,6 +528,101 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function getForeignKeys($table)
 	{
 		throw new DibiNotImplementedException;
+	}
+
+
+	/**
+	 * Stores data into internal array and returns metakey that is used
+	 * later in query.
+	 * @param mixed $data
+	 * @param string type
+	 * @param boolean Is out parameter? Out parameters are not deleted immediately after query execution so the can be read.
+	 * @return string
+	 */
+	public function bindData($data, $type, $out = false)
+	{
+		if (!in_array($type, array(
+			SQLT_BFILEE,
+			OCI_B_BFILE,
+			SQLT_CFILEE,
+			OCI_B_CFILEE,
+			SQLT_CLOB,
+			OCI_B_CLOB,
+			SQLT_BLOB,
+			OCI_B_BLOB,
+			SQLT_RDD,
+			OCI_B_ROWID,
+			SQLT_NTY,
+			OCI_B_NTY,
+			SQLT_INT,
+			OCI_B_INT,
+			SQLT_CHR,
+			SQLT_BIN,
+			OCI_B_BIN,
+			SQLT_LNG,
+			SQLT_RSET,
+		))) {
+			throw new DibiDriverException("Unknown Oracle bind datatype.");
+		}
+		do {
+			$key = $this->generateDataKey();
+		} while (array_key_exists($key, $this->binds));
+		$this->binds[$key] = array(
+				'data' => $data,
+				'datatype' => $type,
+				'out' => $out,
+			);
+		return $key;
+	}
+
+
+	/**
+	 * Alias for bindData($data, $type, true)
+	 *
+	 * @param mixed $data
+	 * @param string $type
+	 * @return string
+	 */
+	public function bindOutData($data, $type) {
+		return $this->bindData($data, $type, true);
+	}
+
+	/**
+	 * Returns data that has already been bound.
+	 * @param string $key
+	 * @return mixed
+	 */
+	public function getBoundData($key)
+	{
+		if (array_key_exists($key, $this->binds)) {
+			return $this->binds[$key]['data'];
+		}
+		return null;
+	}
+
+	/**
+	 * Deletes all internal binds that are not marked as out parameters.
+	 */
+	private function unbindInData() {
+		$todelete = array();
+		foreach ($this->binds as $i => $obj) {
+			if (array_key_exists('descriptor', $obj)) {
+				$obj['descriptor']->free();
+			}
+			if (empty($obj['out'])) {
+				$todelete[$i] = $i;
+			}
+		}
+		$this->binds = array_diff_key($this->binds, $todelete);
+	}
+
+	/**
+	 * Returns pseudo-unique 10 character identifier
+	 * @return string
+	 */
+	private function generateDataKey()
+	{
+		return ':' . substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 10);
 	}
 
 }

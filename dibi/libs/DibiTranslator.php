@@ -218,7 +218,6 @@ final class DibiTranslator extends DibiObject
 
 							} elseif ($pair[1] === 'ex') { // TODO: this will be removed
 								$vx[] = $k . $this->formatValue($v, 'ex');
-
 							} else {
 								$v = $this->formatValue($v, $pair[1]);
 								if ($pair[1] === 'l' || $pair[1] === 'in') {
@@ -340,6 +339,8 @@ final class DibiTranslator extends DibiObject
 
 			switch ($modifier) {
 				case 's':  // string
+				case 'blob': // blob
+				case 'clob': // clob
 				case 'bin':// binary
 				case 'b':  // boolean
 					return $value === NULL ? 'NULL' : $this->driver->escape($value, $modifier);
@@ -354,7 +355,6 @@ final class DibiTranslator extends DibiObject
 						$value = NULL;
 					}
 					// intentionally break omitted
-
 				case 'i':  // signed int
 				case 'u':  // unsigned int, ignored
 					if ($value === NULL) {

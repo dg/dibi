@@ -36,7 +36,7 @@ class DibiFluent extends DibiObject implements IDataSource
 		'SELECT' => array('SELECT', 'DISTINCT', 'FROM', 'WHERE', 'GROUP BY',
 			'HAVING', 'ORDER BY', 'LIMIT', 'OFFSET'),
 		'UPDATE' => array('UPDATE', 'SET', 'WHERE', 'ORDER BY', 'LIMIT'),
-		'INSERT' => array('INSERT', 'INTO', 'VALUES', 'SELECT'),
+		'INSERT' => array('INSERT', 'INTO', 'VALUES', 'SELECT', 'RETURNING'),
 		'DELETE' => array('DELETE', 'FROM', 'USING', 'WHERE', 'ORDER BY', 'LIMIT'),
 	);
 
