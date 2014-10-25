@@ -255,6 +255,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 					case 'mysql':
 						return '`' . str_replace('`', '``', $value) . '`';
 
+					case 'oci':
 					case 'pgsql':
 						return '"' . str_replace('"', '""', $value) . '"';
 
@@ -263,7 +264,6 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 						return '[' . strtr($value, '[]', '  ') . ']';
 
 					case 'odbc':
-					case 'oci': // TODO: not tested
 					case 'mssql':
 						return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
