@@ -79,20 +79,23 @@ class DibiConnection extends DibiObject
 		if (!isset($config['driver'])) {
 			$config['driver'] = dibi::$defaultDriver;
 		}
+		if (!is_object($config['driver'])) {
+			$class = preg_replace(array('#\W#', '#sql#'), array('_', 'Sql'), ucfirst(strtolower($config['driver'])));
+			$class = "Dibi{$class}Driver";
+			if (!class_exists($class)) {
+				include_once dirname(__FILE__) . "/../drivers/$class.php";
 
-		$class = preg_replace(array('#\W#', '#sql#'), array('_', 'Sql'), ucfirst(strtolower($config['driver'])));
-		$class = "Dibi{$class}Driver";
-		if (!class_exists($class)) {
-			include_once dirname(__FILE__) . "/../drivers/$class.php";
-
-			if (!class_exists($class, FALSE)) {
-				throw new DibiException("Unable to create instance of dibi driver '$class'.");
+				if (!class_exists($class, FALSE)) {
+					throw new DibiException("Unable to create instance of dibi driver '$class'.");
+				}
 			}
+			$this->driver = new $class;
+		} else {
+			$this->driver = $config['driver'];
 		}
 
 		$config['name'] = $name;
 		$this->config = $config;
-		$this->driver = new $class;
 		$this->translator = new DibiTranslator($this);
 
 		// profiler
