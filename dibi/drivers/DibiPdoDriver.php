@@ -359,6 +359,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 				break;
 
 			case 'odbc':
+			case 'dblib':
 			case 'mssql':
 			case 'sqlsrv':
 				if ($offset < 1) {
