@@ -17,17 +17,17 @@ $connection = new DibiConnection($options);
 $translator = new DibiTranslator($connection);
 
 // %s
-$SQL = $translator->translate(["SELECT [username] FROM [users] WHERE [user] = %s", 'admin']);
+$SQL = $translator->translate(array("SELECT [username] FROM [users] WHERE [user] = %s", 'admin'));
 Assert::same("SELECT `username` FROM `users` WHERE `user` = 'admin'", $SQL);
 
 // %i
-$SQL = $translator->translate(["SELECT [username] FROM [users] WHERE [id] = %i", 10]);
+$SQL = $translator->translate(array("SELECT [username] FROM [users] WHERE [id] = %i", 10));
 Assert::same("SELECT `username` FROM `users` WHERE `id` = 10", $SQL);
 
 // %n
-$SQL = $translator->translate(["SELECT %n FROM %n WHERE %n = %i", 'username', 'users', 'id', 10]);
+$SQL = $translator->translate(array("SELECT %n FROM %n WHERE %n = %i", 'username', 'users', 'id', 10));
 Assert::same("SELECT `username` FROM `users` WHERE `id` = 10", $SQL);
 
 // %b
-$SQL = $translator->translate(["SELECT [username] FROM [users] WHERE [active] = %b", TRUE]);
+$SQL = $translator->translate(array("SELECT [username] FROM [users] WHERE [active] = %b", TRUE));
 Assert::same("SELECT `username` FROM `users` WHERE `active` = 1", $SQL);
