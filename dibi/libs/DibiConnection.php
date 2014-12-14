@@ -282,6 +282,28 @@ class DibiConnection extends DibiObject
 		}
 	}
 
+	
+	/**
+	 * Generates and return SQL query.
+	 * @param  array|mixed  one or more arguments
+	 * @return string|FALSE
+	 */
+	final public function testQuery($args)
+	{
+		$args = func_get_args();
+		try {
+			return $this->translateArgs($args);
+
+		} catch (DibiException $e) {
+			if ($e->getSql()) {
+				dibi::dump($e->getSql());
+			} else {
+				echo get_class($e) . ': ' . $e->getMessage() . (PHP_SAPI === 'cli' ? "\n" : '<br>');
+			}
+			return FALSE;
+		}
+	}
+
 
 	/**
 	 * Generates (translates) and returns SQL query as DibiDataSource.
