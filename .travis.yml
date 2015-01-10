@@ -11,7 +11,7 @@ matrix:
         - php: hhvm
 
 script:
-    - vendor/bin/tester tests -s -c tests/php-unix.ini
+    - vendor/bin/tester tests -s -p php -c tests/php-unix.ini
     - php code-checker/src/code-checker.php
 
 after_failure:
@@ -22,3 +22,9 @@ before_script:
     # Install Nette Tester & Code Checker
     - composer install --no-interaction --dev --prefer-source
     - composer create-project nette/code-checker code-checker ~2.3 --no-interaction --prefer-source
+
+    # Create databases.ini
+    - cp ./tests/databases.sample.ini ./tests/databases.ini
+
+    # Create Postgre database
+    - psql -c 'CREATE DATABASE dibi_test' -U postgres

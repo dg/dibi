@@ -1,9 +1,6 @@
 <?php
 
 /**
- * Test: DateTimeInterface of DibiTranslator
- *
- * @author     Patrik Votoček
  * @phpversion 5.5
  */
 
@@ -11,11 +8,8 @@ use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
 
-$connection = new DibiConnection(array(
-	'driver' => 'sqlite3',
-	'database' => ':memory:',
-));
-$translator = new DibiTranslator($connection);
+$conn = new DibiConnection($config);
+$translator = new DibiTranslator($conn);
 
 $datetime = new DateTime('1978-01-23 00:00:00');
 

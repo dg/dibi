@@ -1,4 +1,4 @@
-/*/output
-/coverage.dat
-/test.log
+output
 /tmp
+/test.log
+/databases.ini
