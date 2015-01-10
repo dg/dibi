@@ -2,13 +2,9 @@
 
 <style> html { background: url(data/arrow.png) no-repeat bottom right; height: 100%; } </style>
 
-<h1>Tracy & Variables | dibi</h1>
+<h1>Tracy | dibi</h1>
 
-<p>Dibi can dump variables via Tracy, part of Nette Framework.</p>
-
-<ul>
-	<li>Tracy Debugger: http://tracy.nette.org
-</ul>
+<p>Dibi can log queries and dump variables to the <a href="http://tracy.nette.org">Tracy</a>.</p>
 
 <?php
 
@@ -17,10 +13,11 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 }
 
 
+// enable Tracy
 Tracy\Debugger::enable();
 
 
-dibi::connect(array(
+$connection = dibi::connect(array(
 	'driver'   => 'sqlite3',
 	'database' => 'data/sample.s3db',
 	'profiler' => array(
@@ -29,4 +26,13 @@ dibi::connect(array(
 ));
 
 
+// add panel to debug bar
+$panel = new Dibi\Bridges\Tracy\Panel;
+$panel->register($connection);
+
+
+// query will be logged
+dibi::query('SELECT 123');
+
+// result set will be dumped
 Tracy\Debugger::barDump( dibi::fetchAll('SELECT * FROM customers WHERE customer_id < ?', 38), '[customers]' );
