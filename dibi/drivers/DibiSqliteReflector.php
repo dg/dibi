@@ -62,7 +62,6 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 		$columns = array();
 		while ($row = $res->fetch(TRUE)) {
 			$column = $row['name'];
-			$pattern = "/(\"$column\"|\[$column\]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
 			$type = explode('(', $row['type']);
 			$columns[] = array(
 				'name' => $column,
@@ -72,7 +71,7 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 				'size' => isset($type[1]) ? (int) $type[1] : NULL,
 				'nullable' => $row['notnull'] == '0',
 				'default' => $row['dflt_value'],
-				'autoincrement' => (bool) preg_match($pattern, $meta['sql']),
+				'autoincrement' => $row['pk'] && $type[0] === 'INTEGER',
 				'vendor' => $row,
 			);
 		}
