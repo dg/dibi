@@ -29,6 +29,13 @@ define('TEMP_DIR', __DIR__ . '/../tmp');
 Tester\Environment::lock($config['system'], TEMP_DIR);
 
 
+// ODBC
+if ($config['system'] === 'odbc') {
+	copy(__DIR__ . '/data/odbc.mdb', TEMP_DIR . '/odbc.mdb');
+	$config['dsn'] = str_replace('data/odbc.mdb', TEMP_DIR . '/odbc.mdb', $config['dsn']);
+}
+
+
 try {
 	new DibiConnection($config);
 } catch (DibiNotSupportedException $e) {
