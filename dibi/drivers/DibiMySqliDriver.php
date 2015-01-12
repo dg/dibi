@@ -79,7 +79,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 				'timezone' => date('P'),
 				'username' => ini_get('mysqli.default_user'),
 				'password' => ini_get('mysqli.default_pw'),
-				'socket' => ini_get('mysqli.default_socket'),
+				'socket' => (string) ini_get('mysqli.default_socket'),
 				'port' => NULL,
 			);
 			if (!isset($config['host'])) {
@@ -420,9 +420,10 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function getResultColumns()
 	{
 		static $types;
-		if (empty($types)) {
+		if ($types === NULL) {
 			$consts = get_defined_constants(TRUE);
-			foreach ($consts['mysqli'] as $key => $value) {
+			$types = array();
+			foreach (isset($consts['mysqli']) ? $consts['mysqli'] : array() as $key => $value) {
 				if (strncmp($key, 'MYSQLI_TYPE_', 12) === 0) {
 					$types[$value] = substr($key, 12);
 				}
@@ -438,7 +439,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 				'name' => $row['name'],
 				'table' => $row['orgtable'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
-				'nativetype' => $types[$row['type']],
+				'nativetype' => isset($types[$row['type']]) ? $types[$row['type']] : $row['type'],
 				'vendor' => $row,
 			);
 		}
@@ -453,7 +454,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function getResultResource()
 	{
 		$this->autoFree = FALSE;
-		return $this->resultSet === NULL || $this->resultSet->type === NULL ? NULL : $this->resultSet;
+		return $this->resultSet;
 	}
 
 }

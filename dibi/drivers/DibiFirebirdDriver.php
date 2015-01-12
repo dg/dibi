@@ -402,7 +402,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 
 	/**
 	 * Returns the result set resource.
-	 * @return mysqli_result
+	 * @return resource
 	 */
 	public function getResultResource()
 	{
