@@ -68,11 +68,10 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 			$this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
 
 		} catch (PDOException $e) {
+			if ($e->getMessage() === 'could not find driver') {
+				throw new DibiNotSupportedException("PHP extension for PDO is not loaded.");
+			}
 			throw new DibiDriverException($e->getMessage(), $e->getCode());
-		}
-
-		if (!$this->connection) {
-			throw new DibiDriverException('Connecting error.');
 		}
 
 		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
