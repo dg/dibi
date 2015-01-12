@@ -481,7 +481,7 @@ class DibiColumnInfo extends DibiObject
 	 */
 	public function getTableName()
 	{
-		return isset($this->info['table']) ? $this->info['table'] : NULL;
+		return isset($this->info['table']) && $this->info['table'] != NULL ? $this->info['table'] : NULL; // intentionally ==
 	}
 
 
