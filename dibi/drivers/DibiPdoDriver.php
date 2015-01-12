@@ -245,10 +245,12 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	{
 		switch ($type) {
 			case dibi::TEXT:
-				return $this->connection->quote($value, PDO::PARAM_STR);
-
 			case dibi::BINARY:
-				return $this->connection->quote($value, PDO::PARAM_LOB);
+				if ($this->driverName === 'odbc') {
+					return "'" . str_replace("'", "''", $value) . "'";
+				} else {
+					return $this->connection->quote($value, $type === dibi::TEXT ? PDO::PARAM_STR : PDO::PARAM_LOB);
+				}
 
 			case dibi::IDENTIFIER:
 				switch ($this->driverName) {
@@ -275,14 +277,22 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 				}
 
 			case dibi::BOOL:
-				return $this->connection->quote($value, PDO::PARAM_BOOL);
+				if ($this->driverName === 'pgsql') {
+					return $value ? 'TRUE' : 'FALSE';
+				} else {
+					return $value ? 1 : 0;
+				}
 
 			case dibi::DATE:
 			case dibi::DATETIME:
 				if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
 					$value = new DibiDateTime($value);
 				}
-				return $value->format($type === dibi::DATETIME ? "'Y-m-d H:i:s'" : "'Y-m-d'");
+				if ($this->driverName === 'odbc') {
+					return $value->format($type === dibi::DATETIME ? "#m/d/Y H:i:s#" : "#m/d/Y#");
+				} else {
+					return $value->format($type === dibi::DATETIME ? "'Y-m-d H:i:s'" : "'Y-m-d'");
+				}
 
 			default:
 				throw new InvalidArgumentException('Unsupported type.');
@@ -298,7 +308,35 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	 */
 	public function escapeLike($value, $pos)
 	{
-		throw new DibiNotImplementedException;
+		switch ($this->driverName) {
+			case 'mysql':
+				$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
+				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+
+			case 'oci':
+				$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\\%_");
+				$value = str_replace("'", "''", $value);
+				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+
+			case 'pgsql':
+				$value = substr($this->connection->quote($value, PDO::PARAM_STR), 1, -1);
+				$value = strtr($value, array( '%' => '\\\\%', '_' => '\\\\_'));
+				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+
+			case 'sqlite':
+			case 'sqlite2':
+				$value = addcslashes(substr($this->connection->quote($value, PDO::PARAM_STR), 1, -1), '%_\\');
+				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
+
+			case 'odbc':
+			case 'mssql':
+			case 'sqlsrv':
+				$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+
+			default:
+				throw new DibiNotImplementedException;
+		}
 	}
 
 
