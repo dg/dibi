@@ -21,7 +21,7 @@
 		"dg/dibi": "self.version"
 	},
 	"autoload": {
-		"classmap": ["dibi/"]
+		"classmap": ["src/"]
 	},
 	"extra": {
 		"branch-alias": {

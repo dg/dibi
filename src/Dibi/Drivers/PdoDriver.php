@@ -6,8 +6,8 @@
  */
 
 
-require_once dirname(__FILE__) . '/DibiMySqlReflector.php';
-require_once dirname(__FILE__) . '/DibiSqliteReflector.php';
+require_once dirname(__FILE__) . '/MySqlReflector.php';
+require_once dirname(__FILE__) . '/SqliteReflector.php';
 
 
 /**
