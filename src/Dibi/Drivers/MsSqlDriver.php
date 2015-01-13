@@ -5,7 +5,7 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-require_once dirname(__FILE__) . '/DibiMsSqlReflector.php';
+require_once dirname(__FILE__) . '/MsSqlReflector.php';
 
 /**
  * The dibi driver for MS SQL database.

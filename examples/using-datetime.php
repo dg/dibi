@@ -4,7 +4,7 @@
 
 <?php
 
-require __DIR__ . '/../dibi/dibi.php';
+require __DIR__ . '/../src/loader.php';
 
 date_default_timezone_set('Europe/Prague');
 
