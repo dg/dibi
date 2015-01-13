@@ -71,8 +71,8 @@ class dibi
 		FIELD_TIME = dibi::TIME;
 
 	/** version */
-	const VERSION = '2.0.4',
-		REVISION = '$WCREV$ released on $WCDATE$';
+	const VERSION = '2.0.5',
+		REVISION = 'released on 2015-01-13';
 
 	/** sorting order */
 	const ASC = 'ASC',
