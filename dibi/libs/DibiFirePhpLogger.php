@@ -20,6 +20,9 @@ class DibiFirePhpLogger extends DibiObject
 	/** maximum SQL length */
 	static public $maxLength = 1000;
 
+	/** size of json stream chunk */
+	static public $jsonStreamChunkSize = 4990;
+	
 	/** @var int */
 	public $filter;
 
@@ -58,6 +61,11 @@ class DibiFirePhpLogger extends DibiObject
 			return;
 		}
 
+		if (!$this->numOfQueries) {
+			header('X-Wf-Protocol-dibi: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');
+			header('X-Wf-dibi-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0');
+			header('X-Wf-dibi-Structure-1: http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1');
+		}
 		$this->totalTime += $event->time;
 		$this->numOfQueries++;
 		self::$fireTable[] = array(
@@ -67,10 +75,6 @@ class DibiFirePhpLogger extends DibiObject
 			$event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name')
 		);
 
-		header('X-Wf-Protocol-dibi: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');
-		header('X-Wf-dibi-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.0');
-		header('X-Wf-dibi-Structure-1: http://meta.firephp.org/Wildfire/Structure/FirePHP/FirebugConsole/0.1');
-
 		$payload = json_encode(array(
 			array(
 				'Type' => 'TABLE',
@@ -78,7 +82,7 @@ class DibiFirePhpLogger extends DibiObject
 			),
 			self::$fireTable,
 		));
-		foreach (str_split($payload, 4990) as $num => $s) {
+		foreach (str_split($payload, self::$jsonStreamChunkSize) as $num => $s) {
 			$num++;
 			header("X-Wf-dibi-1-1-d$num: |$s|\\"); // protocol-, structure-, plugin-, message-index
 		}
