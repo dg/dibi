@@ -111,7 +111,7 @@ class DibiConnection extends DibiObject
 				$this->onEvent[] = array(new DibiFirePhpLogger($filter), 'logEvent');
 			}
 
-			if (!interface_exists('Tracy\IBarPanel') && (interface_exists('Nette\Diagnostics\IBarPanel') || interface_exists('IBarPanel'))) {
+			if (!interface_exists('Tracy\IBarPanel') && interface_exists('Nette\Diagnostics\IBarPanel') && class_exists('DibiNettePanel')) {
 				$panel = new DibiNettePanel(isset($profilerCfg['explain']) ? $profilerCfg['explain'] : TRUE, $filter);
 				$panel->register($this);
 			}
