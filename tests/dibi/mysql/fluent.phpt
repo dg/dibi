@@ -10,10 +10,12 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$options = $config['mysql'];
-$options['lazy'] = TRUE;
+$connection = new DibiConnection($config);
+$translator = new DibiTranslator($connection);
 
-$connection = new DibiConnection($options);
+if ($config['system'] !== 'mysql') {
+	Tester\Environment::skip('Not supported.');
+}
 
 // %s
 $fluent = new DibiFluent($connection);

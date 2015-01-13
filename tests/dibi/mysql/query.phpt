@@ -10,11 +10,12 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$options = $config['mysql'];
-$options['lazy'] = TRUE;
-
-$connection = new DibiConnection($options);
+$connection = new DibiConnection($config);
 $translator = new DibiTranslator($connection);
+
+if ($config['system'] !== 'mysql') {
+	Tester\Environment::skip('Not supported.');
+}
 
 // %s
 $sql = $translator->translate(array("SELECT [username] FROM [users] WHERE [user] = %s", 'admin'));
