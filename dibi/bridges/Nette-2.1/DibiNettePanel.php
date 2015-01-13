@@ -5,10 +5,7 @@
  * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
  */
 
-
-if (interface_exists('Nette\Diagnostics\IBarPanel')) {
-	class_alias('Nette\Diagnostics\IBarPanel', 'IBarPanel');
-}
+use Nette\Diagnostics\Debugger;
 
 
 /**
@@ -17,7 +14,7 @@ if (interface_exists('Nette\Diagnostics\IBarPanel')) {
  * @author     David Grudl
  * @package    dibi\nette
  */
-class DibiNettePanel extends DibiObject implements IBarPanel
+class DibiNettePanel extends DibiObject implements Nette\Diagnostics\IBarPanel
 {
 	/** @var int maximum SQL length */
 	static public $maxLength = 1000;
@@ -41,24 +38,9 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 
 	public function register(DibiConnection $connection)
 	{
-		if (is_callable('Nette\Diagnostics\Debugger::enable') && !class_exists('NDebugger')) {
-			class_alias('Nette\Diagnostics\Debugger', 'NDebugger'); // PHP 5.2 code compatibility
-		}
-		if (is_callable('NDebugger::enable') && is_callable('NDebugger::getBlueScreen')) { // Nette Framework 2.1
-			NDebugger::getBar()->addPanel($this);
-			NDebugger::getBlueScreen()->addPanel(array(__CLASS__, 'renderException'));
-			$connection->onEvent[] = array($this, 'logEvent');
-
-		} elseif (is_callable('NDebugger::enable')) { // Nette Framework 2.0 (for PHP 5.3 or PHP 5.2 prefixed)
-			NDebugger::$bar && NDebugger::$bar->addPanel($this);
-			NDebugger::$blueScreen && NDebugger::$blueScreen->addPanel(array(__CLASS__, 'renderException'), __CLASS__);
-			$connection->onEvent[] = array($this, 'logEvent');
-
-		} elseif (is_callable('Debugger::enable') && !is_callable('Debugger::getBlueScreen')) { // Nette Framework 2.0 for PHP 5.2 non-prefixed
-			Debugger::$bar && Debugger::$bar->addPanel($this);
-			Debugger::$blueScreen && Debugger::$blueScreen->addPanel(array(__CLASS__, 'renderException'), __CLASS__);
-			$connection->onEvent[] = array($this, 'logEvent');
-		}
+		Debugger::getBar()->addPanel($this);
+		Debugger::getBlueScreen()->addPanel(array(__CLASS__, 'renderException'));
+		$connection->onEvent[] = array($this, 'logEvent');
 	}
 
 
