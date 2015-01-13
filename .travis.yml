@@ -38,4 +38,4 @@ before_script:
 
     # Create Postgre database
     - psql -c 'CREATE DATABASE dibi_test' -U postgres
-    - mysql -e 'create database dibi_test;'
+    - mysql -e 'CREATE DATABASE dibi_test;'
