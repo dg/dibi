@@ -198,15 +198,36 @@ Assert::same(
 
 
 // like
-if ($config['driver'] !== 'sqlite') { // sqlite2
+$args = array(
+	"SELECT * FROM products WHERE (title LIKE %like~ AND title LIKE %~like) OR title LIKE %~like~",
+	'C',
+	'r',
+	"a\n%_\\'\""
+);
+
+if ($config['system'] === 'pgsql') {
+	$conn->query('SET escape_string_warning = off'); // do not log warnings
+
+	$conn->query('SET standard_conforming_strings = off');
+	Assert::same(
+		"SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n\\\\%\\\\_\\\\\\\\''\"%'",
+		$conn->translate($args[0], $args[1], $args[2], $args[3])
+	);
+
+	$conn->query('SET standard_conforming_strings = on');
+	Assert::same(
+		"SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n\\%\\_\\\\''\"%'",
+		$conn->translate($args[0], $args[1], $args[2], $args[3])
+	);
+
+} elseif ($config['driver'] !== 'sqlite') { // sqlite2
 	Assert::same(
 		reformat(array(
 			'sqlite' => "SELECT * FROM products WHERE (title LIKE 'C%' ESCAPE '\\' AND title LIKE '%r' ESCAPE '\\') OR title LIKE '%a\n\\%\\_\\\\''\"%' ESCAPE '\\'",
 			'odbc' => "SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n[%][_]\\''\"%'",
-			'pgsql' => "SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n\\\\%\\\\_\\''\"%'",
 			"SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\\n\\%\\_\\\\\\\\\'\"%'",
 		)),
-		$conn->translate("SELECT * FROM products WHERE (title LIKE %like~ AND title LIKE %~like) OR title LIKE %~like~", 'C', 'r', "a\n%_\\'\"")
+		$conn->translate($args[0], $args[1], $args[2], $args[3])
 	);
 }
 
