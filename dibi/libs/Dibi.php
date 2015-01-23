@@ -40,7 +40,7 @@ class dibi
 
 	/** version */
 	const VERSION = '2.3.0',
-		REVISION = 'released on 2015-01-13';
+		REVISION = 'released on 2015-01-23';
 
 	/** sorting order */
 	const ASC = 'ASC',
