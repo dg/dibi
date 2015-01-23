@@ -310,8 +310,9 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function escapeLike($value, $pos)
 	{
+		$bs = pg_escape_string($this->connection, '\\'); // standard_conforming_strings = on/off
 		$value = pg_escape_string($this->connection, $value);
-		$value = strtr($value, array( '%' => '\\\\%', '_' => '\\\\_'));
+		$value = strtr($value, array('%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\'));
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
