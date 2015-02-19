@@ -38,6 +38,9 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	/** @var string */
 	private $driverName;
 
+	/** @var string */
+	private $serverVersion;
+
 
 	/**
 	 * @throws DibiNotSupportedException
@@ -75,6 +78,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 		}
 
 		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
+		$this->serverVersion = $this->connection->getAttribute(PDO::ATTR_SERVER_VERSION);
 	}
 
 
@@ -396,10 +400,19 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 				}
 				break;
 
-			case 'odbc':
-			case 'dblib':
 			case 'mssql':
 			case 'sqlsrv':
+			case 'dblib':
+				if (version_compare($this->serverVersion, '11.0') >= 0) {
+					if ($offset >= 0 || $limit >= 0) {
+						$sql .= ' OFFSET ' . (int) $offset . ' ROWS'
+							. ($limit > 0 ? ' FETCH NEXT ' . (int) $limit . ' ROWS ONLY' : '');
+					}
+					break;
+				}
+				// intentionally break omitted
+
+			case 'odbc':
 				if ($offset < 1) {
 					$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
 					break;
