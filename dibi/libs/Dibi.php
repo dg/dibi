@@ -22,8 +22,8 @@ class dibi
 		INTEGER = 'i',
 		FLOAT = 'f',
 		DATE = 'd',
-		DATETIME = 't',
-		TIME = 't';
+		DATETIME = 'dt',
+		TIME = 's';
 
 	const IDENTIFIER = 'n',
 		AFFECTED_ROWS = 'a';
