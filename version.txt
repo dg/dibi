@@ -1,1 +1,0 @@
-Dibi 2.3.0 (released on 2015-01-23)
