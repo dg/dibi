@@ -86,14 +86,12 @@ class dibi
 	/**
 	 * Creates a new DibiConnection object and connects it to specified database.
 	 * @param  mixed   connection parameters
+	 * @param  string  connection name
 	 * @return DibiConnection
 	 * @throws DibiException
 	 */
 	public static function connect($config = array(), $name = 0)
 	{
-		if ($name) {
-			trigger_error(__METHOD__ . '(): named connections are deprecated.', E_USER_DEPRECATED);
-		}
 		return self::$connection = self::$registry[$name] = new DibiConnection($config, $name);
 	}
 
@@ -120,6 +118,7 @@ class dibi
 
 	/**
 	 * Retrieve active connection.
+	 * @param  string   connection registy name
 	 * @return DibiConnection
 	 * @throws DibiException
 	 */
@@ -132,8 +131,6 @@ class dibi
 
 			return self::$connection;
 		}
-
-		trigger_error(__METHOD__ . '(): named connections are deprecated.', E_USER_DEPRECATED);
 
 		if (!isset(self::$registry[$name])) {
 			throw new DibiException("There is no connection named '$name'.");
