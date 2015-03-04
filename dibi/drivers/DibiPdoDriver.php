@@ -19,6 +19,7 @@ require_once dirname(__FILE__) . '/DibiSqliteReflector.php';
  *   - password (or pass)
  *   - options (array) => driver specific options {@see PDO::__construct}
  *   - resource (PDO) => existing connection
+ *   - version
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
  * @author     David Grudl
@@ -78,7 +79,9 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 		}
 
 		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
-		$this->serverVersion = $this->connection->getAttribute(PDO::ATTR_SERVER_VERSION);
+		$this->serverVersion = isset($config['version'])
+			? $config['version']
+			: @$this->connection->getAttribute(PDO::ATTR_SERVER_VERSION); // @ - may be not supported
 	}
 
 
