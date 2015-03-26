@@ -275,6 +275,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 					case 'mssql':
 						return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
+					case 'dblib':
 					case 'sqlsrv':
 						return '[' . str_replace(']', ']]', $value) . ']';
 
@@ -337,6 +338,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 
 			case 'odbc':
 			case 'mssql':
+			case 'dblib':
 			case 'sqlsrv':
 				$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
 				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
