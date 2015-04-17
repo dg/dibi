@@ -103,7 +103,7 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	{
 		$res = oci_parse($this->connection, $sql);
 		if ($res) {
-			oci_execute($res, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
+			@oci_execute($res, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
 			$err = oci_error($res);
 			if ($err) {
 				throw new DibiDriverException($err['message'], $err['code'], $sql);
