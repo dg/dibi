@@ -365,11 +365,12 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		$count = oci_num_fields($this->resultSet);
 		$columns = array();
 		for ($i = 1; $i <= $count; $i++) {
+			$type = oci_field_type($this->resultSet, $i);
 			$columns[] = array(
 				'name' => oci_field_name($this->resultSet, $i),
 				'table' => NULL,
 				'fullname' => oci_field_name($this->resultSet, $i),
-				'nativetype'=> oci_field_type($this->resultSet, $i),
+				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
 			);
 		}
 		return $columns;
