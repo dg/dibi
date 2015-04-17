@@ -104,7 +104,7 @@ class DibiNettePanel extends DibiObject implements Nette\Diagnostics\IBarPanel
 				try {
 					$backup = array($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime);
 					$event->connection->onEvent = NULL;
-					$cmd = is_string($this->explain) ? $this->explain : ($event->connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN' : 'EXPLAIN');
+					$cmd = is_string($this->explain) ? $this->explain : ($event->connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
 					$explain = dibi::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);
 				} catch (DibiException $e) {}
 				list($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime) = $backup;
