@@ -281,6 +281,9 @@ class DibiMsSql2012Driver extends DibiObject implements IDibiDriver, IDibiResult
 	public function applyLimit(& $sql, $limit, $offset)
 	{
 		if ($offset > 0) {
+			if (strpos($sql, "ORDER BY") === false) {
+				throw new DibiNotSupportedExceptionException('You have to specify "ORDER BY".');
+			}
 			$sql .= ' OFFSET ' . (int) $offset . ' ROWS'
 			        . ($limit >= 0 ? ' FETCH NEXT ' . (int) $limit . ' ROWS ONLY' : '');
 		} elseif($offset == 0 && $limit >= 0) {
