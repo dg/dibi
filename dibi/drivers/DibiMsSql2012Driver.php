@@ -280,11 +280,11 @@ class DibiMsSql2012Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-    if ($offset > 0) {
+		if ($offset > 0) {
 			$sql .= ' OFFSET ' . (int) $offset ' ROWS')
 			        . ($limit >= 0 ? ' FETCH NEXT ' . (int) $limit . ' ROWS ONLY' : '')
 		} elseif($offset == 0 && $limit >= 0) {
-		  $sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') AS T ';
+			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') AS T ';
 		}
 	}
 
