@@ -76,7 +76,7 @@ Assert::same(
 // hex numbers
 Assert::same(
 	reformat('SELECT 17'),
-	$conn->translate("SELECT %i", '0x11')
+	$conn->translate("SELECT %i", 0x11)
 );
 
 // invalid input
