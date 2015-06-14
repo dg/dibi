@@ -357,19 +357,21 @@ final class DibiTranslator extends DibiObject
 
 				case 'i':  // signed int
 				case 'u':  // unsigned int, ignored
-					// support for long numbers - keep them unchanged
-					if (is_string($value) && preg_match('#[+-]?\d++(e\d+)?\z#A', $value)) {
-						return $value;
+					if ($value === NULL) {
+						return 'NULL';
+					} elseif (is_string($value) && preg_match('#[+-]?\d++(?:e\d+)?\z#A', $value)) {
+						return $value; // support for long numbers - keep them unchanged
 					} else {
-						return $value === NULL ? 'NULL' : (string) (int) ($value + 0);
+						return (string) (int) ($value + 0);
 					}
 
 				case 'f':  // float
-					// support for extreme numbers - keep them unchanged
-					if (is_string($value) && is_numeric($value) && strpos($value, 'x') === FALSE) {
-						return $value; // something like -9E-005 is accepted by SQL, HEX values are not
+					if ($value === NULL) {
+						return 'NULL';
+					} elseif (is_string($value) && is_numeric($value) && substr($value, 1, 1) !== 'x') {
+						return $value; // support for extreme numbers - keep them unchanged
 					} else {
-						return $value === NULL ? 'NULL' : rtrim(rtrim(number_format($value + 0, 10, '.', ''), '0'), '.');
+						return rtrim(rtrim(number_format($value + 0, 10, '.', ''), '0'), '.');
 					}
 
 				case 'd':  // date
