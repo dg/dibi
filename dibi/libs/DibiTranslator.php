@@ -361,8 +361,11 @@ final class DibiTranslator extends DibiObject
 						return 'NULL';
 					} elseif (is_string($value) && preg_match('#[+-]?\d++(?:e\d+)?\z#A', $value)) {
 						return $value; // support for long numbers - keep them unchanged
+					} elseif (is_string($value) && substr($value, 1, 1) === 'x' && is_numeric($value)) {
+						trigger_error('Support for hex strings has been deprecated.', E_USER_DEPRECATED);
+						return (string) hexdec($value);
 					} else {
-						return (string) (int) ($value + 0);
+						return (string) (int) $value;
 					}
 
 				case 'f':  // float

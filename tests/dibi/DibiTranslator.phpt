@@ -73,12 +73,6 @@ Assert::same(
 	$conn->translate("SELECT %f", '-.12345678912345678912345678e10')
 );
 
-// hex numbers
-Assert::same(
-	reformat('SELECT 17'),
-	$conn->translate("SELECT %i", '0x11')
-);
-
 // invalid input
 $e = Assert::exception(function() use ($conn) {
 	$conn->translate("SELECT %s", (object) array(123), ', %m', 123);
