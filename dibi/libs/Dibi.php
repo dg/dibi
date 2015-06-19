@@ -29,14 +29,14 @@ class dibi
 		AFFECTED_ROWS = 'a';
 
 	/** @deprecated */
-	const FIELD_TEXT = dibi::TEXT,
-		FIELD_BINARY = dibi::BINARY,
-		FIELD_BOOL = dibi::BOOL,
-		FIELD_INTEGER = dibi::INTEGER,
-		FIELD_FLOAT = dibi::FLOAT,
-		FIELD_DATE = dibi::DATE,
-		FIELD_DATETIME = dibi::DATETIME,
-		FIELD_TIME = dibi::TIME;
+	const FIELD_TEXT = self::TEXT,
+		FIELD_BINARY = self::BINARY,
+		FIELD_BOOL = self::BOOL,
+		FIELD_INTEGER = self::INTEGER,
+		FIELD_FLOAT = self::FLOAT,
+		FIELD_DATE = self::DATE,
+		FIELD_DATETIME = self::DATETIME,
+		FIELD_TIME = self::TIME;
 
 	/** version */
 	const VERSION = '2.2.3',
@@ -76,7 +76,7 @@ class dibi
 	 */
 	final public function __construct()
 	{
-		throw new LogicException("Cannot instantiate static class " . get_class($this));
+		throw new LogicException('Cannot instantiate static class ' . get_class($this));
 	}
 
 
@@ -296,7 +296,7 @@ class dibi
 	 * @return int
 	 * @throws DibiException
 	 */
-	public static function getInsertId($sequence=NULL)
+	public static function getInsertId($sequence = NULL)
 	{
 		return self::getConnection()->getInsertId($sequence);
 	}
@@ -308,7 +308,7 @@ class dibi
 	 * @return int
 	 * @throws DibiException
 	 */
-	public static function insertId($sequence=NULL)
+	public static function insertId($sequence = NULL)
 	{
 		return self::getConnection()->getInsertId($sequence);
 	}
@@ -479,7 +479,7 @@ class dibi
 			$sql = preg_replace("#(?<=[\\s,(])($keywords1)(?=[\\s,)])#i", "\n\$1", $sql);
 
 			// reduce spaces
-			$sql = preg_replace('#[ \t]{2,}#', " ", $sql);
+			$sql = preg_replace('#[ \t]{2,}#', ' ', $sql);
 
 			$sql = wordwrap($sql, 100);
 			$sql = preg_replace("#([ \t]*\r?\n){2,}#", "\n", $sql);

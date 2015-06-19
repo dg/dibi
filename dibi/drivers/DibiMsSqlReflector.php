@@ -34,10 +34,10 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getTables()
 	{
-		$res = $this->driver->query("
+		$res = $this->driver->query('
 			SELECT TABLE_NAME, TABLE_TYPE
 			FROM INFORMATION_SCHEMA.TABLES
-		");
+		');
 		$tables = array();
 		while ($row = $res->fetch(FALSE)) {
 			$tables[] = array(
@@ -52,12 +52,12 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 	/**
 	 * Returns count of rows in a table
 	 * @param  string
-	 * @return integer
+	 * @return int
 	 */
-	public function getTableCount($table, $fallback=true)
+	public function getTableCount($table, $fallback = TRUE)
 	{
 		if (empty($table)) {
-			return false;
+			return FALSE;
 		}
 		$result = $this->driver->query("
 			SELECT MAX(rowcnt)
@@ -71,7 +71,7 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 				$row = $this->driver->query("SELECT COUNT(*) FROM {$this->driver->escape($table, dibi::IDENTIFIER)}")->fetch(FALSE);
 				$count = intval($row[0]);
 			} else {
-				$count = false;
+				$count = FALSE;
 			}
 		} else {
 			$count = intval($row[0]);
@@ -96,16 +96,16 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 		");
 		$columns = array();
 		while ($row = $res->fetch(TRUE)) {
-			$size = false;
+			$size = FALSE;
 			$type = strtoupper($row['DATA_TYPE']);
 
 			$size_cols = array(
-				'DATETIME'=>'DATETIME_PRECISION',
-				'DECIMAL'=>'NUMERIC_PRECISION',
-				'CHAR'=>'CHARACTER_MAXIMUM_LENGTH',
-				'NCHAR'=>'CHARACTER_OCTET_LENGTH',
-				'NVARCHAR'=>'CHARACTER_OCTET_LENGTH',
-				'VARCHAR'=>'CHARACTER_OCTET_LENGTH'
+				'DATETIME' => 'DATETIME_PRECISION',
+				'DECIMAL' => 'NUMERIC_PRECISION',
+				'CHAR' => 'CHARACTER_MAXIMUM_LENGTH',
+				'NCHAR' => 'CHARACTER_OCTET_LENGTH',
+				'NVARCHAR' => 'CHARACTER_OCTET_LENGTH',
+				'VARCHAR' => 'CHARACTER_OCTET_LENGTH',
 			);
 
 			if (isset($size_cols[$type])) {
@@ -122,7 +122,7 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 				'unsigned' => NULL,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
-				'autoincrement' => false,
+				'autoincrement' => FALSE,
 				'vendor' => $row,
 			);
 		}
@@ -161,8 +161,8 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 			if (!isset($indexes[$index_name])) {
 				$indexes[$index_name] = array();
 				$indexes[$index_name]['name'] = $index_name;
-				$indexes[$index_name]['unique'] = (bool)$row['is_unique'];
-				$indexes[$index_name]['primary'] = (bool)$row['is_primary_key'];
+				$indexes[$index_name]['unique'] = (bool) $row['is_unique'];
+				$indexes[$index_name]['primary'] = (bool) $row['is_primary_key'];
 				$indexes[$index_name]['columns'] = array();
 			}
 			$indexes[$index_name]['columns'][] = $row['column_name'];
@@ -203,8 +203,8 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 				$keys[$key_name]['local'] = array($row['column_name']); // local columns
 				$keys[$key_name]['table'] = $row['reference_table_name']; // referenced table
 				$keys[$key_name]['foreign'] = array($row['reference_column_name']); // referenced columns
-				$keys[$key_name]['onDelete'] = false;
-				$keys[$key_name]['onUpdate'] = false;
+				$keys[$key_name]['onDelete'] = FALSE;
+				$keys[$key_name]['onUpdate'] = FALSE;
 			} else {
 				$keys[$key_name]['local'][] = $row['column_name']; // local columns
 				$keys[$key_name]['foreign'][] = $row['reference_column_name']; // referenced columns

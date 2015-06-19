@@ -64,7 +64,7 @@ class DibiFirePhpLogger extends DibiObject
 			sprintf('%0.3f', $event->time * 1000),
 			strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql,
 			$event->result instanceof Exception ? 'ERROR' : (string) $event->count,
-			$event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name')
+			$event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name'),
 		);
 
 		header('X-Wf-Protocol-dibi: http://meta.wildfirehq.org/Protocol/JsonStream/0.2');

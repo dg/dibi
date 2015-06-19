@@ -10,7 +10,7 @@ date_default_timezone_set('Europe/Prague');
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite3',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 	// enable query logging to this file
 	'profiler' => array(
@@ -26,13 +26,12 @@ try {
 	$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] < ?', 5);
 
 	$res = dibi::query('SELECT FROM [customers] WHERE [customer_id] < ?', 38);
-
 } catch (DibiException $e) {
 	echo '<p>', get_class($e), ': ', $e->getMessage(), '</p>';
 }
 
 
 // outputs a log file
-echo "<h2>File data/log.sql:</h2>";
+echo '<h2>File data/log.sql:</h2>';
 
 echo '<pre>', file_get_contents('data/log.sql'), '</pre>';

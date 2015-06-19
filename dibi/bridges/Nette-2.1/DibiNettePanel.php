@@ -124,7 +124,8 @@ class DibiNettePanel extends DibiObject implements IBarPanel
 					$event->connection->onEvent = NULL;
 					$cmd = is_string($this->explain) ? $this->explain : ($event->connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN' : 'EXPLAIN');
 					$explain = dibi::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);
-				} catch (DibiException $e) {}
+				} catch (DibiException $e) {
+				}
 				list($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime) = $backup;
 			}
 

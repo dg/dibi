@@ -14,7 +14,7 @@ date_default_timezone_set('Europe/Prague');
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite3',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ));
 
@@ -27,7 +27,7 @@ $res->setType('customer_id', Dibi::INTEGER)
 	->setFormat(dibi::DATETIME, 'Y-m-d H:i:s');
 
 
-Tracy\Dumper::dump( $res->fetch() );
+Tracy\Dumper::dump($res->fetch());
 // outputs:
 // DibiRow(3) {
 //    customer_id => 1
@@ -38,7 +38,7 @@ Tracy\Dumper::dump( $res->fetch() );
 // using auto-detection (works well with MySQL or other strictly typed databases)
 $res = dibi::query('SELECT * FROM [customers]');
 
-Tracy\Dumper::dump( $res->fetch() );
+Tracy\Dumper::dump($res->fetch());
 // outputs:
 // DibiRow(3) {
 //    customer_id => 1

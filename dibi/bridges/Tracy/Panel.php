@@ -7,13 +7,13 @@
 
 namespace Dibi\Bridges\Tracy;
 
-use dibi,
-	Tracy;
+use dibi;
+use Tracy;
 
 
 /**
  * Dibi panel for Tracy.
- *
+ * @package    dibi\nette
  * @author     David Grudl
  */
 class Panel extends \DibiObject implements Tracy\IBarPanel
@@ -108,7 +108,8 @@ class Panel extends \DibiObject implements Tracy\IBarPanel
 					$event->connection->onEvent = NULL;
 					$cmd = is_string($this->explain) ? $this->explain : ($event->connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN' : 'EXPLAIN');
 					$explain = dibi::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);
-				} catch (\DibiException $e) {}
+				} catch (\DibiException $e) {
+				}
 				list($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime) = $backup;
 			}
 

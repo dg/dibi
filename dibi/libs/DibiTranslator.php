@@ -160,7 +160,7 @@ final class DibiTranslator extends DibiObject
 
 
 		if ($comment) {
-			$sql[] = "*/";
+			$sql[] = '*/';
 		}
 
 		$sql = implode(' ', $sql);
@@ -187,7 +187,7 @@ final class DibiTranslator extends DibiObject
 	public function formatValue($value, $modifier)
 	{
 		if ($this->comment) {
-			return "...";
+			return '...';
 		}
 
 		if (!$this->driver) {
@@ -489,7 +489,7 @@ final class DibiTranslator extends DibiObject
 
 			if ($cursor >= count($this->args)) {
 				$this->hasError = TRUE;
-				return "**Extra placeholder**";
+				return '**Extra placeholder**';
 			}
 
 			$cursor++;
@@ -512,7 +512,7 @@ final class DibiTranslator extends DibiObject
 					// open comment
 					$this->ifLevelStart = $this->ifLevel;
 					$this->comment = TRUE;
-					return "/*";
+					return '/*';
 				}
 				return '';
 
@@ -520,11 +520,11 @@ final class DibiTranslator extends DibiObject
 				if ($this->ifLevelStart === $this->ifLevel) {
 					$this->ifLevelStart = 0;
 					$this->comment = FALSE;
-					return "*/";
+					return '*/';
 				} elseif (!$this->comment) {
 					$this->ifLevelStart = $this->ifLevel;
 					$this->comment = TRUE;
-					return "/*";
+					return '/*';
 				}
 
 			} elseif ($mod === 'end') {
@@ -533,7 +533,7 @@ final class DibiTranslator extends DibiObject
 					// close comment
 					$this->ifLevelStart = 0;
 					$this->comment = FALSE;
-					return "*/";
+					return '*/';
 				}
 				return '';
 
@@ -572,10 +572,10 @@ final class DibiTranslator extends DibiObject
 			return $this->identifiers->{$matches[2]};
 
 		} elseif ($matches[3]) { // SQL strings: '...'
-			return $this->driver->escape( str_replace("''", "'", $matches[4]), dibi::TEXT);
+			return $this->driver->escape(str_replace("''", "'", $matches[4]), dibi::TEXT);
 
 		} elseif ($matches[5]) { // SQL strings: "..."
-			return $this->driver->escape( str_replace('""', '"', $matches[6]), dibi::TEXT);
+			return $this->driver->escape(str_replace('""', '"', $matches[6]), dibi::TEXT);
 
 		} elseif ($matches[7]) { // string quote
 			$this->hasError = TRUE;

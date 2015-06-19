@@ -66,11 +66,12 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 		if (isset($config['resource']) && $config['resource'] instanceof SQLite3) {
 			$this->connection = $config['resource'];
-		} else try {
-			$this->connection = new SQLite3($config['database']);
-
-		} catch (Exception $e) {
-			throw new DibiDriverException($e->getMessage(), $e->getCode());
+		} else {
+			try {
+				$this->connection = new SQLite3($config['database']);
+			} catch (Exception $e) {
+				throw new DibiDriverException($e->getMessage(), $e->getCode());
+			}
 		}
 
 		$this->dbcharset = empty($config['dbcharset']) ? 'UTF-8' : $config['dbcharset'];
@@ -82,7 +83,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 		// enable foreign keys support (defaultly disabled; if disabled then foreign key constraints are not enforced)
 		$version = SQLite3::version();
 		if ($version['versionNumber'] >= '3006019') {
-			$this->query("PRAGMA foreign_keys = ON");
+			$this->query('PRAGMA foreign_keys = ON');
 		}
 	}
 
@@ -336,8 +337,8 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @param  int      the 0-based cursor pos to seek to
-	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+	 * @param  int   the 0-based cursor pos to seek to
+	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
 	 * @throws DibiNotSupportedException
 	 */
 	public function seek($row)
@@ -368,7 +369,7 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 		static $types = array(SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null');
 		for ($i = 0; $i < $count; $i++) {
 			$columns[] = array(
-				'name'  => $this->resultSet->columnName($i),
+				'name' => $this->resultSet->columnName($i),
 				'table' => NULL,
 				'fullname' => $this->resultSet->columnName($i),
 				'nativetype' => $types[$this->resultSet->columnType($i)],

@@ -7,8 +7,8 @@
 
 namespace Dibi\Bridges\Nette;
 
-use dibi,
-	Nette;
+use dibi;
+use Nette;
 
 
 /**

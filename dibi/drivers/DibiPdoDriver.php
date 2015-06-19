@@ -64,11 +64,12 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 		if ($config['resource'] instanceof PDO) {
 			$this->connection = $config['resource'];
 
-		} else try {
+		} else {
+			try {
 			$this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
-
 		} catch (PDOException $e) {
 			throw new DibiDriverException($e->getMessage(), $e->getCode());
+		}
 		}
 
 		if (!$this->connection) {
@@ -401,7 +402,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
-	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
 	 */
 	public function seek($row)
 	{

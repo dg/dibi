@@ -10,15 +10,15 @@ date_default_timezone_set('Europe/Prague');
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite3',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ));
 
 
 $id = 10;
 $record = array(
-	'title'  => 'Super product',
-	'price'  => 318,
+	'title' => 'Super product',
+	'price' => 318,
 	'active' => TRUE,
 );
 

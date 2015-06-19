@@ -332,8 +332,8 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @param  int      the 0-based cursor pos to seek to
-	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+	 * @param  int   the 0-based cursor pos to seek to
+	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
 	 * @throws DibiException
 	 */
 	public function seek($row)
@@ -367,7 +367,7 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 			$name = str_replace(array('[', ']'), '', sqlite_field_name($this->resultSet, $i));
 			$pair = explode('.', $name);
 			$columns[] = array(
-				'name'  => isset($pair[1]) ? $pair[1] : $pair[0],
+				'name' => isset($pair[1]) ? $pair[1] : $pair[0],
 				'table' => isset($pair[1]) ? $pair[0] : NULL,
 				'fullname' => $name,
 				'nativetype' => NULL,

@@ -154,7 +154,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	{
 		if ($sequence === NULL) {
 			// PostgreSQL 8.1 is needed
-			$res = $this->query("SELECT LASTVAL()");
+			$res = $this->query('SELECT LASTVAL()');
 		} else {
 			$res = $this->query("SELECT CURRVAL('$sequence')");
 		}
@@ -376,7 +376,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
-	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
 	 */
 	public function seek($row)
 	{
@@ -454,14 +454,14 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 				table_schema = ANY (current_schemas(false))";
 
 		if ($version >= 9.3) {
-			$query .= "
+			$query .= '
 				UNION ALL
 				SELECT
 					matviewname, 1
 				FROM
 					pg_matviews
 				WHERE
-					schemaname = ANY (current_schemas(false))";
+					schemaname = ANY (current_schemas(false))';
 		}
 
 		$res = $this->query($query);
