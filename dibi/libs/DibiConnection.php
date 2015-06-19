@@ -21,7 +21,7 @@
  */
 class DibiConnection extends DibiObject
 {
-	/** @var array of function(DibiEvent $event); Occurs after query is executed */
+	/** @var array of function (DibiEvent $event); Occurs after query is executed */
 	public $onEvent;
 
 	/** @var array  Current connection configuration */

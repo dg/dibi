@@ -18,11 +18,11 @@ Tracy\Debugger::enable();
 
 
 $connection = dibi::connect(array(
-	'driver'   => 'sqlite3',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 	'profiler' => array(
 		'run' => TRUE,
-	)
+	),
 ));
 
 
@@ -35,4 +35,4 @@ $panel->register($connection);
 dibi::query('SELECT 123');
 
 // result set will be dumped
-Tracy\Debugger::barDump( dibi::fetchAll('SELECT * FROM customers WHERE customer_id < ?', 38), '[customers]' );
+Tracy\Debugger::barDump(dibi::fetchAll('SELECT * FROM customers WHERE customer_id < ?', 38), '[customers]');

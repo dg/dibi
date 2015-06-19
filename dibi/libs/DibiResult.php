@@ -109,7 +109,7 @@ class DibiResult extends DibiObject implements IDataSource
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
-	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+	 * @return bool     TRUE on success, FALSE if unable to seek to specified record
 	 * @throws DibiException
 	 */
 	final public function seek($row)
@@ -188,7 +188,7 @@ class DibiResult extends DibiObject implements IDataSource
 	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
-	 * @return DibiRow|FALSE  array on success, FALSE if no next record
+	 * @return DibiRow|FALSE array on success, FALSE if no next record
 	 */
 	final public function fetch()
 	{
@@ -209,7 +209,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Like fetch(), but returns only first field.
-	 * @return mixed  value on success, FALSE if no next record
+	 * @return mixed value on success, FALSE if no next record
 	 */
 	final public function fetchSingle()
 	{
@@ -303,16 +303,16 @@ class DibiResult extends DibiObject implements IDataSource
 					$x = & $x[];
 
 				} elseif ($as === '=') { // "value" node
-					$x = $row->{$assoc[$i+1]};
+					$x = $row->{$assoc[$i + 1]};
 					continue 2;
 
 				} elseif ($as === '->') { // "object" node
 					if ($x === NULL) {
 						$x = clone $row;
-						$x = & $x->{$assoc[$i+1]};
+						$x = & $x->{$assoc[$i + 1]};
 						$x = NULL; // prepare child node
 					} else {
-						$x = & $x->{$assoc[$i+1]};
+						$x = & $x->{$assoc[$i + 1]};
 					}
 
 				} elseif ($as !== '|') { // associative-array node
@@ -369,21 +369,20 @@ class DibiResult extends DibiObject implements IDataSource
 				} elseif ($as === '=') { // "record" node
 					if ($x === NULL) {
 						$x = $row->toArray();
-						$x = & $x[ $assoc[$i+1] ];
+						$x = & $x[ $assoc[$i + 1] ];
 						$x = NULL; // prepare child node
 					} else {
-						$x = & $x[ $assoc[$i+1] ];
+						$x = & $x[ $assoc[$i + 1] ];
 					}
 
 				} elseif ($as === '@') { // "object" node
 					if ($x === NULL) {
 						$x = clone $row;
-						$x = & $x->{$assoc[$i+1]};
+						$x = & $x->{$assoc[$i + 1]};
 						$x = NULL; // prepare child node
 					} else {
-						$x = & $x->{$assoc[$i+1]};
+						$x = & $x->{$assoc[$i + 1]};
 					}
-
 
 				} else { // associative-array node
 					$x = & $x[$row->$as];
@@ -424,7 +423,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 		if ($value === NULL) {
 			if ($key !== NULL) {
-				throw new InvalidArgumentException("Either none or both columns must be specified.");
+				throw new InvalidArgumentException('Either none or both columns must be specified.');
 			}
 
 			// autodetect
@@ -478,7 +477,8 @@ class DibiResult extends DibiObject implements IDataSource
 			foreach ($this->getResultDriver()->getResultColumns() as $col) {
 				$this->types[$col['name']] = $cache->{$col['nativetype']};
 			}
-		} catch (DibiNotSupportedException $e) {}
+		} catch (DibiNotSupportedException $e) {
+		}
 	}
 
 
@@ -619,7 +619,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 				foreach ($row as $col => $val) {
 					$spaces = $maxLen - mb_strlen($col) + 2;
-					echo "$col" . str_repeat(" ", $spaces) .  "$val\n";
+					echo "$col" . str_repeat(' ', $spaces) .  "$val\n";
 				}
 
 				echo "\n";

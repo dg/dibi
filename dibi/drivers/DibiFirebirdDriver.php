@@ -88,7 +88,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				throw new DibiDriverException(ibase_errmsg(), ibase_errcode());
 			}
 		}
-
 	}
 
 
@@ -349,7 +348,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	 */
 	public function getRowCount()
 	{
-		throw new DibiNotSupportedException("Firebird/Interbase do not support returning number of rows in result set.");
+		throw new DibiNotSupportedException('Firebird/Interbase do not support returning number of rows in result set.');
 	}
 
 
@@ -379,13 +378,13 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @param  int      the 0-based cursor pos to seek to
-	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+	 * @param  int   the 0-based cursor pos to seek to
+	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
 	 * @throws DibiException
 	 */
 	public function seek($row)
 	{
-		throw new DibiNotSupportedException("Firebird/Interbase do not support seek in result set.");
+		throw new DibiNotSupportedException('Firebird/Interbase do not support seek in result set.');
 	}
 
 
@@ -656,7 +655,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				END AS TRIGGER_ENABLED
 			FROM RDB\$TRIGGERS
 			WHERE RDB\$SYSTEM_FLAG = 0"
-			. ($table === NULL ? ";" : " AND RDB\$RELATION_NAME = UPPER('$table');")
+			. ($table === NULL ? ';' : " AND RDB\$RELATION_NAME = UPPER('$table');")
 		);
 		$triggers = array();
 		while ($row = $res->fetch(TRUE)) {
@@ -683,7 +682,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 		$q = "SELECT TRIM(RDB\$TRIGGER_NAME)
 			FROM RDB\$TRIGGERS
 			WHERE RDB\$SYSTEM_FLAG = 0";
-		$q .= $table === NULL ? ";" : " AND RDB\$RELATION_NAME = UPPER('$table')";
+		$q .= $table === NULL ? ';' : " AND RDB\$RELATION_NAME = UPPER('$table')";
 
 		$res = $this->query($q);
 		$triggers = array();

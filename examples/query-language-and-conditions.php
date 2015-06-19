@@ -8,7 +8,7 @@ require __DIR__ . '/../dibi/dibi.php';
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite3',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ));
 
@@ -32,13 +32,13 @@ dibi::test('
 
 
 // if & else & (optional) end
-dibi::test("
+dibi::test('
 	SELECT *
 	FROM people
 	WHERE id > 0
-		%if", ($foo > 0), "AND foo=?", $foo, "
-		%else %if", ($bar > 0), "AND bar=?", $bar, "
-");
+		%if', ($foo > 0), 'AND foo=?', $foo, '
+		%else %if', ($bar > 0), 'AND bar=?', $bar, '
+');
 // -> SELECT * FROM people WHERE id > 0 AND bar=2
 
 

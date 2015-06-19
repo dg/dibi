@@ -9,9 +9,9 @@ $conn = new DibiConnection($config);
 
 
 $arr = array(
-	'title'   => 'Super Product',
-	'price'   => 12,
-	'brand'   => NULL,
+	'title' => 'Super Product',
+	'price' => 12,
+	'brand' => NULL,
 );
 
 $fluent = $conn->insert('table', $arr)

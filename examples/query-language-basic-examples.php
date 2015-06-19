@@ -10,7 +10,7 @@ date_default_timezone_set('Europe/Prague');
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite3',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ));
 
@@ -45,26 +45,26 @@ $array = array(
 	'brand' => NULL,
 	'created' => new DateTime,
 );
-dibi::test("INSERT INTO products", $array, $array, $array);
+dibi::test('INSERT INTO products', $array, $array, $array);
 // -> INSERT INTO products ([title], [price], [brand], [created]) VALUES ('Super Product', ...) , (...) , (...)
 
 
 // dibi detects UPDATE command
-dibi::test("
-	UPDATE colors SET", array(
+dibi::test('
+	UPDATE colors SET', array(
 		'color' => 'blue',
 		'order' => 12,
-	), "
-	WHERE id=?", 123);
+	), '
+	WHERE id=?', 123);
 // -> UPDATE colors SET [color]='blue', [order]=12 WHERE id=123
 
 
 // modifier applied to array
 $array = array(1, 2, 3);
-dibi::test("
+dibi::test('
 	SELECT *
 	FROM people
-	WHERE id IN (?)", $array
+	WHERE id IN (?)', $array
 );
 // -> SELECT * FROM people WHERE id IN ( 1, 2, 3 )
 
@@ -74,11 +74,11 @@ $order = array(
 	'field1' => 'asc',
 	'field2' => 'desc',
 );
-dibi::test("
+dibi::test('
 	SELECT *
 	FROM people
-	ORDER BY %by", $order, "
-");
+	ORDER BY %by', $order, '
+');
 // -> SELECT * FROM people ORDER BY [field1] ASC, [field2] DESC
 
 

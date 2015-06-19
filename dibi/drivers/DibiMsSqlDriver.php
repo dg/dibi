@@ -363,5 +363,4 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 		return is_resource($this->resultSet) ? $this->resultSet : NULL;
 	}
 
-
 }

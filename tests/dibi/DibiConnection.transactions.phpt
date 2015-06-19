@@ -13,16 +13,16 @@ $conn = new DibiConnection($config);
 $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 
-/*Assert::exception(function() use ($conn) {
+/*Assert::exception(function () use ($conn) {
 	$conn->rollback();
 }, 'DibiException');
 
-Assert::exception(function() use ($conn) {
+Assert::exception(function () use ($conn) {
 	$conn->commit();
 }, 'DibiException');
 
 $conn->begin();
-Assert::exception(function() use ($conn) {
+Assert::exception(function () use ($conn) {
 	$conn->begin();
 }, 'DibiException');
 */

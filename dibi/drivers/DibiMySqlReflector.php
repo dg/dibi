@@ -36,7 +36,7 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 			FROM INFORMATION_SCHEMA.TABLES
 			WHERE TABLE_SCHEMA = DATABASE()
 		");*/
-		$res = $this->driver->query("SHOW FULL TABLES");
+		$res = $this->driver->query('SHOW FULL TABLES');
 		$tables = array();
 		while ($row = $res->fetch(FALSE)) {
 			$tables[] = array(
@@ -138,9 +138,9 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 			$keyName = $row['CONSTRAINT_NAME'];
 
 			$foreignKeys[$keyName]['name'] = $keyName;
-			$foreignKeys[$keyName]['local'] = explode(",", $row['COLUMNS']);
+			$foreignKeys[$keyName]['local'] = explode(',', $row['COLUMNS']);
 			$foreignKeys[$keyName]['table'] = $row['REFERENCED_TABLE_NAME'];
-			$foreignKeys[$keyName]['foreign'] = explode(",", $row['REFERENCED_COLUMNS']);
+			$foreignKeys[$keyName]['foreign'] = explode(',', $row['REFERENCED_COLUMNS']);
 			$foreignKeys[$keyName]['onDelete'] = $row['DELETE_RULE'];
 			$foreignKeys[$keyName]['onUpdate'] = $row['UPDATE_RULE'];
 		}

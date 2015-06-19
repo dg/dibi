@@ -12,11 +12,11 @@ if ($config['system'] !== 'mssql' || $config['driver'] !== 'pdo') {
 	Tester\Environment::skip("Not supported system '$config[system]'.");
 }
 
-$tests = function($conn){
+$tests = function ($conn) {
 	$version = $conn->getDriver()->getResource()->getAttribute(PDO::ATTR_SERVER_VERSION);
 
 	// MsSQL2012+
-	if(version_compare($version, '11.0') >= 0) {
+	if (version_compare($version, '11.0') >= 0) {
 		// Limit and offset
 		Assert::same(
 			'SELECT 1 OFFSET 10 ROWS FETCH NEXT 10 ROWS ONLY',

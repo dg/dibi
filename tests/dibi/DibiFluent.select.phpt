@@ -58,7 +58,7 @@ Assert::same(
 $fluent->where('col > %i', $max)
 	->or('col < %i', $min)
 	->where('active = 1')
-	->where('col')->in(array(1,2,3))
+	->where('col')->in(array(1, 2, 3))
 	->orderBy('val')->asc()
 	->orderBy('[val2] DESC')
 	->orderBy(array('val3' => -1));

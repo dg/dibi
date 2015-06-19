@@ -11,9 +11,9 @@ $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 $ds = $conn->dataSource('SELECT * FROM products');
 Assert::match(
-	reformat("
+	reformat('
 SELECT *
-FROM (SELECT * FROM products) t"),
+FROM (SELECT * FROM products) t'),
 	(string) $ds
 );
 
@@ -111,9 +111,9 @@ FROM (SELECT * FROM products) t
 
 $ds = $conn->select('title')->from('products')->toDataSource();
 Assert::match(
-	reformat("
+	reformat('
 SELECT *
-FROM (SELECT [title] FROM [products]) t"),
+FROM (SELECT [title] FROM [products]) t'),
 	(string) $ds
 );
 
@@ -148,9 +148,9 @@ Assert::equal(array(
 $ds = new DibiDataSource('products', $conn);
 
 Assert::match(
-	reformat("
+	reformat('
 SELECT *
-FROM [products]"),
+FROM [products]'),
 	(string) $ds
 );
 

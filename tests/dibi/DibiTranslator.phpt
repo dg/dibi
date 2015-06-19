@@ -15,32 +15,32 @@ $conn = new DibiConnection($config + array('formatDateTime' => "'Y-m-d H:i:s'", 
 Assert::same(
 	reformat("REPLACE INTO [products] ([title], [price]) VALUES ('Drticka', 318)"),
 	$conn->translate('REPLACE INTO [products]', array(
-	'title'  => 'Drticka',
-	'price'  => 318,
+	'title' => 'Drticka',
+	'price' => 318,
 )));
 
 
 // multiple INSERT command
 $array = array(
-	'title'   => 'Super Product',
-	'price'   => 12,
-	'brand'   => NULL,
+	'title' => 'Super Product',
+	'price' => 12,
+	'brand' => NULL,
 );
 Assert::same(
 	reformat('INSERT INTO [products] ([title], [price], [brand]) VALUES (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL)'),
-	$conn->translate("INSERT INTO [products]", $array, $array, $array)
+	$conn->translate('INSERT INTO [products]', $array, $array, $array)
 );
 
 
 // multiple INSERT command II
 $array = array(
-	array('pole' => 'hodnota1', 'bit'  => 1),
-	array('pole' => 'hodnota2', 'bit'  => 1),
-	array('pole' => 'hodnota3', 'bit'  => 1)
+	array('pole' => 'hodnota1', 'bit' => 1),
+	array('pole' => 'hodnota2', 'bit' => 1),
+	array('pole' => 'hodnota3', 'bit' => 1),
 );
 Assert::same(
 	reformat('INSERT INTO [products]  ([pole], [bit]) VALUES (\'hodnota1\', 1) , (\'hodnota2\', 1) , (\'hodnota3\', 1)'),
-	$conn->translate("INSERT INTO [products] %ex", $array)
+	$conn->translate('INSERT INTO [products] %ex', $array)
 );
 
 
@@ -50,32 +50,32 @@ Assert::same(
 	$conn->translate('UPDATE [colors] SET', array(
 	'color' => 'blue',
 	'order' => 12,
-), "WHERE [id]=%i", 123));
+), 'WHERE [id]=%i', 123));
 
 
 // IN array
 $array = array(1, 2, 3);
 Assert::same(
 	reformat('SELECT * FROM [people] WHERE [id] IN ( 1, 2, 3 )'),
-	$conn->translate("SELECT * FROM [people] WHERE [id] IN (", $array, ")")
+	$conn->translate('SELECT * FROM [people] WHERE [id] IN (', $array, ')')
 );
 
 
 // long numbers
 Assert::same(
 	reformat('SELECT -123456789123456789123456789'),
-	$conn->translate("SELECT %i", '-123456789123456789123456789')
+	$conn->translate('SELECT %i', '-123456789123456789123456789')
 );
 
 // long float numbers
 Assert::same(
 	reformat('SELECT -.12345678912345678912345678e10'),
-	$conn->translate("SELECT %f", '-.12345678912345678912345678e10')
+	$conn->translate('SELECT %f', '-.12345678912345678912345678e10')
 );
 
 // invalid input
-$e = Assert::exception(function() use ($conn) {
-	$conn->translate("SELECT %s", (object) array(123), ', %m', 123);
+$e = Assert::exception(function () use ($conn) {
+	$conn->translate('SELECT %s', (object) array(123), ', %m', 123);
 }, 'DibiException', 'SQL translate error');
 Assert::same('SELECT **Unexpected type object** , **Unknown or invalid modifier %m**', $e->getSql());
 
@@ -131,8 +131,8 @@ $order = array(
 	'field6' => FALSE,
 );
 Assert::same(
-	reformat("SELECT * FROM [people] ORDER BY [field1] ASC, [field2] DESC, [field3] ASC, [field4] DESC, [field5] ASC, [field6] DESC"),
-	$conn->translate("SELECT * FROM [people] ORDER BY %by", $order)
+	reformat('SELECT * FROM [people] ORDER BY [field1] ASC, [field2] DESC, [field3] ASC, [field4] DESC, [field5] ASC, [field6] DESC'),
+	$conn->translate('SELECT * FROM [people] ORDER BY %by', $order)
 );
 
 
@@ -146,7 +146,7 @@ Assert::same(
 );
 
 if ($config['system'] === 'odbc') {
-	Assert::exception(function() use ($conn) {
+	Assert::exception(function () use ($conn) {
 		$conn->translate('SELECT * FROM [products] %lmt %ofs', 2, 1);
 	}, 'DibiException');
 } else {
@@ -175,7 +175,7 @@ Assert::same(
 		'odbc' => 'INSERT INTO test ([a2], [a4], [b1], [b2], [b3], [b4], [b5], [b6], [b7], [b8], [b9]) VALUES (#09/26/1212 00:00:00#, #12/31/1969 22:13:20#, #09/26/1212#, #09/26/1212 00:00:00#, #12/31/1969#, #12/31/1969 22:13:20#, #09/26/1212 00:00:00#, #09/26/1212#, #09/26/1212 00:00:00#, NULL, NULL)',
 		"INSERT INTO test ([a2], [a4], [b1], [b2], [b3], [b4], [b5], [b6], [b7], [b8], [b9]) VALUES ('1212-09-26 00:00:00', '1969-12-31 22:13:20', '1212-09-26', '1212-09-26 00:00:00', '1969-12-31', '1969-12-31 22:13:20', '1212-09-26 00:00:00', '1212-09-26', '1212-09-26 00:00:00', NULL, NULL)",
 	)),
-	$conn->translate("INSERT INTO test", array(
+	$conn->translate('INSERT INTO test', array(
 	'a2' => new DibiDateTime('1212-09-26'),
 	'a4' => new DibiDateTime(-10000),
 	'b1%d' => '1212-09-26',
@@ -193,10 +193,10 @@ Assert::same(
 
 // like
 $args = array(
-	"SELECT * FROM products WHERE (title LIKE %like~ AND title LIKE %~like) OR title LIKE %~like~",
+	'SELECT * FROM products WHERE (title LIKE %like~ AND title LIKE %~like) OR title LIKE %~like~',
 	'C',
 	'r',
-	"a\n%_\\'\""
+	"a\n%_\\'\"",
 );
 
 if ($config['system'] === 'pgsql') {
@@ -213,7 +213,6 @@ if ($config['system'] === 'pgsql') {
 		"SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n\\%\\_\\\\''\"%'",
 		$conn->translate($args[0], $args[1], $args[2], $args[3])
 	);
-
 } elseif ($config['driver'] !== 'sqlite') { // sqlite2
 	Assert::same(
 		reformat(array(
@@ -226,7 +225,7 @@ if ($config['system'] === 'pgsql') {
 }
 
 
-$e = Assert::exception(function() use ($conn) {
+$e = Assert::exception(function () use ($conn) {
 	$conn->translate("SELECT '");
 }, 'DibiException', 'SQL translate error');
 Assert::same('SELECT **Alone quote**', $e->getSql());
@@ -248,12 +247,12 @@ HAVING MAX(salary) > %i 123
 INTO OUTFILE '/tmp/result''.txt'
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
 LINES TERMINATED BY '\\n'
-"
+",
 	)),
-	$conn->translate('%sql', "SELECT DISTINCT HIGH_PRIORITY SQL_BUFFER_RESULT
-CONCAT(last_name, \", \", first_name) AS full_name
+	$conn->translate('%sql', 'SELECT DISTINCT HIGH_PRIORITY SQL_BUFFER_RESULT
+CONCAT(last_name, ", ", first_name) AS full_name
 GROUP BY [user]
-HAVING MAX(salary) > %i", 123, "
+HAVING MAX(salary) > %i', 123, "
 INTO OUTFILE '/tmp/result''.txt'
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
 LINES TERMINATED BY '\\n'
@@ -272,10 +271,10 @@ $array3 = array(
 	'col3' => 'three',
 );
 $array4 = array(
-	'a'   => 12,
-	'b'   => NULL,
-	'c'   => new DibiDateTime('12.3.2007'),
-	'd'   => 'any string',
+	'a' => 12,
+	'b' => NULL,
+	'c' => new DibiDateTime('12.3.2007'),
+	'd' => 'any string',
 );
 
 $array5 = array('RAND()', '[col1] > [col2]');
@@ -365,26 +364,26 @@ WHERE ([test].[a] LIKE '1995-03-01'
 LIMIT 10",
 	)),
 
-	$conn->translate("SELECT *
+	$conn->translate('SELECT *
 FROM [db.table]
-WHERE ([test.a] LIKE %d", '1995-03-01', "
-	OR [b1] IN (", $array1, ")
-	OR [b2] IN (%s", $array1, ")
-	OR [b3] IN (%s", array(), ")
-	OR [b4] IN (", $array2, ")
-	OR [b5] IN (%n", $array3, ")
-	OR [b6] IN %l", $array3, "
-	OR [b7] IN %in", array(), "
-	OR [b8] IN (%sql", $array5, ")
-	OR [b9] IN (", array(), ")
+WHERE ([test.a] LIKE %d', '1995-03-01', '
+	OR [b1] IN (', $array1, ')
+	OR [b2] IN (%s', $array1, ')
+	OR [b3] IN (%s', array(), ')
+	OR [b4] IN (', $array2, ')
+	OR [b5] IN (%n', $array3, ')
+	OR [b6] IN %l', $array3, '
+	OR [b7] IN %in', array(), '
+	OR [b8] IN (%sql', $array5, ')
+	OR [b9] IN (', array(), ")
 	AND [c] = 'embedded '' string'
-	OR [d]=%i", 10.3, "
-	OR [e]=%i", NULL, "
-	OR [true]=", TRUE, "
-	OR [false]=", FALSE, "
-	OR [str_null]=%sn", '', "
-	OR [str_not_null]=%sn", 'hello', "
-LIMIT 10")
+	OR [d]=%i", 10.3, '
+	OR [e]=%i', NULL, '
+	OR [true]=', TRUE, '
+	OR [false]=', FALSE, '
+	OR [str_null]=%sn', '', '
+	OR [str_not_null]=%sn', 'hello', '
+LIMIT 10')
 );
 
 
@@ -466,7 +465,7 @@ Assert::same(
 );
 
 
-$e = Assert::exception(function() use ($conn) {
+$e = Assert::exception(function () use ($conn) {
 	$array6 = array(
 		'id' => array(1, 2, 3, 4),
 		'text' => array('ahoj', 'jak', 'se', array('SUM(%i)', '5')),
@@ -488,14 +487,14 @@ Assert::same(
 );
 
 
-$by = array (
+$by = array(
 	array('funkce(nazev_pole) ASC'),
-	'jine_pole' => 'DESC'
+	'jine_pole' => 'DESC',
 );
 
 Assert::same(
 	reformat('SELECT * FROM table ORDER BY funkce(nazev_pole) ASC, [jine_pole] DESC'),
-	$conn->translate("SELECT * FROM table ORDER BY %by", $by)
+	$conn->translate('SELECT * FROM table ORDER BY %by', $by)
 );
 
 Assert::same(
@@ -514,12 +513,12 @@ setLocale(LC_ALL, 'czech');
 Assert::same(
 	reformat("UPDATE [colors] SET [color]='blue', [price]=-12.4, [spec]=-9E-005, [spec2]=1000, [spec3]=10000, [spec4]=10000 WHERE [price]=123.5"),
 
-	$conn->translate("UPDATE [colors] SET", array(
+	$conn->translate('UPDATE [colors] SET', array(
 	'color' => 'blue',
 	'price' => -12.4,
 	'spec%f' => '-9E-005',
 	'spec2%f' => 1000.00,
 	'spec3%i' => 10000,
 	'spec4' => 10000,
-), "WHERE [price]=%f", 123.5)
+), 'WHERE [price]=%f', 123.5)
 );

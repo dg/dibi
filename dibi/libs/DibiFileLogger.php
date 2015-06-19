@@ -58,7 +58,7 @@ class DibiFileLogger extends DibiObject
 			);
 		} else {
 			fwrite($handle,
-				"OK: " . $event->sql
+				'OK: ' . $event->sql
 				. ($event->count ? ";\n-- rows: " . $event->count : '')
 				. "\n-- takes: " . sprintf('%0.3f ms', $event->time * 1000)
 				. "\n-- source: " . implode(':', $event->source)

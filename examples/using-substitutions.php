@@ -8,7 +8,7 @@ require __DIR__ . '/../dibi/dibi.php';
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite3',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ));
 
@@ -16,7 +16,7 @@ dibi::connect(array(
 // create new substitution :blog:  ==>  wp_
 dibi::getSubstitutes()->blog = 'wp_';
 
-dibi::test("SELECT * FROM [:blog:items]");
+dibi::test('SELECT * FROM [:blog:items]');
 // -> SELECT * FROM [wp_items]
 
 

@@ -117,8 +117,8 @@ class DibiDriverException extends DibiException
  * @author     David Grudl
  * @package    dibi
  */
-class DibiPcreException extends Exception {
-
+class DibiPcreException extends Exception
+{
 	public function __construct($message = '%msg.')
 	{
 		static $messages = array(

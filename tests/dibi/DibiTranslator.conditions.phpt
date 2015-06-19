@@ -13,10 +13,10 @@ $conn = new DibiConnection($config);
 
 // if & end
 Assert::same(
-	reformat("
+	reformat('
 SELECT *
 FROM [customers]
-/* WHERE ... LIKE ... */"),
+/* WHERE ... LIKE ... */'),
 
 	$conn->translate('
 SELECT *
@@ -27,9 +27,9 @@ FROM [customers]
 
 // if & else & end (last end is optional)
 Assert::same(
-	reformat("
+	reformat('
 SELECT *
-FROM  [customers] /* ... */"),
+FROM  [customers] /* ... */'),
 
 	$conn->translate('
 SELECT *
@@ -39,21 +39,21 @@ FROM %if', TRUE, '[customers] %else [products]'
 
 // if & else & (optional) end
 Assert::match(
-	reformat("
+	reformat('
 SELECT *
 FROM [people]
 WHERE [id] > 0
 	/* AND ...=...
 	*/  AND [bar]=1
-"),
+'),
 
-	$conn->translate("
+	$conn->translate('
 SELECT *
 FROM [people]
 WHERE [id] > 0
-	%if", FALSE, "AND [foo]=%i", 1, "
-	%else %if", TRUE, "AND [bar]=%i", 1, "
-"));
+	%if', FALSE, 'AND [foo]=%i', 1, '
+	%else %if', TRUE, 'AND [bar]=%i', 1, '
+'));
 
 
 // nested condition

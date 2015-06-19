@@ -13,16 +13,16 @@ if ($config['system'] !== 'pgsql') {
 }
 
 
-$tests = function($conn) {
+$tests = function ($conn) {
 	Assert::false($conn->query("SELECT 'AAxBB' LIKE %~like~", 'A_B')->fetchSingle());
-	Assert::true( $conn->query("SELECT 'AA_BB' LIKE %~like~", 'A_B')->fetchSingle());
+	Assert::true($conn->query("SELECT 'AA_BB' LIKE %~like~", 'A_B')->fetchSingle());
 
 	Assert::false($conn->query("SELECT 'AAxBB' LIKE %~like~", 'A%B')->fetchSingle());
-	Assert::true( $conn->query("SELECT 'AA%BB' LIKE %~like~", 'A%B')->fetchSingle());
+	Assert::true($conn->query("SELECT 'AA%BB' LIKE %~like~", 'A%B')->fetchSingle());
 
 	Assert::same('AA\\BB', $conn->query("SELECT 'AA\\BB'")->fetchSingle());
 	Assert::false($conn->query("SELECT 'AAxBB' LIKE %~like~", 'A\\B')->fetchSingle());
-	Assert::true( $conn->query("SELECT 'AA\\BB' LIKE %~like~", 'A\\B')->fetchSingle());
+	Assert::true($conn->query("SELECT 'AA\\BB' LIKE %~like~", 'A\\B')->fetchSingle());
 };
 
 $conn = new DibiConnection($config);

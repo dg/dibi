@@ -8,7 +8,7 @@ require __DIR__ . '/../dibi/dibi.php';
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite3',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ));
 
@@ -37,7 +37,7 @@ foreach ($table->getColumns() as $column) {
 echo "</ul>\n";
 
 
-echo "Indexes";
+echo 'Indexes';
 echo "<ul>\n";
 foreach ($table->getIndexes() as $index) {
 	echo "<li>{$index->name} " . ($index->primary ? 'primary ' : '') . ($index->unique ? 'unique' : '') . ' (';

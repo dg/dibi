@@ -12,14 +12,13 @@ Tracy\Debugger::enable();
 
 
 dibi::connect(array(
-	'driver'   => 'sqlite3',
+	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ));
 
 
 // using the "prototype" to add custom method to class DibiResult
-DibiResult::extensionMethod('fetchShuffle', function(DibiResult $obj)
-{
+DibiResult::extensionMethod('fetchShuffle', function (DibiResult $obj) {
 	$all = $obj->fetchAll();
 	shuffle($all);
 	return $all;
