@@ -218,3 +218,14 @@ interface IDibiReflector
 	function getForeignKeys($table);
 
 }
+
+
+/**
+ * dibi named argument collection.
+ *
+ * @author     Jakub Macek
+ * @package    dibi
+ */
+interface IDibiArguments extends ArrayAccess
+{
+}
