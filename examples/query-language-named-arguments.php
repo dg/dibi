@@ -10,8 +10,8 @@ date_default_timezone_set('Europe/Prague');
 
 
 dibi::connect(array(
-    'driver' => 'sqlite3',
-    'database' => 'data/sample.s3db',
+	'driver' => 'sqlite3',
+	'database' => 'data/sample.s3db',
 ));
 dibi::getConnection()->getSubstitutes()->test = 'test_';
 dibi::getConnection()->getSubstitutes()->{''} = 'testtoo_';
