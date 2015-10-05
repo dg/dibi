@@ -11,26 +11,62 @@ if (PHP_VERSION_ID < 50404) {
 }
 
 
-require_once dirname(__FILE__) . '/Dibi/interfaces.php';
-require_once dirname(__FILE__) . '/Dibi/Dibi.php';
-require_once dirname(__FILE__) . '/Dibi/DateTime.php';
-require_once dirname(__FILE__) . '/Dibi/Object.php';
-require_once dirname(__FILE__) . '/Dibi/Literal.php';
-require_once dirname(__FILE__) . '/Dibi/HashMap.php';
-require_once dirname(__FILE__) . '/Dibi/exceptions.php';
-require_once dirname(__FILE__) . '/Dibi/Connection.php';
-require_once dirname(__FILE__) . '/Dibi/Result.php';
-require_once dirname(__FILE__) . '/Dibi/ResultIterator.php';
-require_once dirname(__FILE__) . '/Dibi/Row.php';
-require_once dirname(__FILE__) . '/Dibi/Translator.php';
-require_once dirname(__FILE__) . '/Dibi/DataSource.php';
-require_once dirname(__FILE__) . '/Dibi/Fluent.php';
-require_once dirname(__FILE__) . '/Dibi/Reflection/Column.php';
-require_once dirname(__FILE__) . '/Dibi/Reflection/Database.php';
-require_once dirname(__FILE__) . '/Dibi/Reflection/ForeignKey.php';
-require_once dirname(__FILE__) . '/Dibi/Reflection/Index.php';
-require_once dirname(__FILE__) . '/Dibi/Reflection/Result.php';
-require_once dirname(__FILE__) . '/Dibi/Reflection/Table.php';
-require_once dirname(__FILE__) . '/Dibi/Event.php';
-require_once dirname(__FILE__) . '/Dibi/Loggers/FileLogger.php';
-require_once dirname(__FILE__) . '/Dibi/Loggers/FirePhpLogger.php';
+spl_autoload_register(function ($class) {
+	static $map = [
+		'dibi' => 'dibi.php',
+		'Dibi' => 'dibi.php',
+		'Dibi\Bridges\Nette\DibiExtension22' => 'Bridges/Nette/DibiExtension22.php',
+		'Dibi\Bridges\Tracy\Panel' => 'Bridges/Tracy/Panel.php',
+		'DibiColumnInfo' => 'Reflection/Column.php',
+		'DibiConnection' => 'Connection.php',
+		'DibiDatabaseInfo' => 'Reflection/Database.php',
+		'DibiDataSource' => 'DataSource.php',
+		'DibiDateTime' => 'DateTime.php',
+		'DibiDriverException' => 'exceptions.php',
+		'DibiEvent' => 'Event.php',
+		'DibiException' => 'exceptions.php',
+		'DibiFileLogger' => 'Loggers/FileLogger.php',
+		'DibiFirebirdDriver' => 'Drivers/FirebirdDriver.php',
+		'DibiFirePhpLogger' => 'Loggers/FirePhpLogger.php',
+		'DibiFluent' => 'Fluent.php',
+		'DibiForeignKeyInfo' => 'Reflection/ForeignKey.php',
+		'DibiHashMap' => 'HashMap.php',
+		'DibiHashMapBase' => 'HashMap.php',
+		'DibiHelpers' => 'Helpers.php',
+		'DibiIndexInfo' => 'Reflection/Index.php',
+		'DibiLiteral' => 'Literal.php',
+		'DibiMsSql2005Driver' => 'Drivers/MsSql2005Driver.php',
+		'DibiMsSql2005Reflector' => 'Drivers/MsSql2005Reflector.php',
+		'DibiMsSqlDriver' => 'Drivers/MsSqlDriver.php',
+		'DibiMsSqlReflector' => 'Drivers/MsSqlReflector.php',
+		'DibiMySqlDriver' => 'Drivers/MySqlDriver.php',
+		'DibiMySqliDriver' => 'Drivers/MySqliDriver.php',
+		'DibiMySqlReflector' => 'Drivers/MySqlReflector.php',
+		'DibiNette21Extension' => 'Bridges/Nette/DibiExtension21.php',
+		'DibiNettePanel' => 'Bridges/Nette/Panel.php',
+		'DibiNotImplementedException' => 'exceptions.php',
+		'DibiNotSupportedException' => 'exceptions.php',
+		'DibiObject' => 'Object.php',
+		'DibiOdbcDriver' => 'Drivers/OdbcDriver.php',
+		'DibiOracleDriver' => 'Drivers/OracleDriver.php',
+		'DibiPcreException' => 'exceptions.php',
+		'DibiPdoDriver' => 'Drivers/PdoDriver.php',
+		'DibiPostgreDriver' => 'Drivers/PostgreDriver.php',
+		'DibiProcedureException' => 'exceptions.php',
+		'DibiResult' => 'Result.php',
+		'DibiResultInfo' => 'Reflection/Result.php',
+		'DibiResultIterator' => 'ResultIterator.php',
+		'DibiRow' => 'Row.php',
+		'DibiSqlite3Driver' => 'Drivers/Sqlite3Driver.php',
+		'DibiSqliteReflector' => 'Drivers/SqliteReflector.php',
+		'DibiTableInfo' => 'Reflection/Table.php',
+		'DibiTranslator' => 'Translator.php',
+		'IDataSource' => 'interfaces.php',
+		'IDibiDriver' => 'interfaces.php',
+		'IDibiReflector' => 'interfaces.php',
+		'IDibiResultDriver' => 'interfaces.php',
+	];
+	if (isset($map[$class])) {
+		require __DIR__ . '/Dibi/' . $map[$class];
+	}
+});

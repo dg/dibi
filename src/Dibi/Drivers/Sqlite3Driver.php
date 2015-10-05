@@ -6,9 +6,6 @@
  */
 
 
-require_once dirname(__FILE__) . '/SqliteReflector.php';
-
-
 /**
  * The dibi driver for SQLite3 database.
  *

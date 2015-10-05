@@ -6,9 +6,6 @@
  */
 
 
-require_once dirname(__FILE__) . '/MySqlReflector.php';
-
-
 /**
  * The dibi driver for MySQL database via improved extension.
  *
