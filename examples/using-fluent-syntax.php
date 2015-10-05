@@ -9,18 +9,18 @@ require __DIR__ . '/../src/loader.php';
 date_default_timezone_set('Europe/Prague');
 
 
-dibi::connect(array(
+dibi::connect([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
-));
+]);
 
 
 $id = 10;
-$record = array(
+$record = [
 	'title' => 'Super product',
 	'price' => 318,
 	'active' => TRUE,
-);
+];
 
 // SELECT ...
 dibi::select('product_id')->as('id')

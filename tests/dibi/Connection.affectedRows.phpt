@@ -12,9 +12,9 @@ $conn = new DibiConnection($config);
 $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 
-$conn->query('INSERT INTO products', array(
+$conn->query('INSERT INTO products', [
 	'title' => 'Test product',
-));
+]);
 Assert::same(1, $conn->getAffectedRows());
 
 

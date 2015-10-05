@@ -7,10 +7,10 @@
 require __DIR__ . '/../src/loader.php';
 
 
-dibi::connect(array(
+dibi::connect([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
-));
+]);
 
 
 // retrieve database reflection

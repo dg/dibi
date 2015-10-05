@@ -101,7 +101,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	{
 		// must detect if SQL returns result set or num of affected rows
 		$cmd = strtoupper(substr(ltrim($sql), 0, 6));
-		static $list = array('UPDATE' => 1, 'DELETE' => 1, 'INSERT' => 1, 'REPLAC' => 1);
+		static $list = ['UPDATE' => 1, 'DELETE' => 1, 'INSERT' => 1, 'REPLAC' => 1];
 		$this->affectedRows = FALSE;
 
 		if (isset($list[$cmd])) {
@@ -275,7 +275,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 
 			case 'odbc':
 			case 'mssql':
-				return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
+				return '[' . str_replace(['[', ']'], ['[[', ']]'], $value) . ']';
 
 			case 'dblib':
 			case 'sqlsrv':
@@ -336,7 +336,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 			case 'pgsql':
 				$bs = substr($this->connection->quote('\\', PDO::PARAM_STR), 1, -1); // standard_conforming_strings = on/off
 				$value = substr($this->connection->quote($value, PDO::PARAM_STR), 1, -1);
-				$value = strtr($value, array('%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\'));
+				$value = strtr($value, ['%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\']);
 				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 
 			case 'sqlite':
@@ -347,7 +347,7 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 			case 'mssql':
 			case 'dblib':
 			case 'sqlsrv':
-				$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+				$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
 				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 
 			default:
@@ -491,24 +491,24 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	public function getResultColumns()
 	{
 		$count = $this->resultSet->columnCount();
-		$columns = array();
+		$columns = [];
 		for ($i = 0; $i < $count; $i++) {
 			$row = @$this->resultSet->getColumnMeta($i); // intentionally @
 			if ($row === FALSE) {
 				throw new DibiNotSupportedException('Driver does not support meta data.');
 			}
-			$row = $row + array(
+			$row = $row + [
 				'table' => NULL,
 				'native_type' => 'VAR_STRING',
-			);
+			];
 
-			$columns[] = array(
+			$columns[] = [
 				'name' => $row['name'],
 				'table' => $row['table'],
 				'nativetype' => $row['native_type'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
 				'vendor' => $row,
-			);
+			];
 		}
 		return $columns;
 	}

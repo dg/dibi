@@ -30,9 +30,9 @@ Assert::exception(function () use ($conn) {
 
 $conn->begin();
 Assert::same(3, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
-$conn->query('INSERT INTO [products]', array(
+$conn->query('INSERT INTO [products]', [
 	'title' => 'Test product',
-));
+]);
 Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
 $conn->rollback();
 Assert::same(3, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
@@ -41,8 +41,8 @@ Assert::same(3, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSing
 
 
 $conn->begin();
-$conn->query('INSERT INTO [products]', array(
+$conn->query('INSERT INTO [products]', [
 	'title' => 'Test product',
-));
+]);
 $conn->commit();
 Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());

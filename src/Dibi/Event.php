@@ -56,10 +56,10 @@ class DibiEvent
 		$this->time = -microtime(TRUE);
 
 		if ($type === self::QUERY && preg_match('#\(?\s*(SELECT|UPDATE|INSERT|DELETE)#iA', $this->sql, $matches)) {
-			static $types = array(
+			static $types = [
 				'SELECT' => self::SELECT, 'UPDATE' => self::UPDATE,
 				'INSERT' => self::INSERT, 'DELETE' => self::DELETE,
-			);
+			];
 			$this->type = $types[strtoupper($matches[1])];
 		}
 
@@ -67,7 +67,7 @@ class DibiEvent
 		$dibiDir = dirname($rc->getFileName()) . DIRECTORY_SEPARATOR;
 		foreach (debug_backtrace(FALSE) as $row) {
 			if (isset($row['file']) && is_file($row['file']) && strpos($row['file'], $dibiDir) !== 0) {
-				$this->source = array($row['file'], (int) $row['line']);
+				$this->source = [$row['file'], (int) $row['line']];
 				break;
 			}
 		}

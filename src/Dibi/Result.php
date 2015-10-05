@@ -32,7 +32,7 @@ class DibiResult extends DibiObject implements IDataSource
 	private $driver;
 
 	/** @var array  Translate table */
-	private $types = array();
+	private $types = [];
 
 	/** @var DibiResultInfo */
 	private $meta;
@@ -47,7 +47,7 @@ class DibiResult extends DibiObject implements IDataSource
 	private $rowFactory;
 
 	/** @var array  format */
-	private $formats = array();
+	private $formats = [];
 
 
 	/**
@@ -229,10 +229,10 @@ class DibiResult extends DibiObject implements IDataSource
 		$this->seek((int) $offset);
 		$row = $this->fetch();
 		if (!$row) {
-			return array();  // empty result set
+			return [];  // empty result set
 		}
 
-		$data = array();
+		$data = [];
 		do {
 			if ($limit === 0) {
 				break;
@@ -265,7 +265,7 @@ class DibiResult extends DibiObject implements IDataSource
 		$this->seek(0);
 		$row = $this->fetch();
 		if (!$row) {
-			return array();  // empty result set
+			return [];  // empty result set
 		}
 
 		$data = NULL;
@@ -333,7 +333,7 @@ class DibiResult extends DibiObject implements IDataSource
 		$this->seek(0);
 		$row = $this->fetch();
 		if (!$row) {
-			return array();  // empty result set
+			return [];  // empty result set
 		}
 
 		$data = NULL;
@@ -410,10 +410,10 @@ class DibiResult extends DibiObject implements IDataSource
 		$this->seek(0);
 		$row = $this->fetch();
 		if (!$row) {
-			return array();  // empty result set
+			return [];  // empty result set
 		}
 
-		$data = array();
+		$data = [];
 
 		if ($value === NULL) {
 			if ($key !== NULL) {

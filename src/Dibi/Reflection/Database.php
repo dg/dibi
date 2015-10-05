@@ -59,7 +59,7 @@ class DibiDatabaseInfo extends DibiObject
 	public function getTableNames()
 	{
 		$this->init();
-		$res = array();
+		$res = [];
 		foreach ($this->tables as $table) {
 			$res[] = $table->getName();
 		}
@@ -101,7 +101,7 @@ class DibiDatabaseInfo extends DibiObject
 	protected function init()
 	{
 		if ($this->tables === NULL) {
-			$this->tables = array();
+			$this->tables = [];
 			foreach ($this->reflector->getTables() as $info) {
 				$this->tables[strtolower($info['name'])] = new DibiTableInfo($this->reflector, $info);
 			}

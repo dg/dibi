@@ -12,7 +12,7 @@ matrix:
 
 script:
     - vendor/bin/tester tests -s -p php -c tests/php-unix.ini
-    - php code-checker/src/code-checker.php
+    - php temp/code-checker/src/code-checker.php --short-arrays
 
 after_failure:
     # Print *.actual content
@@ -21,7 +21,7 @@ after_failure:
 before_script:
     # Install Nette Tester & Code Checker
     - travis_retry composer install --no-interaction
-    - travis_retry composer create-project nette/code-checker code-checker ~2.5 --no-interaction
+    - travis_retry composer create-project nette/code-checker temp/code-checker ~2.5 --no-interaction
 
     # Create databases.ini
     - cp ./tests/databases.sample.ini ./tests/databases.ini

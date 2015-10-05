@@ -11,10 +11,10 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 Tracy\Debugger::enable();
 
 
-dibi::connect(array(
+dibi::connect([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
-));
+]);
 
 
 /*

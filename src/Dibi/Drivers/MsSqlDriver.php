@@ -214,7 +214,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	public function escapeIdentifier($value)
 	{
 		// @see https://msdn.microsoft.com/en-us/library/ms176027.aspx
-		return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
+		return '[' . str_replace(['[', ']'], ['[[', ']]'], $value) . ']';
 	}
 
 
@@ -250,7 +250,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function escapeLike($value, $pos)
 	{
-		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
@@ -353,15 +353,15 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	public function getResultColumns()
 	{
 		$count = mssql_num_fields($this->resultSet);
-		$columns = array();
+		$columns = [];
 		for ($i = 0; $i < $count; $i++) {
 			$row = (array) mssql_fetch_field($this->resultSet, $i);
-			$columns[] = array(
+			$columns[] = [
 				'name' => $row['name'],
 				'fullname' => $row['column_source'] ? $row['column_source'] . '.' . $row['name'] : $row['name'],
 				'table' => $row['column_source'],
 				'nativetype' => $row['type'],
-			);
+			];
 		}
 		return $columns;
 	}

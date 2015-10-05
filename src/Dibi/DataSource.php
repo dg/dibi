@@ -29,13 +29,13 @@ class DibiDataSource extends DibiObject implements IDataSource
 	private $totalCount;
 
 	/** @var array */
-	private $cols = array();
+	private $cols = [];
 
 	/** @var array */
-	private $sorting = array();
+	private $sorting = [];
 
 	/** @var array */
-	private $conds = array();
+	private $conds = [];
 
 	/** @var int */
 	private $offset;
@@ -259,8 +259,8 @@ class DibiDataSource extends DibiObject implements IDataSource
 			return $this->connection->translate('
 SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
 FROM %SQL', $this->sql, '
-%ex', $this->conds ? array('WHERE %and', $this->conds) : NULL, '
-%ex', $this->sorting ? array('ORDER BY %by', $this->sorting) : NULL, '
+%ex', $this->conds ? ['WHERE %and', $this->conds] : NULL, '
+%ex', $this->sorting ? ['ORDER BY %by', $this->sorting] : NULL, '
 %ofs %lmt', $this->offset, $this->limit
 			);
 		} catch (Exception $e) {

@@ -57,16 +57,16 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			$this->connection = $config['resource'];
 
 		} else {
-			$config += array(
+			$config += [
 				'charset' => 'utf8',
-			);
+			];
 			if (isset($config['string'])) {
 				$string = $config['string'];
 			} else {
 				$string = '';
 				DibiConnection::alias($config, 'user', 'username');
 				DibiConnection::alias($config, 'dbname', 'database');
-				foreach (array('host', 'hostaddr', 'port', 'dbname', 'user', 'password', 'connect_timeout', 'options', 'sslmode', 'service') as $key) {
+				foreach (['host', 'hostaddr', 'port', 'dbname', 'user', 'password', 'connect_timeout', 'options', 'sslmode', 'service'] as $key) {
 					if (isset($config[$key])) {
 						$string .= $key . '=' . $config[$key] . ' ';
 					}
@@ -219,7 +219,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function inTransaction()
 	{
-		return !in_array(pg_transaction_status($this->connection), array(PGSQL_TRANSACTION_UNKNOWN, PGSQL_TRANSACTION_IDLE), TRUE);
+		return !in_array(pg_transaction_status($this->connection), [PGSQL_TRANSACTION_UNKNOWN, PGSQL_TRANSACTION_IDLE], TRUE);
 	}
 
 
@@ -323,7 +323,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	{
 		$bs = pg_escape_string($this->connection, '\\'); // standard_conforming_strings = on/off
 		$value = pg_escape_string($this->connection, $value);
-		$value = strtr($value, array('%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\'));
+		$value = strtr($value, ['%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\']);
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
@@ -425,13 +425,13 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	public function getResultColumns()
 	{
 		$count = pg_num_fields($this->resultSet);
-		$columns = array();
+		$columns = [];
 		for ($i = 0; $i < $count; $i++) {
-			$row = array(
+			$row = [
 				'name' => pg_field_name($this->resultSet, $i),
 				'table' => pg_field_table($this->resultSet, $i),
 				'nativetype' => pg_field_type($this->resultSet, $i),
-			);
+			];
 			$row['fullname'] = $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'];
 			$columns[] = $row;
 		}
@@ -489,7 +489,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 		$res = $this->query($query);
 		$tables = pg_fetch_all($res->resultSet);
-		return $tables ? $tables : array();
+		return $tables ? $tables : [];
 	}
 
 
@@ -542,10 +542,10 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			");
 		}
 
-		$columns = array();
+		$columns = [];
 		while ($row = $res->fetch(TRUE)) {
 			$size = (int) max($row['character_maximum_length'], $row['numeric_precision']);
-			$columns[] = array(
+			$columns[] = [
 				'name' => $row['column_name'],
 				'table' => $table,
 				'nativetype' => strtoupper($row['udt_name']),
@@ -554,7 +554,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 				'default' => $row['column_default'],
 				'autoincrement' => (int) $row['ordinal_position'] === $primary && substr($row['column_default'], 0, 7) === 'nextval',
 				'vendor' => $row,
-			);
+			];
 		}
 		return $columns;
 	}
@@ -582,7 +582,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			ORDER BY ordinal_position
 		");
 
-		$columns = array();
+		$columns = [];
 		while ($row = $res->fetch(TRUE)) {
 			$columns[$row['ordinal_position']] = $row['column_name'];
 		}
@@ -595,7 +595,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 			WHERE pg_class.oid = $_table::regclass
 		");
 
-		$indexes = array();
+		$indexes = [];
 		while ($row = $res->fetch(TRUE)) {
 			$indexes[$row['relname']]['name'] = $row['relname'];
 			$indexes[$row['relname']]['unique'] = $row['indisunique'] === 't';
@@ -656,17 +656,17 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 				c.conrelid = $_table::regclass
 		");
 
-		$fKeys = $references = array();
+		$fKeys = $references = [];
 		while ($row = $res->fetch(TRUE)) {
 			if (!isset($fKeys[$row['name']])) {
-				$fKeys[$row['name']] = array(
+				$fKeys[$row['name']] = [
 					'name' => $row['name'],
 					'table' => $row['table'],
-					'local' => array(),
-					'foreign' => array(),
+					'local' => [],
+					'foreign' => [],
 					'onUpdate' => $row['onUpdate'],
 					'onDelete' => $row['onDelete'],
-				);
+				];
 
 				$l = explode(',', trim($row['conkey'], '{}'));
 				$f = explode(',', trim($row['confkey'], '{}'));

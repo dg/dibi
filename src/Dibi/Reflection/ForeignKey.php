@@ -20,7 +20,7 @@ class DibiForeignKeyInfo extends DibiObject
 	/** @var string */
 	private $name;
 
-	/** @var array of array(local, foreign, onDelete, onUpdate) */
+	/** @var array of [local, foreign, onDelete, onUpdate] */
 	private $references;
 
 

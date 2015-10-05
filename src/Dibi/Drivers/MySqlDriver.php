@@ -69,12 +69,12 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 		} else {
 			// default values
 			DibiConnection::alias($config, 'flags', 'options');
-			$config += array(
+			$config += [
 				'charset' => 'utf8',
 				'timezone' => date('P'),
 				'username' => ini_get('mysql.default_user'),
 				'password' => ini_get('mysql.default_password'),
-			);
+			];
 			if (!isset($config['host'])) {
 				$host = ini_get('mysql.default_host');
 				if ($host) {
@@ -168,7 +168,7 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function getInfo()
 	{
-		$res = array();
+		$res = [];
 		preg_match_all('#(.+?): +(\d+) *#', mysql_info($this->connection), $matches, PREG_SET_ORDER);
 		if (preg_last_error()) {
 			throw new DibiPcreException;
@@ -443,16 +443,16 @@ class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	public function getResultColumns()
 	{
 		$count = mysql_num_fields($this->resultSet);
-		$columns = array();
+		$columns = [];
 		for ($i = 0; $i < $count; $i++) {
 			$row = (array) mysql_fetch_field($this->resultSet, $i);
-			$columns[] = array(
+			$columns[] = [
 				'name' => $row['name'],
 				'table' => $row['table'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
 				'nativetype' => strtoupper($row['type']),
 				'vendor' => $row,
-			);
+			];
 		}
 		return $columns;
 	}

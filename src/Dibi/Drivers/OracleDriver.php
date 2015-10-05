@@ -378,15 +378,15 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function getResultColumns()
 	{
 		$count = oci_num_fields($this->resultSet);
-		$columns = array();
+		$columns = [];
 		for ($i = 1; $i <= $count; $i++) {
 			$type = oci_field_type($this->resultSet, $i);
-			$columns[] = array(
+			$columns[] = [
 				'name' => oci_field_name($this->resultSet, $i),
 				'table' => NULL,
 				'fullname' => oci_field_name($this->resultSet, $i),
 				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
-			);
+			];
 		}
 		return $columns;
 	}
@@ -413,13 +413,13 @@ class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	public function getTables()
 	{
 		$res = $this->query('SELECT * FROM cat');
-		$tables = array();
+		$tables = [];
 		while ($row = $res->fetch(FALSE)) {
 			if ($row[1] === 'TABLE' || $row[1] === 'VIEW') {
-				$tables[] = array(
+				$tables[] = [
 					'name' => $row[0],
 					'view' => $row[1] === 'VIEW',
-				);
+				];
 			}
 		}
 		return $tables;

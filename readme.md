@@ -30,12 +30,12 @@ Connect to database:
 
 ```php
 // connect to database (static way)
-dibi::connect(array(
+dibi::connect([
     'driver'   => 'mysql',
     'host'     => 'localhost',
     'username' => 'root',
     'password' => '***',
-));
+]);
 
 // or object way; in all other examples use $connection-> instead of dibi::
 $connection = new DibiConnection($options);
@@ -46,19 +46,19 @@ SELECT, INSERT, UPDATE
 ```php
 dibi::query('SELECT * FROM users WHERE id = ?', $id);
 
-$arr = array(
+$arr = [
     'name' => 'John',
     'is_admin'  => TRUE,
-);
+];
 dibi::query('INSERT INTO users', $arr);
 // INSERT INTO users (`name`, `is_admin`) VALUES ('John', 1)
 
 dibi::query('UPDATE users SET', $arr, 'WHERE `id`=?', $x);
 // UPDATE users SET `name`='John', `is_admin`=1 WHERE `id` = 123
 
-dibi::query('UPDATE users SET', array(
+dibi::query('UPDATE users SET', [
 	'title' => array('SHA1(?)', 'tajneheslo'),
-));
+]);
 // UPDATE users SET 'title' = SHA1('tajneheslo')
 ```
 
@@ -81,10 +81,10 @@ foreach ($result as $n => $row) {
 Modifiers for arrays:
 
 ```php
-dibi::query('SELECT * FROM users WHERE %and', array(
+dibi::query('SELECT * FROM users WHERE %and', [
 	array('number > ?', 10),
 	array('number < ?', 100),
-));
+]);
 // SELECT * FROM users WHERE (number > 10) AND (number < 100)
 ```
 
@@ -116,9 +116,9 @@ dibi::query("SELECT * FROM table WHERE name LIKE %like~", $query);
 DateTime:
 
 ```php
-dibi::query('UPDATE users SET', array(
+dibi::query('UPDATE users SET', [
     'time' => new DateTime,
-));
+]);
 // UPDATE users SET ('2008-01-01 01:08:10')
 ```
 

@@ -48,7 +48,7 @@
  */
 abstract class DibiObject
 {
-	/** @var array (method => array(type => callback)) */
+	/** @var array [method => [type => callback]] */
 	private static $extMethods;
 
 
@@ -95,7 +95,7 @@ abstract class DibiObject
 				if (is_array($list) || $list instanceof Traversable) {
 					foreach ($list as $handler) {
 						/**/if (is_object($handler)) {
-							call_user_func_array(array($handler, '__invoke'), $args);
+							call_user_func_array([$handler, '__invoke'], $args);
 
 						} else /**/{
 							call_user_func_array($handler, $args);

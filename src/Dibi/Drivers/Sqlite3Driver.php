@@ -332,12 +332,12 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 		$row = $this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM);
 		$charset = $this->charset === NULL ? NULL : $this->charset . '//TRANSLIT';
 		if ($row && ($assoc || $charset)) {
-			$tmp = array();
+			$tmp = [];
 			foreach ($row as $k => $v) {
 				if ($charset !== NULL && is_string($v)) {
 					$v = iconv($this->dbcharset, $charset, $v);
 				}
-				$tmp[str_replace(array('[', ']'), '', $k)] = $v;
+				$tmp[str_replace(['[', ']'], '', $k)] = $v;
 			}
 			return $tmp;
 		}
@@ -375,15 +375,15 @@ class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDr
 	public function getResultColumns()
 	{
 		$count = $this->resultSet->numColumns();
-		$columns = array();
-		static $types = array(SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null');
+		$columns = [];
+		static $types = [SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null'];
 		for ($i = 0; $i < $count; $i++) {
-			$columns[] = array(
+			$columns[] = [
 				'name' => $this->resultSet->columnName($i),
 				'table' => NULL,
 				'fullname' => $this->resultSet->columnName($i),
 				'nativetype' => $types[$this->resultSet->columnType($i)],
-			);
+			];
 		}
 		return $columns;
 	}

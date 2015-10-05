@@ -31,12 +31,12 @@ class DibiMsSql2005Reflector extends DibiObject implements IDibiReflector
 	public function getTables()
 	{
 		$res = $this->driver->query('SELECT TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES');
-		$tables = array();
+		$tables = [];
 		while ($row = $res->fetch(FALSE)) {
-			$tables[] = array(
+			$tables[] = [
 				'name' => $row[0],
 				'view' => isset($row[1]) && $row[1] === 'VIEW',
-			);
+			];
 		}
 		return $tables;
 	}
@@ -56,7 +56,7 @@ class DibiMsSql2005Reflector extends DibiObject implements IDibiReflector
 			WHERE t.name = {$this->driver->escapeText($table)}
 		");
 
-		$autoIncrements = array();
+		$autoIncrements = [];
 		while ($row = $res->fetch(TRUE)) {
 			$autoIncrements[$row['COLUMN_NAME']] = (bool) $row['AUTO_INCREMENT'];
 		}
@@ -76,9 +76,9 @@ class DibiMsSql2005Reflector extends DibiObject implements IDibiReflector
 			) As Z
 			WHERE C.TABLE_NAME = {$this->driver->escapeText($table)}
 		");
-		$columns = array();
+		$columns = [];
 		while ($row = $res->fetch(TRUE)) {
-			$columns[] = array(
+			$columns[] = [
 				'name' => $row['COLUMN_NAME'],
 				'table' => $table,
 				'nativetype' => strtoupper($row['DATA_TYPE']),
@@ -88,7 +88,7 @@ class DibiMsSql2005Reflector extends DibiObject implements IDibiReflector
 				'default' => $row['COLUMN_DEFAULT'],
 				'autoincrement' => $autoIncrements[$row['COLUMN_NAME']],
 				'vendor' => $row,
-			);
+			];
 		}
 		return $columns;
 	}
@@ -102,18 +102,18 @@ class DibiMsSql2005Reflector extends DibiObject implements IDibiReflector
 	public function getIndexes($table)
 	{
 		$keyUsagesRes = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = {$this->driver->escapeText($table)}");
-		$keyUsages = array();
+		$keyUsages = [];
 		while ($row = $keyUsagesRes->fetch(TRUE)) {
 			$keyUsages[$row['CONSTRAINT_NAME']][(int) $row['ORDINAL_POSITION'] - 1] = $row['COLUMN_NAME'];
 		}
 
 		$res = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = {$this->driver->escapeText($table)}");
-		$indexes = array();
+		$indexes = [];
 		while ($row = $res->fetch(TRUE)) {
 			$indexes[$row['CONSTRAINT_NAME']]['name'] = $row['CONSTRAINT_NAME'];
 			$indexes[$row['CONSTRAINT_NAME']]['unique'] = $row['CONSTRAINT_TYPE'] === 'UNIQUE';
 			$indexes[$row['CONSTRAINT_NAME']]['primary'] = $row['CONSTRAINT_TYPE'] === 'PRIMARY KEY';
-			$indexes[$row['CONSTRAINT_NAME']]['columns'] = isset($keyUsages[$row['CONSTRAINT_NAME']]) ? $keyUsages[$row['CONSTRAINT_NAME']] : array();
+			$indexes[$row['CONSTRAINT_NAME']]['columns'] = isset($keyUsages[$row['CONSTRAINT_NAME']]) ? $keyUsages[$row['CONSTRAINT_NAME']] : [];
 		}
 		return array_values($indexes);
 	}

@@ -22,7 +22,7 @@ Assert::same(3, count($meta->getTables()));
 
 $names = $meta->getTableNames();
 sort($names);
-Assert::equal(array('customers', 'orders', 'products'), $names);
+Assert::equal(['customers', 'orders', 'products'], $names);
 
 Assert::false($meta->hasTable('xxxx'));
 

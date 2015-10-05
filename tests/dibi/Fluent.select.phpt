@@ -14,7 +14,7 @@ $min = 5;
 $fluent = $conn->select('*')
 	->select('a')
 	->select('b')->as('bAlias')
-	->select(array('c', 'd', 'e'))
+	->select(['c', 'd', 'e'])
 	->select('%n', 'd');
 
 Assert::same(
@@ -58,10 +58,10 @@ Assert::same(
 $fluent->where('col > %i', $max)
 	->or('col < %i', $min)
 	->where('active = 1')
-	->where('col')->in(array(1, 2, 3))
+	->where('col')->in([1, 2, 3])
 	->orderBy('val')->asc()
 	->orderBy('[val2] DESC')
-	->orderBy(array('val3' => -1));
+	->orderBy(['val3' => -1]);
 
 Assert::same(
 	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [anotherTable] AS [anotherAlias] INNER JOIN [table3] ON table.col = table3.col WHERE col > 10 OR col < 5 AND active = 1 AND [col] IN (1, 2, 3) ORDER BY [val] ASC , [val2] DESC , [val3] DESC'),
@@ -104,11 +104,11 @@ Assert::same(
 
 
 $fluent = $conn->select('*')
-	->select(array('x' => 'xAlias'))
+	->select(['x' => 'xAlias'])
 	->from('products')
 	->innerJoin('orders')->using('(product_id)')
 	->innerJoin('customers')->using('([customer_id])')
-	->innerJoin('items')->using('(%n)', array('customer_id', 'order_id'));
+	->innerJoin('items')->using('(%n)', ['customer_id', 'order_id']);
 
 Assert::same(
 	reformat('SELECT * , [x] AS [xAlias] FROM [products] INNER JOIN [orders] USING (product_id) INNER JOIN [customers] USING ([customer_id]) INNER JOIN [items] USING ([customer_id], [order_id])'),
@@ -129,9 +129,9 @@ Assert::same(
 
 
 $fluent = $conn->select('*')
-	->from(array('me' => 't'))
+	->from(['me' => 't'])
 	->where('col > %i', $max)
-	->where(array('x' => 'a', 'b', 'c'));
+	->where(['x' => 'a', 'b', 'c']);
 
 Assert::same(
 	reformat('SELECT * FROM [me] AS [t] WHERE col > 10 AND ([x] = \'a\') AND (b) AND (c)'),

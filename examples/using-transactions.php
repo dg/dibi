@@ -7,10 +7,10 @@
 require __DIR__ . '/../src/loader.php';
 
 
-dibi::connect(array(
+dibi::connect([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
-));
+]);
 
 
 echo "<h2>Before</h2>\n";
@@ -19,9 +19,9 @@ dibi::query('SELECT * FROM [products]')->dump();
 
 
 dibi::begin();
-dibi::query('INSERT INTO [products]', array(
+dibi::query('INSERT INTO [products]', [
 	'title' => 'Test product',
-));
+]);
 
 echo "<h2>After INSERT</h2>\n";
 dibi::query('SELECT * FROM [products]')->dump();

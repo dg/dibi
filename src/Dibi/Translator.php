@@ -50,7 +50,7 @@ final class DibiTranslator extends DibiObject
 	public function __construct(DibiConnection $connection)
 	{
 		$this->connection = $connection;
-		$this->identifiers = new DibiHashMap(array($this, 'delimite'));
+		$this->identifiers = new DibiHashMap([$this, 'delimite']);
 	}
 
 
@@ -87,7 +87,7 @@ final class DibiTranslator extends DibiObject
 		$comment = FALSE;
 
 		// iterate
-		$sql = array();
+		$sql = [];
 		while ($cursor < count($this->args)) {
 			$arg = $this->args[$cursor];
 			$cursor++;
@@ -116,7 +116,7 @@ final class DibiTranslator extends DibiObject
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
 					. preg_replace_callback('/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
-							array($this, 'cb'),
+							[$this, 'cb'],
 							substr($arg, $toSkip)
 					);
 					if (preg_last_error()) {
@@ -199,7 +199,7 @@ final class DibiTranslator extends DibiObject
 		}
 
 		if (is_array($value)) {
-			$vx = $kx = array();
+			$vx = $kx = [];
 			switch ($modifier) {
 				case 'and':
 				case 'or':  // key=val AND key IS NULL AND ...
@@ -401,7 +401,7 @@ final class DibiTranslator extends DibiObject
 						$value = substr($value, 0, $toSkip)
 						. preg_replace_callback(
 							'/(?=[`[\'":])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/s',
-							array($this, 'cb'),
+							[$this, 'cb'],
 							substr($value, $toSkip)
 						);
 						if (preg_last_error()) {

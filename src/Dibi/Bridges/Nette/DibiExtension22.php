@@ -39,13 +39,13 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 		}
 
 		$connection = $container->addDefinition($this->prefix('connection'))
-			->setClass('DibiConnection', array($config))
+			->setClass('DibiConnection', [$config])
 			->setAutowired(isset($config['autowired']) ? $config['autowired'] : TRUE);
 
 		if ($useProfiler) {
 			$panel = $container->addDefinition($this->prefix('panel'))
 				->setClass('Dibi\Bridges\Tracy\Panel');
-			$connection->addSetup(array($panel, 'register'), array($connection));
+			$connection->addSetup([$panel, 'register'], [$connection]);
 		}
 	}
 

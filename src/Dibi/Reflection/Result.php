@@ -49,7 +49,7 @@ class DibiResultInfo extends DibiObject
 	public function getColumnNames($fullNames = FALSE)
 	{
 		$this->initColumns();
-		$res = array();
+		$res = [];
 		foreach ($this->columns as $column) {
 			$res[] = $fullNames ? $column->getFullName() : $column->getName();
 		}
@@ -91,7 +91,7 @@ class DibiResultInfo extends DibiObject
 	protected function initColumns()
 	{
 		if ($this->columns === NULL) {
-			$this->columns = array();
+			$this->columns = [];
 			$reflector = $this->driver instanceof IDibiReflector ? $this->driver : NULL;
 			foreach ($this->driver->getResultColumns() as $info) {
 				$this->columns[] = $this->names[$info['name']] = new DibiColumnInfo($reflector, $info);

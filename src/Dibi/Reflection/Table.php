@@ -85,7 +85,7 @@ class DibiTableInfo extends DibiObject
 	public function getColumnNames()
 	{
 		$this->initColumns();
-		$res = array();
+		$res = [];
 		foreach ($this->columns as $column) {
 			$res[] = $column->getName();
 		}
@@ -157,7 +157,7 @@ class DibiTableInfo extends DibiObject
 	protected function initColumns()
 	{
 		if ($this->columns === NULL) {
-			$this->columns = array();
+			$this->columns = [];
 			foreach ($this->reflector->getColumns($this->name) as $info) {
 				$this->columns[strtolower($info['name'])] = new DibiColumnInfo($this->reflector, $info);
 			}
@@ -172,7 +172,7 @@ class DibiTableInfo extends DibiObject
 	{
 		if ($this->indexes === NULL) {
 			$this->initColumns();
-			$this->indexes = array();
+			$this->indexes = [];
 			foreach ($this->reflector->getIndexes($this->name) as $info) {
 				foreach ($info['columns'] as $key => $name) {
 					$info['columns'][$key] = $this->columns[strtolower($name)];

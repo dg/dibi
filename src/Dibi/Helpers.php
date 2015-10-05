@@ -15,14 +15,14 @@ class DibiHelpers
 	/** @internal */
 	public static function escape($driver, $value, $type)
 	{
-		static $types = array(
+		static $types = [
 			dibi::TEXT => 'text',
 			dibi::BINARY => 'binary',
 			dibi::BOOL => 'bool',
 			dibi::DATE => 'date',
 			dibi::DATETIME => 'datetime',
 			dibi::IDENTIFIER => 'identifier',
-		);
+		];
 		if (isset($types[$type])) {
 			return $driver->{'escape' . $types[$type]}($value);
 		} else {
