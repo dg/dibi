@@ -65,13 +65,13 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 
 		} else {
 			// default values
-			$config += array(
+			$config += [
 				'username' => ini_get('ibase.default_password'),
 				'password' => ini_get('ibase.default_user'),
 				'database' => ini_get('ibase.default_db'),
 				'charset' => ini_get('ibase.default_charset'),
 				'buffers' => 0,
-			);
+			];
 
 			DibiDriverException::tryError();
 			if (empty($config['persistent'])) {
@@ -432,15 +432,15 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 	public function getResultColumns()
 	{
 		$count = ibase_num_fields($this->resultSet);
-		$columns = array();
+		$columns = [];
 		for ($i = 0; $i < $count; $i++) {
 			$row = (array) ibase_field_info($this->resultSet, $i);
-			$columns[] = array(
+			$columns[] = [
 				'name' => $row['name'],
 				'fullname' => $row['name'],
 				'table' => $row['relation'],
 				'nativetype' => $row['type'],
-			);
+			];
 		}
 		return $columns;
 	}
@@ -461,12 +461,12 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			FROM RDB\$RELATIONS
 			WHERE RDB\$SYSTEM_FLAG = 0;"
 		);
-		$tables = array();
+		$tables = [];
 		while ($row = $res->fetch(FALSE)) {
-			$tables[] = array(
+			$tables[] = [
 				'name' => $row[0],
 				'view' => $row[1] === 'TRUE',
-			);
+			];
 		}
 		return $tables;
 	}
@@ -510,10 +510,10 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			ORDER BY r.RDB\$FIELD_POSITION;"
 
 		);
-		$columns = array();
+		$columns = [];
 		while ($row = $res->fetch(TRUE)) {
 			$key = $row['FIELD_NAME'];
-			$columns[$key] = array(
+			$columns[$key] = [
 				'name' => $key,
 				'table' => $table,
 				'nativetype' => trim($row['FIELD_TYPE']),
@@ -521,7 +521,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				'nullable' => $row['NULLABLE'] === 'TRUE',
 				'default' => $row['DEFAULT_VALUE'],
 				'autoincrement' => FALSE,
-			);
+			];
 		}
 		return $columns;
 	}
@@ -548,7 +548,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			WHERE UPPER(i.RDB\$RELATION_NAME) = '$table'
 			ORDER BY s.RDB\$FIELD_POSITION"
 		);
-		$indexes = array();
+		$indexes = [];
 		while ($row = $res->fetch(TRUE)) {
 			$key = $row['INDEX_NAME'];
 			$indexes[$key]['name'] = $key;
@@ -578,14 +578,14 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				AND r.RDB\$CONSTRAINT_TYPE = 'FOREIGN KEY'
 			ORDER BY s.RDB\$FIELD_POSITION"
 		);
-		$keys = array();
+		$keys = [];
 		while ($row = $res->fetch(TRUE)) {
 			$key = $row['INDEX_NAME'];
-			$keys[$key] = array(
+			$keys[$key] = [
 				'name' => $key,
 				'column' => $row['FIELD_NAME'],
 				'table' => $table,
-			);
+			];
 		}
 		return $keys;
 	}
@@ -605,7 +605,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				AND RDB\$UNIQUE_FLAG IS NULL
 				AND RDB\$FOREIGN_KEY IS NULL;"
 		);
-		$indices = array();
+		$indices = [];
 		while ($row = $res->fetch(FALSE)) {
 			$indices[] = $row[0];
 		}
@@ -629,7 +629,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 					OR RDB\$FOREIGN_KEY IS NOT NULL
 			);"
 		);
-		$constraints = array();
+		$constraints = [];
 		while ($row = $res->fetch(FALSE)) {
 			$constraints[] = $row[0];
 		}
@@ -672,15 +672,15 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			WHERE RDB\$SYSTEM_FLAG = 0"
 			. ($table === NULL ? ';' : " AND RDB\$RELATION_NAME = UPPER('$table');")
 		);
-		$triggers = array();
+		$triggers = [];
 		while ($row = $res->fetch(TRUE)) {
-			$triggers[$row['TRIGGER_NAME']] = array(
+			$triggers[$row['TRIGGER_NAME']] = [
 				'name' => $row['TRIGGER_NAME'],
 				'table' => $row['TABLE_NAME'],
 				'type' => trim($row['TRIGGER_TYPE']),
 				'event' => trim($row['TRIGGER_EVENT']),
 				'enabled' => trim($row['TRIGGER_ENABLED']) === 'TRUE',
-			);
+			];
 		}
 		return $triggers;
 	}
@@ -700,7 +700,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 		$q .= $table === NULL ? ';' : " AND RDB\$RELATION_NAME = UPPER('$table')";
 
 		$res = $this->query($q);
-		$triggers = array();
+		$triggers = [];
 		while ($row = $res->fetch(FALSE)) {
 			$triggers[] = $row[0];
 		}
@@ -747,7 +747,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 				LEFT JOIN RDB\$FIELDS f ON f.RDB\$FIELD_NAME = p.RDB\$FIELD_SOURCE
 			ORDER BY p.RDB\$PARAMETER_TYPE, p.RDB\$PARAMETER_NUMBER;"
 		);
-		$procedures = array();
+		$procedures = [];
 		while ($row = $res->fetch(TRUE)) {
 			$key = $row['PROCEDURE_NAME'];
 			$io = trim($row['PARAMETER_TYPE']);
@@ -771,7 +771,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			SELECT TRIM(RDB\$PROCEDURE_NAME)
 			FROM RDB\$PROCEDURES;"
 		);
-		$procedures = array();
+		$procedures = [];
 		while ($row = $res->fetch(FALSE)) {
 			$procedures[] = $row[0];
 		}
@@ -790,7 +790,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			FROM RDB\$GENERATORS
 			WHERE RDB\$SYSTEM_FLAG = 0;"
 		);
-		$generators = array();
+		$generators = [];
 		while ($row = $res->fetch(FALSE)) {
 			$generators[] = $row[0];
 		}
@@ -809,7 +809,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 			FROM RDB\$FUNCTIONS
 			WHERE RDB\$SYSTEM_FLAG = 0;"
 		);
-		$functions = array();
+		$functions = [];
 		while ($row = $res->fetch(FALSE)) {
 			$functions[] = $row[0];
 		}

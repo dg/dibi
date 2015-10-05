@@ -7,10 +7,10 @@
 require __DIR__ . '/../src/dibi.php';
 
 
-dibi::connect(array(
+dibi::connect([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
-));
+]);
 
 
 // some variables
@@ -55,7 +55,7 @@ dibi::test('
 
 
 // IF()
-dibi::test('UPDATE products SET', array(
-	'price' => array('IF(price_fixed, price, ?)', 123),
-));
+dibi::test('UPDATE products SET', [
+	'price' => ['IF(price_fixed, price, ?)', 123],
+]);
 // -> SELECT * FROM customers WHERE LIMIT 10

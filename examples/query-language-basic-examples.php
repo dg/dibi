@@ -9,10 +9,10 @@ require __DIR__ . '/../src/dibi.php';
 date_default_timezone_set('Europe/Prague');
 
 
-dibi::connect(array(
+dibi::connect([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
-));
+]);
 
 
 // SELECT
@@ -30,37 +30,37 @@ dibi::test('
 
 // dibi detects INSERT or REPLACE command
 dibi::test('
-	REPLACE INTO products', array(
+	REPLACE INTO products', [
 		'title' => 'Super product',
 		'price' => 318,
 		'active' => TRUE,
-));
+]);
 // -> REPLACE INTO products ([title], [price], [active]) VALUES ('Super product', 318, 1)
 
 
 // multiple INSERT command
-$array = array(
+$array = [
 	'title' => 'Super Product',
 	'price' => 12,
 	'brand' => NULL,
 	'created' => new DateTime,
-);
+];
 dibi::test('INSERT INTO products', $array, $array, $array);
 // -> INSERT INTO products ([title], [price], [brand], [created]) VALUES ('Super Product', ...) , (...) , (...)
 
 
 // dibi detects UPDATE command
 dibi::test('
-	UPDATE colors SET', array(
+	UPDATE colors SET', [
 		'color' => 'blue',
 		'order' => 12,
-	), '
+	], '
 	WHERE id=?', 123);
 // -> UPDATE colors SET [color]='blue', [order]=12 WHERE id=123
 
 
 // modifier applied to array
-$array = array(1, 2, 3);
+$array = [1, 2, 3];
 dibi::test('
 	SELECT *
 	FROM people
@@ -70,10 +70,10 @@ dibi::test('
 
 
 // modifier %by for ORDER BY
-$order = array(
+$order = [
 	'field1' => 'asc',
 	'field2' => 'desc',
-);
+];
 dibi::test('
 	SELECT *
 	FROM people

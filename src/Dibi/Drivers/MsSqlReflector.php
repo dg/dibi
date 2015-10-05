@@ -34,12 +34,12 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 			SELECT TABLE_NAME, TABLE_TYPE
 			FROM INFORMATION_SCHEMA.TABLES
 		');
-		$tables = array();
+		$tables = [];
 		while ($row = $res->fetch(FALSE)) {
-			$tables[] = array(
+			$tables[] = [
 				'name' => $row[0],
 				'view' => isset($row[1]) && $row[1] === 'VIEW',
-			);
+			];
 		}
 		return $tables;
 	}
@@ -90,19 +90,19 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 			WHERE TABLE_NAME = {$this->driver->escapeText($table)}
 			ORDER BY TABLE_NAME, ORDINAL_POSITION
 		");
-		$columns = array();
+		$columns = [];
 		while ($row = $res->fetch(TRUE)) {
 			$size = FALSE;
 			$type = strtoupper($row['DATA_TYPE']);
 
-			$size_cols = array(
+			$size_cols = [
 				'DATETIME' => 'DATETIME_PRECISION',
 				'DECIMAL' => 'NUMERIC_PRECISION',
 				'CHAR' => 'CHARACTER_MAXIMUM_LENGTH',
 				'NCHAR' => 'CHARACTER_OCTET_LENGTH',
 				'NVARCHAR' => 'CHARACTER_OCTET_LENGTH',
 				'VARCHAR' => 'CHARACTER_OCTET_LENGTH',
-			);
+			];
 
 			if (isset($size_cols[$type])) {
 				if ($size_cols[$type]) {
@@ -110,7 +110,7 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 				}
 			}
 
-			$columns[] = array(
+			$columns[] = [
 				'name' => $row['COLUMN_NAME'],
 				'table' => $table,
 				'nativetype' => $type,
@@ -120,7 +120,7 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 				'default' => $row['COLUMN_DEFAULT'],
 				'autoincrement' => FALSE,
 				'vendor' => $row,
-			);
+			];
 		}
 
 		return $columns;
@@ -150,16 +150,16 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 				t.name, ind.name, ind.index_id, ic.index_column_id
 		");
 
-		$indexes = array();
+		$indexes = [];
 		while ($row = $res->fetch(TRUE)) {
 			$index_name = $row['index_name'];
 
 			if (!isset($indexes[$index_name])) {
-				$indexes[$index_name] = array();
+				$indexes[$index_name] = [];
 				$indexes[$index_name]['name'] = $index_name;
 				$indexes[$index_name]['unique'] = (bool) $row['is_unique'];
 				$indexes[$index_name]['primary'] = (bool) $row['is_primary_key'];
-				$indexes[$index_name]['columns'] = array();
+				$indexes[$index_name]['columns'] = [];
 			}
 			$indexes[$index_name]['columns'][] = $row['column_name'];
 		}
@@ -190,15 +190,15 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 			WHERE OBJECT_NAME(f.parent_object_id) = {$this->driver->escapeText($table)}
 		");
 
-		$keys = array();
+		$keys = [];
 		while ($row = $res->fetch(TRUE)) {
 			$key_name = $row['foreign_key'];
 
 			if (!isset($keys[$key_name])) {
 				$keys[$key_name]['name'] = $row['foreign_key']; // foreign key name
-				$keys[$key_name]['local'] = array($row['column_name']); // local columns
+				$keys[$key_name]['local'] = [$row['column_name']]; // local columns
 				$keys[$key_name]['table'] = $row['reference_table_name']; // referenced table
-				$keys[$key_name]['foreign'] = array($row['reference_column_name']); // referenced columns
+				$keys[$key_name]['foreign'] = [$row['reference_column_name']]; // referenced columns
 				$keys[$key_name]['onDelete'] = FALSE;
 				$keys[$key_name]['onUpdate'] = FALSE;
 			} else {

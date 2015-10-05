@@ -36,12 +36,12 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 			WHERE TABLE_SCHEMA = DATABASE()
 		");*/
 		$res = $this->driver->query('SHOW FULL TABLES');
-		$tables = array();
+		$tables = [];
 		while ($row = $res->fetch(FALSE)) {
-			$tables[] = array(
+			$tables[] = [
 				'name' => $row[0],
 				'view' => isset($row[1]) && $row[1] === 'VIEW',
-			);
+			];
 		}
 		return $tables;
 	}
@@ -61,10 +61,10 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 			WHERE TABLE_NAME = $table AND TABLE_SCHEMA = DATABASE()
 		");*/
 		$res = $this->driver->query("SHOW FULL COLUMNS FROM {$this->driver->escapeIdentifier($table)}");
-		$columns = array();
+		$columns = [];
 		while ($row = $res->fetch(TRUE)) {
 			$type = explode('(', $row['Type']);
-			$columns[] = array(
+			$columns[] = [
 				'name' => $row['Field'],
 				'table' => $table,
 				'nativetype' => strtoupper($type[0]),
@@ -74,7 +74,7 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 				'default' => $row['Default'],
 				'autoincrement' => $row['Extra'] === 'auto_increment',
 				'vendor' => $row,
-			);
+			];
 		}
 		return $columns;
 	}
@@ -95,7 +95,7 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 			AND REFERENCED_COLUMN_NAME IS NULL
 		");*/
 		$res = $this->driver->query("SHOW INDEX FROM {$this->driver->escapeIdentifier($table)}");
-		$indexes = array();
+		$indexes = [];
 		while ($row = $res->fetch(TRUE)) {
 			$indexes[$row['Key_name']]['name'] = $row['Key_name'];
 			$indexes[$row['Key_name']]['unique'] = !$row['Non_unique'];
@@ -132,7 +132,7 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 			GROUP BY rc.CONSTRAINT_NAME
 		");
 
-		$foreignKeys = array();
+		$foreignKeys = [];
 		while ($row = $res->fetch(TRUE)) {
 			$keyName = $row['CONSTRAINT_NAME'];
 

@@ -55,7 +55,7 @@ class DibiConnection extends DibiObject
 			parse_str($config, $config);
 
 		} elseif ($config instanceof Traversable) {
-			$tmp = array();
+			$tmp = [];
 			foreach ($config as $key => $val) {
 				$tmp[$key] = $val instanceof Traversable ? iterator_to_array($val) : $val;
 			}
@@ -75,7 +75,7 @@ class DibiConnection extends DibiObject
 			$config['driver'] = dibi::$defaultDriver;
 		}
 
-		$class = $tmp = preg_replace(array('#\W#', '#sql#'), array('_', 'Sql'), ucfirst(strtolower($config['driver'])));
+		$class = $tmp = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($config['driver'])));
 		$class = "Dibi{$class}Driver";
 		if (!class_exists($class)) {
 			throw new DibiException("Unable to create instance of dibi driver '$class'.");
@@ -89,17 +89,17 @@ class DibiConnection extends DibiObject
 		// profiler
 		$profilerCfg = & $config['profiler'];
 		if (is_scalar($profilerCfg)) {
-			$profilerCfg = array('run' => (bool) $profilerCfg);
+			$profilerCfg = ['run' => (bool) $profilerCfg];
 		}
 		if (!empty($profilerCfg['run'])) {
 			$filter = isset($profilerCfg['filter']) ? $profilerCfg['filter'] : DibiEvent::QUERY;
 
 			if (isset($profilerCfg['file'])) {
-				$this->onEvent[] = array(new DibiFileLogger($profilerCfg['file'], $filter), 'logEvent');
+				$this->onEvent[] = [new DibiFileLogger($profilerCfg['file'], $filter), 'logEvent'];
 			}
 
 			if (DibiFirePhpLogger::isAvailable()) {
-				$this->onEvent[] = array(new DibiFirePhpLogger($filter), 'logEvent');
+				$this->onEvent[] = [new DibiFirePhpLogger($filter), 'logEvent'];
 			}
 
 			if (!interface_exists('Tracy\IBarPanel') && interface_exists('Nette\Diagnostics\IBarPanel') && class_exists('DibiNettePanel')) {
@@ -108,7 +108,7 @@ class DibiConnection extends DibiObject
 			}
 		}
 
-		$this->substitutes = new DibiHashMap(create_function('$expr', 'return ":$expr:";'));
+		$this->substitutes = new DibiHashMap(function ($expr) { return ":$expr:"; });
 		if (!empty($config['substitutes'])) {
 			foreach ($config['substitutes'] as $key => $value) {
 				$this->substitutes->$key = $value;
@@ -542,16 +542,9 @@ class DibiConnection extends DibiObject
 	 */
 	public function substitute($value)
 	{
-		return strpos($value, ':') === FALSE ? $value : preg_replace_callback('#:([^:\s]*):#', array($this, 'subCb'), $value);
-	}
-
-
-	/**
-	 * Substitution callback.
-	 */
-	private function subCb($m)
-	{
-		return $this->substitutes->{$m[1]};
+		return strpos($value, ':') === FALSE
+			? $value
+			: preg_replace_callback('#:([^:\s]*):#', function ($m) { $this->substitutes->{$m[1]}; }, $value);
 	}
 
 

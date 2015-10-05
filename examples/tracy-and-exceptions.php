@@ -15,13 +15,13 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 Tracy\Debugger::enable();
 
 
-$connection = dibi::connect(array(
+$connection = dibi::connect([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
-	'profiler' => array(
+	'profiler' => [
 		'run' => TRUE,
-	),
-));
+	],
+]);
 
 
 // add panel to debug bar

@@ -7,10 +7,10 @@
 require __DIR__ . '/../src/dibi.php';
 
 
-dibi::connect(array(
+dibi::connect([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
-));
+]);
 
 
 $res = dibi::query('

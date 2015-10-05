@@ -25,7 +25,7 @@ class DibiNettePanel extends DibiObject implements Nette\Diagnostics\IBarPanel
 	public $filter;
 
 	/** @var array */
-	private $events = array();
+	private $events = [];
 
 
 	public function __construct($explain = TRUE, $filter = NULL)
@@ -38,8 +38,8 @@ class DibiNettePanel extends DibiObject implements Nette\Diagnostics\IBarPanel
 	public function register(DibiConnection $connection)
 	{
 		Debugger::getBar()->addPanel($this);
-		Debugger::getBlueScreen()->addPanel(array(__CLASS__, 'renderException'));
-		$connection->onEvent[] = array($this, 'logEvent');
+		Debugger::getBlueScreen()->addPanel([__CLASS__, 'renderException']);
+		$connection->onEvent[] = [$this, 'logEvent'];
 	}
 
 
@@ -63,10 +63,10 @@ class DibiNettePanel extends DibiObject implements Nette\Diagnostics\IBarPanel
 	public static function renderException($e)
 	{
 		if ($e instanceof DibiException && $e->getSql()) {
-			return array(
+			return [
 				'tab' => 'SQL',
 				'panel' => dibi::dump($e->getSql(), TRUE),
-			);
+			];
 		}
 	}
 
@@ -101,7 +101,7 @@ class DibiNettePanel extends DibiObject implements Nette\Diagnostics\IBarPanel
 			$explain = NULL; // EXPLAIN is called here to work SELECT FOUND_ROWS()
 			if ($this->explain && $event->type === DibiEvent::SELECT) {
 				try {
-					$backup = array($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime);
+					$backup = [$event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime];
 					$event->connection->onEvent = NULL;
 					$cmd = is_string($this->explain) ? $this->explain : ($event->connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
 					$explain = dibi::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);
@@ -126,7 +126,7 @@ class DibiNettePanel extends DibiObject implements Nette\Diagnostics\IBarPanel
 				if (!class_exists($helpers)) {
 					$helpers = class_exists('NDebugHelpers') ? 'NDebugHelpers' : 'DebugHelpers';
 				}
-				$s .= call_user_func(array($helpers, 'editorLink'), $event->source[0], $event->source[1])->class('nette-DibiProfiler-source');
+				$s .= call_user_func([$helpers, 'editorLink'], $event->source[0], $event->source[1])->class('nette-DibiProfiler-source');
 			}
 
 			$s .= "</td><td>{$event->count}</td><td>{$h($event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name'))}</td></tr>";

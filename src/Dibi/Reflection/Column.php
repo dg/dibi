@@ -76,7 +76,7 @@ class DibiColumnInfo extends DibiObject
 		if (empty($this->info['table']) || !$this->reflector) {
 			throw new DibiException("Table is unknown or not available.");
 		}
-		return new DibiTableInfo($this->reflector, array('name' => $this->info['table']));
+		return new DibiTableInfo($this->reflector, ['name' => $this->info['table']]);
 	}
 
 
@@ -170,7 +170,7 @@ class DibiColumnInfo extends DibiObject
 	 */
 	public static function detectType($type)
 	{
-		static $patterns = array(
+		static $patterns = [
 			'^_' => dibi::TEXT, // PostgreSQL arrays
 			'BYTEA|BLOB|BIN' => dibi::BINARY,
 			'TEXT|CHAR|POINT|INTERVAL' => dibi::TEXT,
@@ -180,7 +180,7 @@ class DibiColumnInfo extends DibiObject
 			'TIME' => dibi::DATETIME, // DATETIME, TIMESTAMP
 			'DATE' => dibi::DATE,
 			'BOOL' => dibi::BOOL,
-		);
+		];
 
 		foreach ($patterns as $s => $val) {
 			if (preg_match("#$s#i", $type)) {
@@ -197,7 +197,7 @@ class DibiColumnInfo extends DibiObject
 	public static function getTypeCache()
 	{
 		if (self::$types === NULL) {
-			self::$types = new DibiHashMap(array(__CLASS__, 'detectType'));
+			self::$types = new DibiHashMap([__CLASS__, 'detectType']);
 		}
 		return self::$types;
 	}

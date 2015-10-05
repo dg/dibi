@@ -36,7 +36,7 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 			SELECT name, type = 'view' as view FROM sqlite_temp_master WHERE type IN ('table', 'view')
 			ORDER BY name
 		");
-		$tables = array();
+		$tables = [];
 		while ($row = $res->fetch(TRUE)) {
 			$tables[] = $row;
 		}
@@ -58,11 +58,11 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 		")->fetch(TRUE);
 
 		$res = $this->driver->query("PRAGMA table_info({$this->driver->escapeIdentifier($table)})");
-		$columns = array();
+		$columns = [];
 		while ($row = $res->fetch(TRUE)) {
 			$column = $row['name'];
 			$type = explode('(', $row['type']);
-			$columns[] = array(
+			$columns[] = [
 				'name' => $column,
 				'table' => $table,
 				'fullname' => "$table.$column",
@@ -72,7 +72,7 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 				'default' => $row['dflt_value'],
 				'autoincrement' => $row['pk'] && $type[0] === 'INTEGER',
 				'vendor' => $row,
-			);
+			];
 		}
 		return $columns;
 	}
@@ -86,7 +86,7 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 	public function getIndexes($table)
 	{
 		$res = $this->driver->query("PRAGMA index_list({$this->driver->escapeIdentifier($table)})");
-		$indexes = array();
+		$indexes = [];
 		while ($row = $res->fetch(TRUE)) {
 			$indexes[$row['name']]['name'] = $row['name'];
 			$indexes[$row['name']]['unique'] = (bool) $row['unique'];
@@ -114,12 +114,12 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 		if (!$indexes) { // @see http://www.sqlite.org/lang_createtable.html#rowid
 			foreach ($columns as $column) {
 				if ($column['vendor']['pk']) {
-					$indexes[] = array(
+					$indexes[] = [
 						'name' => 'ROWID',
 						'unique' => TRUE,
 						'primary' => TRUE,
-						'columns' => array($column['name']),
-					);
+						'columns' => [$column['name']],
+					];
 					break;
 				}
 			}
@@ -137,7 +137,7 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 	public function getForeignKeys($table)
 	{
 		$res = $this->driver->query("PRAGMA foreign_key_list({$this->driver->escapeIdentifier($table)})");
-		$keys = array();
+		$keys = [];
 		while ($row = $res->fetch(TRUE)) {
 			$keys[$row['id']]['name'] = $row['id']; // foreign key name
 			$keys[$row['id']]['local'][$row['seq']] = $row['from']; // local columns

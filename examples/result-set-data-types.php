@@ -13,10 +13,10 @@ Tracy\Debugger::enable();
 date_default_timezone_set('Europe/Prague');
 
 
-dibi::connect(array(
+dibi::connect([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
-));
+]);
 
 
 // using manual hints

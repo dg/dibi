@@ -27,7 +27,7 @@ class Panel extends \DibiObject implements Tracy\IBarPanel
 	public $filter;
 
 	/** @var array */
-	private $events = array();
+	private $events = [];
 
 
 	public function __construct($explain = TRUE, $filter = NULL)
@@ -40,8 +40,8 @@ class Panel extends \DibiObject implements Tracy\IBarPanel
 	public function register(\DibiConnection $connection)
 	{
 		Tracy\Debugger::getBar()->addPanel($this);
-		Tracy\Debugger::getBlueScreen()->addPanel(array(__CLASS__, 'renderException'));
-		$connection->onEvent[] = array($this, 'logEvent');
+		Tracy\Debugger::getBlueScreen()->addPanel([__CLASS__, 'renderException']);
+		$connection->onEvent[] = [$this, 'logEvent'];
 	}
 
 
@@ -65,10 +65,10 @@ class Panel extends \DibiObject implements Tracy\IBarPanel
 	public static function renderException($e)
 	{
 		if ($e instanceof \DibiException && $e->getSql()) {
-			return array(
+			return [
 				'tab' => 'SQL',
 				'panel' => dibi::dump($e->getSql(), TRUE),
-			);
+			];
 		}
 	}
 
@@ -104,7 +104,7 @@ class Panel extends \DibiObject implements Tracy\IBarPanel
 			$explain = NULL; // EXPLAIN is called here to work SELECT FOUND_ROWS()
 			if ($this->explain && $event->type === \DibiEvent::SELECT) {
 				try {
-					$backup = array($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime);
+					$backup = [$event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime];
 					$event->connection->onEvent = NULL;
 					$cmd = is_string($this->explain) ? $this->explain : ($event->connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
 					$explain = dibi::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);

@@ -28,16 +28,16 @@ class DibiFluent extends DibiObject implements IDataSource
 	const REMOVE = FALSE;
 
 	/** @var array */
-	public static $masks = array(
-		'SELECT' => array('SELECT', 'DISTINCT', 'FROM', 'WHERE', 'GROUP BY',
-			'HAVING', 'ORDER BY', 'LIMIT', 'OFFSET'),
-		'UPDATE' => array('UPDATE', 'SET', 'WHERE', 'ORDER BY', 'LIMIT'),
-		'INSERT' => array('INSERT', 'INTO', 'VALUES', 'SELECT'),
-		'DELETE' => array('DELETE', 'FROM', 'USING', 'WHERE', 'ORDER BY', 'LIMIT'),
-	);
+	public static $masks = [
+		'SELECT' => ['SELECT', 'DISTINCT', 'FROM', 'WHERE', 'GROUP BY',
+			'HAVING', 'ORDER BY', 'LIMIT', 'OFFSET'],
+		'UPDATE' => ['UPDATE', 'SET', 'WHERE', 'ORDER BY', 'LIMIT'],
+		'INSERT' => ['INSERT', 'INTO', 'VALUES', 'SELECT'],
+		'DELETE' => ['DELETE', 'FROM', 'USING', 'WHERE', 'ORDER BY', 'LIMIT'],
+	];
 
 	/** @var array  default modifiers for arrays */
-	public static $modifiers = array(
+	public static $modifiers = [
 		'SELECT' => '%n',
 		'FROM' => '%n',
 		'IN' => '%in',
@@ -47,10 +47,10 @@ class DibiFluent extends DibiObject implements IDataSource
 		'HAVING' => '%and',
 		'ORDER BY' => '%by',
 		'GROUP BY' => '%by',
-	);
+	];
 
 	/** @var array  clauses separators */
-	public static $separators = array(
+	public static $separators = [
 		'SELECT' => ',',
 		'FROM' => ',',
 		'WHERE' => 'AND',
@@ -62,30 +62,30 @@ class DibiFluent extends DibiObject implements IDataSource
 		'SET' => ',',
 		'VALUES' => ',',
 		'INTO' => FALSE,
-	);
+	];
 
 	/** @var array  clauses */
-	public static $clauseSwitches = array(
+	public static $clauseSwitches = [
 		'JOIN' => 'FROM',
 		'INNER JOIN' => 'FROM',
 		'LEFT JOIN' => 'FROM',
 		'RIGHT JOIN' => 'FROM',
-	);
+	];
 
 	/** @var DibiConnection */
 	private $connection;
 
 	/** @var array */
-	private $setups = array();
+	private $setups = [];
 
 	/** @var string */
 	private $command;
 
 	/** @var array */
-	private $clauses = array();
+	private $clauses = [];
 
 	/** @var array */
-	private $flags = array();
+	private $flags = [];
 
 	/** @var array */
 	private $cursor;
@@ -102,7 +102,7 @@ class DibiFluent extends DibiObject implements IDataSource
 		$this->connection = $connection;
 
 		if (self::$normalizer === NULL) {
-			self::$normalizer = new DibiHashMap(array(__CLASS__, '_formatClause'));
+			self::$normalizer = new DibiHashMap([__CLASS__, '_formatClause']);
 		}
 	}
 
@@ -123,7 +123,7 @@ class DibiFluent extends DibiObject implements IDataSource
 				$this->clauses = array_fill_keys(self::$masks[$clause], NULL);
 			}
 			$this->cursor = & $this->clauses[$clause];
-			$this->cursor = array();
+			$this->cursor = [];
 			$this->command = $clause;
 		}
 
@@ -137,7 +137,7 @@ class DibiFluent extends DibiObject implements IDataSource
 			$this->cursor = & $this->clauses[$clause];
 
 			// TODO: really delete?
-			if ($args === array(self::REMOVE)) {
+			if ($args === [self::REMOVE]) {
 				$this->cursor = NULL;
 				return $this;
 			}
@@ -145,7 +145,7 @@ class DibiFluent extends DibiObject implements IDataSource
 			if (isset(self::$separators[$clause])) {
 				$sep = self::$separators[$clause];
 				if ($sep === FALSE) { // means: replace
-					$this->cursor = array();
+					$this->cursor = [];
 
 				} elseif (!empty($this->cursor)) {
 					$this->cursor[] = $sep;
@@ -154,7 +154,7 @@ class DibiFluent extends DibiObject implements IDataSource
 
 		} else {
 			// append to currect flow
-			if ($args === array(self::REMOVE)) {
+			if ($args === [self::REMOVE]) {
 				return $this;
 			}
 
@@ -162,7 +162,7 @@ class DibiFluent extends DibiObject implements IDataSource
 		}
 
 		if ($this->cursor === NULL) {
-			$this->cursor = array();
+			$this->cursor = [];
 		}
 
 		// special types or argument
@@ -173,14 +173,14 @@ class DibiFluent extends DibiObject implements IDataSource
 				return $this;
 
 			} elseif (is_string($arg) && preg_match('#^[a-z:_][a-z0-9_.:]*\z#i', $arg)) { // identifier
-				$args = array('%n', $arg);
+				$args = ['%n', $arg];
 
 			} elseif (is_array($arg) || ($arg instanceof Traversable && !$arg instanceof self)) { // any array
 				if (isset(self::$modifiers[$clause])) {
-					$args = array(self::$modifiers[$clause], $arg);
+					$args = [self::$modifiers[$clause], $arg];
 
 				} elseif (is_string(key($arg))) { // associative array
-					$args = array('%a', $arg);
+					$args = ['%a', $arg];
 				}
 			} // case $arg === FALSE is handled above
 		}
@@ -205,7 +205,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	{
 		$this->cursor = & $this->clauses[self::$normalizer->$clause];
 		if ($this->cursor === NULL) {
-			$this->cursor = array();
+			$this->cursor = [];
 		}
 
 		return $this;
@@ -316,7 +316,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	public function fetch()
 	{
 		if ($this->command === 'SELECT') {
-			return $this->query($this->_export(NULL, array('%lmt', 1)))->fetch();
+			return $this->query($this->_export(NULL, ['%lmt', 1]))->fetch();
 		} else {
 			return $this->query($this->_export())->fetch();
 		}
@@ -330,7 +330,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	public function fetchSingle()
 	{
 		if ($this->command === 'SELECT') {
-			return $this->query($this->_export(NULL, array('%lmt', 1)))->fetchSingle();
+			return $this->query($this->_export(NULL, ['%lmt', 1]))->fetchSingle();
 		} else {
 			return $this->query($this->_export())->fetchSingle();
 		}
@@ -345,7 +345,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	 */
 	public function fetchAll($offset = NULL, $limit = NULL)
 	{
-		return $this->query($this->_export(NULL, array('%ofs %lmt', $offset, $limit)))->fetchAll();
+		return $this->query($this->_export(NULL, ['%ofs %lmt', $offset, $limit]))->fetchAll();
 	}
 
 
@@ -380,7 +380,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	 */
 	public function getIterator($offset = NULL, $limit = NULL)
 	{
-		return $this->query($this->_export(NULL, array('%ofs %lmt', $offset, $limit)))->getIterator();
+		return $this->query($this->_export(NULL, ['%ofs %lmt', $offset, $limit]))->getIterator();
 	}
 
 
@@ -400,9 +400,9 @@ class DibiFluent extends DibiObject implements IDataSource
 	 */
 	public function count()
 	{
-		return (int) $this->query(array(
+		return (int) $this->query([
 			'SELECT COUNT(*) FROM (%ex', $this->_export(), ') AS [data]',
-		))->fetchSingle();
+		])->fetchSingle();
 	}
 
 
@@ -413,7 +413,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	{
 		$res = $this->connection->query($args);
 		foreach ($this->setups as $setup) {
-			call_user_func_array(array($res, array_shift($setup)), $setup);
+			call_user_func_array([$res, array_shift($setup)], $setup);
 		}
 		return $res;
 	}
@@ -450,7 +450,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	 * @param  string clause name
 	 * @return array
 	 */
-	protected function _export($clause = NULL, $args = array())
+	protected function _export($clause = NULL, $args = [])
 	{
 		if ($clause === NULL) {
 			$data = $this->clauses;
@@ -458,9 +458,9 @@ class DibiFluent extends DibiObject implements IDataSource
 		} else {
 			$clause = self::$normalizer->$clause;
 			if (array_key_exists($clause, $this->clauses)) {
-				$data = array($clause => $this->clauses[$clause]);
+				$data = [$clause => $this->clauses[$clause]];
 			} else {
-				return array();
+				return [];
 			}
 		}
 

@@ -59,11 +59,11 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 			$this->connection = $config['resource'];
 		} else {
 			// default values
-			$config += array(
+			$config += [
 				'username' => ini_get('odbc.default_user'),
 				'password' => ini_get('odbc.default_pw'),
 				'dsn' => ini_get('odbc.default_db'),
-			);
+			];
 
 			if (empty($config['persistent'])) {
 				$this->connection = @odbc_connect($config['dsn'], $config['username'], $config['password']); // intentionally @
@@ -238,7 +238,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 
 	public function escapeIdentifier($value)
 	{
-		return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
+		return '[' . str_replace(['[', ']'], ['[[', ']]'], $value) . ']';
 	}
 
 
@@ -274,7 +274,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	 */
 	public function escapeLike($value, $pos)
 	{
-		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
@@ -353,7 +353,7 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 				return FALSE;
 			}
 			$count = odbc_num_fields($set);
-			$cols = array();
+			$cols = [];
 			for ($i = 1; $i <= $count; $i++) {
 				$cols[] = odbc_result($set, $i);
 			}
@@ -392,14 +392,14 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	public function getResultColumns()
 	{
 		$count = odbc_num_fields($this->resultSet);
-		$columns = array();
+		$columns = [];
 		for ($i = 1; $i <= $count; $i++) {
-			$columns[] = array(
+			$columns[] = [
 				'name' => odbc_field_name($this->resultSet, $i),
 				'table' => NULL,
 				'fullname' => odbc_field_name($this->resultSet, $i),
 				'nativetype' => odbc_field_type($this->resultSet, $i),
-			);
+			];
 		}
 		return $columns;
 	}
@@ -426,13 +426,13 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	public function getTables()
 	{
 		$res = odbc_tables($this->connection);
-		$tables = array();
+		$tables = [];
 		while ($row = odbc_fetch_array($res)) {
 			if ($row['TABLE_TYPE'] === 'TABLE' || $row['TABLE_TYPE'] === 'VIEW') {
-				$tables[] = array(
+				$tables[] = [
 					'name' => $row['TABLE_NAME'],
 					'view' => $row['TABLE_TYPE'] === 'VIEW',
-				);
+				];
 			}
 		}
 		odbc_free_result($res);
@@ -448,17 +448,17 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	public function getColumns($table)
 	{
 		$res = odbc_columns($this->connection);
-		$columns = array();
+		$columns = [];
 		while ($row = odbc_fetch_array($res)) {
 			if ($row['TABLE_NAME'] === $table) {
-				$columns[] = array(
+				$columns[] = [
 					'name' => $row['COLUMN_NAME'],
 					'table' => $table,
 					'nativetype' => $row['TYPE_NAME'],
 					'size' => $row['COLUMN_SIZE'],
 					'nullable' => (bool) $row['NULLABLE'],
 					'default' => $row['COLUMN_DEF'],
-				);
+				];
 			}
 		}
 		odbc_free_result($res);

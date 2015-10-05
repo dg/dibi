@@ -8,11 +8,11 @@ require __DIR__ . '/bootstrap.php';
 $conn = new DibiConnection($config);
 
 
-$arr = array(
+$arr = [
 	'title' => 'Super Product',
 	'price' => 12,
 	'brand' => NULL,
-);
+];
 
 $fluent = $conn->update('table', $arr)
 	->setFlag('IGNORE')->setFlag('DELAYED');
@@ -22,7 +22,7 @@ Assert::same(
 	(string) $fluent
 );
 
-$fluent->set(array('another' => 123));
+$fluent->set(['another' => 123]);
 
 Assert::same(
 	reformat('UPDATE IGNORE DELAYED [table] SET [title]=\'Super Product\', [price]=12, [brand]=NULL , [another]=123'),

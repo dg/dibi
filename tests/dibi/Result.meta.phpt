@@ -24,14 +24,14 @@ $info = $conn->query('
 
 
 Assert::same(
-	array('product_id', 'order_id', 'name', 'xxx'),
+	['product_id', 'order_id', 'name', 'xxx'],
 	$info->getColumnNames()
 );
 
 
 if ($config['driver'] !== 'sqlite3' && $config['driver'] !== 'pdo') {
 	Assert::same(
-		array('products.product_id', 'orders.order_id', 'customers.name', 'xxx'),
+		['products.product_id', 'orders.order_id', 'customers.name', 'xxx'],
 		$info->getColumnNames(TRUE)
 	);
 }

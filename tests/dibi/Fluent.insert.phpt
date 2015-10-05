@@ -8,11 +8,11 @@ require __DIR__ . '/bootstrap.php';
 $conn = new DibiConnection($config);
 
 
-$arr = array(
+$arr = [
 	'title' => 'Super Product',
 	'price' => 12,
 	'brand' => NULL,
-);
+];
 
 $fluent = $conn->insert('table', $arr)
 	->setFlag('IGNORE')->setFlag('DELAYED');

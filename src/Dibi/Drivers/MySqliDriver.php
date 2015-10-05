@@ -70,14 +70,14 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 
 		} else {
 			// default values
-			$config += array(
+			$config += [
 				'charset' => 'utf8',
 				'timezone' => date('P'),
 				'username' => ini_get('mysqli.default_user'),
 				'password' => ini_get('mysqli.default_pw'),
 				'socket' => (string) ini_get('mysqli.default_socket'),
 				'port' => NULL,
-			);
+			];
 			if (!isset($config['host'])) {
 				$host = ini_get('mysqli.default_host');
 				if ($host) {
@@ -163,7 +163,7 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	 */
 	public function getInfo()
 	{
-		$res = array();
+		$res = [];
 		preg_match_all('#(.+?): +(\d+) *#', mysqli_info($this->connection), $matches, PREG_SET_ORDER);
 		if (preg_last_error()) {
 			throw new DibiPcreException;
@@ -432,8 +432,8 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		static $types;
 		if ($types === NULL) {
 			$consts = get_defined_constants(TRUE);
-			$types = array();
-			foreach (isset($consts['mysqli']) ? $consts['mysqli'] : array() as $key => $value) {
+			$types = [];
+			foreach (isset($consts['mysqli']) ? $consts['mysqli'] : [] as $key => $value) {
 				if (strncmp($key, 'MYSQLI_TYPE_', 12) === 0) {
 					$types[$value] = substr($key, 12);
 				}
@@ -442,16 +442,16 @@ class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 		}
 
 		$count = mysqli_num_fields($this->resultSet);
-		$columns = array();
+		$columns = [];
 		for ($i = 0; $i < $count; $i++) {
 			$row = (array) mysqli_fetch_field_direct($this->resultSet, $i);
-			$columns[] = array(
+			$columns[] = [
 				'name' => $row['name'],
 				'table' => $row['orgtable'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
 				'nativetype' => isset($types[$row['type']]) ? $types[$row['type']] : $row['type'],
 				'vendor' => $row,
-			);
+			];
 		}
 		return $columns;
 	}

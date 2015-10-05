@@ -32,7 +32,7 @@ class DibiFirePhpLogger extends DibiObject
 	public $numOfQueries = 0;
 
 	/** @var array */
-	private static $fireTable = array(array('Time', 'SQL Statement', 'Rows', 'Connection'));
+	private static $fireTable = [['Time', 'SQL Statement', 'Rows', 'Connection']];
 
 
 	/**
@@ -67,20 +67,20 @@ class DibiFirePhpLogger extends DibiObject
 		}
 		$this->totalTime += $event->time;
 		$this->numOfQueries++;
-		self::$fireTable[] = array(
+		self::$fireTable[] = [
 			sprintf('%0.3f', $event->time * 1000),
 			strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql,
 			$event->result instanceof Exception ? 'ERROR' : (string) $event->count,
 			$event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name'),
-		);
+		];
 
-		$payload = json_encode(array(
-			array(
+		$payload = json_encode([
+			[
 				'Type' => 'TABLE',
 				'Label' => 'dibi profiler (' . $this->numOfQueries . ' SQL queries took ' . sprintf('%0.3f', $this->totalTime * 1000) . ' ms)',
-			),
+			],
 			self::$fireTable,
-		));
+		]);
 		foreach (str_split($payload, self::$streamChunkSize) as $num => $s) {
 			$num++;
 			header("X-Wf-dibi-1-1-d$num: |$s|\\"); // protocol-, structure-, plugin-, message-index

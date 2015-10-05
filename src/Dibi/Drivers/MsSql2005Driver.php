@@ -264,7 +264,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function escapeLike($value, $pos)
 	{
-		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
@@ -366,13 +366,13 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 	 */
 	public function getResultColumns()
 	{
-		$columns = array();
+		$columns = [];
 		foreach ((array) sqlsrv_field_metadata($this->resultSet) as $fieldMetadata) {
-			$columns[] = array(
+			$columns[] = [
 				'name' => $fieldMetadata['Name'],
 				'fullname' => $fieldMetadata['Name'],
 				'nativetype' => $fieldMetadata['Type'],
-			);
+			];
 		}
 		return $columns;
 	}

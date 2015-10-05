@@ -54,9 +54,9 @@ FROM (SELECT * FROM products) t
 );
 
 
-$ds->select(array('product_id'));
-$ds->orderBy(array('product_id' => dibi::ASC));
-$ds->where(array('product_id = 1'));
+$ds->select(['product_id']);
+$ds->orderBy(['product_id' => dibi::ASC]);
+$ds->where(['product_id = 1']);
 Assert::match(
 	reformat("
 SELECT [product_id]
@@ -79,11 +79,11 @@ FROM (SELECT * FROM products) t
 Assert::same(1, $ds->toDataSource()->count());
 
 
-Assert::equal(array(
-	new DibiRow(array(
+Assert::equal([
+	new DibiRow([
 		'product_id' => 1,
-	)),
-), iterator_to_array($ds));
+	]),
+], iterator_to_array($ds));
 
 Assert::match(
 	reformat("
@@ -117,32 +117,32 @@ FROM (SELECT [title] FROM [products]) t'),
 	(string) $ds
 );
 
-Assert::equal(new DibiRow(array(
+Assert::equal(new DibiRow([
 	'product_id' => 1,
 	'title' => 'Chair',
-)), $conn->dataSource('SELECT * FROM products ORDER BY product_id')->fetch());
+]), $conn->dataSource('SELECT * FROM products ORDER BY product_id')->fetch());
 
 Assert::same(1, $conn->dataSource('SELECT * FROM products ORDER BY product_id')->fetchSingle());
 
 Assert::same(
-	array(1 => 'Chair', 'Table', 'Computer'),
+	[1 => 'Chair', 'Table', 'Computer'],
 	$conn->dataSource('SELECT * FROM products ORDER BY product_id')->fetchPairs()
 );
 
-Assert::equal(array(
-	1 => new DibiRow(array(
+Assert::equal([
+	1 => new DibiRow([
 		'product_id' => 1,
 		'title' => 'Chair',
-	)),
-	new DibiRow(array(
+	]),
+	new DibiRow([
 		'product_id' => 2,
 		'title' => 'Table',
-	)),
-	new DibiRow(array(
+	]),
+	new DibiRow([
 		'product_id' => 3,
 		'title' => 'Computer',
-	)),
-), $conn->dataSource('SELECT * FROM products ORDER BY product_id')->fetchAssoc('product_id'));
+	]),
+], $conn->dataSource('SELECT * FROM products ORDER BY product_id')->fetchAssoc('product_id'));
 
 
 $ds = new DibiDataSource('products', $conn);

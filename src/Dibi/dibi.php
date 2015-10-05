@@ -46,13 +46,13 @@ class dibi
 		DESC = 'DESC';
 
 	/** @var DibiConnection[]  Connection registry storage for DibiConnection objects */
-	private static $registry = array();
+	private static $registry = [];
 
 	/** @var DibiConnection  Current connection */
 	private static $connection;
 
 	/** @var array  @see addHandler */
-	private static $handlers = array();
+	private static $handlers = [];
 
 	/** @var string  Last SQL command @see dibi::query() */
 	public static $sql;
@@ -89,7 +89,7 @@ class dibi
 	 * @return DibiConnection
 	 * @throws DibiException
 	 */
-	public static function connect($config = array(), $name = 0)
+	public static function connect($config = [], $name = 0)
 	{
 		return self::$connection = self::$registry[$name] = new DibiConnection($config, $name);
 	}
@@ -376,7 +376,7 @@ class dibi
 		//if ($name = 'select', 'update', ...') {
 		// return self::command()->$name($args);
 		//}
-		return call_user_func_array(array(self::getConnection(), $name), $args);
+		return call_user_func_array([self::getConnection(), $name], $args);
 	}
 
 
@@ -399,7 +399,7 @@ class dibi
 	public static function select($args)
 	{
 		$args = func_get_args();
-		return call_user_func_array(array(self::getConnection(), 'select'), $args);
+		return call_user_func_array([self::getConnection(), 'select'], $args);
 	}
 
 
@@ -485,13 +485,39 @@ class dibi
 			$highlighter = "#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is";
 			if (PHP_SAPI === 'cli') {
 				if (substr(getenv('TERM'), 0, 5) === 'xterm') {
-					$sql = preg_replace_callback($highlighter, array('dibi', 'cliHighlightCallback'), $sql);
+					$sql = preg_replace_callback($highlighter, function ($m) {
+						if (!empty($m[1])) { // comment
+							return "\033[1;30m" . $m[1] . "\033[0m";
+
+						} elseif (!empty($m[2])) { // error
+							return "\033[1;31m" . $m[2] . "\033[0m";
+
+						} elseif (!empty($m[3])) { // most important keywords
+							return "\033[1;34m" . $m[3] . "\033[0m";
+
+						} elseif (!empty($m[4])) { // other keywords
+							return "\033[1;32m" . $m[4] . "\033[0m";
+						}
+					}, $sql);
 				}
 				echo trim($sql) . "\n\n";
 
 			} else {
 				$sql = htmlSpecialChars($sql);
-				$sql = preg_replace_callback($highlighter, array('dibi', 'highlightCallback'), $sql);
+				$sql = preg_replace_callback($highlighter, function ($m) {
+					if (!empty($m[1])) { // comment
+						return '<em style="color:gray">' . $m[1] . '</em>';
+
+					} elseif (!empty($m[2])) { // error
+						return '<strong style="color:red">' . $m[2] . '</strong>';
+
+					} elseif (!empty($m[3])) { // most important keywords
+						return '<strong style="color:blue">' . $m[3] . '</strong>';
+
+					} elseif (!empty($m[4])) { // other keywords
+						return '<strong style="color:green">' . $m[4] . '</strong>';
+					}
+				}, $sql);
 				echo '<pre class="dump">', trim($sql), "</pre>\n\n";
 			}
 		}
@@ -500,40 +526,6 @@ class dibi
 			return ob_get_clean();
 		} else {
 			ob_end_flush();
-		}
-	}
-
-
-	private static function highlightCallback($matches)
-	{
-		if (!empty($matches[1])) { // comment
-			return '<em style="color:gray">' . $matches[1] . '</em>';
-
-		} elseif (!empty($matches[2])) { // error
-			return '<strong style="color:red">' . $matches[2] . '</strong>';
-
-		} elseif (!empty($matches[3])) { // most important keywords
-			return '<strong style="color:blue">' . $matches[3] . '</strong>';
-
-		} elseif (!empty($matches[4])) { // other keywords
-			return '<strong style="color:green">' . $matches[4] . '</strong>';
-		}
-	}
-
-
-	private static function cliHighlightCallback($matches)
-	{
-		if (!empty($matches[1])) { // comment
-			return "\033[1;30m" . $matches[1] . "\033[0m";
-
-		} elseif (!empty($matches[2])) { // error
-			return "\033[1;31m" . $matches[2] . "\033[0m";
-
-		} elseif (!empty($matches[3])) { // most important keywords
-			return "\033[1;34m" . $matches[3] . "\033[0m";
-
-		} elseif (!empty($matches[4])) { // other keywords
-			return "\033[1;32m" . $matches[4] . "\033[0m";
 		}
 	}
 

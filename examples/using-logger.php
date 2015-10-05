@@ -9,15 +9,15 @@ require __DIR__ . '/../src/dibi.php';
 date_default_timezone_set('Europe/Prague');
 
 
-dibi::connect(array(
+dibi::connect([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 	// enable query logging to this file
-	'profiler' => array(
+	'profiler' => [
 		'run' => TRUE,
 		'file' => 'data/log.sql',
-	),
-));
+	],
+]);
 
 
 try {

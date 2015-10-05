@@ -19,7 +19,7 @@ test(function () use ($config) {
 
 
 test(function () use ($config) { // lazy
-	$conn = new DibiConnection($config + array('lazy' => TRUE));
+	$conn = new DibiConnection($config + ['lazy' => TRUE]);
 	Assert::false($conn->isConnected());
 
 	$conn->query('SELECT 1');
