@@ -2,7 +2,7 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
+ * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
 require_once dirname(__FILE__) . '/DibiMsSqlReflector.php';
@@ -211,7 +211,7 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 				return "'" . str_replace("'", "''", $value) . "'";
 
 			case dibi::IDENTIFIER:
-				// @see http://msdn.microsoft.com/en-us/library/ms176027.aspx
+				// @see https://msdn.microsoft.com/en-us/library/ms176027.aspx
 				return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
 			case dibi::BOOL:

@@ -21,7 +21,7 @@ fits with the scope and aims of the project. It's up to *you* to make a strong
 case to convince the project's developers of the merits of this feature.
 
 We welcome **pull requests**. If you'd like to contribute, please take a moment
-to [read the guidelines](http://nette.org/en/contributing) in order to make
+to [read the guidelines](https://nette.org/en/contributing) in order to make
 the contribution process easy and effective for everyone involved.
 
 Thanks!
