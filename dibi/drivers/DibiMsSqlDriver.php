@@ -265,15 +265,14 @@ class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriv
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-		// offset support is missing
-		if ($limit >= 0) {
-			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
-		}
+		if ($limit >= 0 && !$offset) {
+            		$sql = 'SELECT TOP ' . (int)$limit . ' * FROM (' . $sql . ') AS T ';
+        	}
 
-		if ($offset) {
-			throw new DibiNotImplementedException('Offset is not implemented.');
-		}
-	}
+        	if ($offset) {
+            	$sql = 'SELECT * FROM(' . $sql . ') tmpTable ORDER BY @@IDENTITY OFFSET ' . (int)$offset . ' ROWS FETCH NEXT ' . (int)$limit . ' ROWS ONLY';
+        	}
+    }
 
 
 	/********************* result set ****************d*g**/
