@@ -26,6 +26,9 @@ final class DibiTranslator extends DibiObject
 	/** @var array */
 	private $args;
 
+	/** @var ArrayAccess[] */
+	private $namedArgsContainers;
+
 	/** @var bool */
 	private $hasError;
 
@@ -71,6 +74,15 @@ final class DibiTranslator extends DibiObject
 		while (count($args) === 1 && is_array($args[0])) { // implicit array expansion
 			$args = array_values($args[0]);
 		}
+		$this->namedArgsContainers = array();
+		foreach ($args as $argIndex => $arg) {
+			if ($arg instanceof IDibiArguments) {
+				$this->namedArgsContainers[] = $arg;
+				unset($args[$argIndex]);
+			}
+		}
+		if (count($this->namedArgsContainers) > 0)
+			$args = array_values($args);
 		$this->args = $args;
 
 		$this->limit = -1;
@@ -111,12 +123,12 @@ final class DibiTranslator extends DibiObject
 						(\')((?:\'\'|[^\'])*)\'|     ## 3,4) 'string'
 						(")((?:""|[^"])*)"|          ## 5,6) "string"
 						(\'|")|                      ## 7) lone quote
-						:(\S*?:)([a-zA-Z0-9._]?)|    ## 8,9) :substitution:
-						%([a-zA-Z~][a-zA-Z0-9~]{0,5})|## 10) modifier
-						(\?)                         ## 11) placeholder
+						:(?:(\S*?:)([a-zA-Z0-9._]?)|([a-zA-Z0-9_]+)(?:%([a-zA-Z~][a-zA-Z0-9~]{0,5}))?)|    ## 8,9) :substitution:   10,11) :namedArgument%modifier  or :namedArgument
+						%([a-zA-Z~][a-zA-Z0-9~]{0,5})|## 12) modifier
+						(\?)                         ## 13) placeholder
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
-					. preg_replace_callback('/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
+					. preg_replace_callback('/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(?:(\S*?:)([a-zA-Z0-9._]?)|([a-zA-Z0-9_]+)(?:%([a-zA-Z~][a-zA-Z0-9~]{0,5}))?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
 							array($this, 'cb'),
 							substr($arg, $toSkip)
 					);
@@ -485,11 +497,13 @@ final class DibiTranslator extends DibiObject
 		//    [7] => lone-quote
 		//    [8] => substitution
 		//    [9] => substitution flag
-		//    [10] => modifier (when called from self::translate())
-		//    [11] => placeholder (when called from self::translate())
+		//    [10] => named argument (when called from self::translate())
+		//    [11] => named argument modifier (when called from self::translate())
+		//    [12] => modifier (when called from self::translate())
+		//    [13] => placeholder (when called from self::translate())
 
 
-		if (!empty($matches[11])) { // placeholder
+		if (!empty($matches[13])) { // placeholder
 			$cursor = & $this->cursor;
 
 			if ($cursor >= count($this->args)) {
@@ -501,8 +515,8 @@ final class DibiTranslator extends DibiObject
 			return $this->formatValue($this->args[$cursor - 1], FALSE);
 		}
 
-		if (!empty($matches[10])) { // modifier
-			$mod = $matches[10];
+		if (!empty($matches[12])) { // modifier
+			$mod = $matches[12];
 			$cursor = & $this->cursor;
 
 			if ($cursor >= count($this->args) && $mod !== 'else' && $mod !== 'end') {
@@ -546,6 +560,14 @@ final class DibiTranslator extends DibiObject
 				array_splice($this->args, $cursor, 1, $this->args[$cursor]);
 				return '';
 
+			} elseif ($mod === 'nmd') { // container of named arguments
+				$arg = $this->args[$cursor++];
+				if ($arg === NULL) {
+				} else {
+					$this->namedArgsContainers[] = $arg;
+				}
+				return '';
+
 			} elseif ($mod === 'lmt') { // apply limit
 				$arg = $this->args[$cursor++];
 				if ($arg === NULL) {
@@ -570,6 +592,15 @@ final class DibiTranslator extends DibiObject
 				$cursor++;
 				return $this->formatValue($this->args[$cursor - 1], $mod);
 			}
+		}
+
+		if (!empty($matches[10])) { // named argument
+			$index = $matches[10];
+			$mod = !empty($matches[11]) ? $matches[11] : FALSE; // modifier
+			foreach ($this->namedArgsContainers as $namedArgsContainers)
+				if (isset($namedArgsContainers[$index]))
+					return $this->formatValue($namedArgsContainers[$index], $mod);
+			return ''; // missing named argument might be on purpose (eg. inside an if block)
 		}
 
 		if ($this->comment) {
