@@ -23,7 +23,7 @@ class dibi
 		FLOAT = 'f',
 		DATE = 'd',
 		DATETIME = 't',
-		TIME = 't';
+		TIME = 's';
 
 	const IDENTIFIER = 'n',
 		AFFECTED_ROWS = 'a';
