@@ -2,7 +2,7 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- * Copyright (c) 2005 David Grudl (http://davidgrudl.com)
+ * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
 
@@ -17,7 +17,7 @@ require_once dirname(__FILE__) . '/DibiMsSql2005Reflector.php';
  *   - username (or user)
  *   - password (or pass)
  *   - database => the database name to select
- *   - options (array) => connection options {@link http://msdn.microsoft.com/en-us/library/cc296161(SQL.90).aspx}
+ *   - options (array) => connection options {@link https://msdn.microsoft.com/en-us/library/cc296161(SQL.90).aspx}
  *   - charset => character encoding to set (default is UTF-8)
  *   - resource (resource) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
@@ -226,7 +226,7 @@ class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResult
 				return "'" . str_replace("'", "''", $value) . "'";
 
 			case dibi::IDENTIFIER:
-				// @see http://msdn.microsoft.com/en-us/library/ms176027.aspx
+				// @see https://msdn.microsoft.com/en-us/library/ms176027.aspx
 				return '[' . str_replace(']', ']]', $value) . ']';
 
 			case dibi::BOOL:

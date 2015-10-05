@@ -2,7 +2,7 @@
 
 <h1>Tracy & SQL Exceptions | dibi</h1>
 
-<p>Dibi can display and log exceptions via <a href="http://tracy.nette.org">Tracy</a>.</p>
+<p>Dibi can display and log exceptions via <a href="https://tracy.nette.org">Tracy</a>.</p>
 
 <?php
 

@@ -1,4 +1,4 @@
-[Dibi](http://dibiphp.com) - smart database layer for PHP  [![Buy me a coffee](http://files.nette.org/images/coffee1s.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9XXL5ZJHAYQUN)
+[Dibi](http://dibiphp.com) - smart database layer for PHP  [![Buy me a coffee](https://files.nette.org/images/coffee1s.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9XXL5ZJHAYQUN)
 =========================================================
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/dibi/dibi.svg)](https://packagist.org/packages/dibi/dibi)
@@ -6,7 +6,7 @@
 Database access functions in PHP are not standardised. This library
 hides the differences between them, and above all, it gives you a very handy interface.
 
-The best way to install Dibi is to use a [Composer](http://getcomposer.org/download):
+The best way to install Dibi is to use a [Composer](https://getcomposer.org/download):
 
     php composer.phar require dibi/dibi
 

@@ -4,7 +4,7 @@
 
 <h1>Tracy | dibi</h1>
 
-<p>Dibi can log queries and dump variables to the <a href="http://tracy.nette.org">Tracy</a>.</p>
+<p>Dibi can log queries and dump variables to the <a href="https://tracy.nette.org">Tracy</a>.</p>
 
 <?php
 
