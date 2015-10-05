@@ -38,8 +38,8 @@ class dibi
 		FIELD_TIME = self::TIME;
 
 	/** version */
-	const VERSION = '2.3.2',
-		REVISION = 'released on 2015-04-18';
+	const VERSION = '2.4-dev',
+		REVISION = 'released on 2015-10-08';
 
 	/** sorting order */
 	const ASC = 'ASC',
