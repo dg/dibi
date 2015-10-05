@@ -6,9 +6,6 @@
  */
 
 
-require_once dirname(__FILE__) . '/MsSql2005Reflector.php';
-
-
 /**
  * The dibi driver for MS SQL Driver 2005 database.
  *

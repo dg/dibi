@@ -6,10 +6,6 @@
  */
 
 
-require_once dirname(__FILE__) . '/MySqlReflector.php';
-require_once dirname(__FILE__) . '/SqliteReflector.php';
-
-
 /**
  * The dibi driver for PDO.
  *
