@@ -24,12 +24,7 @@
  *
  * @package    dibi
  *
- * @property-read mixed $resource
- * @property-read IDibiResultDriver $driver
  * @property-read int $rowCount
- * @property-read DibiResultIterator $iterator
- * @property string $rowClass
- * @property-read DibiResultInfo $info
  */
 class DibiResult extends DibiObject implements IDataSource
 {

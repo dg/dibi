@@ -11,12 +11,8 @@
  *
  * @package    dibi
  *
- * @property-read bool $connected
- * @property-read mixed $config
- * @property-read IDibiDriver $driver
  * @property-read int $affectedRows
  * @property-read int $insertId
- * @property-read DibiDatabaseInfo $databaseInfo
  */
 class DibiConnection extends DibiObject
 {
