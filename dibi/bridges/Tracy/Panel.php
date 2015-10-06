@@ -13,7 +13,7 @@ use Tracy;
 
 /**
  * Dibi panel for Tracy.
- *
+ * @package    dibi\nette
  */
 class Panel extends \DibiObject implements Tracy\IBarPanel
 {
