@@ -11,11 +11,6 @@
  *
  * @author     David Grudl
  * @package    dibi
- *
- * @property-read DibiConnection $connection
- * @property-read DibiResult $result
- * @property-read DibiResultIterator $iterator
- * @property-read int $totalCount
  */
 class DibiDataSource extends DibiObject implements IDataSource
 {

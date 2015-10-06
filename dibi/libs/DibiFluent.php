@@ -12,9 +12,6 @@
  * @author     David Grudl
  * @package    dibi
  *
- * @property-read string $command
- * @property-read DibiConnection $connection
- * @property-read DibiResultIterator $iterator
  * @method DibiFluent select($field)
  * @method DibiFluent distinct()
  * @method DibiFluent from($table)
