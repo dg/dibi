@@ -47,6 +47,13 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	}
 
 
+	public function __get($key)
+	{
+		$hint = DibiHelpers::getSuggestion(array_keys((array) $this), $key);
+		trigger_error("Attempt to read missing column '$key'" . ($hint ? ", did you mean '$hint'?" : '.'), E_USER_NOTICE);
+	}
+
+
 	/********************* interfaces ArrayAccess, Countable & IteratorAggregate ****************d*g**/
 
 

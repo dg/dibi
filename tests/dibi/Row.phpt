@@ -24,14 +24,24 @@ Assert::true(isset($row['title']));
 // missing
 Assert::error(function () use ($row) {
 	$x = $row->missing;
-}, E_NOTICE, 'Undefined property: DibiRow::$missing');
+}, E_USER_NOTICE, "Attempt to read missing column 'missing'.");
 
 Assert::error(function () use ($row) {
 	$x = $row['missing'];
-}, E_NOTICE, 'Undefined property: DibiRow::$missing');
+}, E_USER_NOTICE, "Attempt to read missing column 'missing'.");
 
 Assert::false(isset($row->missing));
 Assert::false(isset($row['missing']));
+
+
+// suggestions
+Assert::error(function () use ($row) {
+	$x = $row->tilte;
+}, E_USER_NOTICE, "Attempt to read missing column 'tilte', did you mean 'title'?");
+
+Assert::error(function () use ($row) {
+	$x = $row['tilte'];
+}, E_USER_NOTICE, "Attempt to read missing column 'tilte', did you mean 'title'?");
 
 
 // to array
