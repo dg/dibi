@@ -92,6 +92,26 @@ class DibiHelpers
 	}
 
 
+	/**
+	 * Finds the best suggestion.
+	 * @return string|NULL
+	 * @internal
+	 */
+	public static function getSuggestion(array $items, $value)
+	{
+		$best = NULL;
+		$min = (int) (strlen($value) / 4) + 2;
+		foreach ($items as $item) {
+			$item = is_object($item) ? $item->getName() : $item;
+			if (($len = levenshtein($item, $value)) > 0 && $len < $min) {
+				$min = $len;
+				$best = $item;
+			}
+		}
+		return $best;
+	}
+
+
 	/** @internal */
 	public static function escape($driver, $value, $type)
 	{
