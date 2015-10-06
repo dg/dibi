@@ -20,8 +20,10 @@
  *
  * @package    dibi\drivers
  */
-class DibiSqlite3Driver extends DibiObject implements IDibiDriver, IDibiResultDriver
+class DibiSqlite3Driver implements IDibiDriver, IDibiResultDriver
 {
+	use DibiStrict;
+
 	/** @var SQLite3  Connection resource */
 	private $connection;
 

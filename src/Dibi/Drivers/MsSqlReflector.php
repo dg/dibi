@@ -12,8 +12,10 @@
  * @package    dibi\drivers
  * @internal
  */
-class DibiMsSqlReflector extends DibiObject implements IDibiReflector
+class DibiMsSqlReflector implements IDibiReflector
 {
+	use DibiStrict;
+
 	/** @var IDibiDriver */
 	private $driver;
 

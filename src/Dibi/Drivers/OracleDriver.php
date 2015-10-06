@@ -23,8 +23,10 @@
  *
  * @package    dibi\drivers
  */
-class DibiOracleDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 {
+	use DibiStrict;
+
 	/** @var resource  Connection resource */
 	private $connection;
 

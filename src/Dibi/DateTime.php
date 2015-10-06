@@ -13,6 +13,7 @@
  */
 class DibiDateTime extends DateTime
 {
+	use DibiStrict;
 
 	public function __construct($time = 'now', DateTimeZone $timezone = NULL)
 	{

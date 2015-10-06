@@ -14,6 +14,8 @@
  */
 class dibi
 {
+	use DibiStrict;
+
 	const
 		AFFECTED_ROWS = 'a',
 		IDENTIFIER = 'n';

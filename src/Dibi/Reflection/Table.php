@@ -19,8 +19,10 @@
  * @property-read array $indexes
  * @property-read DibiIndexInfo $primaryKey
  */
-class DibiTableInfo extends DibiObject
+class DibiTableInfo
 {
+	use DibiStrict;
+
 	/** @var IDibiReflector */
 	private $reflector;
 

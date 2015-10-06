@@ -22,6 +22,8 @@
  */
 class DibiResultIterator implements Iterator, Countable
 {
+	use DibiStrict;
+
 	/** @var DibiResult */
 	private $result;
 

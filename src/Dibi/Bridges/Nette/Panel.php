@@ -13,8 +13,10 @@ use Nette\Diagnostics\Debugger;
  *
  * @package    dibi\nette
  */
-class DibiNettePanel extends DibiObject implements Nette\Diagnostics\IBarPanel
+class DibiNettePanel implements Nette\Diagnostics\IBarPanel
 {
+	use DibiStrict;
+
 	/** @var int maximum SQL length */
 	static public $maxLength = 1000;
 

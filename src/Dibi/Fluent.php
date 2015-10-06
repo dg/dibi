@@ -23,8 +23,10 @@
  * @method DibiFluent leftJoin($table)
  * @method DibiFluent on($cond)
  */
-class DibiFluent extends DibiObject implements IDataSource
+class DibiFluent implements IDataSource
 {
+	use DibiStrict;
+
 	const REMOVE = FALSE;
 
 	/** @var array */

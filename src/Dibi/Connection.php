@@ -14,8 +14,10 @@
  * @property-read int $affectedRows
  * @property-read int $insertId
  */
-class DibiConnection extends DibiObject
+class DibiConnection
 {
+	use DibiStrict;
+
 	/** @var array of function (DibiEvent $event); Occurs after query is executed */
 	public $onEvent;
 

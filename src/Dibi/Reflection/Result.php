@@ -14,8 +14,10 @@
  * @property-read array $columns
  * @property-read array $columnNames
  */
-class DibiResultInfo extends DibiObject
+class DibiResultInfo
 {
+	use DibiStrict;
+
 	/** @var IDibiResultDriver */
 	private $driver;
 

@@ -20,8 +20,10 @@
  *
  * @package    dibi\drivers
  */
-class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 {
+	use DibiStrict;
+
 	/** @var resource  Connection resource */
 	private $connection;
 

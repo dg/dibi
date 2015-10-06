@@ -11,8 +11,10 @@
  *
  * @package    dibi
  */
-class DibiLiteral extends DibiObject
+class DibiLiteral
 {
+	use DibiStrict;
+
 	/** @var string */
 	private $value;
 
