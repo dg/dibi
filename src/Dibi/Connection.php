@@ -9,8 +9,6 @@
 /**
  * dibi connection.
  *
- * @package    dibi
- *
  * @property-read int $affectedRows
  * @property-read int $insertId
  */

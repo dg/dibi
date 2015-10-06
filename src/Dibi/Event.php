@@ -8,8 +8,6 @@
 
 /**
  * Profiler & logger event.
- *
- * @package    dibi
  */
 class DibiEvent
 {

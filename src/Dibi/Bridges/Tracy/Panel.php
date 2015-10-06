@@ -14,7 +14,6 @@ use DibiHelpers;
 
 /**
  * Dibi panel for Tracy.
- * @package    dibi\nette
  */
 class Panel implements Tracy\IBarPanel
 {

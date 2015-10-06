@@ -20,8 +20,6 @@
  *   - resource (resource) => existing connection resource
  *   - persistent => Creates persistent connections with oci_pconnect instead of oci_new_connect
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
- *
- * @package    dibi\drivers
  */
 class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 {

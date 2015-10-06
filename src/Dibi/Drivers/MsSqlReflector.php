@@ -8,8 +8,6 @@
 
 /**
  * The dibi reflector for MsSQL databases.
- *
- * @package    dibi\drivers
  * @internal
  */
 class DibiMsSqlReflector implements IDibiReflector

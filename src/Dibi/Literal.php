@@ -8,8 +8,6 @@
 
 /**
  * SQL literal value.
- *
- * @package    dibi
  */
 class DibiLiteral
 {

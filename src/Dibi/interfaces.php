@@ -8,7 +8,6 @@
 
 /**
  * Provides an interface between a dataset and data-aware components.
- * @package    dibi
  */
 interface IDataSource extends Countable, IteratorAggregate
 {
@@ -19,7 +18,6 @@ interface IDataSource extends Countable, IteratorAggregate
 
 /**
  * dibi driver interface.
- * @package    dibi
  */
 interface IDibiDriver
 {
@@ -131,7 +129,6 @@ interface IDibiDriver
 
 /**
  * dibi result set driver interface.
- * @package    dibi
  */
 interface IDibiResultDriver
 {
@@ -189,8 +186,6 @@ interface IDibiResultDriver
 
 /**
  * dibi driver reflection.
- *
- * @package    dibi
  */
 interface IDibiReflector
 {

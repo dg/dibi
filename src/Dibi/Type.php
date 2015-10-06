@@ -8,8 +8,6 @@
 
 /**
  * Data types.
- *
- * @package    dibi
  */
 class DibiType
 {

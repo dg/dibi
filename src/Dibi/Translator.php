@@ -8,8 +8,6 @@
 
 /**
  * dibi SQL translator.
- *
- * @package    dibi
  */
 final class DibiTranslator
 {

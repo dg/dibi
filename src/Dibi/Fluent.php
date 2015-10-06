@@ -9,8 +9,6 @@
 /**
  * dibi SQL builder via fluent interfaces. EXPERIMENTAL!
  *
- * @package    dibi
- *
  * @method DibiFluent select($field)
  * @method DibiFluent distinct()
  * @method DibiFluent from($table)

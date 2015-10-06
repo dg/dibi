@@ -9,9 +9,6 @@
 /**
  * Reflection metadata class for a foreign key.
  *
- * @package    dibi\reflection
- * @todo
- *
  * @property-read string $name
  * @property-read array $references
  */

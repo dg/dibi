@@ -9,8 +9,6 @@
 /**
  * Reflection metadata class for a table or result set column.
  *
- * @package    dibi\reflection
- *
  * @property-read string $name
  * @property-read string $fullName
  * @property-read DibiTableInfo $table

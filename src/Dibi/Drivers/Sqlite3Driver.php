@@ -17,8 +17,6 @@
  *   - charset => character encoding to set (default is UTF-8)
  *   - resource (SQLite3) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
- *
- * @package    dibi\drivers
  */
 class DibiSqlite3Driver implements IDibiDriver, IDibiResultDriver
 {

@@ -8,7 +8,6 @@
 
 /**
  * Better OOP experience.
- * @package    dibi
  */
 trait DibiStrict
 {

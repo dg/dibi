@@ -9,8 +9,6 @@
 /**
  * Reflection metadata class for a index or primary key.
  *
- * @package    dibi\reflection
- *
  * @property-read string $name
  * @property-read array $columns
  * @property-read bool $unique

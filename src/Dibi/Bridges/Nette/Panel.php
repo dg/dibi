@@ -10,8 +10,6 @@ use Nette\Diagnostics\Debugger;
 
 /**
  * Dibi panel for Nette\Diagnostics.
- *
- * @package    dibi\nette
  */
 class DibiNettePanel implements Nette\Diagnostics\IBarPanel
 {

@@ -17,8 +17,6 @@
  *   - resource (PDO) => existing connection
  *   - version
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
- *
- * @package    dibi\drivers
  */
 class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 {

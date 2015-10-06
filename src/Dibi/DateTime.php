@@ -8,8 +8,6 @@
 
 /**
  * DateTime.
- *
- * @package    dibi
  */
 class DibiDateTime extends DateTime
 {

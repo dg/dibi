@@ -17,8 +17,6 @@
  * }
  * unset($result);
  * </code>
- *
- * @package    dibi
  */
 class DibiResultIterator implements Iterator, Countable
 {

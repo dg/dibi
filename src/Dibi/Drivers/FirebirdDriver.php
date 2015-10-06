@@ -17,8 +17,6 @@
  *   - buffers (int) => buffers is the number of database buffers to allocate for the server-side cache. If 0 or omitted, server chooses its own default.
  *   - resource (resource) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
- *
- * @package    dibi\drivers
  */
 class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 {

@@ -8,8 +8,6 @@
 
 /**
  * dibi FirePHP logger.
- *
- * @package    dibi
  */
 class DibiFirePhpLogger
 {
