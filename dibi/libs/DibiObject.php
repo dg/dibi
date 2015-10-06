@@ -209,8 +209,8 @@ abstract class DibiObject
 		}
 
 		// property getter support
-		$name[0] = $name[0] & "\xDF"; // case-sensitive checking, capitalize first character
-		$m = 'get' . $name;
+		$uname = ucfirst($name);
+		$m = 'get' . $uname;
 		if (self::hasAccessor($class, $m)) {
 			// ampersands:
 			// - uses & __get() because declaration should be forward compatible (e.g. with Nette\Web\Html)
@@ -219,13 +219,12 @@ abstract class DibiObject
 			return $val;
 		}
 
-		$m = 'is' . $name;
+		$m = 'is' . $uname;
 		if (self::hasAccessor($class, $m)) {
 			$val = $this->$m();
 			return $val;
 		}
 
-		$name = func_get_arg(0);
 		throw new LogicException("Cannot read an undeclared property $class::\$$name.");
 	}
 
@@ -246,20 +245,18 @@ abstract class DibiObject
 		}
 
 		// property setter support
-		$name[0] = $name[0] & "\xDF"; // case-sensitive checking, capitalize first character
-		if (self::hasAccessor($class, 'get' . $name) || self::hasAccessor($class, 'is' . $name)) {
+		$uname = ucfirst($name);
+		if (self::hasAccessor($class, 'get' . $uname) || self::hasAccessor($class, 'is' . $uname)) {
 			$m = 'set' . $name;
 			if (self::hasAccessor($class, $m)) {
 				$this->$m($value);
 				return;
 
 			} else {
-				$name = func_get_arg(0);
 				throw new LogicException("Cannot assign to a read-only property $class::\$$name.");
 			}
 		}
 
-		$name = func_get_arg(0);
 		throw new LogicException("Cannot assign to an undeclared property $class::\$$name.");
 	}
 
@@ -271,8 +268,7 @@ abstract class DibiObject
 	 */
 	public function __isset($name)
 	{
-		$name[0] = $name[0] & "\xDF";
-		return $name !== '' && self::hasAccessor(get_class($this), 'get' . $name);
+		return $name !== '' && self::hasAccessor(get_class($this), 'get' . ucfirst($name));
 	}
 
 
