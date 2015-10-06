@@ -16,10 +16,10 @@ dibi::connect([
 // retrieve database reflection
 $database = dibi::getDatabaseInfo();
 
-echo "<h2>Database '{$database->name}'</h2>\n";
+echo "<h2>Database '{$database->getName()}'</h2>\n";
 echo "<ul>\n";
 foreach ($database->getTables() as $table) {
-	echo '<li>', ($table->view ? 'view' : 'table') . " $table->name</li>\n";
+	echo '<li>', ($table->isView() ? 'view' : 'table') . " {$table->getName()}</li>\n";
 }
 echo "</ul>\n";
 
@@ -27,12 +27,12 @@ echo "</ul>\n";
 // table reflection
 $table = $database->getTable('products');
 
-echo "<h2>Table '{$table->name}'</h2>\n";
+echo "<h2>Table '{$table->getName()}'</h2>\n";
 
 echo "Columns\n";
 echo "<ul>\n";
 foreach ($table->getColumns() as $column) {
-	echo "<li>{$column->name} <i>{$column->nativeType}</i> <code>{$column->default}</code></li>\n";
+	echo "<li>{$column->getName()} <i>{$column->getNativeType()}</i> <code>{$column->getDefault()}</code></li>\n";
 }
 echo "</ul>\n";
 
@@ -40,9 +40,9 @@ echo "</ul>\n";
 echo 'Indexes';
 echo "<ul>\n";
 foreach ($table->getIndexes() as $index) {
-	echo "<li>{$index->name} " . ($index->primary ? 'primary ' : '') . ($index->unique ? 'unique' : '') . ' (';
+	echo "<li>{$index->getName()} " . ($index->isPrimary() ? 'primary ' : '') . ($index->isUnique() ? 'unique' : '') . ' (';
 	foreach ($index->getColumns() as $column) {
-		echo "$column->name, ";
+		echo $column->getName(), ', ';
 	}
 	echo ")</li>\n";
 }

@@ -39,19 +39,19 @@ if ($config['driver'] !== 'sqlite3' && $config['driver'] !== 'pdo') {
 
 $columns = $info->getColumns();
 
-Assert::same('product_id', $columns[0]->name);
+Assert::same('product_id', $columns[0]->getName());
 if ($config['driver'] !== 'sqlite3' && $config['driver'] !== 'pdo') {
-	Assert::same('products', $columns[0]->tableName);
+	Assert::same('products', $columns[0]->getTableName());
 }
 Assert::null($columns[0]->getVendorInfo('xxx'));
 if ($config['system'] !== 'sqlite') {
-	Assert::same('i', $columns[0]->type);
+	Assert::same('i', $columns[0]->getType());
 }
-Assert::null($columns[0]->nullable);
+Assert::null($columns[0]->isNullable());
 
-Assert::same('xxx', $columns[3]->name);
-Assert::null($columns[3]->tableName);
+Assert::same('xxx', $columns[3]->getName());
+Assert::null($columns[3]->getTableName());
 if ($config['system'] !== 'sqlite') {
-	Assert::same('i', $columns[0]->type);
+	Assert::same('i', $columns[0]->getType());
 }
-Assert::null($columns[3]->nullable);
+Assert::null($columns[3]->isNullable());

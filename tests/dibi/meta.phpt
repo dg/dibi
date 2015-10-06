@@ -27,32 +27,32 @@ Assert::equal(['customers', 'orders', 'products'], $names);
 Assert::false($meta->hasTable('xxxx'));
 
 $table = $meta->getTable('products');
-Assert::same('products', $table->name);
+Assert::same('products', $table->getName());
 Assert::false($table->isView());
 
 Assert::same(2, count($table->getColumns()));
 Assert::false($table->hasColumn('xxxx'));
 Assert::true($table->hasColumn('product_id'));
 Assert::true($table->hasColumn('Product_id'));
-Assert::same('product_id', $table->getColumn('Product_id')->name);
+Assert::same('product_id', $table->getColumn('Product_id')->getName());
 
 $column = $table->getColumn('product_id');
-Assert::same('product_id', $column->name);
-Assert::same('products', $column->table->name);
-Assert::same('i', $column->type);
-Assert::type('string', $column->nativeType);
-Assert::false($column->nullable);
-Assert::true($column->autoIncrement);
+Assert::same('product_id', $column->getName());
+Assert::same('products', $column->getTable()->getName());
+Assert::same('i', $column->getType());
+Assert::type('string', $column->getNativeType());
+Assert::false($column->isNullable());
+Assert::true($column->isAutoIncrement());
 
 $column = $table->getColumn('title');
-Assert::same('title', $column->name);
-Assert::same('products', $column->table->name);
-Assert::same('s', $column->type);
-Assert::type('string', $column->nativeType);
-Assert::same(100, $column->size);
-Assert::true($column->nullable);
-Assert::false($column->autoIncrement);
-//Assert::null($column->default);
+Assert::same('title', $column->getName());
+Assert::same('products', $column->getTable()->getName());
+Assert::same('s', $column->getType());
+Assert::type('string', $column->getNativeType());
+Assert::same(100, $column->getSize());
+Assert::true($column->isNullable());
+Assert::false($column->isAutoIncrement());
+//Assert::null($column->getDefault());
 
 
 $indexes = $table->getIndexes();
@@ -60,16 +60,16 @@ $index = reset($indexes);
 
 if ($config['system'] !== 'sqlite') {
 	Assert::same(2, count($indexes));
-	Assert::true($index->primary);
-	Assert::true($index->unique);
+	Assert::true($index->isPrimary());
+	Assert::true($index->isUnique());
 	Assert::same(1, count($index->getColumns()));
-	Assert::same('product_id', $index->columns[0]->name);
+	Assert::same('product_id', $index->getColumns()[0]->getName());
 
 	$index = next($indexes);
 }
 
-Assert::same('title', $index->name);
-Assert::false($index->primary);
-Assert::false($index->unique);
+Assert::same('title', $index->getName());
+Assert::false($index->isPrimary());
+Assert::false($index->isUnique());
 Assert::same(1, count($index->getColumns()));
-Assert::same('title', $index->columns[0]->name);
+Assert::same('title', $index->getColumns()[0]->getName());
