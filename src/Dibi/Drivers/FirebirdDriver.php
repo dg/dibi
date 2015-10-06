@@ -20,8 +20,10 @@
  *
  * @package    dibi\drivers
  */
-class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 {
+	use DibiStrict;
+
 	const ERROR_EXCEPTION_THROWN = -836;
 
 	/** @var resource  Connection resource */

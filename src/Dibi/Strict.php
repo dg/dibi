@@ -7,10 +7,10 @@
 
 
 /**
- * Object is the ultimate ancestor of all instantiable classes.
+ * Better OOP experience.
  * @package    dibi
  */
-abstract class DibiObject
+trait DibiStrict
 {
 	/** @var array [method => [type => callback]] */
 	private static $extMethods;

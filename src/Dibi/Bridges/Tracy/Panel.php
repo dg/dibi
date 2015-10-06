@@ -16,8 +16,10 @@ use DibiHelpers;
  * Dibi panel for Tracy.
  * @package    dibi\nette
  */
-class Panel extends \DibiObject implements Tracy\IBarPanel
+class Panel implements Tracy\IBarPanel
 {
+	use \DibiStrict;
+
 	/** @var int maximum SQL length */
 	static public $maxLength = 1000;
 

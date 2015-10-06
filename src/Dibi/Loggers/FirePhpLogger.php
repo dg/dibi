@@ -11,8 +11,10 @@
  *
  * @package    dibi
  */
-class DibiFirePhpLogger extends DibiObject
+class DibiFirePhpLogger
 {
+	use DibiStrict;
+
 	/** maximum number of rows */
 	static public $maxQueries = 30;
 

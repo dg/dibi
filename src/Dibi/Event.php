@@ -13,6 +13,8 @@
  */
 class DibiEvent
 {
+	use DibiStrict;
+
 	/** event type */
 	const CONNECT = 1,
 		SELECT = 4,

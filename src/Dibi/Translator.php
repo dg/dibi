@@ -11,8 +11,10 @@
  *
  * @package    dibi
  */
-final class DibiTranslator extends DibiObject
+final class DibiTranslator
 {
+	use DibiStrict;
+
 	/** @var DibiConnection */
 	private $connection;
 

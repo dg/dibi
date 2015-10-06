@@ -20,8 +20,10 @@
  *
  * @package    dibi\drivers
  */
-class DibiMsSqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
+class DibiMsSqlDriver implements IDibiDriver, IDibiResultDriver
 {
+	use DibiStrict;
+
 	/** @var resource  Connection resource */
 	private $connection;
 

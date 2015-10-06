@@ -11,6 +11,7 @@
  */
 class DibiHelpers
 {
+	use DibiStrict;
 
 	/**
 	 * Prints out a syntax highlighted version of the SQL command or DibiResult.

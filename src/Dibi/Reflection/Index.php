@@ -16,8 +16,10 @@
  * @property-read bool $unique
  * @property-read bool $primary
  */
-class DibiIndexInfo extends DibiObject
+class DibiIndexInfo
 {
+	use DibiStrict;
+
 	/** @var array (name, columns, [unique], [primary]) */
 	private $info;
 

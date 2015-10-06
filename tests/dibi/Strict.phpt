@@ -5,12 +5,9 @@ use Tester\Assert;
 require __DIR__ . '/bootstrap.php';
 
 
-class TestClass extends DibiObject
+class TestClass
 {
-	public function callParent()
-	{
-		parent::callParent();
-	}
+	use DibiStrict;
 
 	public function getBar()
 	{
@@ -20,6 +17,14 @@ class TestClass extends DibiObject
 	public function isFoo()
 	{
 		return 456;
+	}
+}
+
+class TestChild extends TestClass
+{
+	public function callParent()
+	{
+		parent::callParent();
 	}
 }
 
@@ -35,7 +40,7 @@ Assert::exception(function () {
 }, 'LogicException', 'Call to undefined static method TestClass::undeclared().');
 
 Assert::exception(function () {
-	$obj = new TestClass;
+	$obj = new TestChild;
 	$obj->callParent();
 }, 'LogicException', 'Call to undefined method parent::callParent().');
 

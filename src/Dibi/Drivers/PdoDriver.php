@@ -20,8 +20,10 @@
  *
  * @package    dibi\drivers
  */
-class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
+class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 {
+	use DibiStrict;
+
 	/** @var PDO  Connection resource */
 	private $connection;
 

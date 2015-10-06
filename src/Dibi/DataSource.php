@@ -11,8 +11,10 @@
  *
  * @package    dibi
  */
-class DibiDataSource extends DibiObject implements IDataSource
+class DibiDataSource implements IDataSource
 {
+	use DibiStrict;
+
 	/** @var DibiConnection */
 	private $connection;
 

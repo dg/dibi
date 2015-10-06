@@ -15,8 +15,10 @@
  * @property-read string $name
  * @property-read array $references
  */
-class DibiForeignKeyInfo extends DibiObject
+class DibiForeignKeyInfo
 {
+	use DibiStrict;
+
 	/** @var string */
 	private $name;
 

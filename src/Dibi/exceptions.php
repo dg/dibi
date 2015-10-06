@@ -13,6 +13,8 @@
  */
 class DibiException extends Exception
 {
+	use DibiStrict;
+
 	/** @var string */
 	private $sql;
 
@@ -116,6 +118,8 @@ class DibiDriverException extends DibiException
  */
 class DibiPcreException extends Exception
 {
+	use DibiStrict;
+
 	public function __construct($message = '%msg.')
 	{
 		static $messages = [

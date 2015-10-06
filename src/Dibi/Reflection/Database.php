@@ -15,8 +15,10 @@
  * @property-read array $tables
  * @property-read array $tableNames
  */
-class DibiDatabaseInfo extends DibiObject
+class DibiDatabaseInfo
 {
+	use DibiStrict;
+
 	/** @var IDibiReflector */
 	private $reflector;
 

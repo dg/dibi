@@ -46,7 +46,7 @@ spl_autoload_register(function ($class) {
 		'DibiNettePanel' => 'Bridges/Nette/Panel.php',
 		'DibiNotImplementedException' => 'exceptions.php',
 		'DibiNotSupportedException' => 'exceptions.php',
-		'DibiObject' => 'Object.php',
+		'DibiStrict' => 'Strict.php',
 		'DibiOdbcDriver' => 'Drivers/OdbcDriver.php',
 		'DibiOracleDriver' => 'Drivers/OracleDriver.php',
 		'DibiPcreException' => 'exceptions.php',

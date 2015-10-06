@@ -22,8 +22,10 @@
  * @property-read bool $autoIncrement
  * @property-read mixed $default
  */
-class DibiColumnInfo extends DibiObject
+class DibiColumnInfo
 {
+	use DibiStrict;
+
 	/** @var array */
 	private static $types;
 

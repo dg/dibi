@@ -26,8 +26,10 @@
  *
  * @package    dibi\drivers
  */
-class DibiMySqlDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
+class DibiMySqlDriver implements IDibiDriver, IDibiResultDriver
 {
+	use DibiStrict;
+
 	const ERROR_ACCESS_DENIED = 1045;
 	const ERROR_DUPLICATE_ENTRY = 1062;
 	const ERROR_DATA_TRUNCATED = 1265;

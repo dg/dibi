@@ -11,8 +11,10 @@
  *
  * @package    dibi
  */
-class DibiFileLogger extends DibiObject
+class DibiFileLogger
 {
+	use DibiStrict;
+
 	/** @var string  Name of the file where SQL errors should be logged */
 	public $file;
 

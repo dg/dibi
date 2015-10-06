@@ -26,8 +26,10 @@
  *
  * @property-read int $rowCount
  */
-class DibiResult extends DibiObject implements IDataSource
+class DibiResult implements IDataSource
 {
+	use DibiStrict;
+
 	/** @var array  IDibiResultDriver */
 	private $driver;
 
