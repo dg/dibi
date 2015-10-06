@@ -459,7 +459,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getTables()
 	{
-		$version = pg_parameter_status($this->resource, 'server_version');
+		$version = pg_parameter_status($this->getResource(), 'server_version');
 		if ($version < 7.4) {
 			throw new DibiDriverException('Reflection requires PostgreSQL 7.4 and newer.');
 		}

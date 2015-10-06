@@ -163,7 +163,7 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 		if ($savepoint !== NULL) {
 			throw new DibiNotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
-		$this->transaction = ibase_trans($this->resource);
+		$this->transaction = ibase_trans($this->getResource());
 		$this->inTransaction = TRUE;
 	}
 
