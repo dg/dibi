@@ -18,7 +18,6 @@
  *   - resource (resource) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
- * @author     Tomáš Kraina, Roman Sklenář
  * @package    dibi\drivers
  */
 class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultDriver, IDibiReflector
@@ -807,8 +806,6 @@ class DibiFirebirdDriver extends DibiObject implements IDibiDriver, IDibiResultD
 /**
  * Database procedure exception.
  *
- * @author     Roman Sklenář
- * @copyright  Copyright (c) 2010
  * @package    dibi\drivers
  */
 class DibiProcedureException extends DibiException

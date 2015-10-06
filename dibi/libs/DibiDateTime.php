@@ -9,7 +9,6 @@
 /**
  * DateTime with serialization and timestamp support for PHP 5.2.
  *
- * @author     David Grudl
  * @package    dibi
  */
 class DibiDateTime extends DateTime

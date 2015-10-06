@@ -184,7 +184,6 @@ interface IDibiResultDriver
 /**
  * dibi driver reflection.
  *
- * @author     David Grudl
  * @package    dibi
  */
 interface IDibiReflector

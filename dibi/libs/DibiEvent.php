@@ -9,7 +9,6 @@
 /**
  * Profiler & logger event.
  *
- * @author     David Grudl
  * @package    dibi
  */
 class DibiEvent

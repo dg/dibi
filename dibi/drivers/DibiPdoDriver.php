@@ -22,7 +22,6 @@ require_once dirname(__FILE__) . '/DibiSqliteReflector.php';
  *   - version
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
- * @author     David Grudl
  * @package    dibi\drivers
  */
 class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver

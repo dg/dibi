@@ -9,7 +9,6 @@
 /**
  * Default implementation of IDataSource for dibi.
  *
- * @author     David Grudl
  * @package    dibi
  *
  * @property-read DibiConnection $connection

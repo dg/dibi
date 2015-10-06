@@ -9,7 +9,6 @@
 /**
  * Dibi extension for Nette Framework 2.1. Creates 'connection' service.
  *
- * @author     David Grudl
  * @package    dibi\nette
  * @phpversion 5.3
  */

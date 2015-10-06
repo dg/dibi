@@ -10,7 +10,6 @@
  * This class is static container class for creating DB objects and
  * store connections info.
  *
- * @author     David Grudl
  * @package    dibi
  */
 class dibi

@@ -9,7 +9,6 @@
 /**
  * Reflection metadata class for a database.
  *
- * @author     David Grudl
  * @package    dibi\reflection
  *
  * @property-read string $name
@@ -115,7 +114,6 @@ class DibiDatabaseInfo extends DibiObject
 /**
  * Reflection metadata class for a database table.
  *
- * @author     David Grudl
  * @package    dibi\reflection
  *
  * @property-read string $name
@@ -307,7 +305,6 @@ class DibiTableInfo extends DibiObject
 /**
  * Reflection metadata class for a result set.
  *
- * @author     David Grudl
  * @package    dibi\reflection
  *
  * @property-read array $columns
@@ -404,7 +401,6 @@ class DibiResultInfo extends DibiObject
 /**
  * Reflection metadata class for a table or result set column.
  *
- * @author     David Grudl
  * @package    dibi\reflection
  *
  * @property-read string $name
@@ -604,7 +600,6 @@ class DibiColumnInfo extends DibiObject
 /**
  * Reflection metadata class for a foreign key.
  *
- * @author     David Grudl
  * @package    dibi\reflection
  * @todo
  *
@@ -650,7 +645,6 @@ class DibiForeignKeyInfo extends DibiObject
 /**
  * Reflection metadata class for a index or primary key.
  *
- * @author     David Grudl
  * @package    dibi\reflection
  *
  * @property-read string $name

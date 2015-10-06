@@ -44,7 +44,6 @@
  * $obj->newMethod($x);
  * </code>
  *
- * @author     David Grudl
  * @package    dibi
  */
 abstract class DibiObject

@@ -11,7 +11,6 @@ use Nette\Diagnostics\Debugger;
 /**
  * Dibi panel for Nette\Diagnostics.
  *
- * @author     David Grudl
  * @package    dibi\nette
  */
 class DibiNettePanel extends DibiObject implements Nette\Diagnostics\IBarPanel

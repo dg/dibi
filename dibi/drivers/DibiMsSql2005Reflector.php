@@ -9,7 +9,6 @@
 /**
  * The dibi reflector for MSSQL2005 databases.
  *
- * @author     Daniel Kouba
  * @package    dibi\drivers
  * @internal
  */

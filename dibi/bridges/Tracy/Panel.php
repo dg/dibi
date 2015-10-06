@@ -14,7 +14,6 @@ use Tracy;
 /**
  * Dibi panel for Tracy.
  *
- * @author     David Grudl
  */
 class Panel extends \DibiObject implements Tracy\IBarPanel
 {

@@ -9,7 +9,6 @@
 /**
  * dibi SQL builder via fluent interfaces. EXPERIMENTAL!
  *
- * @author     David Grudl
  * @package    dibi
  *
  * @property-read string $command

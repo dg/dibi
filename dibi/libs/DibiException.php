@@ -9,7 +9,6 @@
 /**
  * dibi common exception.
  *
- * @author     David Grudl
  * @package    dibi
  */
 class DibiException extends Exception
@@ -54,7 +53,6 @@ class DibiException extends Exception
 /**
  * database server exception.
  *
- * @author     David Grudl
  * @package    dibi
  */
 class DibiDriverException extends DibiException
@@ -114,7 +112,6 @@ class DibiDriverException extends DibiException
 /**
  * PCRE exception.
  *
- * @author     David Grudl
  * @package    dibi
  */
 class DibiPcreException extends Exception

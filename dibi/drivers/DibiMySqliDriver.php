@@ -28,7 +28,6 @@ require_once dirname(__FILE__) . '/DibiMySqlReflector.php';
  *   - resource (mysqli) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
- * @author     David Grudl
  * @package    dibi\drivers
  */
 class DibiMySqliDriver extends DibiObject implements IDibiDriver, IDibiResultDriver

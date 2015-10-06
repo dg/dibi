@@ -9,7 +9,6 @@
 /**
  * Lazy cached storage.
  *
- * @author     David Grudl
  * @package    dibi
  * @internal
  */
@@ -45,7 +44,6 @@ abstract class DibiHashMapBase
 /**
  * Lazy cached storage.
  *
- * @author     David Grudl
  * @internal
  */
 final class DibiHashMap extends DibiHashMapBase

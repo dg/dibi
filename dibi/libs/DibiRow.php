@@ -9,7 +9,6 @@
 /**
  * Result set single row.
  *
- * @author     David Grudl
  * @package    dibi
  */
 class DibiRow implements ArrayAccess, IteratorAggregate, Countable

@@ -22,7 +22,6 @@
  * unset($result);
  * </code>
  *
- * @author     David Grudl
  * @package    dibi
  *
  * @property-read mixed $resource

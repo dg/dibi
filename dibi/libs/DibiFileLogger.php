@@ -9,7 +9,6 @@
 /**
  * dibi file logger.
  *
- * @author     David Grudl
  * @package    dibi
  */
 class DibiFileLogger extends DibiObject

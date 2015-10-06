@@ -9,7 +9,6 @@
 /**
  * dibi SQL translator.
  *
- * @author     David Grudl
  * @package    dibi
  */
 final class DibiTranslator extends DibiObject

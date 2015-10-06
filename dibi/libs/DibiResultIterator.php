@@ -18,7 +18,6 @@
  * unset($result);
  * </code>
  *
- * @author     David Grudl
  * @package    dibi
  */
 class DibiResultIterator implements Iterator, Countable

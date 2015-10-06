@@ -9,7 +9,6 @@
 /**
  * The dibi reflector for SQLite database.
  *
- * @author     David Grudl
  * @package    dibi\drivers
  * @internal
  */

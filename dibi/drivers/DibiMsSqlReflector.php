@@ -2,17 +2,13 @@
 
 /**
  * This file is part of the "dibi" - smart database abstraction layer.
- *
- * Copyright (c) 2005, 2010 David Grudl (https://davidgrudl.com)
- *
- * @package    dibi\drivers
+ * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
 
 /**
  * The dibi reflector for MsSQL databases.
  *
- * @author     Steven Bredenberg
  * @package    dibi\drivers
  * @internal
  */

@@ -9,7 +9,6 @@
 /**
  * dibi FirePHP logger.
  *
- * @author     David Grudl
  * @package    dibi
  */
 class DibiFirePhpLogger extends DibiObject

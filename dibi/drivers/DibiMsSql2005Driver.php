@@ -22,7 +22,6 @@ require_once dirname(__FILE__) . '/DibiMsSql2005Reflector.php';
  *   - resource (resource) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
  *
- * @author     David Grudl
  * @package    dibi\drivers
  */
 class DibiMsSql2005Driver extends DibiObject implements IDibiDriver, IDibiResultDriver

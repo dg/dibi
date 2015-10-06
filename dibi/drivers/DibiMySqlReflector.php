@@ -9,7 +9,6 @@
 /**
  * The dibi reflector for MySQL databases.
  *
- * @author     David Grudl
  * @package    dibi\drivers
  * @internal
  */

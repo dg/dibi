@@ -9,7 +9,6 @@
 /**
  * dibi connection.
  *
- * @author     David Grudl
  * @package    dibi
  *
  * @property-read bool $connected

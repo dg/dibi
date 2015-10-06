@@ -14,7 +14,6 @@ use Nette;
 /**
  * Dibi extension for Nette Framework 2.2. Creates 'connection' & 'panel' services.
  *
- * @author     David Grudl
  * @package    dibi\nette
  */
 class DibiExtension22 extends Nette\DI\CompilerExtension
