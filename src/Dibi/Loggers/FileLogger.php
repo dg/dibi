@@ -8,8 +8,6 @@
 
 /**
  * dibi file logger.
- *
- * @package    dibi
  */
 class DibiFileLogger
 {

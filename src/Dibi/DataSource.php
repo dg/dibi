@@ -9,7 +9,6 @@
 /**
  * Default implementation of IDataSource for dibi.
  *
- * @package    dibi
  */
 class DibiDataSource implements IDataSource
 {

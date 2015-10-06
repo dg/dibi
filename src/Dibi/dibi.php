@@ -9,8 +9,6 @@
 /**
  * This class is static container class for creating DB objects and
  * store connections info.
- *
- * @package    dibi
  */
 class dibi
 {

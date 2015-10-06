@@ -8,8 +8,6 @@
 
 /**
  * The dibi reflector for SQLite database.
- *
- * @package    dibi\drivers
  * @internal
  */
 class DibiSqliteReflector implements IDibiReflector

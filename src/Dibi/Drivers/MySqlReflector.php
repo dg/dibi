@@ -8,8 +8,6 @@
 
 /**
  * The dibi reflector for MySQL databases.
- *
- * @package    dibi\drivers
  * @internal
  */
 class DibiMySqlReflector implements IDibiReflector

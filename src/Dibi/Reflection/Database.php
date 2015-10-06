@@ -9,8 +9,6 @@
 /**
  * Reflection metadata class for a database.
  *
- * @package    dibi\reflection
- *
  * @property-read string $name
  * @property-read array $tables
  * @property-read array $tableNames

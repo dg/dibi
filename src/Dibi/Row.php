@@ -8,8 +8,6 @@
 
 /**
  * Result set single row.
- *
- * @package    dibi
  */
 class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 {

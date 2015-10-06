@@ -8,8 +8,6 @@
 
 /**
  * Lazy cached storage.
- *
- * @package    dibi
  * @internal
  */
 abstract class DibiHashMapBase

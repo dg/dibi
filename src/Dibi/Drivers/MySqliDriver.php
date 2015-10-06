@@ -24,8 +24,6 @@
  *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - resource (mysqli) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
- *
- * @package    dibi\drivers
  */
 class DibiMySqliDriver implements IDibiDriver, IDibiResultDriver
 {

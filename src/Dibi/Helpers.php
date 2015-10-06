@@ -6,9 +6,6 @@
  */
 
 
-/**
- * @package    dibi
- */
 class DibiHelpers
 {
 	use DibiStrict;

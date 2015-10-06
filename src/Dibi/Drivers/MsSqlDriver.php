@@ -17,8 +17,6 @@
  *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
- *
- * @package    dibi\drivers
  */
 class DibiMsSqlDriver implements IDibiDriver, IDibiResultDriver
 {

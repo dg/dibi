@@ -18,8 +18,6 @@
  *   - charset => character encoding to set (default is UTF-8)
  *   - resource (resource) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
- *
- * @package    dibi\drivers
  */
 class DibiMsSql2005Driver implements IDibiDriver, IDibiResultDriver
 {

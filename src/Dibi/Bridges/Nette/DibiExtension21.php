@@ -8,8 +8,6 @@
 
 /**
  * Dibi extension for Nette Framework 2.1. Creates 'connection' service.
- *
- * @package    dibi\nette
  */
 class DibiNette21Extension extends Nette\DI\CompilerExtension
 {

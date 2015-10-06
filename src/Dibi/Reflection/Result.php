@@ -9,8 +9,6 @@
 /**
  * Reflection metadata class for a result set.
  *
- * @package    dibi\reflection
- *
  * @property-read array $columns
  * @property-read array $columnNames
  */

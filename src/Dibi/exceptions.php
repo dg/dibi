@@ -8,8 +8,6 @@
 
 /**
  * dibi common exception.
- *
- * @package    dibi
  */
 class DibiException extends Exception
 {
@@ -54,8 +52,6 @@ class DibiException extends Exception
 
 /**
  * database server exception.
- *
- * @package    dibi
  */
 class DibiDriverException extends DibiException
 {
@@ -113,8 +109,6 @@ class DibiDriverException extends DibiException
 
 /**
  * PCRE exception.
- *
- * @package    dibi
  */
 class DibiPcreException extends Exception
 {
@@ -135,24 +129,16 @@ class DibiPcreException extends Exception
 }
 
 
-/**
- * @package    dibi
- */
 class DibiNotImplementedException extends DibiException
 {}
 
 
-/**
- * @package    dibi
- */
 class DibiNotSupportedException extends DibiException
 {}
 
 
 /**
  * Database procedure exception.
- *
- * @package    dibi
  */
 class DibiProcedureException extends DibiException
 {

@@ -22,8 +22,6 @@
  * unset($result);
  * </code>
  *
- * @package    dibi
- *
  * @property-read int $rowCount
  */
 class DibiResult implements IDataSource
