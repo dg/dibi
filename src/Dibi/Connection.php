@@ -664,7 +664,7 @@ class DibiConnection extends DibiObject
 	 */
 	public function __wakeup()
 	{
-		throw new DibiNotSupportedException('You cannot serialize or unserialize ' . $this->getClass() . ' instances.');
+		throw new DibiNotSupportedException('You cannot serialize or unserialize ' . get_class($this) . ' instances.');
 	}
 
 
@@ -673,7 +673,15 @@ class DibiConnection extends DibiObject
 	 */
 	public function __sleep()
 	{
-		throw new DibiNotSupportedException('You cannot serialize or unserialize ' . $this->getClass() . ' instances.');
+		throw new DibiNotSupportedException('You cannot serialize or unserialize ' . get_class($this) . ' instances.');
+	}
+
+
+	protected function onEvent($arg)
+	{
+		foreach ($this->onEvent ?: [] as $handler) {
+			call_user_func($handler, $arg);
+		}
 	}
 
 }
