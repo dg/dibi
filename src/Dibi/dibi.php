@@ -14,36 +14,38 @@
  */
 class dibi
 {
-	/** column type */
-	const TEXT = 's', // as 'string'
-		BINARY = 'bin',
-		BOOL = 'b',
-		INTEGER = 'i',
-		FLOAT = 'f',
-		DATE = 'd',
-		DATETIME = 't',
-		TIME = 't';
-
-	const IDENTIFIER = 'n',
-		AFFECTED_ROWS = 'a';
-
-	/** @deprecated */
-	const FIELD_TEXT = self::TEXT,
-		FIELD_BINARY = self::BINARY,
-		FIELD_BOOL = self::BOOL,
-		FIELD_INTEGER = self::INTEGER,
-		FIELD_FLOAT = self::FLOAT,
-		FIELD_DATE = self::DATE,
-		FIELD_DATETIME = self::DATETIME,
-		FIELD_TIME = self::TIME;
+	const
+		AFFECTED_ROWS = 'a',
+		IDENTIFIER = 'n';
 
 	/** version */
-	const VERSION = '2.4-dev',
+	const
+		VERSION = '2.4-dev',
 		REVISION = 'released on 2015-10-08';
 
 	/** sorting order */
-	const ASC = 'ASC',
+	const
+		ASC = 'ASC',
 		DESC = 'DESC';
+
+	/** @deprecated */
+	const
+		TEXT = DibiType::TEXT,
+		BINARY = DibiType::BINARY,
+		BOOL = DibiType::BOOL,
+		INTEGER = DibiType::INTEGER,
+		FLOAT = DibiType::FLOAT,
+		DATE = DibiType::DATE,
+		DATETIME = DibiType::DATETIME,
+		TIME = DibiType::TIME,
+		FIELD_TEXT = DibiType::TEXT,
+		FIELD_BINARY = DibiType::BINARY,
+		FIELD_BOOL = DibiType::BOOL,
+		FIELD_INTEGER = DibiType::INTEGER,
+		FIELD_FLOAT = DibiType::FLOAT,
+		FIELD_DATE = DibiType::DATE,
+		FIELD_DATETIME = DibiType::DATETIME,
+		FIELD_TIME = DibiType::TIME;
 
 	/** @var DibiConnection[]  Connection registry storage for DibiConnection objects */
 	private static $registry = [];
