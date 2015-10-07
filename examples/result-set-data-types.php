@@ -22,9 +22,9 @@ dibi::connect([
 // using manual hints
 $res = dibi::query('SELECT * FROM [customers]');
 
-$res->setType('customer_id', Dibi::INTEGER)
-	->setType('added', Dibi::DATETIME)
-	->setFormat(dibi::DATETIME, 'Y-m-d H:i:s');
+$res->setType('customer_id', DibiType::INTEGER)
+	->setType('added', DibiType::DATETIME)
+	->setFormat(DibiType::DATETIME, 'Y-m-d H:i:s');
 
 
 Tracy\Dumper::dump($res->fetch());

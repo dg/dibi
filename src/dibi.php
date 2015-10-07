@@ -62,6 +62,7 @@ spl_autoload_register(function ($class) {
 		'DibiSqliteReflector' => 'Drivers/SqliteReflector.php',
 		'DibiTableInfo' => 'Reflection/Table.php',
 		'DibiTranslator' => 'Translator.php',
+		'DibiType' => 'Type.php',
 		'IDataSource' => 'interfaces.php',
 		'IDibiDriver' => 'interfaces.php',
 		'IDibiReflector' => 'interfaces.php',

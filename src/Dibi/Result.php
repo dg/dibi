@@ -488,24 +488,24 @@ class DibiResult extends DibiObject implements IDataSource
 				continue;
 			}
 			$value = $row[$key];
-			if ($value === FALSE || $type === dibi::TEXT) {
+			if ($value === FALSE || $type === DibiType::TEXT) {
 
-			} elseif ($type === dibi::INTEGER) {
+			} elseif ($type === DibiType::INTEGER) {
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
 
-			} elseif ($type === dibi::FLOAT) {
+			} elseif ($type === DibiType::FLOAT) {
 				$row[$key] = str_replace(',', '.', ltrim((string) ($tmp = (float) $value), '0')) === ltrim(rtrim(rtrim($value, '0'), '.'), '0') ? $tmp : $value;
 
-			} elseif ($type === dibi::BOOL) {
+			} elseif ($type === DibiType::BOOL) {
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
 
-			} elseif ($type === dibi::DATE || $type === dibi::DATETIME) {
+			} elseif ($type === DibiType::DATE || $type === DibiType::DATETIME) {
 				if ((int) $value !== 0 || substr((string) $value, 0, 3) === '00:') { // '', NULL, FALSE, '0000-00-00', ...
 					$value = new DibiDateTime($value);
 					$row[$key] = empty($this->formats[$type]) ? $value : $value->format($this->formats[$type]);
 				}
 
-			} elseif ($type === dibi::BINARY) {
+			} elseif ($type === DibiType::BINARY) {
 				$row[$key] = $this->getResultDriver()->unescapeBinary($value);
 			}
 		}
@@ -515,7 +515,7 @@ class DibiResult extends DibiObject implements IDataSource
 	/**
 	 * Define column type.
 	 * @param  string  column
-	 * @param  string  type (use constant Dibi::*)
+	 * @param  string  type (use constant DibiType::*)
 	 * @return self
 	 */
 	final public function setType($col, $type)
@@ -537,7 +537,7 @@ class DibiResult extends DibiObject implements IDataSource
 
 	/**
 	 * Sets data format.
-	 * @param  string  type (use constant Dibi::*)
+	 * @param  string  type (use constant DibiType::*)
 	 * @param  string  format
 	 * @return self
 	 */

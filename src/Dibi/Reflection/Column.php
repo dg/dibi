@@ -171,15 +171,15 @@ class DibiColumnInfo extends DibiObject
 	public static function detectType($type)
 	{
 		static $patterns = [
-			'^_' => dibi::TEXT, // PostgreSQL arrays
-			'BYTEA|BLOB|BIN' => dibi::BINARY,
-			'TEXT|CHAR|POINT|INTERVAL' => dibi::TEXT,
-			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT' => dibi::INTEGER,
-			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => dibi::FLOAT,
-			'^TIME$' => dibi::TIME,
-			'TIME' => dibi::DATETIME, // DATETIME, TIMESTAMP
-			'DATE' => dibi::DATE,
-			'BOOL' => dibi::BOOL,
+			'^_' => DibiType::TEXT, // PostgreSQL arrays
+			'BYTEA|BLOB|BIN' => DibiType::BINARY,
+			'TEXT|CHAR|POINT|INTERVAL' => DibiType::TEXT,
+			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT' => DibiType::INTEGER,
+			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => DibiType::FLOAT,
+			'^TIME$' => DibiType::TIME,
+			'TIME' => DibiType::DATETIME, // DATETIME, TIMESTAMP
+			'DATE' => DibiType::DATE,
+			'BOOL' => DibiType::BOOL,
 		];
 
 		foreach ($patterns as $s => $val) {
@@ -187,7 +187,7 @@ class DibiColumnInfo extends DibiObject
 				return $val;
 			}
 		}
-		return dibi::TEXT;
+		return DibiType::TEXT;
 	}
 
 

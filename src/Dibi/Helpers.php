@@ -95,11 +95,11 @@ class DibiHelpers
 	public static function escape($driver, $value, $type)
 	{
 		static $types = [
-			dibi::TEXT => 'text',
-			dibi::BINARY => 'binary',
-			dibi::BOOL => 'bool',
-			dibi::DATE => 'date',
-			dibi::DATETIME => 'datetime',
+			DibiType::TEXT => 'text',
+			DibiType::BINARY => 'binary',
+			DibiType::BOOL => 'bool',
+			DibiType::DATE => 'date',
+			DibiType::DATETIME => 'datetime',
 			dibi::IDENTIFIER => 'identifier',
 		];
 		if (isset($types[$type])) {
