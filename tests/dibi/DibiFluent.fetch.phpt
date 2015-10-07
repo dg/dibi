@@ -57,3 +57,31 @@ if ($config['system'] !== 'odbc') {
 		),
 	), $res->fetchAssoc('name,title'));
 }
+
+$fluent = $conn->select('*')
+	->from('customers')
+	->limit(1)
+	->offset(3)
+	->orderBy('customer_id');
+
+Assert::same(
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
+	(string) $fluent
+);
+
+Assert::equal(new DibiRow(array('customer_id' => num(4), 'name' => 'Holly')), $fluent->fetch());
+
+$fluent->removeClause('limit')->limit(2);
+Assert::equal(new DibiRow(array('customer_id' => num(4), 'name' => 'Holly')), $fluent->fetch());
+
+$fluent->removeClause('limit')->limit('%i', '1');
+Assert::equal(new DibiRow(array('customer_id' => num(4), 'name' => 'Holly')), $fluent->fetch());
+
+$fluent->removeClause('limit');
+Assert::equal(new DibiRow(array('customer_id' => num(4), 'name' => 'Holly')), $fluent->fetch());
+
+$fluent->removeClause('select')->select('name')->limit(1);
+Assert::equal('Holly', $fluent->fetchSingle());
+
+$fluent = $conn->select('name')->from('customers')->limit(1)->offset(3)->limit(1);
+Assert::equal(new DibiRow(array('name' => 'Holly')), $fluent->fetch());

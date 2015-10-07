@@ -315,11 +315,13 @@ class DibiFluent extends DibiObject implements IDataSource
 	 */
 	public function fetch()
 	{
-		if ($this->command === 'SELECT') {
-			return $this->query($this->_export(NULL, array('%lmt', 1)))->fetch();
-		} else {
-			return $this->query($this->_export())->fetch();
+		if ($this->command === 'SELECT' && $this->_export('limit') === array()) {
+			$this->limit(1);
+			$result = $this->query($this->_export())->fetch();
+			$this->removeClause('limit');
+			return $result;
 		}
+		return $this->query($this->_export())->fetch();
 	}
 
 
@@ -329,11 +331,13 @@ class DibiFluent extends DibiObject implements IDataSource
 	 */
 	public function fetchSingle()
 	{
-		if ($this->command === 'SELECT') {
-			return $this->query($this->_export(NULL, array('%lmt', 1)))->fetchSingle();
-		} else {
-			return $this->query($this->_export())->fetchSingle();
+		if ($this->command === 'SELECT' && $this->_export('limit') === array()) {
+			$this->limit(1);
+			$result = $this->query($this->_export())->fetchSingle();
+			$this->removeClause('limit');
+			return $result;
 		}
+		return $this->query($this->_export())->fetchSingle();
 	}
 
 
