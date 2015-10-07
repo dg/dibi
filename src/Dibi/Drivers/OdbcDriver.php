@@ -222,33 +222,47 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 	/**
 	 * Encodes data for use in a SQL statement.
 	 * @param  mixed     value
-	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    encoded value
-	 * @throws InvalidArgumentException
 	 */
-	public function escape($value, $type)
+	public function escapeText($value)
 	{
-		switch ($type) {
-			case dibi::TEXT:
-			case dibi::BINARY:
-				return "'" . str_replace("'", "''", $value) . "'";
+		return "'" . str_replace("'", "''", $value) . "'";
+	}
 
-			case dibi::IDENTIFIER:
-				return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
-			case dibi::BOOL:
-				return $value ? 1 : 0;
+	public function escapeBinary($value)
+	{
+		return "'" . str_replace("'", "''", $value) . "'";
+	}
 
-			case dibi::DATE:
-			case dibi::DATETIME:
-				if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-					$value = new DibiDateTime($value);
-				}
-				return $value->format($type === dibi::DATETIME ? "#m/d/Y H:i:s#" : "#m/d/Y#");
 
-			default:
-				throw new InvalidArgumentException('Unsupported type.');
+	public function escapeIdentifier($value)
+	{
+		return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
+	}
+
+
+	public function escapeBool($value)
+	{
+		return $value ? 1 : 0;
+	}
+
+
+	public function escapeDate($value)
+	{
+		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
+			$value = new DibiDateTime($value);
 		}
+		return $value->format("#m/d/Y#");
+	}
+
+
+	public function escapeDateTime($value)
+	{
+		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
+			$value = new DibiDateTime($value);
+		}
+		return $value->format("#m/d/Y H:i:s#");
 	}
 
 
@@ -267,17 +281,19 @@ class DibiOdbcDriver extends DibiObject implements IDibiDriver, IDibiResultDrive
 
 	/**
 	 * Decodes data from result set.
-	 * @param  string    value
-	 * @param  string    type (dibi::BINARY)
-	 * @return string    decoded value
-	 * @throws InvalidArgumentException
+	 * @param  string
+	 * @return string
 	 */
-	public function unescape($value, $type)
+	public function unescapeBinary($value)
 	{
-		if ($type === dibi::BINARY) {
-			return $value;
-		}
-		throw new InvalidArgumentException('Unsupported type.');
+		return $value;
+	}
+
+
+	/** @deprecated */
+	public function escape($value, $type)
+	{
+		return DibiHelpers::escape($this, $value, $type);
 	}
 
 

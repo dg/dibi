@@ -506,7 +506,7 @@ class DibiResult extends DibiObject implements IDataSource
 				}
 
 			} elseif ($type === dibi::BINARY) {
-				$row[$key] = $this->getResultDriver()->unescape($value, $type);
+				$row[$key] = $this->getResultDriver()->unescapeBinary($value);
 			}
 		}
 	}

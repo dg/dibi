@@ -53,7 +53,7 @@ class DibiMsSql2005Reflector extends DibiObject implements IDibiReflector
 			SELECT c.name as COLUMN_NAME, c.is_identity AS AUTO_INCREMENT
 			FROM sys.columns c
 			INNER JOIN sys.tables t ON c.object_id = t.object_id
-			WHERE t.name = {$this->driver->escape($table, dibi::TEXT)}
+			WHERE t.name = {$this->driver->escapeText($table)}
 		");
 
 		$autoIncrements = array();
@@ -74,7 +74,7 @@ class DibiMsSql2005Reflector extends DibiObject implements IDibiReflector
 					And TC.CONSTRAINT_TYPE = 'PRIMARY KEY'
 					And CCU.COLUMN_NAME = C.COLUMN_NAME
 			) As Z
-			WHERE C.TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}
+			WHERE C.TABLE_NAME = {$this->driver->escapeText($table)}
 		");
 		$columns = array();
 		while ($row = $res->fetch(TRUE)) {
@@ -101,13 +101,13 @@ class DibiMsSql2005Reflector extends DibiObject implements IDibiReflector
 	 */
 	public function getIndexes($table)
 	{
-		$keyUsagesRes = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}");
+		$keyUsagesRes = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = {$this->driver->escapeText($table)}");
 		$keyUsages = array();
 		while ($row = $keyUsagesRes->fetch(TRUE)) {
 			$keyUsages[$row['CONSTRAINT_NAME']][(int) $row['ORDINAL_POSITION'] - 1] = $row['COLUMN_NAME'];
 		}
 
-		$res = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}");
+		$res = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = {$this->driver->escapeText($table)}");
 		$indexes = array();
 		while ($row = $res->fetch(TRUE)) {
 			$indexes[$row['CONSTRAINT_NAME']]['name'] = $row['CONSTRAINT_NAME'];

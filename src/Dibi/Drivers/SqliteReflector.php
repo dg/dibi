@@ -52,12 +52,12 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 	public function getColumns($table)
 	{
 		$meta = $this->driver->query("
-			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = {$this->driver->escape($table, dibi::TEXT)}
+			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = {$this->driver->escapeText($table)}
 			UNION ALL
-			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = {$this->driver->escape($table, dibi::TEXT)}
+			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = {$this->driver->escapeText($table)}
 		")->fetch(TRUE);
 
-		$res = $this->driver->query("PRAGMA table_info({$this->driver->escape($table, dibi::IDENTIFIER)})");
+		$res = $this->driver->query("PRAGMA table_info({$this->driver->escapeIdentifier($table)})");
 		$columns = array();
 		while ($row = $res->fetch(TRUE)) {
 			$column = $row['name'];
@@ -85,7 +85,7 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getIndexes($table)
 	{
-		$res = $this->driver->query("PRAGMA index_list({$this->driver->escape($table, dibi::IDENTIFIER)})");
+		$res = $this->driver->query("PRAGMA index_list({$this->driver->escapeIdentifier($table)})");
 		$indexes = array();
 		while ($row = $res->fetch(TRUE)) {
 			$indexes[$row['name']]['name'] = $row['name'];
@@ -93,7 +93,7 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 		}
 
 		foreach ($indexes as $index => $values) {
-			$res = $this->driver->query("PRAGMA index_info({$this->driver->escape($index, dibi::IDENTIFIER)})");
+			$res = $this->driver->query("PRAGMA index_info({$this->driver->escapeIdentifier($index)})");
 			while ($row = $res->fetch(TRUE)) {
 				$indexes[$index]['columns'][$row['seqno']] = $row['name'];
 			}
@@ -139,7 +139,7 @@ class DibiSqliteReflector extends DibiObject implements IDibiReflector
 		if (!($this->driver instanceof DibiSqlite3Driver)) {
 			// throw new DibiNotSupportedException; // @see http://www.sqlite.org/foreignkeys.html
 		}
-		$res = $this->driver->query("PRAGMA foreign_key_list({$this->driver->escape($table, dibi::IDENTIFIER)})");
+		$res = $this->driver->query("PRAGMA foreign_key_list({$this->driver->escapeIdentifier($table)})");
 		$keys = array();
 		while ($row = $res->fetch(TRUE)) {
 			$keys[$row['id']]['name'] = $row['id']; // foreign key name

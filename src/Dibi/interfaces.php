@@ -97,12 +97,20 @@ interface IDibiDriver
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  string    value
-	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
+	 * @param  mixed     value
 	 * @return string    encoded value
-	 * @throws InvalidArgumentException
 	 */
-	function escape($value, $type);
+	function escapeText($value);
+
+	function escapeBinary($value);
+
+	function escapeIdentifier($value);
+
+	function escapeBool($value);
+
+	function escapeDate($value);
+
+	function escapeDateTime($value);
 
 	/**
 	 * Encodes string for use in a LIKE statement.
@@ -171,12 +179,10 @@ interface IDibiResultDriver
 
 	/**
 	 * Decodes data from result set.
-	 * @param  string    value
-	 * @param  string    type (dibi::BINARY)
-	 * @return string    decoded value
-	 * @throws InvalidArgumentException
+	 * @param  string
+	 * @return string
 	 */
-	function unescape($value, $type);
+	function unescapeBinary($value);
 
 }
 
