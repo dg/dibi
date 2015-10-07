@@ -14,13 +14,13 @@ class DibiFirePhpLogger
 	use DibiStrict;
 
 	/** maximum number of rows */
-	static public $maxQueries = 30;
+	public static $maxQueries = 30;
 
 	/** maximum SQL length */
-	static public $maxLength = 1000;
+	public static $maxLength = 1000;
 
 	/** size of json stream chunk */
-	static public $streamChunkSize = 4990;
+	public static $streamChunkSize = 4990;
 
 	/** @var int */
 	public $filter;
