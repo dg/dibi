@@ -54,13 +54,13 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getColumns($table)
 	{
-		/*$table = $this->escape($table, dibi::TEXT);
+		/*$table = $this->escapeText($table);
 		$this->query("
 			SELECT *
 			FROM INFORMATION_SCHEMA.COLUMNS
 			WHERE TABLE_NAME = $table AND TABLE_SCHEMA = DATABASE()
 		");*/
-		$res = $this->driver->query("SHOW FULL COLUMNS FROM {$this->driver->escape($table, dibi::IDENTIFIER)}");
+		$res = $this->driver->query("SHOW FULL COLUMNS FROM {$this->driver->escapeIdentifier($table)}");
 		$columns = array();
 		while ($row = $res->fetch(TRUE)) {
 			$type = explode('(', $row['Type']);
@@ -87,14 +87,14 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getIndexes($table)
 	{
-		/*$table = $this->escape($table, dibi::TEXT);
+		/*$table = $this->escapeText($table);
 		$this->query("
 			SELECT *
 			FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
 			WHERE TABLE_NAME = $table AND TABLE_SCHEMA = DATABASE()
 			AND REFERENCED_COLUMN_NAME IS NULL
 		");*/
-		$res = $this->driver->query("SHOW INDEX FROM {$this->driver->escape($table, dibi::IDENTIFIER)}");
+		$res = $this->driver->query("SHOW INDEX FROM {$this->driver->escapeIdentifier($table)}");
 		$indexes = array();
 		while ($row = $res->fetch(TRUE)) {
 			$indexes[$row['Key_name']]['name'] = $row['Key_name'];
@@ -114,7 +114,7 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 	 */
 	public function getForeignKeys($table)
 	{
-		$data = $this->driver->query("SELECT `ENGINE` FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}")->fetch(TRUE);
+		$data = $this->driver->query("SELECT `ENGINE` FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = {$this->driver->escapeText($table)}")->fetch(TRUE);
 		if ($data['ENGINE'] !== 'InnoDB') {
 			throw new DibiNotSupportedException("Foreign keys are not supported in {$data['ENGINE']} tables.");
 		}
@@ -128,7 +128,7 @@ class DibiMySqlReflector extends DibiObject implements IDibiReflector
 				kcu.CONSTRAINT_NAME = rc.CONSTRAINT_NAME
 				AND kcu.CONSTRAINT_SCHEMA = rc.CONSTRAINT_SCHEMA
 			WHERE rc.CONSTRAINT_SCHEMA = DATABASE()
-				AND rc.TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}
+				AND rc.TABLE_NAME = {$this->driver->escapeText($table)}
 			GROUP BY rc.CONSTRAINT_NAME
 		");
 

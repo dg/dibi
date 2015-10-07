@@ -279,6 +279,13 @@ class DibiSqliteDriver extends DibiObject implements IDibiDriver, IDibiResultDri
 	}
 
 
+	/** @deprecated */
+	public function escape($value, $type)
+	{
+		return DibiHelpers::escape($this, $value, $type);
+	}
+
+
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @return void

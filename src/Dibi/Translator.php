@@ -339,13 +339,17 @@ final class DibiTranslator extends DibiObject
 
 			switch ($modifier) {
 				case 's':  // string
+					return $value === NULL ? 'NULL' : $this->driver->escapeText($value);
+
 				case 'bin':// binary
+					return $value === NULL ? 'NULL' : $this->driver->escapeBinary($value);
+
 				case 'b':  // boolean
-					return $value === NULL ? 'NULL' : $this->driver->escape($value, $modifier);
+					return $value === NULL ? 'NULL' : $this->driver->escapeBool($value);
 
 				case 'sN': // string or NULL
 				case 'sn':
-					return $value == '' ? 'NULL' : $this->driver->escape($value, dibi::TEXT); // notice two equal signs
+					return $value == '' ? 'NULL' : $this->driver->escapeText($value); // notice two equal signs
 
 				case 'iN': // signed int or NULL
 				case 'in': // deprecated
@@ -381,13 +385,7 @@ final class DibiTranslator extends DibiObject
 					if ($value === NULL) {
 						return 'NULL';
 					} else {
-						if (is_numeric($value)) {
-							$value = (int) $value; // timestamp
-
-						} elseif (is_string($value)) {
-							$value = new DateTime($value);
-						}
-						return $this->driver->escape($value, $modifier);
+						return $modifier === 'd' ? $this->driver->escapeDate($value) : $this->driver->escapeDateTime($value);
 					}
 
 				case 'by':
@@ -441,7 +439,7 @@ final class DibiTranslator extends DibiObject
 
 		// without modifier procession
 		if (is_string($value)) {
-			return $this->driver->escape($value, dibi::TEXT);
+			return $this->driver->escapeText($value);
 
 		} elseif (is_int($value)) {
 			return (string) $value;
@@ -450,13 +448,13 @@ final class DibiTranslator extends DibiObject
 			return rtrim(rtrim(number_format($value, 10, '.', ''), '0'), '.');
 
 		} elseif (is_bool($value)) {
-			return $this->driver->escape($value, dibi::BOOL);
+			return $this->driver->escapeBool($value);
 
 		} elseif ($value === NULL) {
 			return 'NULL';
 
 		} elseif ($value instanceof DateTime || $value instanceof DateTimeInterface) {
-			return $this->driver->escape($value, dibi::DATETIME);
+			return $this->driver->escapeDateTime($value);
 
 		} elseif ($value instanceof DibiLiteral) {
 			return (string) $value;
@@ -582,10 +580,10 @@ final class DibiTranslator extends DibiObject
 			return $this->identifiers->{$matches[2]};
 
 		} elseif ($matches[3]) { // SQL strings: '...'
-			return $this->driver->escape(str_replace("''", "'", $matches[4]), dibi::TEXT);
+			return $this->driver->escapeText(str_replace("''", "'", $matches[4]));
 
 		} elseif ($matches[5]) { // SQL strings: "..."
-			return $this->driver->escape(str_replace('""', '"', $matches[6]), dibi::TEXT);
+			return $this->driver->escapeText(str_replace('""', '"', $matches[6]));
 
 		} elseif ($matches[7]) { // string quote
 			$this->hasError = TRUE;
@@ -614,7 +612,7 @@ final class DibiTranslator extends DibiObject
 		$parts = explode('.', $value);
 		foreach ($parts as & $v) {
 			if ($v !== '*') {
-				$v = $this->driver->escape($v, dibi::IDENTIFIER);
+				$v = $this->driver->escapeIdentifier($v);
 			}
 		}
 		return implode('.', $parts);

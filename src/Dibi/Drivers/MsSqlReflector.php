@@ -58,13 +58,13 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 		$result = $this->driver->query("
 			SELECT MAX(rowcnt)
 			FROM sys.sysindexes
-			WHERE id=OBJECT_ID({$this->driver->escape($table, dibi::IDENTIFIER)})
+			WHERE id=OBJECT_ID({$this->driver->escapeIdentifier($table)})
 		");
 		$row = $result->fetch(FALSE);
 
 		if (!is_array($row) || count($row) < 1) {
 			if ($fallback) {
-				$row = $this->driver->query("SELECT COUNT(*) FROM {$this->driver->escape($table, dibi::IDENTIFIER)}")->fetch(FALSE);
+				$row = $this->driver->query("SELECT COUNT(*) FROM {$this->driver->escapeIdentifier($table)}")->fetch(FALSE);
 				$count = intval($row[0]);
 			} else {
 				$count = FALSE;
@@ -87,7 +87,7 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 		$res = $this->driver->query("
 			SELECT * FROM
 			INFORMATION_SCHEMA.COLUMNS
-			WHERE TABLE_NAME = {$this->driver->escape($table, dibi::TEXT)}
+			WHERE TABLE_NAME = {$this->driver->escapeText($table)}
 			ORDER BY TABLE_NAME, ORDINAL_POSITION
 		");
 		$columns = array();
@@ -144,7 +144,7 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 				(ic.object_id = col.object_id and ic.column_id = col.column_id)
 			INNER JOIN sys.tables t ON
 				(ind.object_id = t.object_id)
-			WHERE t.name = {$this->driver->escape($table, dibi::TEXT)}
+			WHERE t.name = {$this->driver->escapeText($table)}
 				AND t.is_ms_shipped = 0
 			ORDER BY
 				t.name, ind.name, ind.index_id, ic.index_column_id
@@ -187,7 +187,7 @@ class DibiMsSqlReflector extends DibiObject implements IDibiReflector
 			FROM sys.foreign_keys AS f
 			INNER JOIN sys.foreign_key_columns AS fc
 			ON f.OBJECT_ID = fc.constraint_object_id
-			WHERE OBJECT_NAME(f.parent_object_id) = {$this->driver->escape($table, dibi::TEXT)}
+			WHERE OBJECT_NAME(f.parent_object_id) = {$this->driver->escapeText($table)}
 		");
 
 		$keys = array();

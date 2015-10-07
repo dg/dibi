@@ -243,67 +243,81 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 	/**
 	 * Encodes data for use in a SQL statement.
 	 * @param  mixed     value
-	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    encoded value
-	 * @throws InvalidArgumentException
 	 */
-	public function escape($value, $type)
+	public function escapeText($value)
 	{
-		switch ($type) {
-			case dibi::TEXT:
-			case dibi::BINARY:
-				if ($this->driverName === 'odbc') {
-					return "'" . str_replace("'", "''", $value) . "'";
-				} else {
-					return $this->connection->quote($value, $type === dibi::TEXT ? PDO::PARAM_STR : PDO::PARAM_LOB);
-				}
+		if ($this->driverName === 'odbc') {
+			return "'" . str_replace("'", "''", $value) . "'";
+		} else {
+			return $this->connection->quote($value, PDO::PARAM_STR);
+		}
+	}
 
-			case dibi::IDENTIFIER:
-				switch ($this->driverName) {
-					case 'mysql':
-						return '`' . str_replace('`', '``', $value) . '`';
 
-					case 'oci':
-					case 'pgsql':
-						return '"' . str_replace('"', '""', $value) . '"';
+	public function escapeBinary($value)
+	{
+		if ($this->driverName === 'odbc') {
+			return "'" . str_replace("'", "''", $value) . "'";
+		} else {
+			return $this->connection->quote($value, PDO::PARAM_LOB);
+		}
+	}
 
-					case 'sqlite':
-					case 'sqlite2':
-						return '[' . strtr($value, '[]', '  ') . ']';
 
-					case 'odbc':
-					case 'mssql':
-						return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
+	public function escapeIdentifier($value)
+	{
+		switch ($this->driverName) {
+			case 'mysql':
+				return '`' . str_replace('`', '``', $value) . '`';
 
-					case 'dblib':
-					case 'sqlsrv':
-						return '[' . str_replace(']', ']]', $value) . ']';
+			case 'oci':
+			case 'pgsql':
+				return '"' . str_replace('"', '""', $value) . '"';
 
-					default:
-						return $value;
-				}
+			case 'sqlite':
+			case 'sqlite2':
+				return '[' . strtr($value, '[]', '  ') . ']';
 
-			case dibi::BOOL:
-				if ($this->driverName === 'pgsql') {
-					return $value ? 'TRUE' : 'FALSE';
-				} else {
-					return $value ? 1 : 0;
-				}
+			case 'odbc':
+			case 'mssql':
+				return '[' . str_replace(array('[', ']'), array('[[', ']]'), $value) . ']';
 
-			case dibi::DATE:
-			case dibi::DATETIME:
-				if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-					$value = new DibiDateTime($value);
-				}
-				if ($this->driverName === 'odbc') {
-					return $value->format($type === dibi::DATETIME ? '#m/d/Y H:i:s#' : '#m/d/Y#');
-				} else {
-					return $value->format($type === dibi::DATETIME ? "'Y-m-d H:i:s'" : "'Y-m-d'");
-				}
+			case 'dblib':
+			case 'sqlsrv':
+				return '[' . str_replace(']', ']]', $value) . ']';
 
 			default:
-				throw new InvalidArgumentException('Unsupported type.');
+				return $value;
 		}
+	}
+
+
+	public function escapeBool($value)
+	{
+		if ($this->driverName === 'pgsql') {
+			return $value ? 'TRUE' : 'FALSE';
+		} else {
+			return $value ? 1 : 0;
+		}
+	}
+
+
+	public function escapeDate($value)
+	{
+		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
+			$value = new DibiDateTime($value);
+		}
+		return $value->format($this->driverName === 'odbc' ? '#m/d/Y#' : "'Y-m-d'");
+	}
+
+
+	public function escapeDateTime($value)
+	{
+		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
+			$value = new DibiDateTime($value);
+		}
+		return $value->format($this->driverName === 'odbc' ? "#m/d/Y H:i:s#" : "'Y-m-d H:i:s'");
 	}
 
 
@@ -351,17 +365,19 @@ class DibiPdoDriver extends DibiObject implements IDibiDriver, IDibiResultDriver
 
 	/**
 	 * Decodes data from result set.
-	 * @param  string    value
-	 * @param  string    type (dibi::BINARY)
-	 * @return string    decoded value
-	 * @throws InvalidArgumentException
+	 * @param  string
+	 * @return string
 	 */
-	public function unescape($value, $type)
+	public function unescapeBinary($value)
 	{
-		if ($type === dibi::BINARY) {
-			return $value;
-		}
-		throw new InvalidArgumentException('Unsupported type.');
+		return $value;
+	}
+
+
+	/** @deprecated */
+	public function escape($value, $type)
+	{
+		return DibiHelpers::escape($this, $value, $type);
 	}
 
 

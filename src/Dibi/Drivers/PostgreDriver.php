@@ -262,42 +262,54 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	/**
 	 * Encodes data for use in a SQL statement.
 	 * @param  mixed     value
-	 * @param  string    type (dibi::TEXT, dibi::BOOL, ...)
 	 * @return string    encoded value
-	 * @throws InvalidArgumentException
 	 */
-	public function escape($value, $type)
+	public function escapeText($value)
 	{
-		switch ($type) {
-			case dibi::TEXT:
-				if (!is_resource($this->connection)) {
-					throw new DibiException('Lost connection to server.');
-				}
-				return "'" . pg_escape_string($this->connection, $value) . "'";
-
-			case dibi::BINARY:
-				if (!is_resource($this->connection)) {
-					throw new DibiException('Lost connection to server.');
-				}
-				return "'" . pg_escape_bytea($this->connection, $value) . "'";
-
-			case dibi::IDENTIFIER:
-				// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
-				return '"' . str_replace('"', '""', $value) . '"';
-
-			case dibi::BOOL:
-				return $value ? 'TRUE' : 'FALSE';
-
-			case dibi::DATE:
-			case dibi::DATETIME:
-				if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-					$value = new DibiDateTime($value);
-				}
-				return $value->format($type === dibi::DATETIME ? "'Y-m-d H:i:s'" : "'Y-m-d'");
-
-			default:
-				throw new InvalidArgumentException('Unsupported type.');
+		if (!is_resource($this->connection)) {
+			throw new DibiException('Lost connection to server.');
 		}
+		return "'" . pg_escape_string($this->connection, $value) . "'";
+	}
+
+
+	public function escapeBinary($value)
+	{
+		if (!is_resource($this->connection)) {
+			throw new DibiException('Lost connection to server.');
+		}
+		return "'" . pg_escape_bytea($this->connection, $value) . "'";
+	}
+
+
+	public function escapeIdentifier($value)
+	{
+		// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+		return '"' . str_replace('"', '""', $value) . '"';
+	}
+
+
+	public function escapeBool($value)
+	{
+		return $value ? 'TRUE' : 'FALSE';
+	}
+
+
+	public function escapeDate($value)
+	{
+		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
+			$value = new DibiDateTime($value);
+		}
+		return $value->format("'Y-m-d'");
+	}
+
+
+	public function escapeDateTime($value)
+	{
+		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
+			$value = new DibiDateTime($value);
+		}
+		return $value->format("'Y-m-d H:i:s'");
 	}
 
 
@@ -318,17 +330,19 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 
 	/**
 	 * Decodes data from result set.
-	 * @param  string    value
-	 * @param  string    type (dibi::BINARY)
-	 * @return string    decoded value
-	 * @throws InvalidArgumentException
+	 * @param  string
+	 * @return string
 	 */
-	public function unescape($value, $type)
+	public function unescapeBinary($value)
 	{
-		if ($type === dibi::BINARY) {
-			return pg_unescape_bytea($value);
-		}
-		throw new InvalidArgumentException('Unsupported type.');
+		return pg_unescape_bytea($value);
+	}
+
+
+	/** @deprecated */
+	public function escape($value, $type)
+	{
+		return DibiHelpers::escape($this, $value, $type);
 	}
 
 
@@ -486,7 +500,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getColumns($table)
 	{
-		$_table = $this->escape($this->escape($table, dibi::IDENTIFIER), dibi::TEXT);
+		$_table = $this->escapeText($this->escapeIdentifier($table));
 		$res = $this->query("
 			SELECT indkey
 			FROM pg_class
@@ -553,7 +567,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getIndexes($table)
 	{
-		$_table = $this->escape($this->escape($table, dibi::IDENTIFIER), dibi::TEXT);
+		$_table = $this->escapeText($this->escapeIdentifier($table));
 		$res = $this->query("
 			SELECT
 				a.attnum AS ordinal_position,
@@ -601,7 +615,7 @@ class DibiPostgreDriver extends DibiObject implements IDibiDriver, IDibiResultDr
 	 */
 	public function getForeignKeys($table)
 	{
-		$_table = $this->escape($this->escape($table, dibi::IDENTIFIER), dibi::TEXT);
+		$_table = $this->escapeText($this->escapeIdentifier($table));
 
 		$res = $this->query("
 			SELECT
