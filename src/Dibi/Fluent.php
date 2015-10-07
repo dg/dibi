@@ -317,11 +317,12 @@ class Fluent implements IDataSource
 	 */
 	public function fetch()
 	{
-		if ($this->command === 'SELECT') {
-			return $this->query($this->_export(NULL, ['%lmt', 1]))->fetch();
-		} else {
-			return $this->query($this->_export())->fetch();
+		if ($this->command === 'SELECT' && !$this->clauses['LIMIT']) {
+			$result = $this->query($this->limit(1)->_export())->fetch();
+			$this->removeClause('LIMIT');
+			return $result;
 		}
+		return $this->query($this->_export())->fetch();
 	}
 
 
@@ -331,11 +332,12 @@ class Fluent implements IDataSource
 	 */
 	public function fetchSingle()
 	{
-		if ($this->command === 'SELECT') {
-			return $this->query($this->_export(NULL, ['%lmt', 1]))->fetchSingle();
-		} else {
-			return $this->query($this->_export())->fetchSingle();
+		if ($this->command === 'SELECT' && !$this->clauses['LIMIT']) {
+			$result = $this->query($this->limit(1)->_export())->fetchSingle();
+			$this->removeClause('LIMIT');
+			return $result;
 		}
+		return $this->query($this->_export())->fetchSingle();
 	}
 
 
