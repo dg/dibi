@@ -81,7 +81,7 @@ try {
 } catch (Exception $e) {
 }
 Assert::same(
-	reformat(' SELECT * FROM [table] LIMIT 1'),
+	reformat('SELECT * FROM [table] LIMIT 1'),
 	dibi::$sql
 );
 
