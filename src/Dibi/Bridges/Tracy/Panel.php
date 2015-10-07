@@ -9,6 +9,7 @@ namespace Dibi\Bridges\Tracy;
 
 use dibi;
 use Tracy;
+use DibiHelpers;
 
 
 /**
@@ -67,7 +68,7 @@ class Panel extends \DibiObject implements Tracy\IBarPanel
 		if ($e instanceof \DibiException && $e->getSql()) {
 			return [
 				'tab' => 'SQL',
-				'panel' => dibi::dump($e->getSql(), TRUE),
+				'panel' => DibiHelpers::dump($e->getSql(), TRUE),
 			];
 		}
 	}
@@ -107,7 +108,7 @@ class Panel extends \DibiObject implements Tracy\IBarPanel
 					$backup = [$event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime];
 					$event->connection->onEvent = NULL;
 					$cmd = is_string($this->explain) ? $this->explain : ($event->connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
-					$explain = dibi::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);
+					$explain = DibiHelpers::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);
 				} catch (\DibiException $e) {
 				}
 				list($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime) = $backup;
@@ -120,7 +121,7 @@ class Panel extends \DibiObject implements Tracy\IBarPanel
 				$s .= "<br /><a href='#tracy-debug-DibiProfiler-row-$counter' class='tracy-toggle tracy-collapsed' rel='#tracy-debug-DibiProfiler-row-$counter'>explain</a>";
 			}
 
-			$s .= '</td><td class="tracy-DibiProfiler-sql">' . dibi::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, TRUE);
+			$s .= '</td><td class="tracy-DibiProfiler-sql">' . DibiHelpers::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, TRUE);
 			if ($explain) {
 				$s .= "<div id='tracy-debug-DibiProfiler-row-$counter' class='tracy-collapsed'>{$explain}</div>";
 			}
