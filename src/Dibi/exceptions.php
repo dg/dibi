@@ -143,3 +143,39 @@ class DibiNotImplementedException extends DibiException
  */
 class DibiNotSupportedException extends DibiException
 {}
+
+
+/**
+ * Database procedure exception.
+ *
+ * @package    dibi
+ */
+class DibiProcedureException extends DibiException
+{
+	/** @var string */
+	protected $severity;
+
+
+	/**
+	 * Construct the exception.
+	 * @param  string  Message describing the exception
+	 * @param  int     Some code
+	 * @param  string SQL command
+	 */
+	public function __construct($message = NULL, $code = 0, $severity = NULL, $sql = NULL)
+	{
+		parent::__construct($message, (int) $code, $sql);
+		$this->severity = $severity;
+	}
+
+
+	/**
+	 * Gets the exception severity.
+	 * @return string
+	 */
+	public function getSeverity()
+	{
+		$this->severity;
+	}
+
+}
