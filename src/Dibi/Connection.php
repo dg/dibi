@@ -260,12 +260,12 @@ class DibiConnection extends DibiObject
 	{
 		$args = func_get_args();
 		try {
-			dibi::dump($this->translateArgs($args));
+			DibiHelpers::dump($this->translateArgs($args));
 			return TRUE;
 
 		} catch (DibiException $e) {
 			if ($e->getSql()) {
-				dibi::dump($e->getSql());
+				DibiHelpers::dump($e->getSql());
 			} else {
 				echo get_class($e) . ': ' . $e->getMessage() . (PHP_SAPI === 'cli' ? "\n" : '<br>');
 			}
