@@ -5,13 +5,18 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Reflection;
+
+use Dibi;
+use Dibi\Type;
+
 
 /**
  * Reflection metadata class for a table or result set column.
  *
  * @property-read string $name
  * @property-read string $fullName
- * @property-read DibiTableInfo $table
+ * @property-read Table $table
  * @property-read string $type
  * @property-read mixed $nativeType
  * @property-read int $size
@@ -20,21 +25,21 @@
  * @property-read bool $autoIncrement
  * @property-read mixed $default
  */
-class DibiColumnInfo
+class Column
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	/** @var array */
 	private static $types;
 
-	/** @var IDibiReflector|NULL when created by DibiResultInfo */
+	/** @var Dibi\Reflector|NULL when created by Result */
 	private $reflector;
 
 	/** @var array (name, nativetype, [table], [fullname], [size], [nullable], [default], [autoincrement], [vendor]) */
 	private $info;
 
 
-	public function __construct(IDibiReflector $reflector = NULL, array $info)
+	public function __construct(Dibi\Reflector $reflector = NULL, array $info)
 	{
 		$this->reflector = $reflector;
 		$this->info = $info;
@@ -69,14 +74,14 @@ class DibiColumnInfo
 
 
 	/**
-	 * @return DibiTableInfo
+	 * @return Table
 	 */
 	public function getTable()
 	{
 		if (empty($this->info['table']) || !$this->reflector) {
-			throw new DibiException("Table is unknown or not available.");
+			throw new Dibi\Exception("Table is unknown or not available.");
 		}
-		return new DibiTableInfo($this->reflector, ['name' => $this->info['table']]);
+		return new Table($this->reflector, ['name' => $this->info['table']]);
 	}
 
 
@@ -171,15 +176,15 @@ class DibiColumnInfo
 	public static function detectType($type)
 	{
 		static $patterns = [
-			'^_' => DibiType::TEXT, // PostgreSQL arrays
-			'BYTEA|BLOB|BIN' => DibiType::BINARY,
-			'TEXT|CHAR|POINT|INTERVAL' => DibiType::TEXT,
-			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT' => DibiType::INTEGER,
-			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => DibiType::FLOAT,
-			'^TIME$' => DibiType::TIME,
-			'TIME' => DibiType::DATETIME, // DATETIME, TIMESTAMP
-			'DATE' => DibiType::DATE,
-			'BOOL' => DibiType::BOOL,
+			'^_' => Type::TEXT, // PostgreSQL arrays
+			'BYTEA|BLOB|BIN' => Type::BINARY,
+			'TEXT|CHAR|POINT|INTERVAL' => Type::TEXT,
+			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT' => Type::INTEGER,
+			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => Type::FLOAT,
+			'^TIME$' => Type::TIME,
+			'TIME' => Type::DATETIME, // DATETIME, TIMESTAMP
+			'DATE' => Type::DATE,
+			'BOOL' => Type::BOOL,
 		];
 
 		foreach ($patterns as $s => $val) {
@@ -187,7 +192,7 @@ class DibiColumnInfo
 				return $val;
 			}
 		}
-		return DibiType::TEXT;
+		return Type::TEXT;
 	}
 
 
@@ -197,7 +202,7 @@ class DibiColumnInfo
 	public static function getTypeCache()
 	{
 		if (self::$types === NULL) {
-			self::$types = new DibiHashMap([__CLASS__, 'detectType']);
+			self::$types = new Dibi\HashMap([__CLASS__, 'detectType']);
 		}
 		return self::$types;
 	}

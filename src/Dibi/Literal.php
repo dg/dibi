@@ -5,13 +5,15 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * SQL literal value.
  */
-class DibiLiteral
+class Literal
 {
-	use DibiStrict;
+	use Strict;
 
 	/** @var string */
 	private $value;

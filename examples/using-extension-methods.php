@@ -17,8 +17,8 @@ dibi::connect([
 ]);
 
 
-// using the "prototype" to add custom method to class DibiResult
-DibiResult::extensionMethod('fetchShuffle', function (DibiResult $obj) {
+// using the "prototype" to add custom method to class Dibi\Result
+Dibi\Result::extensionMethod('fetchShuffle', function (Dibi\Result $obj) {
 	$all = $obj->fetchAll();
 	shuffle($all);
 	return $all;

@@ -5,6 +5,8 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * dibi result set.
@@ -24,26 +26,26 @@
  *
  * @property-read int $rowCount
  */
-class DibiResult implements IDataSource
+class Result implements IDataSource
 {
-	use DibiStrict;
+	use Strict;
 
-	/** @var array  IDibiResultDriver */
+	/** @var array  ResultDriver */
 	private $driver;
 
 	/** @var array  Translate table */
 	private $types = [];
 
-	/** @var DibiResultInfo */
+	/** @var Reflection\Result */
 	private $meta;
 
 	/** @var bool  Already fetched? Used for allowance for first seek(0) */
 	private $fetched = FALSE;
 
 	/** @var string  returned object class */
-	private $rowClass = 'DibiRow';
+	private $rowClass = 'Dibi\Row';
 
-	/** @var Callback  returned object factory*/
+	/** @var callable  returned object factory*/
 	private $rowFactory;
 
 	/** @var array  format */
@@ -51,7 +53,7 @@ class DibiResult implements IDataSource
 
 
 	/**
-	 * @param  IDibiResultDriver
+	 * @param  ResultDriver
 	 */
 	public function __construct($driver)
 	{
@@ -84,13 +86,13 @@ class DibiResult implements IDataSource
 
 	/**
 	 * Safe access to property $driver.
-	 * @return IDibiResultDriver
-	 * @throws RuntimeException
+	 * @return ResultDriver
+	 * @throws \RuntimeException
 	 */
 	final public function getResultDriver()
 	{
 		if ($this->driver === NULL) {
-			throw new RuntimeException('Result-set was released from memory.');
+			throw new \RuntimeException('Result-set was released from memory.');
 		}
 
 		return $this->driver;
@@ -104,7 +106,7 @@ class DibiResult implements IDataSource
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
 	 * @return bool     TRUE on success, FALSE if unable to seek to specified record
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	final public function seek($row)
 	{
@@ -134,11 +136,11 @@ class DibiResult implements IDataSource
 
 	/**
 	 * Required by the IteratorAggregate interface.
-	 * @return DibiResultIterator
+	 * @return ResultIterator
 	 */
 	final public function getIterator()
 	{
-		return new DibiResultIterator($this);
+		return new ResultIterator($this);
 	}
 
 
@@ -146,7 +148,7 @@ class DibiResult implements IDataSource
 
 
 	/**
-	 * Set fetched object class. This class should extend the DibiRow class.
+	 * Set fetched object class. This class should extend the Row class.
 	 * @param  string
 	 * @return self
 	 */
@@ -168,7 +170,7 @@ class DibiResult implements IDataSource
 
 
 	/**
-	 * Set a factory to create fetched object instances. These should extend the DibiRow class.
+	 * Set a factory to create fetched object instances. These should extend the Row class.
 	 * @param  callback
 	 * @return self
 	 */
@@ -182,7 +184,7 @@ class DibiResult implements IDataSource
 	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
-	 * @return DibiRow|FALSE array on success, FALSE if no next record
+	 * @return Row|FALSE array on success, FALSE if no next record
 	 */
 	final public function fetch()
 	{
@@ -221,7 +223,7 @@ class DibiResult implements IDataSource
 	 * Fetches all records from table.
 	 * @param  int  offset
 	 * @param  int  limit
-	 * @return DibiRow[]
+	 * @return Row[]
 	 */
 	final public function fetchAll($offset = NULL, $limit = NULL)
 	{
@@ -253,8 +255,8 @@ class DibiResult implements IDataSource
 	 * - associative descriptor: col1|col2->col3=col4
 	 *   builds a tree:          $tree[$val1][$val2]->col3[$val3] = val4
 	 * @param  string  associative descriptor
-	 * @return DibiRow
-	 * @throws InvalidArgumentException
+	 * @return Row
+	 * @throws \InvalidArgumentException
 	 */
 	final public function fetchAssoc($assoc)
 	{
@@ -275,7 +277,7 @@ class DibiResult implements IDataSource
 		foreach ($assoc as $as) {
 			// offsetExists ignores NULL in PHP 5.2.1, isset() surprisingly NULL accepts
 			if ($as !== '[]' && $as !== '=' && $as !== '->' && $as !== '|' && !property_exists($row, $as)) {
-				throw new InvalidArgumentException("Unknown column '$as' in associative descriptor.");
+				throw new \InvalidArgumentException("Unknown column '$as' in associative descriptor.");
 			}
 		}
 
@@ -403,7 +405,7 @@ class DibiResult implements IDataSource
 	 * @param  string  associative key
 	 * @param  string  value
 	 * @return array
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
 	final public function fetchPairs($key = NULL, $value = NULL)
 	{
@@ -417,7 +419,7 @@ class DibiResult implements IDataSource
 
 		if ($value === NULL) {
 			if ($key !== NULL) {
-				throw new InvalidArgumentException('Either none or both columns must be specified.');
+				throw new \InvalidArgumentException('Either none or both columns must be specified.');
 			}
 
 			// autodetect
@@ -434,7 +436,7 @@ class DibiResult implements IDataSource
 
 		} else {
 			if (!property_exists($row, $value)) {
-				throw new InvalidArgumentException("Unknown value column '$value'.");
+				throw new \InvalidArgumentException("Unknown value column '$value'.");
 			}
 
 			if ($key === NULL) { // indexed-array
@@ -445,7 +447,7 @@ class DibiResult implements IDataSource
 			}
 
 			if (!property_exists($row, $key)) {
-				throw new InvalidArgumentException("Unknown key column '$key'.");
+				throw new \InvalidArgumentException("Unknown key column '$key'.");
 			}
 		}
 
@@ -466,12 +468,12 @@ class DibiResult implements IDataSource
 	 */
 	private function detectTypes()
 	{
-		$cache = DibiColumnInfo::getTypeCache();
+		$cache = Reflection\Column::getTypeCache();
 		try {
 			foreach ($this->getResultDriver()->getResultColumns() as $col) {
 				$this->types[$col['name']] = $cache->{$col['nativetype']};
 			}
-		} catch (DibiNotSupportedException $e) {
+		} catch (NotSupportedException $e) {
 		}
 	}
 
@@ -488,24 +490,24 @@ class DibiResult implements IDataSource
 				continue;
 			}
 			$value = $row[$key];
-			if ($value === FALSE || $type === DibiType::TEXT) {
+			if ($value === FALSE || $type === Type::TEXT) {
 
-			} elseif ($type === DibiType::INTEGER) {
+			} elseif ($type === Type::INTEGER) {
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
 
-			} elseif ($type === DibiType::FLOAT) {
+			} elseif ($type === Type::FLOAT) {
 				$row[$key] = str_replace(',', '.', ltrim((string) ($tmp = (float) $value), '0')) === ltrim(rtrim(rtrim($value, '0'), '.'), '0') ? $tmp : $value;
 
-			} elseif ($type === DibiType::BOOL) {
+			} elseif ($type === Type::BOOL) {
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
 
-			} elseif ($type === DibiType::DATE || $type === DibiType::DATETIME) {
+			} elseif ($type === Type::DATE || $type === Type::DATETIME) {
 				if ((int) $value !== 0 || substr((string) $value, 0, 3) === '00:') { // '', NULL, FALSE, '0000-00-00', ...
-					$value = new DibiDateTime($value);
+					$value = new DateTime($value);
 					$row[$key] = empty($this->formats[$type]) ? $value : $value->format($this->formats[$type]);
 				}
 
-			} elseif ($type === DibiType::BINARY) {
+			} elseif ($type === Type::BINARY) {
 				$row[$key] = $this->getResultDriver()->unescapeBinary($value);
 			}
 		}
@@ -515,7 +517,7 @@ class DibiResult implements IDataSource
 	/**
 	 * Define column type.
 	 * @param  string  column
-	 * @param  string  type (use constant DibiType::*)
+	 * @param  string  type (use constant Type::*)
 	 * @return self
 	 */
 	final public function setType($col, $type)
@@ -537,7 +539,7 @@ class DibiResult implements IDataSource
 
 	/**
 	 * Sets data format.
-	 * @param  string  type (use constant DibiType::*)
+	 * @param  string  type (use constant Type::*)
 	 * @param  string  format
 	 * @return self
 	 */
@@ -563,12 +565,12 @@ class DibiResult implements IDataSource
 
 	/**
 	 * Returns a meta information about the current result set.
-	 * @return DibiResultInfo
+	 * @return Reflection\Result
 	 */
 	public function getInfo()
 	{
 		if ($this->meta === NULL) {
-			$this->meta = new DibiResultInfo($this->getResultDriver());
+			$this->meta = new Reflection\Result($this->getResultDriver());
 		}
 		return $this->meta;
 	}

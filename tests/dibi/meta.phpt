@@ -12,7 +12,7 @@ if ($config['system'] === 'odbc' || $config['driver'] === 'pdo') {
 	Tester\Environment::skip('Not supported.');
 }
 
-$conn = new DibiConnection($config);
+$conn = new Dibi\Connection($config);
 $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 

@@ -5,10 +5,11 @@
  */
 
 use Tester\Assert;
+use Dibi\Row;
 
 require __DIR__ . '/bootstrap.php';
 
-$conn = new DibiConnection($config);
+$conn = new Dibi\Connection($config);
 $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 
@@ -30,9 +31,9 @@ Assert::same('Chair', $res->fetchSingle());
 // fetch complete result set
 $res = $conn->query('SELECT * FROM [products] ORDER BY product_id');
 Assert::equal([
-	new DibiRow(['product_id' => num(1), 'title' => 'Chair']),
-	new DibiRow(['product_id' => num(2), 'title' => 'Table']),
-	new DibiRow(['product_id' => num(3), 'title' => 'Computer']),
+	new Row(['product_id' => num(1), 'title' => 'Chair']),
+	new Row(['product_id' => num(2), 'title' => 'Table']),
+	new Row(['product_id' => num(3), 'title' => 'Computer']),
 ], $res->fetchAll());
 
 
@@ -53,18 +54,18 @@ Assert::same(
 // fetch row by row
 $res = $conn->query('SELECT * FROM [products] ORDER BY product_id');
 Assert::equal([
-	new DibiRow(['product_id' => num(1), 'title' => 'Chair']),
-	new DibiRow(['product_id' => num(2), 'title' => 'Table']),
-	new DibiRow(['product_id' => num(3), 'title' => 'Computer']),
+	new Row(['product_id' => num(1), 'title' => 'Chair']),
+	new Row(['product_id' => num(2), 'title' => 'Table']),
+	new Row(['product_id' => num(3), 'title' => 'Computer']),
 ], iterator_to_array($res));
 
 
 // fetch complete result set like association array
 $res = $conn->query('SELECT * FROM [products] ORDER BY product_id');
 Assert::equal([
-	'Chair' => new DibiRow(['product_id' => num(1), 'title' => 'Chair']),
-	'Table' => new DibiRow(['product_id' => num(2), 'title' => 'Table']),
-	'Computer' => new DibiRow(['product_id' => num(3), 'title' => 'Computer']),
+	'Chair' => new Row(['product_id' => num(1), 'title' => 'Chair']),
+	'Table' => new Row(['product_id' => num(2), 'title' => 'Table']),
+	'Computer' => new Row(['product_id' => num(3), 'title' => 'Computer']),
 ], $res->fetchAssoc('title'));
 
 
@@ -90,14 +91,14 @@ function query($conn) {
 
 Assert::equal([
 	'Arnold Rimmer' => [
-		'Chair' => new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
-		'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
+		'Chair' => new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+		'Computer' => new Row(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
 	],
 	'Dave Lister' => [
-		'Table' => new DibiRow(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
+		'Table' => new Row(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
 	],
 	'Kristine Kochanski' => [
-		'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
+		'Computer' => new Row(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 	],
 ], query($conn)->fetchAssoc('name,title'));
 
@@ -105,20 +106,20 @@ Assert::equal([
 Assert::equal([
 	'Arnold Rimmer' => [
 		[
-			'Chair' => new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+			'Chair' => new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
 		],
 		[
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
 		],
 	],
 	'Dave Lister' => [
 		[
-			'Table' => new DibiRow(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
+			'Table' => new Row(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
 		],
 	],
 	'Kristine Kochanski' => [
 		[
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 		],
 	],
 ], query($conn)->fetchAssoc('name,#,title'));
@@ -127,22 +128,22 @@ Assert::equal([
 Assert::equal([
 	'Arnold Rimmer' => [
 		'title' => [
-			'Chair' => new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
+			'Chair' => new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
 		],
 		'name' => 'Arnold Rimmer',
 		'amount' => num(7.0),
 	],
 	'Dave Lister' => [
 		'title' => [
-			'Table' => new DibiRow(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
+			'Table' => new Row(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
 		],
 		'name' => 'Dave Lister',
 		'amount' => num(3.0),
 	],
 	'Kristine Kochanski' => [
 		'title' => [
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 		],
 		'name' => 'Kristine Kochanski',
 		'amount' => num(5.0),
@@ -151,24 +152,24 @@ Assert::equal([
 
 
 Assert::equal([
-	'Arnold Rimmer' => new DibiRow([
+	'Arnold Rimmer' => new Row([
 		'title' => [
-			'Chair' => new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
+			'Chair' => new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
 		],
 		'name' => 'Arnold Rimmer',
 		'amount' => num(7.0),
 	]),
-	'Dave Lister' => new DibiRow([
+	'Dave Lister' => new Row([
 		'title' => [
-			'Table' => new DibiRow(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
+			'Table' => new Row(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
 		],
 		'name' => 'Dave Lister',
 		'amount' => num(3.0),
 	]),
-	'Kristine Kochanski' => new DibiRow([
+	'Kristine Kochanski' => new Row([
 		'title' => [
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 		],
 		'name' => 'Kristine Kochanski',
 		'amount' => num(5.0),
@@ -177,12 +178,12 @@ Assert::equal([
 
 
 Assert::equal([
-	new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
-	new DibiRow([
+	new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+	new Row([
 		'title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
-	new DibiRow([
+	new Row([
 		'title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
-	new DibiRow([
+	new Row([
 		'title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 ], query($conn)->fetchAssoc('@,='));
 
@@ -190,22 +191,22 @@ Assert::equal([
 Assert::equal([
 	'Arnold Rimmer' => [
 		'title' => [
-			'Chair' => new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
+			'Chair' => new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
 		],
 		'name' => 'Arnold Rimmer',
 		'amount' => num(7.0),
 	],
 	'Dave Lister' => [
 		'title' => [
-			'Table' => new DibiRow(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
+			'Table' => new Row(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
 		],
 		'name' => 'Dave Lister',
 		'amount' => num(3.0),
 	],
 	'Kristine Kochanski' => [
 		'title' => [
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 		],
 		'name' => 'Kristine Kochanski',
 		'amount' => num(5.0),
@@ -216,14 +217,14 @@ Assert::equal([
 // old syntax
 Assert::equal([
 	'Arnold Rimmer' => [
-		'Chair' => new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
-		'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
+		'Chair' => new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+		'Computer' => new Row(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
 	],
 	'Dave Lister' => [
-		'Table' => new DibiRow(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
+		'Table' => new Row(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
 	],
 	'Kristine Kochanski' => [
-		'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
+		'Computer' => new Row(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 	],
 ], query($conn)->fetchAssoc('name|title'));
 
@@ -231,44 +232,44 @@ Assert::equal([
 Assert::equal([
 	'Arnold Rimmer' => [
 		[
-			'Chair' => new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+			'Chair' => new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
 		],
 		[
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
 		],
 	],
 	'Dave Lister' => [
 		[
-			'Table' => new DibiRow(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
+			'Table' => new Row(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
 		],
 	],
 	'Kristine Kochanski' => [
 		[
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 		],
 	],
 ], query($conn)->fetchAssoc('name[]title'));
 
 
 Assert::equal([
-	'Arnold Rimmer' => new DibiRow([
+	'Arnold Rimmer' => new Row([
 		'title' => [
-			'Chair' => new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
+			'Chair' => new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
 		],
 		'name' => 'Arnold Rimmer',
 		'amount' => num(7.0),
 	]),
-	'Dave Lister' => new DibiRow([
+	'Dave Lister' => new Row([
 		'title' => [
-			'Table' => new DibiRow(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
+			'Table' => new Row(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
 		],
 		'name' => 'Dave Lister',
 		'amount' => num(3.0),
 	]),
-	'Kristine Kochanski' => new DibiRow([
+	'Kristine Kochanski' => new Row([
 		'title' => [
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 		],
 		'name' => 'Kristine Kochanski',
 		'amount' => num(5.0),
@@ -277,17 +278,17 @@ Assert::equal([
 
 
 Assert::equal([
-	'Arnold Rimmer' => new DibiRow([
+	'Arnold Rimmer' => new Row([
 		'title' => ['Chair' => 'Arnold Rimmer', 'Computer' => 'Arnold Rimmer'],
 		'name' => 'Arnold Rimmer',
 		'amount' => num(7.0),
 	]),
-	'Dave Lister' => new DibiRow([
+	'Dave Lister' => new Row([
 		'title' => ['Table' => 'Dave Lister'],
 		'name' => 'Dave Lister',
 		'amount' => num(3.0),
 	]),
-	'Kristine Kochanski' => new DibiRow([
+	'Kristine Kochanski' => new Row([
 		'title' => ['Computer' => 'Kristine Kochanski'],
 		'name' => 'Kristine Kochanski',
 		'amount' => num(5.0),
@@ -296,32 +297,32 @@ Assert::equal([
 
 
 Assert::equal([
-	new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
-	new DibiRow(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
-	new DibiRow(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
-	new DibiRow(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
+	new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+	new Row(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
+	new Row(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
+	new Row(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 ], query($conn)->fetchAssoc('[]'));
 
 
 Assert::equal([
-	'Arnold Rimmer' => new DibiRow([
+	'Arnold Rimmer' => new Row([
 		'title' => [
-			'Chair' => new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
+			'Chair' => new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
 		],
 		'name' => 'Arnold Rimmer',
 		'amount' => num(7.0),
 	]),
-	'Dave Lister' => new DibiRow([
+	'Dave Lister' => new Row([
 		'title' => [
-			'Table' => new DibiRow(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
+			'Table' => new Row(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
 		],
 		'name' => 'Dave Lister',
 		'amount' => num(3.0),
 	]),
-	'Kristine Kochanski' => new DibiRow([
+	'Kristine Kochanski' => new Row([
 		'title' => [
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 		],
 		'name' => 'Kristine Kochanski',
 		'amount' => num(5.0),

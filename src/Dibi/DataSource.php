@@ -5,22 +5,24 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * Default implementation of IDataSource for dibi.
  *
  */
-class DibiDataSource implements IDataSource
+class DataSource implements IDataSource
 {
-	use DibiStrict;
+	use Strict;
 
-	/** @var DibiConnection */
+	/** @var Connection */
 	private $connection;
 
 	/** @var string */
 	private $sql;
 
-	/** @var DibiResult */
+	/** @var Result */
 	private $result;
 
 	/** @var int */
@@ -47,9 +49,9 @@ class DibiDataSource implements IDataSource
 
 	/**
 	 * @param  string  SQL command or table or view name, as data source
-	 * @param  DibiConnection  connection
+	 * @param  Connection  connection
 	 */
-	public function __construct($sql, DibiConnection $connection)
+	public function __construct($sql, Connection $connection)
 	{
 		if (strpbrk($sql, " \t\r\n") === FALSE) {
 			$this->sql = $connection->getDriver()->escapeIdentifier($sql); // table name
@@ -131,7 +133,7 @@ class DibiDataSource implements IDataSource
 
 	/**
 	 * Returns the dibi connection.
-	 * @return DibiConnection
+	 * @return Connection
 	 */
 	final public function getConnection()
 	{
@@ -143,8 +145,8 @@ class DibiDataSource implements IDataSource
 
 
 	/**
-	 * Returns (and queries) DibiResult.
-	 * @return DibiResult
+	 * Returns (and queries) Result.
+	 * @return Result
 	 */
 	public function getResult()
 	{
@@ -156,7 +158,7 @@ class DibiDataSource implements IDataSource
 
 
 	/**
-	 * @return DibiResultIterator
+	 * @return ResultIterator
 	 */
 	public function getIterator()
 	{
@@ -166,7 +168,7 @@ class DibiDataSource implements IDataSource
 
 	/**
 	 * Generates, executes SQL query and fetches the single row.
-	 * @return DibiRow|FALSE  array on success, FALSE if no next record
+	 * @return Row|FALSE  array on success, FALSE if no next record
 	 */
 	public function fetch()
 	{
@@ -231,8 +233,8 @@ class DibiDataSource implements IDataSource
 
 
 	/**
-	 * Returns this data source wrapped in DibiFluent object.
-	 * @return DibiFluent
+	 * Returns this data source wrapped in Fluent object.
+	 * @return Fluent
 	 */
 	public function toFluent()
 	{
@@ -241,8 +243,8 @@ class DibiDataSource implements IDataSource
 
 
 	/**
-	 * Returns this data source wrapped in DibiDataSource object.
-	 * @return DibiDataSource
+	 * Returns this data source wrapped in DataSource object.
+	 * @return DataSource
 	 */
 	public function toDataSource()
 	{
@@ -264,7 +266,7 @@ FROM %SQL', $this->sql, '
 %ex', $this->sorting ? ['ORDER BY %by', $this->sorting] : NULL, '
 %ofs %lmt', $this->offset, $this->limit
 			);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			trigger_error($e->getMessage(), E_USER_ERROR);
 		}
 	}

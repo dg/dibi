@@ -5,20 +5,24 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Drivers;
+
+use Dibi;
+
 
 /**
  * The dibi reflector for MySQL databases.
  * @internal
  */
-class DibiMySqlReflector implements IDibiReflector
+class MySqlReflector implements Dibi\Reflector
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
-	/** @var IDibiDriver */
+	/** @var Dibi\Driver */
 	private $driver;
 
 
-	public function __construct(IDibiDriver $driver)
+	public function __construct(Dibi\Driver $driver)
 	{
 		$this->driver = $driver;
 	}
@@ -110,13 +114,13 @@ class DibiMySqlReflector implements IDibiReflector
 	 * Returns metadata for all foreign keys in a table.
 	 * @param  string
 	 * @return array
-	 * @throws DibiNotSupportedException
+	 * @throws Dibi\NotSupportedException
 	 */
 	public function getForeignKeys($table)
 	{
 		$data = $this->driver->query("SELECT `ENGINE` FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = {$this->driver->escapeText($table)}")->fetch(TRUE);
 		if ($data['ENGINE'] !== 'InnoDB') {
-			throw new DibiNotSupportedException("Foreign keys are not supported in {$data['ENGINE']} tables.");
+			throw new Dibi\NotSupportedException("Foreign keys are not supported in {$data['ENGINE']} tables.");
 		}
 
 		$res = $this->driver->query("

@@ -5,25 +5,27 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * dibi SQL builder via fluent interfaces. EXPERIMENTAL!
  *
- * @method DibiFluent select($field)
- * @method DibiFluent distinct()
- * @method DibiFluent from($table)
- * @method DibiFluent where($cond)
- * @method DibiFluent groupBy($field)
- * @method DibiFluent having($cond)
- * @method DibiFluent orderBy($field)
- * @method DibiFluent limit(int $limit)
- * @method DibiFluent offset(int $offset)
- * @method DibiFluent leftJoin($table)
- * @method DibiFluent on($cond)
+ * @method Fluent select($field)
+ * @method Fluent distinct()
+ * @method Fluent from($table)
+ * @method Fluent where($cond)
+ * @method Fluent groupBy($field)
+ * @method Fluent having($cond)
+ * @method Fluent orderBy($field)
+ * @method Fluent limit(int $limit)
+ * @method Fluent offset(int $offset)
+ * @method Fluent leftJoin($table)
+ * @method Fluent on($cond)
  */
-class DibiFluent implements IDataSource
+class Fluent implements IDataSource
 {
-	use DibiStrict;
+	use Strict;
 
 	const REMOVE = FALSE;
 
@@ -72,7 +74,7 @@ class DibiFluent implements IDataSource
 		'RIGHT JOIN' => 'FROM',
 	];
 
-	/** @var DibiConnection */
+	/** @var Connection */
 	private $connection;
 
 	/** @var array */
@@ -90,19 +92,19 @@ class DibiFluent implements IDataSource
 	/** @var array */
 	private $cursor;
 
-	/** @var DibiHashMap  normalized clauses */
+	/** @var HashMap  normalized clauses */
 	private static $normalizer;
 
 
 	/**
-	 * @param  DibiConnection
+	 * @param  Connection
 	 */
-	public function __construct(DibiConnection $connection)
+	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
 
 		if (self::$normalizer === NULL) {
-			self::$normalizer = new DibiHashMap([__CLASS__, '_formatClause']);
+			self::$normalizer = new HashMap([__CLASS__, '_formatClause']);
 		}
 	}
 
@@ -175,7 +177,7 @@ class DibiFluent implements IDataSource
 			} elseif (is_string($arg) && preg_match('#^[a-z:_][a-z0-9_.:]*\z#i', $arg)) { // identifier
 				$args = ['%n', $arg];
 
-			} elseif (is_array($arg) || ($arg instanceof Traversable && !$arg instanceof self)) { // any array
+			} elseif (is_array($arg) || ($arg instanceof \Traversable && !$arg instanceof self)) { // any array
 				if (isset(self::$modifiers[$clause])) {
 					$args = [self::$modifiers[$clause], $arg];
 
@@ -265,7 +267,7 @@ class DibiFluent implements IDataSource
 
 	/**
 	 * Returns the dibi connection.
-	 * @return DibiConnection
+	 * @return Connection
 	 */
 	final public function getConnection()
 	{
@@ -274,7 +276,7 @@ class DibiFluent implements IDataSource
 
 
 	/**
-	 * Adds DibiResult setup.
+	 * Adds Result setup.
 	 * @param  string  method
 	 * @param  mixed   args
 	 * @return self
@@ -292,16 +294,16 @@ class DibiFluent implements IDataSource
 	/**
 	 * Generates and executes SQL query.
 	 * @param  mixed what to return?
-	 * @return DibiResult|int  result set object (if any)
-	 * @throws DibiException
+	 * @return Result|int  result set object (if any)
+	 * @throws Exception
 	 */
 	public function execute($return = NULL)
 	{
 		$res = $this->query($this->_export());
 		switch ($return) {
-			case dibi::IDENTIFIER:
+			case \dibi::IDENTIFIER:
 				return $this->connection->getInsertId();
-			case dibi::AFFECTED_ROWS:
+			case \dibi::AFFECTED_ROWS:
 				return $this->connection->getAffectedRows();
 			default:
 				return $res;
@@ -311,7 +313,7 @@ class DibiFluent implements IDataSource
 
 	/**
 	 * Generates, executes SQL query and fetches the single row.
-	 * @return DibiRow|FALSE  array on success, FALSE if no next record
+	 * @return Row|FALSE  array on success, FALSE if no next record
 	 */
 	public function fetch()
 	{
@@ -376,7 +378,7 @@ class DibiFluent implements IDataSource
 	 * Required by the IteratorAggregate interface.
 	 * @param  int  offset
 	 * @param  int  limit
-	 * @return DibiResultIterator
+	 * @return ResultIterator
 	 */
 	public function getIterator($offset = NULL, $limit = NULL)
 	{
@@ -407,7 +409,7 @@ class DibiFluent implements IDataSource
 
 
 	/**
-	 * @return DibiResult
+	 * @return Result
 	 */
 	private function query($args)
 	{
@@ -423,11 +425,11 @@ class DibiFluent implements IDataSource
 
 
 	/**
-	 * @return DibiDataSource
+	 * @return DataSource
 	 */
 	public function toDataSource()
 	{
-		return new DibiDataSource($this->connection->translate($this->_export()), $this->connection);
+		return new DataSource($this->connection->translate($this->_export()), $this->connection);
 	}
 
 
@@ -439,14 +441,14 @@ class DibiFluent implements IDataSource
 	{
 		try {
 			return $this->connection->translate($this->_export());
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			trigger_error($e->getMessage(), E_USER_ERROR);
 		}
 	}
 
 
 	/**
-	 * Generates parameters for DibiTranslator.
+	 * Generates parameters for Translator.
 	 * @param  string clause name
 	 * @return array
 	 */

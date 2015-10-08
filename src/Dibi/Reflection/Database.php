@@ -5,6 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Reflection;
+
+use Dibi;
+
 
 /**
  * Reflection metadata class for a database.
@@ -13,11 +17,11 @@
  * @property-read array $tables
  * @property-read array $tableNames
  */
-class DibiDatabaseInfo
+class Database
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
-	/** @var IDibiReflector */
+	/** @var Dibi\Reflector */
 	private $reflector;
 
 	/** @var string */
@@ -27,7 +31,7 @@ class DibiDatabaseInfo
 	private $tables;
 
 
-	public function __construct(IDibiReflector $reflector, $name)
+	public function __construct(Dibi\Reflector $reflector, $name)
 	{
 		$this->reflector = $reflector;
 		$this->name = $name;
@@ -44,7 +48,7 @@ class DibiDatabaseInfo
 
 
 	/**
-	 * @return DibiTableInfo[]
+	 * @return Table[]
 	 */
 	public function getTables()
 	{
@@ -69,7 +73,7 @@ class DibiDatabaseInfo
 
 	/**
 	 * @param  string
-	 * @return DibiTableInfo
+	 * @return Table
 	 */
 	public function getTable($name)
 	{
@@ -79,7 +83,7 @@ class DibiDatabaseInfo
 			return $this->tables[$l];
 
 		} else {
-			throw new DibiException("Database '$this->name' has no table '$name'.");
+			throw new Dibi\Exception("Database '$this->name' has no table '$name'.");
 		}
 	}
 
@@ -103,7 +107,7 @@ class DibiDatabaseInfo
 		if ($this->tables === NULL) {
 			$this->tables = [];
 			foreach ($this->reflector->getTables() as $info) {
-				$this->tables[strtolower($info['name'])] = new DibiTableInfo($this->reflector, $info);
+				$this->tables[strtolower($info['name'])] = new Table($this->reflector, $info);
 			}
 		}
 	}

@@ -5,15 +5,21 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Bridges\Nette;
+
+use Dibi;
+use Dibi\Event;
+use Dibi\Helpers;
+use Nette;
 use Nette\Diagnostics\Debugger;
 
 
 /**
  * Dibi panel for Nette\Diagnostics.
  */
-class DibiNettePanel implements Nette\Diagnostics\IBarPanel
+class Panel implements Nette\Diagnostics\IBarPanel
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	/** @var int maximum SQL length */
 	public static $maxLength = 1000;
@@ -30,12 +36,12 @@ class DibiNettePanel implements Nette\Diagnostics\IBarPanel
 
 	public function __construct($explain = TRUE, $filter = NULL)
 	{
-		$this->filter = $filter ? (int) $filter : DibiEvent::QUERY;
+		$this->filter = $filter ? (int) $filter : Event::QUERY;
 		$this->explain = $explain;
 	}
 
 
-	public function register(DibiConnection $connection)
+	public function register(Dibi\Connection $connection)
 	{
 		Debugger::getBar()->addPanel($this);
 		Debugger::getBlueScreen()->addPanel([__CLASS__, 'renderException']);
@@ -47,7 +53,7 @@ class DibiNettePanel implements Nette\Diagnostics\IBarPanel
 	 * After event notification.
 	 * @return void
 	 */
-	public function logEvent(DibiEvent $event)
+	public function logEvent(Event $event)
 	{
 		if (($event->type & $this->filter) === 0) {
 			return;
@@ -62,10 +68,10 @@ class DibiNettePanel implements Nette\Diagnostics\IBarPanel
 	 */
 	public static function renderException($e)
 	{
-		if ($e instanceof DibiException && $e->getSql()) {
+		if ($e instanceof Dibi\Exception && $e->getSql()) {
 			return [
 				'tab' => 'SQL',
-				'panel' => DibiHelpers::dump($e->getSql(), TRUE),
+				'panel' => Helpers::dump($e->getSql(), TRUE),
 			];
 		}
 	}
@@ -99,15 +105,15 @@ class DibiNettePanel implements Nette\Diagnostics\IBarPanel
 		foreach ($this->events as $event) {
 			$totalTime += $event->time;
 			$explain = NULL; // EXPLAIN is called here to work SELECT FOUND_ROWS()
-			if ($this->explain && $event->type === DibiEvent::SELECT) {
+			if ($this->explain && $event->type === Event::SELECT) {
 				try {
-					$backup = [$event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime];
+					$backup = [$event->connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime];
 					$event->connection->onEvent = NULL;
 					$cmd = is_string($this->explain) ? $this->explain : ($event->connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
-					$explain = DibiHelpers::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);
-				} catch (DibiException $e) {
+					$explain = Helpers::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);
+				} catch (Dibi\Exception $e) {
 				}
-				list($event->connection->onEvent, dibi::$numOfQueries, dibi::$totalTime) = $backup;
+				list($event->connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime) = $backup;
 			}
 
 			$s .= '<tr><td>' . sprintf('%0.3f', $event->time * 1000);
@@ -117,7 +123,7 @@ class DibiNettePanel implements Nette\Diagnostics\IBarPanel
 				$s .= "<br /><a href='#nette-debug-DibiProfiler-row-$counter' class='nette-toggler nette-toggle-collapsed' rel='#nette-debug-DibiProfiler-row-$counter'>explain</a>";
 			}
 
-			$s .= '</td><td class="nette-DibiProfiler-sql">' . DibiHelpers::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, TRUE);
+			$s .= '</td><td class="nette-DibiProfiler-sql">' . Helpers::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, TRUE);
 			if ($explain) {
 				$s .= "<div id='nette-debug-DibiProfiler-row-$counter' class='nette-collapsed'>{$explain}</div>";
 			}

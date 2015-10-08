@@ -5,11 +5,13 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * Data types.
  */
-class DibiType
+class Type
 {
 	const
 		TEXT = 's', // as 'string'
@@ -23,7 +25,7 @@ class DibiType
 
 	final public function __construct()
 	{
-		throw new LogicException('Cannot instantiate static class ' . __CLASS__);
+		throw new \LogicException('Cannot instantiate static class ' . __CLASS__);
 	}
 
 }

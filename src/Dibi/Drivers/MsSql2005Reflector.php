@@ -5,20 +5,24 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Drivers;
+
+use Dibi;
+
 
 /**
  * The dibi reflector for MSSQL2005 databases.
  * @internal
  */
-class DibiMsSql2005Reflector implements IDibiReflector
+class MsSql2005Reflector implements Dibi\Reflector
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
-	/** @var IDibiDriver */
+	/** @var Dibi\Driver */
 	private $driver;
 
 
-	public function __construct(IDibiDriver $driver)
+	public function __construct(Dibi\Driver $driver)
 	{
 		$this->driver = $driver;
 	}
@@ -126,7 +130,7 @@ class DibiMsSql2005Reflector implements IDibiReflector
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new DibiNotImplementedException;
+		throw new Dibi\NotImplementedException;
 	}
 
 }

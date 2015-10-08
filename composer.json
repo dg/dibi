@@ -21,7 +21,8 @@
 		"dg/dibi": "self.version"
 	},
 	"autoload": {
-		"classmap": ["src/"]
+		"classmap": ["src/"],
+		"files": ["src/loader.php"]
 	},
 	"extra": {
 		"branch-alias": {

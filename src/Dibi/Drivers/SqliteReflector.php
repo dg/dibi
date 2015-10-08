@@ -5,20 +5,24 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Drivers;
+
+use Dibi;
+
 
 /**
  * The dibi reflector for SQLite database.
  * @internal
  */
-class DibiSqliteReflector implements IDibiReflector
+class SqliteReflector implements Dibi\Reflector
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
-	/** @var IDibiDriver */
+	/** @var Dibi\Driver */
 	private $driver;
 
 
-	public function __construct(IDibiDriver $driver)
+	public function __construct(Dibi\Driver $driver)
 	{
 		$this->driver = $driver;
 	}

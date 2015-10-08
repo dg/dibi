@@ -5,6 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Reflection;
+
+use Dibi;
+
 
 /**
  * Reflection metadata class for a result set.
@@ -12,11 +16,11 @@
  * @property-read array $columns
  * @property-read array $columnNames
  */
-class DibiResultInfo
+class Result
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
-	/** @var IDibiResultDriver */
+	/** @var Dibi\ResultDriver */
 	private $driver;
 
 	/** @var array */
@@ -26,14 +30,14 @@ class DibiResultInfo
 	private $names;
 
 
-	public function __construct(IDibiResultDriver $driver)
+	public function __construct(Dibi\ResultDriver $driver)
 	{
 		$this->driver = $driver;
 	}
 
 
 	/**
-	 * @return DibiColumnInfo[]
+	 * @return Column[]
 	 */
 	public function getColumns()
 	{
@@ -59,7 +63,7 @@ class DibiResultInfo
 
 	/**
 	 * @param  string
-	 * @return DibiColumnInfo
+	 * @return Column
 	 */
 	public function getColumn($name)
 	{
@@ -69,7 +73,7 @@ class DibiResultInfo
 			return $this->names[$l];
 
 		} else {
-			throw new DibiException("Result set has no column '$name'.");
+			throw new Dibi\Exception("Result set has no column '$name'.");
 		}
 	}
 
@@ -92,9 +96,9 @@ class DibiResultInfo
 	{
 		if ($this->columns === NULL) {
 			$this->columns = [];
-			$reflector = $this->driver instanceof IDibiReflector ? $this->driver : NULL;
+			$reflector = $this->driver instanceof Dibi\Reflector ? $this->driver : NULL;
 			foreach ($this->driver->getResultColumns() as $info) {
-				$this->columns[] = $this->names[$info['name']] = new DibiColumnInfo($reflector, $info);
+				$this->columns[] = $this->names[$info['name']] = new Column($reflector, $info);
 			}
 		}
 	}

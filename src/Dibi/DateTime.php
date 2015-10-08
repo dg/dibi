@@ -5,19 +5,21 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * DateTime.
  */
-class DibiDateTime extends DateTime
+class DateTime extends \DateTime
 {
-	use DibiStrict;
+	use Strict;
 
-	public function __construct($time = 'now', DateTimeZone $timezone = NULL)
+	public function __construct($time = 'now', \DateTimeZone $timezone = NULL)
 	{
 		if (is_numeric($time)) {
 			parent::__construct('@' . $time);
-			$this->setTimeZone($timezone ? $timezone : new DateTimeZone(date_default_timezone_get()));
+			$this->setTimeZone($timezone ? $timezone : new \DateTimeZone(date_default_timezone_get()));
 		} elseif ($timezone === NULL) {
 			parent::__construct($time);
 		} else {

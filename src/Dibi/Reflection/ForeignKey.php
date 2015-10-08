@@ -5,6 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Reflection;
+
+use Dibi;
+
 
 /**
  * Reflection metadata class for a foreign key.
@@ -12,9 +16,9 @@
  * @property-read string $name
  * @property-read array $references
  */
-class DibiForeignKeyInfo
+class ForeignKey
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	/** @var string */
 	private $name;

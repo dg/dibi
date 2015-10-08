@@ -5,6 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Reflection;
+
+use Dibi;
+
 
 /**
  * Reflection metadata class for a index or primary key.
@@ -14,9 +18,9 @@
  * @property-read bool $unique
  * @property-read bool $primary
  */
-class DibiIndexInfo
+class Index
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	/** @var array (name, columns, [unique], [primary]) */
 	private $info;

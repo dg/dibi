@@ -8,8 +8,8 @@ use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
 
-$conn = new DibiConnection($config);
-$translator = new DibiTranslator($conn);
+$conn = new Dibi\Connection($config);
+$translator = new Dibi\Translator($conn);
 
 $datetime = new DateTime('1978-01-23 00:00:00');
 

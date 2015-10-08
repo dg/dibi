@@ -5,6 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Reflection;
+
+use Dibi;
+
 
 /**
  * Reflection metadata class for a database table.
@@ -15,13 +19,13 @@
  * @property-read array $columnNames
  * @property-read array $foreignKeys
  * @property-read array $indexes
- * @property-read DibiIndexInfo $primaryKey
+ * @property-read Index $primaryKey
  */
-class DibiTableInfo
+class Table
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
-	/** @var IDibiReflector */
+	/** @var Dibi\Reflector */
 	private $reflector;
 
 	/** @var string */
@@ -39,11 +43,11 @@ class DibiTableInfo
 	/** @var array */
 	private $indexes;
 
-	/** @var DibiIndexInfo */
+	/** @var Index */
 	private $primaryKey;
 
 
-	public function __construct(IDibiReflector $reflector, array $info)
+	public function __construct(Dibi\Reflector $reflector, array $info)
 	{
 		$this->reflector = $reflector;
 		$this->name = $info['name'];
@@ -70,7 +74,7 @@ class DibiTableInfo
 
 
 	/**
-	 * @return DibiColumnInfo[]
+	 * @return Column[]
 	 */
 	public function getColumns()
 	{
@@ -95,7 +99,7 @@ class DibiTableInfo
 
 	/**
 	 * @param  string
-	 * @return DibiColumnInfo
+	 * @return Column
 	 */
 	public function getColumn($name)
 	{
@@ -105,7 +109,7 @@ class DibiTableInfo
 			return $this->columns[$l];
 
 		} else {
-			throw new DibiException("Table '$this->name' has no column '$name'.");
+			throw new Dibi\Exception("Table '$this->name' has no column '$name'.");
 		}
 	}
 
@@ -122,7 +126,7 @@ class DibiTableInfo
 
 
 	/**
-	 * @return DibiForeignKeyInfo[]
+	 * @return ForeignKey[]
 	 */
 	public function getForeignKeys()
 	{
@@ -132,7 +136,7 @@ class DibiTableInfo
 
 
 	/**
-	 * @return DibiIndexInfo[]
+	 * @return Index[]
 	 */
 	public function getIndexes()
 	{
@@ -142,7 +146,7 @@ class DibiTableInfo
 
 
 	/**
-	 * @return DibiIndexInfo
+	 * @return Index
 	 */
 	public function getPrimaryKey()
 	{
@@ -159,7 +163,7 @@ class DibiTableInfo
 		if ($this->columns === NULL) {
 			$this->columns = [];
 			foreach ($this->reflector->getColumns($this->name) as $info) {
-				$this->columns[strtolower($info['name'])] = new DibiColumnInfo($this->reflector, $info);
+				$this->columns[strtolower($info['name'])] = new Column($this->reflector, $info);
 			}
 		}
 	}
@@ -177,7 +181,7 @@ class DibiTableInfo
 				foreach ($info['columns'] as $key => $name) {
 					$info['columns'][$key] = $this->columns[strtolower($name)];
 				}
-				$this->indexes[strtolower($info['name'])] = new DibiIndexInfo($info);
+				$this->indexes[strtolower($info['name'])] = new Index($info);
 				if (!empty($info['primary'])) {
 					$this->primaryKey = $this->indexes[strtolower($info['name'])];
 				}
@@ -191,7 +195,7 @@ class DibiTableInfo
 	 */
 	protected function initForeignKeys()
 	{
-		throw new DibiNotImplementedException;
+		throw new Dibi\NotImplementedException;
 	}
 
 }

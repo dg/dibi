@@ -5,6 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
+use Traversable;
+
 
 /**
  * dibi connection.
@@ -12,26 +16,26 @@
  * @property-read int $affectedRows
  * @property-read int $insertId
  */
-class DibiConnection
+class Connection
 {
-	use DibiStrict;
+	use Strict;
 
-	/** @var array of function (DibiEvent $event); Occurs after query is executed */
+	/** @var array of function (Event $event); Occurs after query is executed */
 	public $onEvent;
 
 	/** @var array  Current connection configuration */
 	private $config;
 
-	/** @var IDibiDriver */
+	/** @var Driver */
 	private $driver;
 
-	/** @var DibiTranslator */
+	/** @var Translator */
 	private $translator;
 
 	/** @var bool  Is connected? */
 	private $connected = FALSE;
 
-	/** @var DibiHashMap Substitutes for identifiers */
+	/** @var HashMap Substitutes for identifiers */
 	private $substitutes;
 
 
@@ -47,7 +51,7 @@ class DibiConnection
 
 	 * @param  mixed   connection parameters
 	 * @param  string  connection name
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	public function __construct($config, $name = NULL)
 	{
@@ -62,7 +66,7 @@ class DibiConnection
 			$config = $tmp;
 
 		} elseif (!is_array($config)) {
-			throw new InvalidArgumentException('Configuration must be array, string or object.');
+			throw new \InvalidArgumentException('Configuration must be array, string or object.');
 		}
 
 		self::alias($config, 'username', 'user');
@@ -72,19 +76,19 @@ class DibiConnection
 		self::alias($config, 'result|formatDateTime', 'resultDateTime');
 
 		if (!isset($config['driver'])) {
-			$config['driver'] = dibi::$defaultDriver;
+			$config['driver'] = \dibi::$defaultDriver;
 		}
 
 		$class = $tmp = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($config['driver'])));
-		$class = "Dibi{$class}Driver";
+		$class = "Dibi\\Drivers\\{$class}Driver";
 		if (!class_exists($class)) {
-			throw new DibiException("Unable to create instance of dibi driver '$class'.");
+			throw new Exception("Unable to create instance of dibi driver '$class'.");
 		}
 
 		$config['name'] = $name;
 		$this->config = $config;
 		$this->driver = new $class;
-		$this->translator = new DibiTranslator($this);
+		$this->translator = new Translator($this);
 
 		// profiler
 		$profilerCfg = & $config['profiler'];
@@ -92,23 +96,23 @@ class DibiConnection
 			$profilerCfg = ['run' => (bool) $profilerCfg];
 		}
 		if (!empty($profilerCfg['run'])) {
-			$filter = isset($profilerCfg['filter']) ? $profilerCfg['filter'] : DibiEvent::QUERY;
+			$filter = isset($profilerCfg['filter']) ? $profilerCfg['filter'] : Event::QUERY;
 
 			if (isset($profilerCfg['file'])) {
-				$this->onEvent[] = [new DibiFileLogger($profilerCfg['file'], $filter), 'logEvent'];
+				$this->onEvent[] = [new Loggers\FileLogger($profilerCfg['file'], $filter), 'logEvent'];
 			}
 
-			if (DibiFirePhpLogger::isAvailable()) {
-				$this->onEvent[] = [new DibiFirePhpLogger($filter), 'logEvent'];
+			if (Loggers\FirePhpLogger::isAvailable()) {
+				$this->onEvent[] = [new Loggers\FirePhpLogger($filter), 'logEvent'];
 			}
 
-			if (!interface_exists('Tracy\IBarPanel') && interface_exists('Nette\Diagnostics\IBarPanel') && class_exists('DibiNettePanel')) {
-				$panel = new DibiNettePanel(isset($profilerCfg['explain']) ? $profilerCfg['explain'] : TRUE, $filter);
+			if (!interface_exists('Tracy\IBarPanel') && interface_exists('Nette\Diagnostics\IBarPanel') && class_exists('Dibi\Bridges\Nette\Panel')) {
+				$panel = new Bridges\Nette\Panel(isset($profilerCfg['explain']) ? $profilerCfg['explain'] : TRUE, $filter);
 				$panel->register($this);
 			}
 		}
 
-		$this->substitutes = new DibiHashMap(function ($expr) { return ":$expr:"; });
+		$this->substitutes = new HashMap(function ($expr) { return ":$expr:"; });
 		if (!empty($config['substitutes'])) {
 			foreach ($config['substitutes'] as $key => $value) {
 				$this->substitutes->$key = $value;
@@ -138,13 +142,13 @@ class DibiConnection
 	 */
 	final public function connect()
 	{
-		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::CONNECT) : NULL;
+		$event = $this->onEvent ? new Event($this, Event::CONNECT) : NULL;
 		try {
 			$this->driver->connect($this->config);
 			$this->connected = TRUE;
 			$event && $this->onEvent($event->done());
 
-		} catch (DibiException $e) {
+		} catch (Exception $e) {
 			$event && $this->onEvent($event->done($e));
 			throw $e;
 		}
@@ -216,7 +220,7 @@ class DibiConnection
 
 	/**
 	 * Returns the driver and connects to a database in lazy mode.
-	 * @return IDibiDriver
+	 * @return Driver
 	 */
 	final public function getDriver()
 	{
@@ -228,8 +232,8 @@ class DibiConnection
 	/**
 	 * Generates (translates) and executes SQL query.
 	 * @param  array|mixed      one or more arguments
-	 * @return DibiResult|int   result set object (if any)
-	 * @throws DibiException
+	 * @return Result|int   result set object (if any)
+	 * @throws Exception
 	 */
 	final public function query($args)
 	{
@@ -242,7 +246,7 @@ class DibiConnection
 	 * Generates SQL query.
 	 * @param  array|mixed      one or more arguments
 	 * @return string
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	final public function translate($args)
 	{
@@ -260,12 +264,12 @@ class DibiConnection
 	{
 		$args = func_get_args();
 		try {
-			DibiHelpers::dump($this->translateArgs($args));
+			Helpers::dump($this->translateArgs($args));
 			return TRUE;
 
-		} catch (DibiException $e) {
+		} catch (Exception $e) {
 			if ($e->getSql()) {
-				DibiHelpers::dump($e->getSql());
+				Helpers::dump($e->getSql());
 			} else {
 				echo get_class($e) . ': ' . $e->getMessage() . (PHP_SAPI === 'cli' ? "\n" : '<br>');
 			}
@@ -275,15 +279,15 @@ class DibiConnection
 
 
 	/**
-	 * Generates (translates) and returns SQL query as DibiDataSource.
+	 * Generates (translates) and returns SQL query as DataSource.
 	 * @param  array|mixed      one or more arguments
-	 * @return DibiDataSource
-	 * @throws DibiException
+	 * @return DataSource
+	 * @throws Exception
 	 */
 	final public function dataSource($args)
 	{
 		$args = func_get_args();
-		return new DibiDataSource($this->translateArgs($args), $this);
+		return new DataSource($this->translateArgs($args), $this);
 	}
 
 
@@ -302,19 +306,19 @@ class DibiConnection
 	/**
 	 * Executes the SQL query.
 	 * @param  string           SQL statement.
-	 * @return DibiResult|int   result set object (if any)
-	 * @throws DibiException
+	 * @return Result|int   result set object (if any)
+	 * @throws Exception
 	 */
 	final public function nativeQuery($sql)
 	{
 		$this->connected || $this->connect();
 
-		dibi::$sql = $sql;
-		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::QUERY, $sql) : NULL;
+		\dibi::$sql = $sql;
+		$event = $this->onEvent ? new Event($this, Event::QUERY, $sql) : NULL;
 		try {
 			$res = $this->driver->query($sql);
 
-		} catch (DibiException $e) {
+		} catch (Exception $e) {
 			$event && $this->onEvent($event->done($e));
 			throw $e;
 		}
@@ -333,14 +337,14 @@ class DibiConnection
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
 	 * @return int  number of rows
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	public function getAffectedRows()
 	{
 		$this->connected || $this->connect();
 		$rows = $this->driver->getAffectedRows();
 		if (!is_int($rows) || $rows < 0) {
-			throw new DibiException('Cannot retrieve number of affected rows.');
+			throw new Exception('Cannot retrieve number of affected rows.');
 		}
 		return $rows;
 	}
@@ -349,7 +353,7 @@ class DibiConnection
 	/**
 	 * Gets the number of affected rows. Alias for getAffectedRows().
 	 * @return int  number of rows
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	public function affectedRows()
 	{
@@ -361,14 +365,14 @@ class DibiConnection
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @param  string     optional sequence name
 	 * @return int
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	public function getInsertId($sequence = NULL)
 	{
 		$this->connected || $this->connect();
 		$id = $this->driver->getInsertId($sequence);
 		if ($id < 1) {
-			throw new DibiException('Cannot retrieve last generated ID.');
+			throw new Exception('Cannot retrieve last generated ID.');
 		}
 		return (int) $id;
 	}
@@ -378,7 +382,7 @@ class DibiConnection
 	 * Retrieves the ID generated for an AUTO_INCREMENT column. Alias for getInsertId().
 	 * @param  string     optional sequence name
 	 * @return int
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	public function insertId($sequence = NULL)
 	{
@@ -394,12 +398,12 @@ class DibiConnection
 	public function begin($savepoint = NULL)
 	{
 		$this->connected || $this->connect();
-		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::BEGIN, $savepoint) : NULL;
+		$event = $this->onEvent ? new Event($this, Event::BEGIN, $savepoint) : NULL;
 		try {
 			$this->driver->begin($savepoint);
 			$event && $this->onEvent($event->done());
 
-		} catch (DibiException $e) {
+		} catch (Exception $e) {
 			$event && $this->onEvent($event->done($e));
 			throw $e;
 		}
@@ -414,12 +418,12 @@ class DibiConnection
 	public function commit($savepoint = NULL)
 	{
 		$this->connected || $this->connect();
-		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::COMMIT, $savepoint) : NULL;
+		$event = $this->onEvent ? new Event($this, Event::COMMIT, $savepoint) : NULL;
 		try {
 			$this->driver->commit($savepoint);
 			$event && $this->onEvent($event->done());
 
-		} catch (DibiException $e) {
+		} catch (Exception $e) {
 			$event && $this->onEvent($event->done($e));
 			throw $e;
 		}
@@ -434,12 +438,12 @@ class DibiConnection
 	public function rollback($savepoint = NULL)
 	{
 		$this->connected || $this->connect();
-		$event = $this->onEvent ? new DibiEvent($this, DibiEvent::ROLLBACK, $savepoint) : NULL;
+		$event = $this->onEvent ? new Event($this, Event::ROLLBACK, $savepoint) : NULL;
 		try {
 			$this->driver->rollback($savepoint);
 			$event && $this->onEvent($event->done());
 
-		} catch (DibiException $e) {
+		} catch (Exception $e) {
 			$event && $this->onEvent($event->done($e));
 			throw $e;
 		}
@@ -448,14 +452,14 @@ class DibiConnection
 
 	/**
 	 * Result set factory.
-	 * @param  IDibiResultDriver
-	 * @return DibiResult
+	 * @param  ResultDriver
+	 * @return Result
 	 */
-	public function createResultSet(IDibiResultDriver $resultDriver)
+	public function createResultSet(ResultDriver $resultDriver)
 	{
-		$res = new DibiResult($resultDriver);
-		return $res->setFormat(DibiType::DATE, $this->config['result']['formatDate'])
-			->setFormat(DibiType::DATETIME, $this->config['result']['formatDateTime']);
+		$res = new Result($resultDriver);
+		return $res->setFormat(Type::DATE, $this->config['result']['formatDate'])
+			->setFormat(Type::DATETIME, $this->config['result']['formatDateTime']);
 	}
 
 
@@ -463,17 +467,17 @@ class DibiConnection
 
 
 	/**
-	 * @return DibiFluent
+	 * @return Fluent
 	 */
 	public function command()
 	{
-		return new DibiFluent($this);
+		return new Fluent($this);
 	}
 
 
 	/**
 	 * @param  string    column name
-	 * @return DibiFluent
+	 * @return Fluent
 	 */
 	public function select($args)
 	{
@@ -485,12 +489,12 @@ class DibiConnection
 	/**
 	 * @param  string   table
 	 * @param  array
-	 * @return DibiFluent
+	 * @return Fluent
 	 */
 	public function update($table, $args)
 	{
 		if (!(is_array($args) || $args instanceof Traversable)) {
-			throw new InvalidArgumentException('Arguments must be array or Traversable.');
+			throw new \InvalidArgumentException('Arguments must be array or Traversable.');
 		}
 		return $this->command()->update('%n', $table)->set($args);
 	}
@@ -499,14 +503,14 @@ class DibiConnection
 	/**
 	 * @param  string   table
 	 * @param  array
-	 * @return DibiFluent
+	 * @return Fluent
 	 */
 	public function insert($table, $args)
 	{
 		if ($args instanceof Traversable) {
 			$args = iterator_to_array($args);
 		} elseif (!is_array($args)) {
-			throw new InvalidArgumentException('Arguments must be array or Traversable.');
+			throw new \InvalidArgumentException('Arguments must be array or Traversable.');
 		}
 		return $this->command()->insert()
 			->into('%n', $table, '(%n)', array_keys($args))->values('%l', $args);
@@ -515,7 +519,7 @@ class DibiConnection
 
 	/**
 	 * @param  string   table
-	 * @return DibiFluent
+	 * @return Fluent
 	 */
 	public function delete($table)
 	{
@@ -528,7 +532,7 @@ class DibiConnection
 
 	/**
 	 * Returns substitution hashmap.
-	 * @return DibiHashMap
+	 * @return HashMap
 	 */
 	public function getSubstitutes()
 	{
@@ -554,8 +558,8 @@ class DibiConnection
 	/**
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
 	 * @param  array|mixed    one or more arguments
-	 * @return DibiRow
-	 * @throws DibiException
+	 * @return Row
+	 * @throws Exception
 	 */
 	public function fetch($args)
 	{
@@ -567,8 +571,8 @@ class DibiConnection
 	/**
 	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
 	 * @param  array|mixed    one or more arguments
-	 * @return DibiRow[]
-	 * @throws DibiException
+	 * @return Row[]
+	 * @throws Exception
 	 */
 	public function fetchAll($args)
 	{
@@ -581,7 +585,7 @@ class DibiConnection
 	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
 	 * @param  array|mixed    one or more arguments
 	 * @return string
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	public function fetchSingle($args)
 	{
@@ -594,7 +598,7 @@ class DibiConnection
 	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
 	 * @param  array|mixed    one or more arguments
 	 * @return string
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	public function fetchPairs($args)
 	{
@@ -618,7 +622,7 @@ class DibiConnection
 
 		$handle = @fopen($file, 'r'); // intentionally @
 		if (!$handle) {
-			throw new RuntimeException("Cannot open file '$file'.");
+			throw new \RuntimeException("Cannot open file '$file'.");
 		}
 
 		$count = 0;
@@ -650,12 +654,12 @@ class DibiConnection
 
 	/**
 	 * Gets a information about the current database.
-	 * @return DibiDatabaseInfo
+	 * @return Reflection\Database
 	 */
 	public function getDatabaseInfo()
 	{
 		$this->connected || $this->connect();
-		return new DibiDatabaseInfo($this->driver->getReflector(), isset($this->config['database']) ? $this->config['database'] : NULL);
+		return new Reflection\Database($this->driver->getReflector(), isset($this->config['database']) ? $this->config['database'] : NULL);
 	}
 
 
@@ -664,7 +668,7 @@ class DibiConnection
 	 */
 	public function __wakeup()
 	{
-		throw new DibiNotSupportedException('You cannot serialize or unserialize ' . get_class($this) . ' instances.');
+		throw new NotSupportedException('You cannot serialize or unserialize ' . get_class($this) . ' instances.');
 	}
 
 
@@ -673,7 +677,7 @@ class DibiConnection
 	 */
 	public function __sleep()
 	{
-		throw new DibiNotSupportedException('You cannot serialize or unserialize ' . get_class($this) . ' instances.');
+		throw new NotSupportedException('You cannot serialize or unserialize ' . get_class($this) . ' instances.');
 	}
 
 

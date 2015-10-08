@@ -5,43 +5,45 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * Provides an interface between a dataset and data-aware components.
  */
-interface IDataSource extends Countable, IteratorAggregate
+interface IDataSource extends \Countable, \IteratorAggregate
 {
-	//function IteratorAggregate::getIterator();
-	//function Countable::count();
+	//function \IteratorAggregate::getIterator();
+	//function \Countable::count();
 }
 
 
 /**
  * dibi driver interface.
  */
-interface IDibiDriver
+interface Driver
 {
 
 	/**
 	 * Connects to a database.
 	 * @param  array
 	 * @return void
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	function connect(array & $config);
 
 	/**
 	 * Disconnects from a database.
 	 * @return void
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	function disconnect();
 
 	/**
 	 * Internal: Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return IDibiResultDriver|NULL
-	 * @throws DibiDriverException
+	 * @return ResultDriver|NULL
+	 * @throws DriverException
 	 */
 	function query($sql);
 
@@ -61,7 +63,7 @@ interface IDibiDriver
 	 * Begins a transaction (if supported).
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws DriverException
 	 */
 	function begin($savepoint = NULL);
 
@@ -69,7 +71,7 @@ interface IDibiDriver
 	 * Commits statements in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws DriverException
 	 */
 	function commit($savepoint = NULL);
 
@@ -77,7 +79,7 @@ interface IDibiDriver
 	 * Rollback changes in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws DriverException
 	 */
 	function rollback($savepoint = NULL);
 
@@ -89,7 +91,7 @@ interface IDibiDriver
 
 	/**
 	 * Returns the connection reflector.
-	 * @return IDibiReflector
+	 * @return Reflector
 	 */
 	function getReflector();
 
@@ -130,7 +132,7 @@ interface IDibiDriver
 /**
  * dibi result set driver interface.
  */
-interface IDibiResultDriver
+interface ResultDriver
 {
 
 	/**
@@ -143,7 +145,7 @@ interface IDibiResultDriver
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
 	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	function seek($row);
 
@@ -187,7 +189,7 @@ interface IDibiResultDriver
 /**
  * dibi driver reflection.
  */
-interface IDibiReflector
+interface Reflector
 {
 
 	/**

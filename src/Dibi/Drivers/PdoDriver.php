@@ -5,6 +5,11 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Drivers;
+
+use Dibi;
+use PDO;
+
 
 /**
  * The dibi driver for PDO.
@@ -16,16 +21,16 @@
  *   - options (array) => driver specific options {@see PDO::__construct}
  *   - resource (PDO) => existing connection
  *   - version
- *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
+ *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
-class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
+class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	/** @var PDO  Connection resource */
 	private $connection;
 
-	/** @var PDOStatement  Resultset resource */
+	/** @var \PDOStatement  Resultset resource */
 	private $resultSet;
 
 	/** @var int|FALSE  Affected rows */
@@ -39,12 +44,12 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 
 
 	/**
-	 * @throws DibiNotSupportedException
+	 * @throws Dibi\NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('pdo')) {
-			throw new DibiNotSupportedException("PHP extension 'pdo' is not loaded.");
+			throw new Dibi\NotSupportedException("PHP extension 'pdo' is not loaded.");
 		}
 	}
 
@@ -52,13 +57,13 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 	/**
 	 * Connects to a database.
 	 * @return void
-	 * @throws DibiException
+	 * @throws Dibi\Exception
 	 */
 	public function connect(array & $config)
 	{
 		$foo = & $config['dsn'];
 		$foo = & $config['options'];
-		DibiConnection::alias($config, 'resource', 'pdo');
+		Dibi\Connection::alias($config, 'resource', 'pdo');
 
 		if ($config['resource'] instanceof PDO) {
 			$this->connection = $config['resource'];
@@ -66,11 +71,11 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 		} else {
 			try {
 				$this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
-			} catch (PDOException $e) {
+			} catch (\PDOException $e) {
 				if ($e->getMessage() === 'could not find driver') {
-					throw new DibiNotSupportedException('PHP extension for PDO is not loaded.');
+					throw new Dibi\NotSupportedException('PHP extension for PDO is not loaded.');
 				}
-				throw new DibiDriverException($e->getMessage(), $e->getCode());
+				throw new Dibi\DriverException($e->getMessage(), $e->getCode());
 			}
 		}
 
@@ -94,8 +99,8 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return IDibiResultDriver|NULL
-	 * @throws DibiDriverException
+	 * @return Dibi\ResultDriver|NULL
+	 * @throws Dibi\DriverException
 	 */
 	public function query($sql)
 	{
@@ -109,7 +114,7 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 
 			if ($this->affectedRows === FALSE) {
 				$err = $this->connection->errorInfo();
-				throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
+				throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
 			}
 
 		} else {
@@ -117,7 +122,7 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 
 			if ($res === FALSE) {
 				$err = $this->connection->errorInfo();
-				throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
+				throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
 			} else {
 				return $this->createResultDriver($res);
 			}
@@ -149,13 +154,13 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 	 * Begins a transaction (if supported).
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function begin($savepoint = NULL)
 	{
 		if (!$this->connection->beginTransaction()) {
 			$err = $this->connection->errorInfo();
-			throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
+			throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
 		}
 	}
 
@@ -164,13 +169,13 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 	 * Commits statements in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function commit($savepoint = NULL)
 	{
 		if (!$this->connection->commit()) {
 			$err = $this->connection->errorInfo();
-			throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
+			throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
 		}
 	}
 
@@ -179,13 +184,13 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 	 * Rollback changes in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function rollback($savepoint = NULL)
 	{
 		if (!$this->connection->rollBack()) {
 			$err = $this->connection->errorInfo();
-			throw new DibiDriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
+			throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
 		}
 	}
 
@@ -202,29 +207,29 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 
 	/**
 	 * Returns the connection reflector.
-	 * @return IDibiReflector
+	 * @return Dibi\Reflector
 	 */
 	public function getReflector()
 	{
 		switch ($this->driverName) {
 			case 'mysql':
-				return new DibiMySqlReflector($this);
+				return new MySqlReflector($this);
 
 			case 'sqlite':
-				return new DibiSqliteReflector($this);
+				return new SqliteReflector($this);
 
 			default:
-				throw new DibiNotSupportedException;
+				throw new Dibi\NotSupportedException;
 		}
 	}
 
 
 	/**
 	 * Result set driver factory.
-	 * @param  PDOStatement
-	 * @return IDibiResultDriver
+	 * @param  \PDOStatement
+	 * @return Dibi\ResultDriver
 	 */
-	public function createResultDriver(PDOStatement $resource)
+	public function createResultDriver(\PDOStatement $resource)
 	{
 		$res = clone $this;
 		$res->resultSet = $resource;
@@ -299,8 +304,8 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 
 	public function escapeDate($value)
 	{
-		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-			$value = new DibiDateTime($value);
+		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+			$value = new Dibi\DateTime($value);
 		}
 		return $value->format($this->driverName === 'odbc' ? '#m/d/Y#' : "'Y-m-d'");
 	}
@@ -308,8 +313,8 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 
 	public function escapeDateTime($value)
 	{
-		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-			$value = new DibiDateTime($value);
+		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+			$value = new Dibi\DateTime($value);
 		}
 		return $value->format($this->driverName === 'odbc' ? "#m/d/Y H:i:s#" : "'Y-m-d H:i:s'");
 	}
@@ -370,7 +375,7 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 	/** @deprecated */
 	public function escape($value, $type)
 	{
-		return DibiHelpers::escape($this, $value, $type);
+		return Dibi\Helpers::escape($this, $value, $type);
 	}
 
 
@@ -433,7 +438,7 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 				// intentionally break omitted
 
 			default:
-				throw new DibiNotSupportedException('PDO or driver does not support applying limit or offset.');
+				throw new Dibi\NotSupportedException('PDO or driver does not support applying limit or offset.');
 		}
 	}
 
@@ -469,7 +474,7 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 	 */
 	public function seek($row)
 	{
-		throw new DibiNotSupportedException('Cannot seek an unbuffered result set.');
+		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
 	}
 
 
@@ -486,7 +491,7 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 	/**
 	 * Returns metadata for all columns in a result set.
 	 * @return array
-	 * @throws DibiException
+	 * @throws Dibi\Exception
 	 */
 	public function getResultColumns()
 	{
@@ -495,7 +500,7 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 		for ($i = 0; $i < $count; $i++) {
 			$row = @$this->resultSet->getColumnMeta($i); // intentionally @
 			if ($row === FALSE) {
-				throw new DibiNotSupportedException('Driver does not support meta data.');
+				throw new Dibi\NotSupportedException('Driver does not support meta data.');
 			}
 			$row = $row + [
 				'table' => NULL,
@@ -516,7 +521,7 @@ class DibiPdoDriver implements IDibiDriver, IDibiResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return PDOStatement
+	 * @return \PDOStatement
 	 */
 	public function getResultResource()
 	{

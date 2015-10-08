@@ -37,13 +37,13 @@ if ($config['system'] === 'odbc') {
 
 
 try {
-	new DibiConnection($config);
-} catch (DibiNotSupportedException $e) {
+	new Dibi\Connection($config);
+} catch (Dibi\NotSupportedException $e) {
 	Tester\Environment::skip($e->getMessage());
 }
 
 
-function test(\Closure $function)
+function test(Closure $function)
 {
 	$function();
 }

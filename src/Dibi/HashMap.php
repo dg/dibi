@@ -5,12 +5,14 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * Lazy cached storage.
  * @internal
  */
-abstract class DibiHashMapBase
+abstract class HashMapBase
 {
 	private $callback;
 
@@ -25,7 +27,7 @@ abstract class DibiHashMapBase
 	{
 		if (!is_callable($callback)) {
 			$able = is_callable($callback, TRUE, $textual);
-			throw new InvalidArgumentException("Handler '$textual' is not " . ($able ? 'callable.' : 'valid PHP callback.'));
+			throw new \InvalidArgumentException("Handler '$textual' is not " . ($able ? 'callable.' : 'valid PHP callback.'));
 		}
 		$this->callback = $callback;
 	}
@@ -44,7 +46,7 @@ abstract class DibiHashMapBase
  *
  * @internal
  */
-final class DibiHashMap extends DibiHashMapBase
+final class HashMap extends HashMapBase
 {
 
 	public function __set($nm, $val)
