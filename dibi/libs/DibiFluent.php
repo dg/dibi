@@ -402,7 +402,7 @@ class DibiFluent extends DibiObject implements IDataSource
 	public function count()
 	{
 		return (int) $this->query(array(
-			'SELECT COUNT(*) FROM (%ex', $this->_export(), ') AS [data]',
+			'SELECT COUNT(*) FROM (%ex', $this->_export(), ') [data]',
 		))->fetchSingle();
 	}
 
