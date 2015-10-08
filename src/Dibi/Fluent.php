@@ -403,7 +403,7 @@ class Fluent implements IDataSource
 	public function count()
 	{
 		return (int) $this->query([
-			'SELECT COUNT(*) FROM (%ex', $this->_export(), ') AS [data]',
+			'SELECT COUNT(*) FROM (%ex', $this->_export(), ') [data]',
 		])->fetchSingle();
 	}
 
