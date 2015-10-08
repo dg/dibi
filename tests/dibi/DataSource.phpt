@@ -1,11 +1,12 @@
 <?php
 
 use Tester\Assert;
+use Dibi\Row;
 
 require __DIR__ . '/bootstrap.php';
 
 
-$conn = new DibiConnection($config);
+$conn = new Dibi\Connection($config);
 $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 
@@ -80,7 +81,7 @@ Assert::same(1, $ds->toDataSource()->count());
 
 
 Assert::equal([
-	new DibiRow([
+	new Row([
 		'product_id' => 1,
 	]),
 ], iterator_to_array($ds));
@@ -117,7 +118,7 @@ FROM (SELECT [title] FROM [products]) t'),
 	(string) $ds
 );
 
-Assert::equal(new DibiRow([
+Assert::equal(new Row([
 	'product_id' => 1,
 	'title' => 'Chair',
 ]), $conn->dataSource('SELECT * FROM products ORDER BY product_id')->fetch());
@@ -130,22 +131,22 @@ Assert::same(
 );
 
 Assert::equal([
-	1 => new DibiRow([
+	1 => new Row([
 		'product_id' => 1,
 		'title' => 'Chair',
 	]),
-	new DibiRow([
+	new Row([
 		'product_id' => 2,
 		'title' => 'Table',
 	]),
-	new DibiRow([
+	new Row([
 		'product_id' => 3,
 		'title' => 'Computer',
 	]),
 ], $conn->dataSource('SELECT * FROM products ORDER BY product_id')->fetchAssoc('product_id'));
 
 
-$ds = new DibiDataSource('products', $conn);
+$ds = new Dibi\DataSource('products', $conn);
 
 Assert::match(
 	reformat('

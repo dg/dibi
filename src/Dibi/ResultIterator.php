@@ -5,11 +5,13 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * External result set iterator.
  *
- * This can be returned by DibiResult::getIterator() method or using foreach
+ * This can be returned by Result::getIterator() method or using foreach
  * <code>
  * $result = dibi::query('SELECT * FROM table');
  * foreach ($result as $row) {
@@ -18,11 +20,11 @@
  * unset($result);
  * </code>
  */
-class DibiResultIterator implements Iterator, Countable
+class ResultIterator implements \Iterator, \Countable
 {
-	use DibiStrict;
+	use Strict;
 
-	/** @var DibiResult */
+	/** @var Result */
 	private $result;
 
 	/** @var int */
@@ -33,9 +35,9 @@ class DibiResultIterator implements Iterator, Countable
 
 
 	/**
-	 * @param  DibiResult
+	 * @param  Result
 	 */
-	public function __construct(DibiResult $result)
+	public function __construct(Result $result)
 	{
 		$this->result = $result;
 	}

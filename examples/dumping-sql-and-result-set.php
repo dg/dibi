@@ -27,6 +27,6 @@ dibi::dump();
 
 
 // dump result table
-echo '<h2>DibiResult::dump()</h2>';
+echo '<h2>Dibi\Result::dump()</h2>';
 
 $res->dump();

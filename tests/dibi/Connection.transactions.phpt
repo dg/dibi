@@ -9,22 +9,22 @@ use Tester\Assert;
 require __DIR__ . '/bootstrap.php';
 
 
-$conn = new DibiConnection($config);
+$conn = new Dibi\Connection($config);
 $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 
 /*Assert::exception(function () use ($conn) {
 	$conn->rollback();
-}, 'DibiException');
+}, 'Dibi\Exception');
 
 Assert::exception(function () use ($conn) {
 	$conn->commit();
-}, 'DibiException');
+}, 'Dibi\Exception');
 
 $conn->begin();
 Assert::exception(function () use ($conn) {
 	$conn->begin();
-}, 'DibiException');
+}, 'Dibi\Exception');
 */
 
 

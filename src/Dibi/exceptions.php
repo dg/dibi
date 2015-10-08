@@ -5,13 +5,15 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * dibi common exception.
  */
-class DibiException extends Exception
+class Exception extends \Exception
 {
-	use DibiStrict;
+	use Strict;
 
 	/** @var string */
 	private $sql;
@@ -53,7 +55,7 @@ class DibiException extends Exception
 /**
  * database server exception.
  */
-class DibiDriverException extends DibiException
+class DriverException extends Exception
 {
 
 	/********************* error catching ****************d*g**/
@@ -110,9 +112,9 @@ class DibiDriverException extends DibiException
 /**
  * PCRE exception.
  */
-class DibiPcreException extends Exception
+class PcreException extends \Exception
 {
-	use DibiStrict;
+	use Strict;
 
 	public function __construct($message = '%msg.')
 	{
@@ -129,18 +131,18 @@ class DibiPcreException extends Exception
 }
 
 
-class DibiNotImplementedException extends DibiException
+class NotImplementedException extends Exception
 {}
 
 
-class DibiNotSupportedException extends DibiException
+class NotSupportedException extends Exception
 {}
 
 
 /**
  * Database procedure exception.
  */
-class DibiProcedureException extends DibiException
+class ProcedureException extends Exception
 {
 	/** @var string */
 	protected $severity;

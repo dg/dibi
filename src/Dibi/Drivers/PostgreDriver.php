@@ -5,6 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Drivers;
+
+use Dibi;
+
 
 /**
  * The dibi driver for PostgreSQL database.
@@ -16,11 +20,11 @@
  *   - charset => character encoding to set (default is utf8)
  *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
+ *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
-class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	/** @var resource  Connection resource */
 	private $connection;
@@ -36,12 +40,12 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 
 
 	/**
-	 * @throws DibiNotSupportedException
+	 * @throws Dibi\NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('pgsql')) {
-			throw new DibiNotSupportedException("PHP extension 'pgsql' is not loaded.");
+			throw new Dibi\NotSupportedException("PHP extension 'pgsql' is not loaded.");
 		}
 	}
 
@@ -49,7 +53,7 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 	/**
 	 * Connects to a database.
 	 * @return void
-	 * @throws DibiException
+	 * @throws Dibi\Exception
 	 */
 	public function connect(array & $config)
 	{
@@ -64,8 +68,8 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 				$string = $config['string'];
 			} else {
 				$string = '';
-				DibiConnection::alias($config, 'user', 'username');
-				DibiConnection::alias($config, 'dbname', 'database');
+				Dibi\Connection::alias($config, 'user', 'username');
+				Dibi\Connection::alias($config, 'dbname', 'database');
 				foreach (['host', 'hostaddr', 'port', 'dbname', 'user', 'password', 'connect_timeout', 'options', 'sslmode', 'service'] as $key) {
 					if (isset($config[$key])) {
 						$string .= $key . '=' . $config[$key] . ' ';
@@ -73,26 +77,26 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 				}
 			}
 
-			DibiDriverException::tryError();
+			Dibi\DriverException::tryError();
 			if (empty($config['persistent'])) {
 				$this->connection = pg_connect($string, PGSQL_CONNECT_FORCE_NEW);
 			} else {
 				$this->connection = pg_pconnect($string, PGSQL_CONNECT_FORCE_NEW);
 			}
-			if (DibiDriverException::catchError($msg)) {
-				throw new DibiDriverException($msg, 0);
+			if (Dibi\DriverException::catchError($msg)) {
+				throw new Dibi\DriverException($msg, 0);
 			}
 		}
 
 		if (!is_resource($this->connection)) {
-			throw new DibiDriverException('Connecting error.');
+			throw new Dibi\DriverException('Connecting error.');
 		}
 
 		if (isset($config['charset'])) {
-			DibiDriverException::tryError();
+			Dibi\DriverException::tryError();
 			pg_set_client_encoding($this->connection, $config['charset']);
-			if (DibiDriverException::catchError($msg)) {
-				throw new DibiDriverException($msg, 0);
+			if (Dibi\DriverException::catchError($msg)) {
+				throw new Dibi\DriverException($msg, 0);
 			}
 		}
 
@@ -125,8 +129,8 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return IDibiResultDriver|NULL
-	 * @throws DibiDriverException
+	 * @return Dibi\ResultDriver|NULL
+	 * @throws Dibi\DriverException
 	 */
 	public function query($sql)
 	{
@@ -134,7 +138,7 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 		$res = @pg_query($this->connection, $sql); // intentionally @
 
 		if ($res === FALSE) {
-			throw new DibiDriverException(pg_last_error($this->connection), 0, $sql);
+			throw new Dibi\DriverException(pg_last_error($this->connection), 0, $sql);
 
 		} elseif (is_resource($res)) {
 			$this->affectedRows = pg_affected_rows($res);
@@ -181,7 +185,7 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 	 * Begins a transaction (if supported).
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function begin($savepoint = NULL)
 	{
@@ -193,7 +197,7 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 	 * Commits statements in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function commit($savepoint = NULL)
 	{
@@ -205,7 +209,7 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 	 * Rollback changes in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function rollback($savepoint = NULL)
 	{
@@ -235,7 +239,7 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 
 	/**
 	 * Returns the connection reflector.
-	 * @return IDibiReflector
+	 * @return Dibi\Reflector
 	 */
 	public function getReflector()
 	{
@@ -246,7 +250,7 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 	/**
 	 * Result set driver factory.
 	 * @param  resource
-	 * @return IDibiResultDriver
+	 * @return Dibi\ResultDriver
 	 */
 	public function createResultDriver($resource)
 	{
@@ -297,8 +301,8 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 
 	public function escapeDate($value)
 	{
-		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-			$value = new DibiDateTime($value);
+		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+			$value = new Dibi\DateTime($value);
 		}
 		return $value->format("'Y-m-d'");
 	}
@@ -306,8 +310,8 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 
 	public function escapeDateTime($value)
 	{
-		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-			$value = new DibiDateTime($value);
+		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+			$value = new Dibi\DateTime($value);
 		}
 		return $value->format("'Y-m-d H:i:s'");
 	}
@@ -342,7 +346,7 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 	/** @deprecated */
 	public function escape($value, $type)
 	{
-		return DibiHelpers::escape($this, $value, $type);
+		return Dibi\Helpers::escape($this, $value, $type);
 	}
 
 
@@ -450,7 +454,7 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 	}
 
 
-	/********************* IDibiReflector ****************d*g**/
+	/********************* Dibi\Reflector ****************d*g**/
 
 
 	/**
@@ -461,7 +465,7 @@ class DibiPostgreDriver implements IDibiDriver, IDibiResultDriver, IDibiReflecto
 	{
 		$version = pg_parameter_status($this->getResource(), 'server_version');
 		if ($version < 7.4) {
-			throw new DibiDriverException('Reflection requires PostgreSQL 7.4 and newer.');
+			throw new Dibi\DriverException('Reflection requires PostgreSQL 7.4 and newer.');
 		}
 
 		$query = "

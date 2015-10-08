@@ -5,11 +5,15 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Bridges\Nette;
+
+use Nette;
+
 
 /**
  * Dibi extension for Nette Framework 2.1. Creates 'connection' service.
  */
-class DibiNette21Extension extends Nette\DI\CompilerExtension
+class DibiExtension21 extends Nette\DI\CompilerExtension
 {
 
 	public function loadConfiguration()
@@ -32,14 +36,14 @@ class DibiNette21Extension extends Nette\DI\CompilerExtension
 		}
 
 		$connection = $container->addDefinition($this->prefix('connection'))
-			->setClass('DibiConnection', [$config])
+			->setClass('Dibi\Connection', [$config])
 			->setAutowired(isset($config['autowired']) ? $config['autowired'] : TRUE);
 
 		if ($useProfiler) {
 			$panel = $container->addDefinition($this->prefix('panel'))
-				->setClass('DibiNettePanel')
+				->setClass('Dibi\Bridges\Nette\Panel')
 				->addSetup('Nette\Diagnostics\Debugger::getBar()->addPanel(?)', ['@self'])
-				->addSetup('Nette\Diagnostics\Debugger::getBlueScreen()->addPanel(?)', ['DibiNettePanel::renderException']);
+				->addSetup('Nette\Diagnostics\Debugger::getBlueScreen()->addPanel(?)', ['Dibi\Bridges\Nette\Panel::renderException']);
 
 			$connection->addSetup('$service->onEvent[] = ?', [[$panel, 'logEvent']]);
 		}

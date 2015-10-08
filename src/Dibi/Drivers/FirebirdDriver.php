@@ -5,6 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Drivers;
+
+use Dibi;
+
 
 /**
  * The dibi driver for Firebird/InterBase database.
@@ -16,11 +20,11 @@
  *   - charset => character encoding to set
  *   - buffers (int) => buffers is the number of database buffers to allocate for the server-side cache. If 0 or omitted, server chooses its own default.
  *   - resource (resource) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
+ *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
-class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	const ERROR_EXCEPTION_THROWN = -836;
 
@@ -41,12 +45,12 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 
 
 	/**
-	 * @throws DibiNotSupportedException
+	 * @throws Dibi\NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('interbase')) {
-			throw new DibiNotSupportedException("PHP extension 'interbase' is not loaded.");
+			throw new Dibi\NotSupportedException("PHP extension 'interbase' is not loaded.");
 		}
 	}
 
@@ -54,11 +58,11 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	/**
 	 * Connects to a database.
 	 * @return void
-	 * @throws DibiException
+	 * @throws Dibi\Exception
 	 */
 	public function connect(array & $config)
 	{
-		DibiConnection::alias($config, 'database', 'db');
+		Dibi\Connection::alias($config, 'database', 'db');
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
@@ -73,18 +77,18 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 				'buffers' => 0,
 			];
 
-			DibiDriverException::tryError();
+			Dibi\DriverException::tryError();
 			if (empty($config['persistent'])) {
 				$this->connection = ibase_connect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
 			} else {
 				$this->connection = ibase_pconnect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
 			}
-			if (DibiDriverException::catchError($msg)) {
-				throw new DibiDriverException($msg, ibase_errcode());
+			if (Dibi\DriverException::catchError($msg)) {
+				throw new Dibi\DriverException($msg, ibase_errcode());
 			}
 
 			if (!is_resource($this->connection)) {
-				throw new DibiDriverException(ibase_errmsg(), ibase_errcode());
+				throw new Dibi\DriverException(ibase_errmsg(), ibase_errcode());
 			}
 		}
 	}
@@ -103,27 +107,27 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return IDibiResultDriver|NULL
-	 * @throws DibiDriverException|DibiException
+	 * @return Dibi\ResultDriver|NULL
+	 * @throws Dibi\DriverException|Dibi\Exception
 	 */
 	public function query($sql)
 	{
-		DibiDriverException::tryError();
+		Dibi\DriverException::tryError();
 		$resource = $this->inTransaction ? $this->transaction : $this->connection;
 		$res = ibase_query($resource, $sql);
 
-		if (DibiDriverException::catchError($msg)) {
+		if (Dibi\DriverException::catchError($msg)) {
 			if (ibase_errcode() == self::ERROR_EXCEPTION_THROWN) {
 				preg_match('/exception (\d+) (\w+) (.*)/i', ibase_errmsg(), $match);
-				throw new DibiProcedureException($match[3], $match[1], $match[2], dibi::$sql);
+				throw new Dibi\ProcedureException($match[3], $match[1], $match[2], \dibi::$sql);
 
 			} else {
-				throw new DibiDriverException(ibase_errmsg(), ibase_errcode(), dibi::$sql);
+				throw new Dibi\DriverException(ibase_errmsg(), ibase_errcode(), \dibi::$sql);
 			}
 		}
 
 		if ($res === FALSE) {
-			throw new DibiDriverException(ibase_errmsg(), ibase_errcode(), $sql);
+			throw new Dibi\DriverException(ibase_errmsg(), ibase_errcode(), $sql);
 
 		} elseif (is_resource($res)) {
 			return $this->createResultDriver($res);
@@ -156,12 +160,12 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	 * Begins a transaction (if supported).
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function begin($savepoint = NULL)
 	{
 		if ($savepoint !== NULL) {
-			throw new DibiNotSupportedException('Savepoints are not supported in Firebird/Interbase.');
+			throw new Dibi\NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 		$this->transaction = ibase_trans($this->getResource());
 		$this->inTransaction = TRUE;
@@ -172,16 +176,16 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	 * Commits statements in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function commit($savepoint = NULL)
 	{
 		if ($savepoint !== NULL) {
-			throw new DibiNotSupportedException('Savepoints are not supported in Firebird/Interbase.');
+			throw new Dibi\NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 
 		if (!ibase_commit($this->transaction)) {
-			throw new DibiDriverException('Unable to handle operation - failure when commiting transaction.');
+			throw new Dibi\DriverException('Unable to handle operation - failure when commiting transaction.');
 		}
 
 		$this->inTransaction = FALSE;
@@ -192,16 +196,16 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	 * Rollback changes in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function rollback($savepoint = NULL)
 	{
 		if ($savepoint !== NULL) {
-			throw new DibiNotSupportedException('Savepoints are not supported in Firebird/Interbase.');
+			throw new Dibi\NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 
 		if (!ibase_rollback($this->transaction)) {
-			throw new DibiDriverException('Unable to handle operation - failure when rolbacking transaction.');
+			throw new Dibi\DriverException('Unable to handle operation - failure when rolbacking transaction.');
 		}
 
 		$this->inTransaction = FALSE;
@@ -230,7 +234,7 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 
 	/**
 	 * Returns the connection reflector.
-	 * @return IDibiReflector
+	 * @return Dibi\Reflector
 	 */
 	public function getReflector()
 	{
@@ -241,7 +245,7 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	/**
 	 * Result set driver factory.
 	 * @param  resource
-	 * @return IDibiResultDriver
+	 * @return Dibi\ResultDriver
 	 */
 	public function createResultDriver($resource)
 	{
@@ -285,8 +289,8 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 
 	public function escapeDate($value)
 	{
-		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-			$value = new DibiDateTime($value);
+		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+			$value = new Dibi\DateTime($value);
 		}
 		return $value->format("'Y-m-d'");
 	}
@@ -294,8 +298,8 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 
 	public function escapeDateTime($value)
 	{
-		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-			$value = new DibiDateTime($value);
+		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+			$value = new Dibi\DateTime($value);
 		}
 		return $value->format("'Y-m-d H:i:s'");
 	}
@@ -309,7 +313,7 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	 */
 	public function escapeLike($value, $pos)
 	{
-		throw new DibiNotImplementedException;
+		throw new Dibi\NotImplementedException;
 	}
 
 
@@ -327,7 +331,7 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	/** @deprecated */
 	public function escape($value, $type)
 	{
-		return DibiHelpers::escape($this, $value, $type);
+		return Dibi\Helpers::escape($this, $value, $type);
 	}
 
 
@@ -363,7 +367,7 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	 */
 	public function getRowCount()
 	{
-		throw new DibiNotSupportedException('Firebird/Interbase do not support returning number of rows in result set.');
+		throw new Dibi\NotSupportedException('Firebird/Interbase do not support returning number of rows in result set.');
 	}
 
 
@@ -374,16 +378,16 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	 */
 	public function fetch($assoc)
 	{
-		DibiDriverException::tryError();
+		Dibi\DriverException::tryError();
 		$result = $assoc ? ibase_fetch_assoc($this->resultSet, IBASE_TEXT) : ibase_fetch_row($this->resultSet, IBASE_TEXT); // intentionally @
 
-		if (DibiDriverException::catchError($msg)) {
+		if (Dibi\DriverException::catchError($msg)) {
 			if (ibase_errcode() == self::ERROR_EXCEPTION_THROWN) {
 				preg_match('/exception (\d+) (\w+) (.*)/is', ibase_errmsg(), $match);
-				throw new DibiProcedureException($match[3], $match[1], $match[2], dibi::$sql);
+				throw new Dibi\ProcedureException($match[3], $match[1], $match[2], \dibi::$sql);
 
 			} else {
-				throw new DibiDriverException($msg, ibase_errcode(), dibi::$sql);
+				throw new Dibi\DriverException($msg, ibase_errcode(), \dibi::$sql);
 			}
 		}
 
@@ -395,11 +399,11 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	 * Moves cursor position without fetching row.
 	 * @param  int   the 0-based cursor pos to seek to
 	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
-	 * @throws DibiException
+	 * @throws Dibi\Exception
 	 */
 	public function seek($row)
 	{
-		throw new DibiNotSupportedException('Firebird/Interbase do not support seek in result set.');
+		throw new Dibi\NotSupportedException('Firebird/Interbase do not support seek in result set.');
 	}
 
 
@@ -446,7 +450,7 @@ class DibiFirebirdDriver implements IDibiDriver, IDibiResultDriver, IDibiReflect
 	}
 
 
-	/********************* IDibiReflector ********************/
+	/********************* Dibi\Reflector ********************/
 
 
 	/**

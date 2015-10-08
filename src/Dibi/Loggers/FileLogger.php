@@ -5,13 +5,17 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Loggers;
+
+use Dibi;
+
 
 /**
  * dibi file logger.
  */
-class DibiFileLogger
+class FileLogger
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	/** @var string  Name of the file where SQL errors should be logged */
 	public $file;
@@ -23,7 +27,7 @@ class DibiFileLogger
 	public function __construct($file, $filter = NULL)
 	{
 		$this->file = $file;
-		$this->filter = $filter ? (int) $filter : DibiEvent::QUERY;
+		$this->filter = $filter ? (int) $filter : Dibi\Event::QUERY;
 	}
 
 
@@ -31,7 +35,7 @@ class DibiFileLogger
 	 * After event notification.
 	 * @return void
 	 */
-	public function logEvent(DibiEvent $event)
+	public function logEvent(Dibi\Event $event)
 	{
 		if (($event->type & $this->filter) === 0) {
 			return;
@@ -43,7 +47,7 @@ class DibiFileLogger
 		}
 		flock($handle, LOCK_EX);
 
-		if ($event->result instanceof Exception) {
+		if ($event->result instanceof \Exception) {
 			$message = $event->result->getMessage();
 			if ($code = $event->result->getCode()) {
 				$message = "[$code] $message";

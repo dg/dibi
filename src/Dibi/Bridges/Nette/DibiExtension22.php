@@ -7,7 +7,6 @@
 
 namespace Dibi\Bridges\Nette;
 
-use dibi;
 use Nette;
 
 
@@ -37,7 +36,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 		}
 
 		$connection = $container->addDefinition($this->prefix('connection'))
-			->setClass('DibiConnection', [$config])
+			->setClass('Dibi\Connection', [$config])
 			->setAutowired(isset($config['autowired']) ? $config['autowired'] : TRUE);
 
 		if ($useProfiler) {

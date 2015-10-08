@@ -5,6 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Drivers;
+
+use Dibi;
+
 
 /**
  * The dibi driver for Oracle database.
@@ -19,11 +23,11 @@
  *   - formatDateTime => how to format datetime in SQL (@see date)
  *   - resource (resource) => existing connection resource
  *   - persistent => Creates persistent connections with oci_pconnect instead of oci_new_connect
- *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
+ *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
-class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	/** @var resource  Connection resource */
 	private $connection;
@@ -42,12 +46,12 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 
 
 	/**
-	 * @throws DibiNotSupportedException
+	 * @throws Dibi\NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('oci8')) {
-			throw new DibiNotSupportedException("PHP extension 'oci8' is not loaded.");
+			throw new Dibi\NotSupportedException("PHP extension 'oci8' is not loaded.");
 		}
 	}
 
@@ -55,7 +59,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	/**
 	 * Connects to a database.
 	 * @return void
-	 * @throws DibiException
+	 * @throws Dibi\Exception
 	 */
 	public function connect(array & $config)
 	{
@@ -73,7 +77,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 
 		if (!$this->connection) {
 			$err = oci_error();
-			throw new DibiDriverException($err['message'], $err['code']);
+			throw new Dibi\DriverException($err['message'], $err['code']);
 		}
 
 		if (isset($config['schema'])) {
@@ -95,8 +99,8 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return IDibiResultDriver|NULL
-	 * @throws DibiDriverException
+	 * @return Dibi\ResultDriver|NULL
+	 * @throws Dibi\DriverException
 	 */
 	public function query($sql)
 	{
@@ -105,14 +109,14 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 			@oci_execute($res, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
 			$err = oci_error($res);
 			if ($err) {
-				throw new DibiDriverException($err['message'], $err['code'], $sql);
+				throw new Dibi\DriverException($err['message'], $err['code'], $sql);
 
 			} elseif (is_resource($res)) {
 				return $this->createResultDriver($res);
 			}
 		} else {
 			$err = oci_error($this->connection);
-			throw new DibiDriverException($err['message'], $err['code'], $sql);
+			throw new Dibi\DriverException($err['message'], $err['code'], $sql);
 		}
 	}
 
@@ -123,7 +127,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 */
 	public function getAffectedRows()
 	{
-		throw new DibiNotImplementedException;
+		throw new Dibi\NotImplementedException;
 	}
 
 
@@ -153,13 +157,13 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 * Commits statements in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function commit($savepoint = NULL)
 	{
 		if (!oci_commit($this->connection)) {
 			$err = oci_error($this->connection);
-			throw new DibiDriverException($err['message'], $err['code']);
+			throw new Dibi\DriverException($err['message'], $err['code']);
 		}
 		$this->autocommit = TRUE;
 	}
@@ -169,13 +173,13 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 * Rollback changes in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function rollback($savepoint = NULL)
 	{
 		if (!oci_rollback($this->connection)) {
 			$err = oci_error($this->connection);
-			throw new DibiDriverException($err['message'], $err['code']);
+			throw new Dibi\DriverException($err['message'], $err['code']);
 		}
 		$this->autocommit = TRUE;
 	}
@@ -193,7 +197,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 
 	/**
 	 * Returns the connection reflector.
-	 * @return IDibiReflector
+	 * @return Dibi\Reflector
 	 */
 	public function getReflector()
 	{
@@ -204,7 +208,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	/**
 	 * Result set driver factory.
 	 * @param  resource
-	 * @return IDibiResultDriver
+	 * @return Dibi\ResultDriver
 	 */
 	public function createResultDriver($resource)
 	{
@@ -249,8 +253,8 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 
 	public function escapeDate($value)
 	{
-		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-			$value = new DibiDateTime($value);
+		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+			$value = new Dibi\DateTime($value);
 		}
 		return $value->format($this->fmtDate);
 	}
@@ -258,8 +262,8 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 
 	public function escapeDateTime($value)
 	{
-		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-			$value = new DibiDateTime($value);
+		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+			$value = new Dibi\DateTime($value);
 		}
 		return $value->format($this->fmtDateTime);
 	}
@@ -293,7 +297,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	/** @deprecated */
 	public function escape($value, $type)
 	{
-		return DibiHelpers::escape($this, $value, $type);
+		return Dibi\Helpers::escape($this, $value, $type);
 	}
 
 
@@ -334,7 +338,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 */
 	public function getRowCount()
 	{
-		throw new DibiNotSupportedException('Row count is not available for unbuffered queries.');
+		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
 	}
 
 
@@ -356,7 +360,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 */
 	public function seek($row)
 	{
-		throw new DibiNotImplementedException;
+		throw new Dibi\NotImplementedException;
 	}
 
 
@@ -403,7 +407,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	}
 
 
-	/********************* IDibiReflector ****************d*g**/
+	/********************* Dibi\Reflector ****************d*g**/
 
 
 	/**
@@ -433,7 +437,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 */
 	public function getColumns($table)
 	{
-		throw new DibiNotImplementedException;
+		throw new Dibi\NotImplementedException;
 	}
 
 
@@ -444,7 +448,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 */
 	public function getIndexes($table)
 	{
-		throw new DibiNotImplementedException;
+		throw new Dibi\NotImplementedException;
 	}
 
 
@@ -455,7 +459,7 @@ class DibiOracleDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new DibiNotImplementedException;
+		throw new Dibi\NotImplementedException;
 	}
 
 }

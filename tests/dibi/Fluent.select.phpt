@@ -5,7 +5,7 @@ use Tester\Assert;
 require __DIR__ . '/bootstrap.php';
 
 
-$conn = new DibiConnection($config);
+$conn = new Dibi\Connection($config);
 
 
 $max = 10;
@@ -68,7 +68,7 @@ Assert::same(
 	(string) $fluent
 );
 
-$fluent->orderBy(DibiFluent::REMOVE);
+$fluent->orderBy(Dibi\Fluent::REMOVE);
 
 Assert::same(
 	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [anotherTable] AS [anotherAlias] INNER JOIN [table3] ON table.col = table3.col WHERE col > 10 OR col < 5 AND active = 1 AND [col] IN (1, 2, 3)'),

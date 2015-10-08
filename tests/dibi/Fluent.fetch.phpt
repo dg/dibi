@@ -5,10 +5,11 @@
  */
 
 use Tester\Assert;
+use Dibi\Row;
 
 require __DIR__ . '/bootstrap.php';
 
-$conn = new DibiConnection($config);
+$conn = new Dibi\Connection($config);
 $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 
@@ -30,9 +31,9 @@ Assert::equal('Chair', $res->fetchSingle());
 // fetch complete result set
 $res = $conn->select('*')->from('products')->orderBy('product_id');
 Assert::equal([
-	new DibiRow(['product_id' => num(1), 'title' => 'Chair']),
-	new DibiRow(['product_id' => num(2), 'title' => 'Table']),
-	new DibiRow(['product_id' => num(3), 'title' => 'Computer']),
+	new Row(['product_id' => num(1), 'title' => 'Chair']),
+	new Row(['product_id' => num(2), 'title' => 'Table']),
+	new Row(['product_id' => num(3), 'title' => 'Computer']),
 ], $res->fetchAll());
 
 
@@ -46,14 +47,14 @@ if ($config['system'] !== 'odbc') {
 
 	Assert::equal([
 		'Arnold Rimmer' => [
-			'Chair' => new DibiRow(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
+			'Chair' => new Row(['title' => 'Chair', 'name' => 'Arnold Rimmer', 'amount' => num(7.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Arnold Rimmer', 'amount' => num(2.0)]),
 		],
 		'Dave Lister' => [
-			'Table' => new DibiRow(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
+			'Table' => new Row(['title' => 'Table', 'name' => 'Dave Lister', 'amount' => num(3.0)]),
 		],
 		'Kristine Kochanski' => [
-			'Computer' => new DibiRow(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
+			'Computer' => new Row(['title' => 'Computer', 'name' => 'Kristine Kochanski', 'amount' => num(5.0)]),
 		],
 	], $res->fetchAssoc('name,title'));
 }

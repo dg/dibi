@@ -5,6 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Drivers;
+
+use Dibi;
+
 
 /**
  * The dibi driver interacting with databases via ODBC connections.
@@ -15,11 +19,11 @@
  *   - password (or pass)
  *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see DibiConnection options
+ *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
-class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
+class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	/** @var resource  Connection resource */
 	private $connection;
@@ -38,12 +42,12 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 
 
 	/**
-	 * @throws DibiNotSupportedException
+	 * @throws Dibi\NotSupportedException
 	 */
 	public function __construct()
 	{
 		if (!extension_loaded('odbc')) {
-			throw new DibiNotSupportedException("PHP extension 'odbc' is not loaded.");
+			throw new Dibi\NotSupportedException("PHP extension 'odbc' is not loaded.");
 		}
 	}
 
@@ -51,7 +55,7 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	/**
 	 * Connects to a database.
 	 * @return void
-	 * @throws DibiException
+	 * @throws Dibi\Exception
 	 */
 	public function connect(array & $config)
 	{
@@ -73,7 +77,7 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 		}
 
 		if (!is_resource($this->connection)) {
-			throw new DibiDriverException(odbc_errormsg() . ' ' . odbc_error());
+			throw new Dibi\DriverException(odbc_errormsg() . ' ' . odbc_error());
 		}
 	}
 
@@ -91,8 +95,8 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return IDibiResultDriver|NULL
-	 * @throws DibiDriverException
+	 * @return Dibi\ResultDriver|NULL
+	 * @throws Dibi\DriverException
 	 */
 	public function query($sql)
 	{
@@ -100,7 +104,7 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 		$res = @odbc_exec($this->connection, $sql); // intentionally @
 
 		if ($res === FALSE) {
-			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
+			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
 
 		} elseif (is_resource($res)) {
 			$this->affectedRows = odbc_num_rows($res);
@@ -125,7 +129,7 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 */
 	public function getInsertId($sequence)
 	{
-		throw new DibiNotSupportedException('ODBC does not support autoincrementing.');
+		throw new Dibi\NotSupportedException('ODBC does not support autoincrementing.');
 	}
 
 
@@ -133,12 +137,12 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 * Begins a transaction (if supported).
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function begin($savepoint = NULL)
 	{
 		if (!odbc_autocommit($this->connection, FALSE)) {
-			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
+			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 	}
 
@@ -147,12 +151,12 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 * Commits statements in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function commit($savepoint = NULL)
 	{
 		if (!odbc_commit($this->connection)) {
-			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
+			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 		odbc_autocommit($this->connection, TRUE);
 	}
@@ -162,12 +166,12 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 * Rollback changes in a transaction.
 	 * @param  string  optional savepoint name
 	 * @return void
-	 * @throws DibiDriverException
+	 * @throws Dibi\DriverException
 	 */
 	public function rollback($savepoint = NULL)
 	{
 		if (!odbc_rollback($this->connection)) {
-			throw new DibiDriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
+			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 		odbc_autocommit($this->connection, TRUE);
 	}
@@ -195,7 +199,7 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 
 	/**
 	 * Returns the connection reflector.
-	 * @return IDibiReflector
+	 * @return Dibi\Reflector
 	 */
 	public function getReflector()
 	{
@@ -206,7 +210,7 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	/**
 	 * Result set driver factory.
 	 * @param  resource
-	 * @return IDibiResultDriver
+	 * @return Dibi\ResultDriver
 	 */
 	public function createResultDriver($resource)
 	{
@@ -250,8 +254,8 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 
 	public function escapeDate($value)
 	{
-		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-			$value = new DibiDateTime($value);
+		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+			$value = new Dibi\DateTime($value);
 		}
 		return $value->format("#m/d/Y#");
 	}
@@ -259,8 +263,8 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 
 	public function escapeDateTime($value)
 	{
-		if (!$value instanceof DateTime && !$value instanceof DateTimeInterface) {
-			$value = new DibiDateTime($value);
+		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+			$value = new Dibi\DateTime($value);
 		}
 		return $value->format("#m/d/Y H:i:s#");
 	}
@@ -293,7 +297,7 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	/** @deprecated */
 	public function escape($value, $type)
 	{
-		return DibiHelpers::escape($this, $value, $type);
+		return Dibi\Helpers::escape($this, $value, $type);
 	}
 
 
@@ -309,7 +313,7 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 		}
 
 		if ($offset) {
-			throw new DibiNotSupportedException('Offset is not implemented in driver odbc.');
+			throw new Dibi\NotSupportedException('Offset is not implemented in driver odbc.');
 		}
 	}
 
@@ -416,7 +420,7 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	}
 
 
-	/********************* IDibiReflector ****************d*g**/
+	/********************* Dibi\Reflector ****************d*g**/
 
 
 	/**
@@ -473,7 +477,7 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 */
 	public function getIndexes($table)
 	{
-		throw new DibiNotImplementedException;
+		throw new Dibi\NotImplementedException;
 	}
 
 
@@ -484,7 +488,7 @@ class DibiOdbcDriver implements IDibiDriver, IDibiResultDriver, IDibiReflector
 	 */
 	public function getForeignKeys($table)
 	{
-		throw new DibiNotImplementedException;
+		throw new Dibi\NotImplementedException;
 	}
 
 }

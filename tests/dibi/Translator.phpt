@@ -5,10 +5,11 @@
  */
 
 use Tester\Assert;
+use Dibi\DateTime;
 
 require __DIR__ . '/bootstrap.php';
 
-$conn = new DibiConnection($config + ['formatDateTime' => "'Y-m-d H:i:s'", 'formatDate' => "'Y-m-d'"]);
+$conn = new Dibi\Connection($config + ['formatDateTime' => "'Y-m-d H:i:s'", 'formatDate' => "'Y-m-d'"]);
 
 
 // dibi detects INSERT or REPLACE command & booleans
@@ -76,7 +77,7 @@ Assert::same(
 // invalid input
 $e = Assert::exception(function () use ($conn) {
 	$conn->translate('SELECT %s', (object) [123], ', %m', 123);
-}, 'DibiException', 'SQL translate error');
+}, 'Dibi\Exception', 'SQL translate error');
 Assert::same('SELECT **Unexpected type object** , **Unknown or invalid modifier %m**', $e->getSql());
 
 Assert::same(
@@ -148,7 +149,7 @@ Assert::same(
 if ($config['system'] === 'odbc') {
 	Assert::exception(function () use ($conn) {
 		$conn->translate('SELECT * FROM [products] %lmt %ofs', 2, 1);
-	}, 'DibiException');
+	}, 'Dibi\Exception');
 } else {
 	// with limit = 2, offset = 1
 	Assert::same(
@@ -176,8 +177,8 @@ Assert::same(
 		"INSERT INTO test ([a2], [a4], [b1], [b2], [b3], [b4], [b5], [b6], [b7], [b8], [b9]) VALUES ('1212-09-26 00:00:00', '1969-12-31 22:13:20', '1212-09-26', '1212-09-26 00:00:00', '1969-12-31', '1969-12-31 22:13:20', '1212-09-26 00:00:00', '1212-09-26', '1212-09-26 00:00:00', NULL, NULL)",
 	]),
 	$conn->translate('INSERT INTO test', [
-	'a2' => new DibiDateTime('1212-09-26'),
-	'a4' => new DibiDateTime(-10000),
+	'a2' => new DateTime('1212-09-26'),
+	'a4' => new DateTime(-10000),
 	'b1%d' => '1212-09-26',
 	'b2%t' => '1212-09-26',
 	'b3%d' => -10000,
@@ -227,7 +228,7 @@ if ($config['system'] === 'pgsql') {
 
 $e = Assert::exception(function () use ($conn) {
 	$conn->translate("SELECT '");
-}, 'DibiException', 'SQL translate error');
+}, 'Dibi\Exception', 'SQL translate error');
 Assert::same('SELECT **Alone quote**', $e->getSql());
 
 Assert::match(
@@ -273,7 +274,7 @@ $array3 = [
 $array4 = [
 	'a' => 12,
 	'b' => NULL,
-	'c' => new DibiDateTime('12.3.2007'),
+	'c' => new DateTime('12.3.2007'),
 	'd' => 'any string',
 ];
 
@@ -472,7 +473,7 @@ $e = Assert::exception(function () use ($conn) {
 		'num%i' => ['1', ''],
 	];
 	$conn->translate('INSERT INTO test %m', $array6);
-}, 'DibiException', 'SQL translate error');
+}, 'Dibi\Exception', 'SQL translate error');
 Assert::same('INSERT INTO test **Multi-insert array "num%i" is different.**', $e->getSql());
 
 $array6 = [

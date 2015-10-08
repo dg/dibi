@@ -5,12 +5,13 @@
  */
 
 use Tester\Assert;
+use Dibi\Connection;
 
 require __DIR__ . '/bootstrap.php';
 
 
 test(function () use ($config) {
-	$conn = new DibiConnection($config);
+	$conn = new Connection($config);
 	Assert::true($conn->isConnected());
 
 	$conn->disconnect();
@@ -19,7 +20,7 @@ test(function () use ($config) {
 
 
 test(function () use ($config) { // lazy
-	$conn = new DibiConnection($config + ['lazy' => TRUE]);
+	$conn = new Connection($config + ['lazy' => TRUE]);
 	Assert::false($conn->isConnected());
 
 	$conn->query('SELECT 1');
@@ -28,10 +29,10 @@ test(function () use ($config) { // lazy
 
 
 test(function () use ($config) { // query string
-	$conn = new DibiConnection(http_build_query($config, NULL, '&'));
+	$conn = new Connection(http_build_query($config, NULL, '&'));
 	Assert::true($conn->isConnected());
 
 	Assert::null($conn->getConfig('lazy'));
 	Assert::same($config['driver'], $conn->getConfig('driver'));
-	Assert::type('IDibiDriver', $conn->getDriver());
+	Assert::type('Dibi\Driver', $conn->getDriver());
 });

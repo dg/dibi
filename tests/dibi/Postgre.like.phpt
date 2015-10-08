@@ -25,7 +25,7 @@ $tests = function ($conn) {
 	Assert::true($conn->query("SELECT 'AA\\BB' LIKE %~like~", 'A\\B')->fetchSingle());
 };
 
-$conn = new DibiConnection($config);
+$conn = new Dibi\Connection($config);
 $conn->query('SET escape_string_warning = off'); // do not log warnings
 
 $conn->query('SET standard_conforming_strings = on');

@@ -5,26 +5,28 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
 
-class DibiHelpers
+
+class Helpers
 {
-	use DibiStrict;
+	use Strict;
 
 	/**
-	 * Prints out a syntax highlighted version of the SQL command or DibiResult.
-	 * @param  string|DibiResult
+	 * Prints out a syntax highlighted version of the SQL command or Result.
+	 * @param  string|Result
 	 * @param  bool  return output instead of printing it?
 	 * @return string
 	 */
 	public static function dump($sql = NULL, $return = FALSE)
 	{
 		ob_start();
-		if ($sql instanceof DibiResult) {
+		if ($sql instanceof Result) {
 			$sql->dump();
 
 		} else {
 			if ($sql === NULL) {
-				$sql = dibi::$sql;
+				$sql = \dibi::$sql;
 			}
 
 			static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|FETCH\s+NEXT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE|START\s+TRANSACTION|BEGIN|COMMIT|ROLLBACK(?:\s+TO\s+SAVEPOINT)?|(?:RELEASE\s+)?SAVEPOINT';
@@ -113,12 +115,12 @@ class DibiHelpers
 	public static function escape($driver, $value, $type)
 	{
 		static $types = [
-			DibiType::TEXT => 'text',
-			DibiType::BINARY => 'binary',
-			DibiType::BOOL => 'bool',
-			DibiType::DATE => 'date',
-			DibiType::DATETIME => 'datetime',
-			dibi::IDENTIFIER => 'identifier',
+			Type::TEXT => 'text',
+			Type::BINARY => 'binary',
+			Type::BOOL => 'bool',
+			Type::DATE => 'date',
+			Type::DATETIME => 'datetime',
+			\dibi::IDENTIFIER => 'identifier',
 		];
 		if (isset($types[$type])) {
 			return $driver->{'escape' . $types[$type]}($value);

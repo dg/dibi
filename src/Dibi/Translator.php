@@ -5,18 +5,20 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * dibi SQL translator.
  */
-final class DibiTranslator
+final class Translator
 {
-	use DibiStrict;
+	use Strict;
 
-	/** @var DibiConnection */
+	/** @var Connection */
 	private $connection;
 
-	/** @var IDibiDriver */
+	/** @var Driver */
 	private $driver;
 
 	/** @var int */
@@ -43,14 +45,14 @@ final class DibiTranslator
 	/** @var int */
 	private $offset;
 
-	/** @var DibiHashMap */
+	/** @var HashMap */
 	private $identifiers;
 
 
-	public function __construct(DibiConnection $connection)
+	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
-		$this->identifiers = new DibiHashMap([$this, 'delimite']);
+		$this->identifiers = new HashMap([$this, 'delimite']);
 	}
 
 
@@ -58,7 +60,7 @@ final class DibiTranslator
 	 * Generates SQL.
 	 * @param  array
 	 * @return string
-	 * @throws DibiException
+	 * @throws Exception
 	 */
 	public function translate(array $args)
 	{
@@ -120,7 +122,7 @@ final class DibiTranslator
 							substr($arg, $toSkip)
 					);
 					if (preg_last_error()) {
-						throw new DibiPcreException;
+						throw new PcreException;
 					}
 				}
 				continue;
@@ -131,7 +133,7 @@ final class DibiTranslator
 				continue;
 			}
 
-			if ($arg instanceof Traversable) {
+			if ($arg instanceof \Traversable) {
 				$arg = iterator_to_array($arg);
 			}
 
@@ -165,7 +167,7 @@ final class DibiTranslator
 		$sql = implode(' ', $sql);
 
 		if ($this->hasError) {
-			throw new DibiException('SQL translate error', 0, $sql);
+			throw new Exception('SQL translate error', 0, $sql);
 		}
 
 		// apply limit
@@ -194,7 +196,7 @@ final class DibiTranslator
 		}
 
 		// array processing (with or without modifier)
-		if ($value instanceof Traversable) {
+		if ($value instanceof \Traversable) {
 			$value = iterator_to_array($value);
 		}
 
@@ -332,7 +334,7 @@ final class DibiTranslator
 
 		// with modifier procession
 		if ($modifier) {
-			if ($value !== NULL && !is_scalar($value) && !$value instanceof DateTime && !$value instanceof DateTimeInterface) {  // array is already processed
+			if ($value !== NULL && !is_scalar($value) && !$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {  // array is already processed
 				$this->hasError = TRUE;
 				return '**Unexpected type ' . gettype($value) . '**';
 			}
@@ -405,7 +407,7 @@ final class DibiTranslator
 							substr($value, $toSkip)
 						);
 						if (preg_last_error()) {
-							throw new DibiPcreException;
+							throw new PcreException;
 						}
 					}
 					return $value;
@@ -453,10 +455,10 @@ final class DibiTranslator
 		} elseif ($value === NULL) {
 			return 'NULL';
 
-		} elseif ($value instanceof DateTime || $value instanceof DateTimeInterface) {
+		} elseif ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
 			return $this->driver->escapeDateTime($value);
 
-		} elseif ($value instanceof DibiLiteral) {
+		} elseif ($value instanceof Literal) {
 			return (string) $value;
 
 		} else {

@@ -5,13 +5,17 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi\Loggers;
+
+use Dibi;
+
 
 /**
  * dibi FirePHP logger.
  */
-class DibiFirePhpLogger
+class FirePhpLogger
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	/** maximum number of rows */
 	public static $maxQueries = 30;
@@ -46,7 +50,7 @@ class DibiFirePhpLogger
 
 	public function __construct($filter = NULL)
 	{
-		$this->filter = $filter ? (int) $filter : DibiEvent::QUERY;
+		$this->filter = $filter ? (int) $filter : Dibi\Event::QUERY;
 	}
 
 
@@ -54,7 +58,7 @@ class DibiFirePhpLogger
 	 * After event notification.
 	 * @return void
 	 */
-	public function logEvent(DibiEvent $event)
+	public function logEvent(Dibi\Event $event)
 	{
 		if (headers_sent() || ($event->type & $this->filter) === 0 || count(self::$fireTable) > self::$maxQueries) {
 			return;
@@ -70,7 +74,7 @@ class DibiFirePhpLogger
 		self::$fireTable[] = [
 			sprintf('%0.3f', $event->time * 1000),
 			strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql,
-			$event->result instanceof Exception ? 'ERROR' : (string) $event->count,
+			$event->result instanceof \Exception ? 'ERROR' : (string) $event->count,
 			$event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name'),
 		];
 

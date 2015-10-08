@@ -5,7 +5,7 @@ use Tester\Assert;
 require __DIR__ . '/bootstrap.php';
 
 
-$conn = new DibiConnection($config);
+$conn = new Dibi\Connection($config);
 
 // create new substitution :blog:  ==>  wp_
 $conn->getSubstitutes()->blog = 'wp_';

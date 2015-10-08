@@ -5,11 +5,13 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * Result set single row.
  */
-class DibiRow implements ArrayAccess, IteratorAggregate, Countable
+class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 {
 
 	public function __construct($arr)
@@ -30,16 +32,16 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 	 * Converts value to DateTime object.
 	 * @param  string key
 	 * @param  string format
-	 * @return DateTime
+	 * @return \DateTime
 	 */
 	public function asDateTime($key, $format = NULL)
 	{
 		$time = $this[$key];
-		if (!$time instanceof DibiDateTime) {
+		if (!$time instanceof DateTime) {
 			if ((int) $time === 0 && substr((string) $time, 0, 3) !== '00:') { // '', NULL, FALSE, '0000-00-00', ...
 				return NULL;
 			}
-			$time = new DibiDateTime($time);
+			$time = new DateTime($time);
 		}
 		return $format === NULL ? $time : $time->format($format);
 	}
@@ -47,7 +49,7 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 
 	public function __get($key)
 	{
-		$hint = DibiHelpers::getSuggestion(array_keys((array) $this), $key);
+		$hint = Helpers::getSuggestion(array_keys((array) $this), $key);
 		trigger_error("Attempt to read missing column '$key'" . ($hint ? ", did you mean '$hint'?" : '.'), E_USER_NOTICE);
 	}
 
@@ -63,7 +65,7 @@ class DibiRow implements ArrayAccess, IteratorAggregate, Countable
 
 	final public function getIterator()
 	{
-		return new ArrayIterator($this);
+		return new \ArrayIterator($this);
 	}
 
 

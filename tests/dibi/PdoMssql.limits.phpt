@@ -76,5 +76,5 @@ $tests = function ($conn) {
 	}
 };
 
-$conn = new DibiConnection($config);
+$conn = new Dibi\Connection($config);
 $tests($conn);

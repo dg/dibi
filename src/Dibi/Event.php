@@ -5,13 +5,15 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+namespace Dibi;
+
 
 /**
  * Profiler & logger event.
  */
-class DibiEvent
+class Event
 {
-	use DibiStrict;
+	use Strict;
 
 	/** event type */
 	const CONNECT = 1,
@@ -26,7 +28,7 @@ class DibiEvent
 		TRANSACTION = 448, // BEGIN | COMMIT | ROLLBACK
 		ALL = 1023;
 
-	/** @var DibiConnection */
+	/** @var Connection */
 	public $connection;
 
 	/** @var int */
@@ -35,7 +37,7 @@ class DibiEvent
 	/** @var string */
 	public $sql;
 
-	/** @var DibiResult|DibiDriverException|NULL */
+	/** @var Result|DriverException|NULL */
 	public $result;
 
 	/** @var float */
@@ -48,7 +50,7 @@ class DibiEvent
 	public $source;
 
 
-	public function __construct(DibiConnection $connection, $type, $sql = NULL)
+	public function __construct(Connection $connection, $type, $sql = NULL)
 	{
 		$this->connection = $connection;
 		$this->type = $type;
@@ -63,7 +65,7 @@ class DibiEvent
 			$this->type = $types[strtoupper($matches[1])];
 		}
 
-		$rc = new ReflectionClass('dibi');
+		$rc = new \ReflectionClass('dibi');
 		$dibiDir = dirname($rc->getFileName()) . DIRECTORY_SEPARATOR;
 		foreach (debug_backtrace(FALSE) as $row) {
 			if (isset($row['file']) && is_file($row['file']) && strpos($row['file'], $dibiDir) !== 0) {
@@ -72,9 +74,9 @@ class DibiEvent
 			}
 		}
 
-		dibi::$elapsedTime = FALSE;
-		dibi::$numOfQueries++;
-		dibi::$sql = $sql;
+		\dibi::$elapsedTime = FALSE;
+		\dibi::$numOfQueries++;
+		\dibi::$sql = $sql;
 	}
 
 
@@ -82,14 +84,14 @@ class DibiEvent
 	{
 		$this->result = $result;
 		try {
-			$this->count = $result instanceof DibiResult ? count($result) : NULL;
-		} catch (DibiException $e) {
+			$this->count = $result instanceof Result ? count($result) : NULL;
+		} catch (Exception $e) {
 			$this->count = NULL;
 		}
 
 		$this->time += microtime(TRUE);
-		dibi::$elapsedTime = $this->time;
-		dibi::$totalTime += $this->time;
+		\dibi::$elapsedTime = $this->time;
+		\dibi::$totalTime += $this->time;
 		return $this;
 	}
 

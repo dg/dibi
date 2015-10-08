@@ -15,21 +15,21 @@ try {
 		'database' => 'data/sample.s3db',
 	]);
 	echo 'OK';
-} catch (DibiException $e) {
+} catch (Dibi\Exception $e) {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
 
 
-// connects to SQlite using DibiConnection object
+// connects to SQlite using Dibi\Connection object
 echo '<p>Connecting to Sqlite: ';
 try {
-	$connection = new DibiConnection([
+	$connection = new Dibi\Connection([
 		'driver' => 'sqlite3',
 		'database' => 'data/sample.s3db',
 	]);
 	echo 'OK';
-} catch (DibiException $e) {
+} catch (Dibi\Exception $e) {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
@@ -40,7 +40,7 @@ echo '<p>Connecting to MySQL: ';
 try {
 	dibi::connect('driver=mysql&host=localhost&username=root&password=xxx&database=test&charset=cp1250');
 	echo 'OK';
-} catch (DibiException $e) {
+} catch (Dibi\Exception $e) {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
@@ -61,7 +61,7 @@ try {
 		'flags' => MYSQLI_CLIENT_COMPRESS,
 	]);
 	echo 'OK';
-} catch (DibiException $e) {
+} catch (Dibi\Exception $e) {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
@@ -77,7 +77,7 @@ try {
 		'dsn' => 'Driver={Microsoft Access Driver (*.mdb)};Dbq='.__DIR__.'/data/sample.mdb',
 	]);
 	echo 'OK';
-} catch (DibiException $e) {
+} catch (Dibi\Exception $e) {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
@@ -92,7 +92,7 @@ try {
 		'persistent' => TRUE,
 	]);
 	echo 'OK';
-} catch (DibiException $e) {
+} catch (Dibi\Exception $e) {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
@@ -106,7 +106,7 @@ try {
 		'dsn' => 'sqlite::memory:',
 	]);
 	echo 'OK';
-} catch (DibiException $e) {
+} catch (Dibi\Exception $e) {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
@@ -122,7 +122,7 @@ try {
 		'password' => 'xxx',
 	]);
 	echo 'OK';
-} catch (DibiException $e) {
+} catch (Dibi\Exception $e) {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
@@ -139,7 +139,7 @@ try {
 		'database' => 'main',
 	]);
 	echo 'OK';
-} catch (DibiException $e) {
+} catch (Dibi\Exception $e) {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";
@@ -155,7 +155,7 @@ try {
 		'database' => 'db',
 	]);
 	echo 'OK';
-} catch (DibiException $e) {
+} catch (Dibi\Exception $e) {
 	echo get_class($e), ': ', $e->getMessage(), "\n";
 }
 echo "</p>\n";

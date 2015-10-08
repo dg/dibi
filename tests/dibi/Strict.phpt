@@ -7,7 +7,7 @@ require __DIR__ . '/bootstrap.php';
 
 class TestClass
 {
-	use DibiStrict;
+	use Dibi\Strict;
 
 	public $public;
 

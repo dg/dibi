@@ -4,6 +4,8 @@
 
 <?php
 
+use Dibi\Type;
+
 if (@!include __DIR__ . '/../vendor/autoload.php') {
 	die('Install dependencies using `composer install --dev`');
 }
@@ -22,14 +24,14 @@ dibi::connect([
 // using manual hints
 $res = dibi::query('SELECT * FROM [customers]');
 
-$res->setType('customer_id', DibiType::INTEGER)
-	->setType('added', DibiType::DATETIME)
-	->setFormat(DibiType::DATETIME, 'Y-m-d H:i:s');
+$res->setType('customer_id', Type::INTEGER)
+	->setType('added', Type::DATETIME)
+	->setFormat(Type::DATETIME, 'Y-m-d H:i:s');
 
 
 Tracy\Dumper::dump($res->fetch());
 // outputs:
-// DibiRow(3) {
+// Dibi\Row(3) {
 //    customer_id => 1
 //    name => "Dave Lister" (11)
 //    added => "2007-03-11 17:20:03" (19)
@@ -40,7 +42,7 @@ $res = dibi::query('SELECT * FROM [customers]');
 
 Tracy\Dumper::dump($res->fetch());
 // outputs:
-// DibiRow(3) {
+// Dibi\Row(3) {
 //    customer_id => 1
 //    name => "Dave Lister" (11)
 //    added => "2007-03-11 17:20:03" (19)
