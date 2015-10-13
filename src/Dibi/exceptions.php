@@ -57,55 +57,6 @@ class Exception extends \Exception
  */
 class DriverException extends Exception
 {
-
-	/********************* error catching ****************d*g**/
-
-
-	/** @var string */
-	private static $errorMsg;
-
-
-	/**
-	 * Starts catching potential errors/warnings.
-	 * @return void
-	 */
-	public static function tryError()
-	{
-		set_error_handler([__CLASS__, '_errorHandler'], E_ALL);
-		self::$errorMsg = NULL;
-	}
-
-
-	/**
-	 * Returns catched error/warning message.
-	 * @param  string  catched message
-	 * @return bool
-	 */
-	public static function catchError(& $message)
-	{
-		restore_error_handler();
-		$message = self::$errorMsg;
-		self::$errorMsg = NULL;
-		return $message !== NULL;
-	}
-
-
-	/**
-	 * Internal error handler. Do not call directly.
-	 * @internal
-	 */
-	public static function _errorHandler($code, $message)
-	{
-		restore_error_handler();
-
-		if (ini_get('html_errors')) {
-			$message = strip_tags($message);
-			$message = html_entity_decode($message);
-		}
-
-		self::$errorMsg = $message;
-	}
-
 }
 
 
