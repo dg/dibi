@@ -497,7 +497,17 @@ class Result implements IDataSource
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
 
 			} elseif ($type === Type::FLOAT) {
-				$row[$key] = str_replace(',', '.', ltrim((string) ($tmp = (float) $value), '0')) === ltrim(rtrim(rtrim($value, '0'), '.'), '0') ? $tmp : $value;
+				$value = ltrim($value, '0');
+				$p = strpos($value, '.');
+				if ($p !== FALSE) {
+					$value = rtrim(rtrim($value, '0'), '.');
+				}
+				if ($value === '' || $value[0] === '.') {
+					$value = '0' . $value;
+				}
+				$row[$key] = $value === str_replace(',', '.', (string) ($float = (float) $value))
+					? $float
+					: $value;
 
 			} elseif ($type === Type::BOOL) {
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
