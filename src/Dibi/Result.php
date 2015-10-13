@@ -18,8 +18,8 @@ namespace Dibi;
  * $value = $result->fetchSingle();
  * $table = $result->fetchAll();
  * $pairs = $result->fetchPairs();
- * $assoc = $result->fetchAssoc('id');
- * $assoc = $result->fetchAssoc('active,#,id');
+ * $assoc = $result->fetchAssoc('col1');
+ * $assoc = $result->fetchAssoc('col1[]col2->col3');
  *
  * unset($result);
  * </code>
