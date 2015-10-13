@@ -21,7 +21,8 @@ class Type
 		FLOAT = 'f',
 		DATE = 'd',
 		DATETIME = 't',
-		TIME = 't';
+		TIME = 't',
+		TIME_INTERVAL = 'ti';
 
 	final public function __construct()
 	{

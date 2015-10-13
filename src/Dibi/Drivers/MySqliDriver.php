@@ -477,6 +477,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 				'table' => $row['orgtable'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
 				'nativetype' => isset($types[$row['type']]) ? $types[$row['type']] : $row['type'],
+				'type' => $row['type'] === MYSQLI_TYPE_TIME ? Dibi\Type::TIME_INTERVAL : NULL,
 				'vendor' => $row,
 			];
 		}

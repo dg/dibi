@@ -455,6 +455,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 				'table' => $row['table'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
 				'nativetype' => strtoupper($row['type']),
+				'type' => $row['type'] === 'time' ? Dibi\Type::TIME_INTERVAL : NULL,
 				'vendor' => $row,
 			];
 		}

@@ -471,7 +471,7 @@ class Result implements IDataSource
 		$cache = Helpers::getTypeCache();
 		try {
 			foreach ($this->getResultDriver()->getResultColumns() as $col) {
-				$this->types[$col['name']] = $cache->{$col['nativetype']};
+				$this->types[$col['name']] = isset($col['type']) ? $col['type'] : $cache->{$col['nativetype']};
 			}
 		} catch (NotSupportedException $e) {
 		}
@@ -521,6 +521,11 @@ class Result implements IDataSource
 				} else {
 					$row[$key] = NULL;
 				}
+
+			} elseif ($type === Type::TIME_INTERVAL) {
+				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)\z#', $value, $m);
+				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
+				$row[$key]->invert = (int) (bool) $m[1];
 
 			} elseif ($type === Type::BINARY) {
 				$row[$key] = $this->getResultDriver()->unescapeBinary($value);
