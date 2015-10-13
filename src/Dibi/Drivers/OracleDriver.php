@@ -109,7 +109,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			@oci_execute($res, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
 			$err = oci_error($res);
 			if ($err) {
-				throw new Dibi\DriverException($err['message'], $err['code'], $sql);
+				throw self::createException($err['message'], $err['code'], $sql);
 
 			} elseif (is_resource($res)) {
 				return $this->createResultDriver($res);
@@ -117,6 +117,26 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		} else {
 			$err = oci_error($this->connection);
 			throw new Dibi\DriverException($err['message'], $err['code'], $sql);
+		}
+	}
+
+
+	/**
+	 * @return Dibi\DriverException
+	 */
+	public static function createException($message, $code, $sql)
+	{
+		if (in_array($code, [1, 2299, 38911], TRUE)) {
+			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
+
+		} elseif (in_array($code, [1400], TRUE)) {
+			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
+
+		} elseif (in_array($code, [2266, 2291, 2292], TRUE)) {
+			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
+
+		} else {
+			return new Dibi\DriverException($message, $code, $sql);
 		}
 	}
 

@@ -112,11 +112,41 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 		}
 
 		$res = @$this->connection->query($sql); // intentionally @
-		if ($this->connection->lastErrorCode()) {
-			throw new Dibi\DriverException($this->connection->lastErrorMsg(), $this->connection->lastErrorCode(), $sql);
+		if ($code = $this->connection->lastErrorCode()) {
+			throw self::createException($this->connection->lastErrorMsg(), $code, $sql);
 
 		} elseif ($res instanceof \SQLite3Result) {
 			return $this->createResultDriver($res);
+		}
+	}
+
+
+	/**
+	 * @return Dibi\DriverException
+	 */
+	public static function createException($message, $code, $sql)
+	{
+		if ($code !== 19) {
+			return new Dibi\DriverException($message, $code, $sql);
+
+		} elseif (strpos($message, 'must be unique') !== FALSE
+			|| strpos($message, 'is not unique') !== FALSE
+			|| strpos($message, 'UNIQUE constraint failed') !== FALSE
+		) {
+			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
+
+		} elseif (strpos($message, 'may not be NULL') !== FALSE
+			|| strpos($message, 'NOT NULL constraint failed') !== FALSE
+		) {
+			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
+
+		} elseif (strpos($message, 'foreign key constraint failed') !== FALSE
+			|| strpos($message, 'FOREIGN KEY constraint failed') !== FALSE
+		) {
+			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
+
+		} else {
+			return new Dibi\ConstraintViolationException($message, $code, $sql);
 		}
 	}
 

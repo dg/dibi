@@ -96,7 +96,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		pg_set_error_verbosity($this->connection, PGSQL_ERRORS_VERBOSE);
 
 		if (isset($config['charset']) && pg_set_client_encoding($this->connection, $config['charset'])) {
-			throw new Dibi\DriverException(pg_last_error($this->connection), 0, $sql);
+			throw self::createException(pg_last_error($this->connection));
 		}
 
 		if (isset($config['schema'])) {
@@ -137,13 +137,41 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		$res = @pg_query($this->connection, $sql); // intentionally @
 
 		if ($res === FALSE) {
-			throw new Dibi\DriverException(pg_last_error($this->connection), 0, $sql);
+			throw self::createException(pg_last_error($this->connection), NULL, $sql);
 
 		} elseif (is_resource($res)) {
 			$this->affectedRows = pg_affected_rows($res);
 			if (pg_num_fields($res)) {
 				return $this->createResultDriver($res);
 			}
+		}
+	}
+
+
+	/**
+	 * @return Dibi\DriverException
+	 */
+	public static function createException($message, $code = NULL, $sql = NULL)
+	{
+		if ($code === NULL && preg_match('#^ERROR:\s+(\S+):\s*#', $message, $m)) {
+			$code = $m[1];
+			$message = substr($message, strlen($m[0]));
+		}
+
+		if ($code === '0A000' && strpos($message, 'truncate') !== FALSE) {
+			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
+
+		} elseif ($code === '23502') {
+			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
+
+		} elseif ($code === '23503') {
+			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
+
+		} elseif ($code === '23505') {
+			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
+
+		} else {
+			return new Dibi\DriverException($message, $code, $sql);
 		}
 	}
 

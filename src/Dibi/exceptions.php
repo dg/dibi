@@ -64,7 +64,7 @@ class DriverException extends Exception
 /**
  * PCRE exception.
  */
-class PcreException extends \Exception
+class PcreException extends Exception
 {
 	use Strict;
 
@@ -124,4 +124,36 @@ class ProcedureException extends Exception
 		$this->severity;
 	}
 
+}
+
+
+/**
+ * Base class for all constraint violation related exceptions.
+ */
+class ConstraintViolationException extends DriverException
+{
+}
+
+
+/**
+ * Exception for a foreign key constraint violation.
+ */
+class ForeignKeyConstraintViolationException extends ConstraintViolationException
+{
+}
+
+
+/**
+ * Exception for a NOT NULL constraint violation.
+ */
+class NotNullConstraintViolationException extends ConstraintViolationException
+{
+}
+
+
+/**
+ * Exception for a unique constraint violation.
+ */
+class UniqueConstraintViolationException extends ConstraintViolationException
+{
 }

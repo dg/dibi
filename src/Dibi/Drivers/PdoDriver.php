@@ -111,21 +111,33 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 		if (isset($list[$cmd])) {
 			$this->affectedRows = $this->connection->exec($sql);
-
-			if ($this->affectedRows === FALSE) {
-				$err = $this->connection->errorInfo();
-				throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
+			if ($this->affectedRows !== FALSE) {
+				return;
 			}
-
 		} else {
 			$res = $this->connection->query($sql);
-
-			if ($res === FALSE) {
-				$err = $this->connection->errorInfo();
-				throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1], $sql);
-			} else {
+			if ($res) {
 				return $this->createResultDriver($res);
 			}
+		}
+
+		list($sqlState, $code, $message) = $this->connection->errorInfo();
+		$message = "SQLSTATE[$sqlState]: $message";
+		switch ($this->driverName) {
+			case 'mysql':
+				throw MySqliDriver::createException($message, $code, $sql);
+
+			case 'oci':
+				throw OracleDriver::createException($message, $code, $sql);
+
+			case 'pgsql':
+				throw PostgreDriver::createException($message, $sqlState, $sql);
+
+			case 'sqlite':
+				throw Sqlite3Driver::createException($message, $code, $sql);
+
+			default:
+				throw new Dibi\DriverException($message, $code, $sql);
 		}
 	}
 
@@ -356,7 +368,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 
 			default:
-				throw new DibiNotImplementedException;
+				throw new Dibi\NotImplementedException;
 		}
 	}
 

@@ -157,8 +157,8 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 			$res = @mysql_unbuffered_query($sql, $this->connection); // intentionally @
 		}
 
-		if (mysql_errno($this->connection)) {
-			throw new Dibi\DriverException(mysql_error($this->connection), mysql_errno($this->connection), $sql);
+		if ($code = mysql_errno($this->connection)) {
+			throw MySqliDriver::createException(mysql_error($this->connection), $code, $sql);
 
 		} elseif (is_resource($res)) {
 			return $this->createResultDriver($res);

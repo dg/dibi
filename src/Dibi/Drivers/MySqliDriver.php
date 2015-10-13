@@ -152,11 +152,34 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	{
 		$res = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT); // intentionally @
 
-		if (mysqli_errno($this->connection)) {
-			throw new Dibi\DriverException(mysqli_error($this->connection), mysqli_errno($this->connection), $sql);
+		if ($code = mysqli_errno($this->connection)) {
+			throw self::createException(mysqli_error($this->connection), $code, $sql);
 
 		} elseif (is_object($res)) {
 			return $this->createResultDriver($res);
+		}
+	}
+
+
+	/**
+	 * @return Dibi\DriverException
+	 */
+	public static function createException($message, $code, $sql)
+	{
+		if (in_array($code, [1216, 1217, 1451, 1452, 1701], TRUE)) {
+			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
+
+		} elseif (in_array($code, [1062, 1557, 1569, 1586], TRUE)) {
+			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
+
+		} elseif ($code >= 2001 && $code <= 2028) {
+			return new Dibi\ConnectionException($message, $code, $sql);
+
+		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], TRUE)) {
+			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
+
+		} else {
+			return new Dibi\DriverException($message, $code, $sql);
 		}
 	}
 
