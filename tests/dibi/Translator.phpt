@@ -161,7 +161,7 @@ if ($config['system'] === 'odbc') {
 	Assert::same(
 		reformat([
 			'mysql' => 'SELECT * FROM `products`  LIMIT 18446744073709551615 OFFSET 50',
-			'pgsql' => 'SELECT * FROM "products"  OFFSET 50',
+			'postgre' => 'SELECT * FROM "products"  OFFSET 50',
 			'SELECT * FROM [products]  LIMIT -1 OFFSET 50',
 		]),
 		$conn->translate('SELECT * FROM [products] %ofs', 50)
@@ -200,7 +200,7 @@ $args = [
 	"a\n%_\\'\"",
 ];
 
-if ($config['system'] === 'pgsql') {
+if ($config['system'] === 'postgre') {
 	$conn->query('SET escape_string_warning = off'); // do not log warnings
 
 	$conn->query('SET standard_conforming_strings = off');
@@ -303,7 +303,7 @@ WHERE (`test`.`a` LIKE '1995-03-01'
 	OR `str_null`=NULL
 	OR `str_not_null`='hello'
 LIMIT 10",
-		'pgsql' => 'SELECT *
+		'postgre' => 'SELECT *
 FROM "db"."table"
 WHERE ("test"."a" LIKE \'1995-03-01\'
 	OR "b1" IN ( 1, 2, 3 )

@@ -1,6 +1,6 @@
 CREATE TABLE [products] (
 	[product_id] INTEGER NOT NULL PRIMARY KEY,
-	[title] VARCHAR(100) NULL
+	[title] VARCHAR(100) NOT NULL
 );
 
 CREATE INDEX "title" ON "products" ("title");
@@ -11,7 +11,7 @@ INSERT INTO "products" ("product_id", "title") VALUES (3,	'Computer');
 
 CREATE TABLE [customers] (
 	[customer_id] INTEGER PRIMARY KEY NOT NULL,
-	[name] VARCHAR(100) NULL
+	[name] VARCHAR(100) NOT NULL
 );
 
 INSERT INTO "customers" ("customer_id", "name") VALUES (1,	'Dave Lister');
@@ -25,7 +25,9 @@ CREATE TABLE [orders] (
 	[order_id] INTEGER NOT NULL PRIMARY KEY,
 	[customer_id] INTEGER NOT NULL,
 	[product_id] INTEGER NOT NULL,
-	[amount] FLOAT NOT NULL
+	[amount] FLOAT NOT NULL,
+	CONSTRAINT orders_product FOREIGN KEY (product_id) REFERENCES products (product_id),
+	CONSTRAINT orders_customer FOREIGN KEY (customer_id) REFERENCES customers (customer_id)
 );
 
 INSERT INTO "orders" ("order_id", "customer_id", "product_id", "amount") VALUES (1,	2,	1,	'7.0');

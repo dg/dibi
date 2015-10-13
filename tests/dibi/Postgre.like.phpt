@@ -8,7 +8,7 @@ use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
 
-if ($config['system'] !== 'pgsql') {
+if ($config['system'] !== 'postgre') {
 	Tester\Environment::skip("Not supported system '$config[system]'.");
 }
 

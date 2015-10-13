@@ -4,7 +4,7 @@ CREATE SCHEMA public;
 
 CREATE TABLE products (
 	product_id serial NOT NULL,
-	title varchar(100) DEFAULT NULL,
+	title varchar(100) NOT NULL,
 	PRIMARY KEY (product_id)
 );
 
@@ -18,7 +18,7 @@ CREATE INDEX title ON products USING btree (title);
 
 CREATE TABLE customers (
 	customer_id serial NOT NULL,
-	name varchar(100) DEFAULT NULL,
+	name varchar(100) NOT NULL,
 	PRIMARY KEY (customer_id)
 );
 
