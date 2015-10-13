@@ -77,14 +77,10 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				'buffers' => 0,
 			];
 
-			Dibi\DriverException::tryError();
 			if (empty($config['persistent'])) {
 				$this->connection = ibase_connect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
 			} else {
 				$this->connection = ibase_pconnect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
-			}
-			if (Dibi\DriverException::catchError($msg)) {
-				throw new Dibi\DriverException($msg, ibase_errcode());
 			}
 
 			if (!is_resource($this->connection)) {
@@ -112,22 +108,17 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function query($sql)
 	{
-		Dibi\DriverException::tryError();
 		$resource = $this->inTransaction ? $this->transaction : $this->connection;
 		$res = ibase_query($resource, $sql);
 
-		if (Dibi\DriverException::catchError($msg)) {
+		if ($res === FALSE) {
 			if (ibase_errcode() == self::ERROR_EXCEPTION_THROWN) {
 				preg_match('/exception (\d+) (\w+) (.*)/i', ibase_errmsg(), $match);
-				throw new Dibi\ProcedureException($match[3], $match[1], $match[2], \dibi::$sql);
+				throw new Dibi\ProcedureException($match[3], $match[1], $match[2], $sql);
 
 			} else {
-				throw new Dibi\DriverException(ibase_errmsg(), ibase_errcode(), \dibi::$sql);
+				throw new Dibi\DriverException(ibase_errmsg(), ibase_errcode(), $sql);
 			}
-		}
-
-		if ($res === FALSE) {
-			throw new Dibi\DriverException(ibase_errmsg(), ibase_errcode(), $sql);
 
 		} elseif (is_resource($res)) {
 			return $this->createResultDriver($res);
@@ -378,10 +369,9 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function fetch($assoc)
 	{
-		Dibi\DriverException::tryError();
 		$result = $assoc ? ibase_fetch_assoc($this->resultSet, IBASE_TEXT) : ibase_fetch_row($this->resultSet, IBASE_TEXT); // intentionally @
 
-		if (Dibi\DriverException::catchError($msg)) {
+		if (ibase_errcode()) {
 			if (ibase_errcode() == self::ERROR_EXCEPTION_THROWN) {
 				preg_match('/exception (\d+) (\w+) (.*)/is', ibase_errmsg(), $match);
 				throw new Dibi\ProcedureException($match[3], $match[1], $match[2], \dibi::$sql);
