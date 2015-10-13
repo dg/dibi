@@ -614,66 +614,7 @@ class Result implements IDataSource
 	 */
 	final public function dump()
 	{
-		$i = 0;
-		$this->seek(0);
-		if (PHP_SAPI === 'cli') {
-			$hasColors = (substr(getenv('TERM'), 0, 5) === 'xterm');
-			$maxLen = 0;
-			while ($row = $this->fetch()) {
-				if ($i === 0) {
-					foreach ($row as $col => $foo) {
-						$len = mb_strlen($col);
-						$maxLen = max($len, $maxLen);
-					}
-				}
-
-				if ($hasColors) {
-					echo "\033[1;37m#row: $i\033[0m\n";
-				} else {
-					echo "#row: $i\n";
-				}
-
-				foreach ($row as $col => $val) {
-					$spaces = $maxLen - mb_strlen($col) + 2;
-					echo "$col" . str_repeat(' ', $spaces) .  "$val\n";
-				}
-
-				echo "\n";
-				$i++;
-			}
-
-			if ($i === 0) {
-				echo "empty result set\n";
-			}
-			echo "\n";
-
-		} else {
-			while ($row = $this->fetch()) {
-				if ($i === 0) {
-					echo "\n<table class=\"dump\">\n<thead>\n\t<tr>\n\t\t<th>#row</th>\n";
-
-					foreach ($row as $col => $foo) {
-						echo "\t\t<th>" . htmlSpecialChars($col) . "</th>\n";
-					}
-
-					echo "\t</tr>\n</thead>\n<tbody>\n";
-				}
-
-				echo "\t<tr>\n\t\t<th>", $i, "</th>\n";
-				foreach ($row as $col) {
-					//if (is_object($col)) $col = $col->__toString();
-					echo "\t\t<td>", htmlSpecialChars($col), "</td>\n";
-				}
-				echo "\t</tr>\n";
-				$i++;
-			}
-
-			if ($i === 0) {
-				echo '<p><em>empty result set</em></p>';
-			} else {
-				echo "</tbody>\n</table>\n";
-			}
-		}
+		echo Helpers::dump($this);
 	}
 
 }

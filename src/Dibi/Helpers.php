@@ -24,8 +24,47 @@ class Helpers
 	public static function dump($sql = NULL, $return = FALSE)
 	{
 		ob_start();
-		if ($sql instanceof Result) {
-			$sql->dump();
+		if ($sql instanceof Result && PHP_SAPI === 'cli') {
+			$hasColors = (substr(getenv('TERM'), 0, 5) === 'xterm');
+			$maxLen = 0;
+			foreach ($sql as $i => $row) {
+				if ($i === 0) {
+					foreach ($row as $col => $foo) {
+						$len = mb_strlen($col);
+						$maxLen = max($len, $maxLen);
+					}
+				}
+
+				echo $hasColors ? "\033[1;37m#row: $i\033[0m\n" : "#row: $i\n";
+				foreach ($row as $col => $val) {
+					$spaces = $maxLen - mb_strlen($col) + 2;
+					echo "$col" . str_repeat(' ', $spaces) .  "$val\n";
+				}
+				echo "\n";
+			}
+
+			echo empty($row) ? "empty result set\n\n" : "\n";
+
+		} elseif ($sql instanceof Result) {
+			foreach ($sql as $i => $row) {
+				if ($i === 0) {
+					echo "\n<table class=\"dump\">\n<thead>\n\t<tr>\n\t\t<th>#row</th>\n";
+					foreach ($row as $col => $foo) {
+						echo "\t\t<th>" . htmlSpecialChars($col) . "</th>\n";
+					}
+					echo "\t</tr>\n</thead>\n<tbody>\n";
+				}
+
+				echo "\t<tr>\n\t\t<th>", $i, "</th>\n";
+				foreach ($row as $col) {
+					echo "\t\t<td>", htmlSpecialChars($col), "</td>\n";
+				}
+				echo "\t</tr>\n";
+			}
+
+			echo empty($row)
+				? '<p><em>empty result set</em></p>'
+				: "</tbody>\n</table>\n";
 
 		} else {
 			if ($sql === NULL) {
