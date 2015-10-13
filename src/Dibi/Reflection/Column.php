@@ -170,7 +170,7 @@ class Column
 	/**
 	 * Heuristic type detection.
 	 * @param  string
-	 * @return string
+	 * @return string|NULL
 	 * @internal
 	 */
 	public static function detectType($type)
@@ -192,7 +192,7 @@ class Column
 				return $val;
 			}
 		}
-		return Type::TEXT;
+		return NULL;
 	}
 
 
