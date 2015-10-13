@@ -490,7 +490,8 @@ class Result implements IDataSource
 				continue;
 			}
 			$value = $row[$key];
-			if ($value === FALSE || $type === Type::TEXT) {
+			if ($type === Type::TEXT) {
+				$row[$key] = (string) $value;
 
 			} elseif ($type === Type::INTEGER) {
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
