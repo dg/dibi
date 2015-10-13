@@ -57,6 +57,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function connect(array & $config)
 	{
+		$error = NULL;
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
 
@@ -77,27 +78,25 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				}
 			}
 
-			Dibi\DriverException::tryError();
+			set_error_handler(function($severity, $message) use (& $error) {
+				$error = $message;
+			});
 			if (empty($config['persistent'])) {
 				$this->connection = pg_connect($string, PGSQL_CONNECT_FORCE_NEW);
 			} else {
 				$this->connection = pg_pconnect($string, PGSQL_CONNECT_FORCE_NEW);
 			}
-			if (Dibi\DriverException::catchError($msg)) {
-				throw new Dibi\DriverException($msg, 0);
-			}
+			restore_error_handler();
 		}
 
 		if (!is_resource($this->connection)) {
-			throw new Dibi\DriverException('Connecting error.');
+			throw new Dibi\DriverException($error ?: 'Connecting error.');
 		}
 
-		if (isset($config['charset'])) {
-			Dibi\DriverException::tryError();
-			pg_set_client_encoding($this->connection, $config['charset']);
-			if (Dibi\DriverException::catchError($msg)) {
-				throw new Dibi\DriverException($msg, 0);
-			}
+		pg_set_error_verbosity($this->connection, PGSQL_ERRORS_VERBOSE);
+
+		if (isset($config['charset']) && pg_set_client_encoding($this->connection, $config['charset'])) {
+			throw new Dibi\DriverException(pg_last_error($this->connection), 0, $sql);
 		}
 
 		if (isset($config['schema'])) {
