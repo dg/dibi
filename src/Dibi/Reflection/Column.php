@@ -29,9 +29,6 @@ class Column
 {
 	use Dibi\Strict;
 
-	/** @var array */
-	private static $types;
-
 	/** @var Dibi\Reflector|NULL when created by Result */
 	private $reflector;
 
@@ -99,7 +96,7 @@ class Column
 	 */
 	public function getType()
 	{
-		return self::getTypeCache()->{$this->info['nativetype']};
+		return Dibi\Helpers::getTypeCache()->{$this->info['nativetype']};
 	}
 
 
@@ -164,47 +161,6 @@ class Column
 	public function getVendorInfo($key)
 	{
 		return isset($this->info['vendor'][$key]) ? $this->info['vendor'][$key] : NULL;
-	}
-
-
-	/**
-	 * Heuristic type detection.
-	 * @param  string
-	 * @return string|NULL
-	 * @internal
-	 */
-	public static function detectType($type)
-	{
-		static $patterns = [
-			'^_' => Type::TEXT, // PostgreSQL arrays
-			'BYTEA|BLOB|BIN' => Type::BINARY,
-			'TEXT|CHAR|POINT|INTERVAL' => Type::TEXT,
-			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT' => Type::INTEGER,
-			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => Type::FLOAT,
-			'^TIME$' => Type::TIME,
-			'TIME' => Type::DATETIME, // DATETIME, TIMESTAMP
-			'DATE' => Type::DATE,
-			'BOOL' => Type::BOOL,
-		];
-
-		foreach ($patterns as $s => $val) {
-			if (preg_match("#$s#i", $type)) {
-				return $val;
-			}
-		}
-		return NULL;
-	}
-
-
-	/**
-	 * @internal
-	 */
-	public static function getTypeCache()
-	{
-		if (self::$types === NULL) {
-			self::$types = new Dibi\HashMap([__CLASS__, 'detectType']);
-		}
-		return self::$types;
 	}
 
 }

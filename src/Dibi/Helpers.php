@@ -12,6 +12,9 @@ class Helpers
 {
 	use Strict;
 
+	/** @var array */
+	private static $types;
+
 	/**
 	 * Prints out a syntax highlighted version of the SQL command or Result.
 	 * @param  string|Result
@@ -127,6 +130,47 @@ class Helpers
 		} else {
 			throw new InvalidArgumentException('Unsupported type.');
 		}
+	}
+
+
+	/**
+	 * Heuristic type detection.
+	 * @param  string
+	 * @return string|NULL
+	 * @internal
+	 */
+	public static function detectType($type)
+	{
+		static $patterns = [
+			'^_' => Type::TEXT, // PostgreSQL arrays
+			'BYTEA|BLOB|BIN' => Type::BINARY,
+			'TEXT|CHAR|POINT|INTERVAL' => Type::TEXT,
+			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT' => Type::INTEGER,
+			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => Type::FLOAT,
+			'^TIME$' => Type::TIME,
+			'TIME' => Type::DATETIME, // DATETIME, TIMESTAMP
+			'DATE' => Type::DATE,
+			'BOOL' => Type::BOOL,
+		];
+
+		foreach ($patterns as $s => $val) {
+			if (preg_match("#$s#i", $type)) {
+				return $val;
+			}
+		}
+		return NULL;
+	}
+
+
+	/**
+	 * @internal
+	 */
+	public static function getTypeCache()
+	{
+		if (self::$types === NULL) {
+			self::$types = new HashMap([__CLASS__, 'detectType']);
+		}
+		return self::$types;
 	}
 
 }

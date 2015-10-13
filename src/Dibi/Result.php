@@ -468,7 +468,7 @@ class Result implements IDataSource
 	 */
 	private function detectTypes()
 	{
-		$cache = Reflection\Column::getTypeCache();
+		$cache = Helpers::getTypeCache();
 		try {
 			foreach ($this->getResultDriver()->getResultColumns() as $col) {
 				$this->types[$col['name']] = $cache->{$col['nativetype']};
