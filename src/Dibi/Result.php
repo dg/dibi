@@ -518,6 +518,8 @@ class Result implements IDataSource
 				if ((int) $value !== 0 || substr((string) $value, 0, 3) === '00:') { // '', NULL, FALSE, '0000-00-00', ...
 					$value = new DateTime($value);
 					$row[$key] = empty($this->formats[$type]) ? $value : $value->format($this->formats[$type]);
+				} else {
+					$row[$key] = NULL;
 				}
 
 			} elseif ($type === Type::BINARY) {
