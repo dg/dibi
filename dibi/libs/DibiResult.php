@@ -492,7 +492,9 @@ class DibiResult extends DibiObject implements IDataSource
 			if ($value === FALSE || $type === dibi::TEXT) {
 
 			} elseif ($type === dibi::INTEGER) {
-				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
+				$row[$key] = is_float($tmp = $value * 1)
+					? (is_string($value) ? $value : (int) $value)
+					: $tmp;
 
 			} elseif ($type === dibi::FLOAT) {
 				$value = ltrim($value, '0');
