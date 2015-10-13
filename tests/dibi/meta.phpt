@@ -50,7 +50,7 @@ Assert::same('products', $column->table->name);
 Assert::same('s', $column->type);
 Assert::type('string', $column->nativeType);
 Assert::same(100, $column->size);
-Assert::true($column->nullable);
+Assert::false($column->nullable);
 Assert::false($column->autoIncrement);
 //Assert::null($column->default);
 

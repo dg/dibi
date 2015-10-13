@@ -61,7 +61,7 @@ function reformat($s)
 	}
 	if ($config['system'] === 'mysql') {
 		return strtr($s, '[]', '``');
-	} elseif ($config['system'] === 'pgsql') {
+	} elseif ($config['system'] === 'postgre') {
 		return strtr($s, '[]', '""');
 	} elseif ($config['system'] === 'odbc' || $config['system'] === 'sqlite') {
 		return $s;
