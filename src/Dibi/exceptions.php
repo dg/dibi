@@ -15,19 +15,20 @@ class Exception extends \Exception
 {
 	use Strict;
 
-	/** @var string */
+	/** @var string|NULL */
 	private $sql;
 
 
 	/**
 	 * Construct a dibi exception.
 	 * @param  string  Message describing the exception
-	 * @param  int     Some code
-	 * @param  string SQL command
+	 * @param  mixed
+	 * @param  string  SQL command
 	 */
 	public function __construct($message = NULL, $code = 0, $sql = NULL)
 	{
-		parent::__construct($message, (int) $code);
+		parent::__construct($message);
+		$this->code = $code;
 		$this->sql = $sql;
 	}
 
@@ -83,11 +84,13 @@ class PcreException extends \Exception
 
 
 class NotImplementedException extends Exception
-{}
+{
+}
 
 
 class NotSupportedException extends Exception
-{}
+{
+}
 
 
 /**
