@@ -129,3 +129,29 @@ test(function () {
 	Assert::same(['col' => 1.0], $result->test(['col' => 1.0]));
 	setlocale(LC_NUMERIC, 'C');
 });
+
+
+test(function () {
+	$result = new MockResult;
+	$result->setType('col', Type::INTEGER);
+
+	Assert::same(['col' => NULL], $result->test(['col' => NULL]));
+	Assert::same(['col' => 1], $result->test(['col' => TRUE]));
+	Assert::same(['col' => 0], $result->test(['col' => FALSE]));
+
+	Assert::same(['col' => 0], $result->test(['col' => '']));
+	Assert::same(['col' => 0], $result->test(['col' => '0']));
+	Assert::same(['col' => 1], $result->test(['col' => '1']));
+	Assert::same(['col' => 10], $result->test(['col' => '10']));
+	Assert::same(['col' => 11], $result->test(['col' => '11']));
+	Assert::same(['col' => 10], $result->test(['col' => '0010']));
+	Assert::same(['col' => 11], $result->test(['col' => '0011']));
+	Assert::same(['col' => '0.00000000000000000001'], $result->test(['col' => '0.00000000000000000001']));
+	Assert::same(['col' => '12345678901234567890'], $result->test(['col' => '12345678901234567890']));
+	Assert::same(['col' => '012345678901234567890'], $result->test(['col' => '012345678901234567890']));
+
+	Assert::same(['col' => 0], $result->test(['col' => 0]));
+	Assert::same(['col' => 0], $result->test(['col' => 0.0]));
+	Assert::same(['col' => 1], $result->test(['col' => 1]));
+	Assert::same(['col' => 1], $result->test(['col' => 1.0]));
+});

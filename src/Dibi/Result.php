@@ -494,7 +494,9 @@ class Result implements IDataSource
 				$row[$key] = (string) $value;
 
 			} elseif ($type === Type::INTEGER) {
-				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
+				$row[$key] = is_float($tmp = $value * 1)
+					? (is_string($value) ? $value : (int) $value)
+					: $tmp;
 
 			} elseif ($type === Type::FLOAT) {
 				$value = ltrim($value, '0');
