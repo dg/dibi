@@ -154,7 +154,7 @@ class Helpers
 
 
 	/** @internal */
-	public static function escape($driver, $value, $type)
+	public static function escape(Driver $driver, $value, $type)
 	{
 		static $types = [
 			Type::TEXT => 'text',
@@ -167,7 +167,7 @@ class Helpers
 		if (isset($types[$type])) {
 			return $driver->{'escape' . $types[$type]}($value);
 		} else {
-			throw new InvalidArgumentException('Unsupported type.');
+			throw new \InvalidArgumentException('Unsupported type.');
 		}
 	}
 

@@ -285,7 +285,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	public function escapeText($value)
 	{
 		if (!is_resource($this->connection)) {
-			throw new DibiException('Lost connection to server.');
+			throw new Dibi\Exception('Lost connection to server.');
 		}
 		return "'" . mysql_real_escape_string($value, $this->connection) . "'";
 	}
@@ -294,7 +294,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	public function escapeBinary($value)
 	{
 		if (!is_resource($this->connection)) {
-			throw new DibiException('Lost connection to server.');
+			throw new Dibi\Exception('Lost connection to server.');
 		}
 		return "_binary'" . mysql_real_escape_string($value, $this->connection) . "'";
 	}

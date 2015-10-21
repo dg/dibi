@@ -298,7 +298,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	public function escapeText($value)
 	{
 		if (!is_resource($this->connection)) {
-			throw new DibiException('Lost connection to server.');
+			throw new Dibi\Exception('Lost connection to server.');
 		}
 		return "'" . pg_escape_string($this->connection, $value) . "'";
 	}
@@ -307,7 +307,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	public function escapeBinary($value)
 	{
 		if (!is_resource($this->connection)) {
-			throw new DibiException('Lost connection to server.');
+			throw new Dibi\Exception('Lost connection to server.');
 		}
 		return "'" . pg_escape_bytea($this->connection, $value) . "'";
 	}
