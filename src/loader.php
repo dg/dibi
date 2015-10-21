@@ -24,8 +24,8 @@ spl_autoload_register(function ($class) {
 		'Dibi\Driver' => 'interfaces.php',
 		'Dibi\DriverException' => 'exceptions.php',
 		'Dibi\Drivers\FirebirdDriver' => 'Drivers/FirebirdDriver.php',
-		'Dibi\Drivers\MsSql2005Driver' => 'Drivers/MsSql2005Driver.php',
-		'Dibi\Drivers\MsSql2005Reflector' => 'Drivers/MsSql2005Reflector.php',
+		'Dibi\Drivers\SqlsrvDriver' => 'Drivers/SqlsrvDriver.php',
+		'Dibi\Drivers\SqlsrvReflector' => 'Drivers/SqlsrvReflector.php',
 		'Dibi\Drivers\MsSqlDriver' => 'Drivers/MsSqlDriver.php',
 		'Dibi\Drivers\MsSqlReflector' => 'Drivers/MsSqlReflector.php',
 		'Dibi\Drivers\MySqlDriver' => 'Drivers/MySqlDriver.php',
@@ -84,8 +84,8 @@ spl_autoload_register(function ($class) {
 		'DibiHashMapBase' => 'Dibi\HashMapBase',
 		'DibiIndexInfo' => 'Dibi\Reflection\Index',
 		'DibiLiteral' => 'Dibi\Literal',
-		'DibiMsSql2005Driver' => 'Dibi\Drivers\MsSql2005Driver',
-		'DibiMsSql2005Reflector' => 'Dibi\Drivers\MsSql2005Reflector',
+		'DibiMsSql2005Driver' => 'Dibi\Drivers\SqlsrvDriver',
+		'DibiMsSql2005Reflector' => 'Dibi\Drivers\SqlsrvReflector',
 		'DibiMsSqlDriver' => 'Dibi\Drivers\MsSqlDriver',
 		'DibiMsSqlReflector' => 'Dibi\Drivers\MsSqlReflector',
 		'DibiMySqlDriver' => 'Dibi\Drivers\MySqlDriver',
@@ -113,6 +113,8 @@ spl_autoload_register(function ($class) {
 		'IDibiDriver' => 'Dibi\Driver',
 		'IDibiReflector' => 'Dibi\Reflector',
 		'IDibiResultDriver' => 'Dibi\ResultDriver',
+		'Dibi\Drivers\MsSql2005Driver' => 'Dibi\Drivers\SqlsrvDriver',
+		'Dibi\Drivers\MsSql2005Reflector' => 'Dibi\Drivers\SqlsrvReflector',
 	];
 	if (isset($map[$class])) {
 		require __DIR__ . '/Dibi/' . $map[$class];

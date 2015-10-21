@@ -128,11 +128,11 @@ try {
 echo "</p>\n";
 
 
-// connects to MS SQL 2005
-echo '<p>Connecting to MS SQL 2005: ';
+// connects to SQLSRV
+echo '<p>Connecting to SQLSRV: ';
 try {
 	dibi::connect([
-		'driver' => 'mssql2005',
+		'driver' => 'sqlsrv',
 		'host' => '(local)',
 		'username' => 'Administrator',
 		'password' => 'xxx',

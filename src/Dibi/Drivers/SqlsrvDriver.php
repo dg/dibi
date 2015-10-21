@@ -12,7 +12,7 @@ use Dibi\Connection;
 
 
 /**
- * The dibi driver for MS SQL Driver 2005 database.
+ * The dibi driver for SQLSRV database.
  *
  * Driver options:
  *   - host => the MS SQL server host name. It can also include a port number (hostname:port)
@@ -24,7 +24,7 @@ use Dibi\Connection;
  *   - resource (resource) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
-class MsSql2005Driver implements Dibi\Driver, Dibi\ResultDriver
+class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
@@ -192,7 +192,7 @@ class MsSql2005Driver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function getReflector()
 	{
-		return new Mssql2005Reflector($this);
+		return new SqlsrvReflector($this);
 	}
 
 

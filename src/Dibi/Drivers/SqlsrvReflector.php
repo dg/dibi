@@ -11,10 +11,10 @@ use Dibi;
 
 
 /**
- * The dibi reflector for MSSQL2005 databases.
+ * The dibi reflector for SQLSRV databases.
  * @internal
  */
-class MsSql2005Reflector implements Dibi\Reflector
+class SqlsrvReflector implements Dibi\Reflector
 {
 	use Dibi\Strict;
 
