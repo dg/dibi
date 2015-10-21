@@ -588,7 +588,7 @@ final class DibiTranslator extends DibiObject
 			return $matches[9] == '' ? $this->formatValue($m, FALSE) : $m . $matches[9]; // value or identifier
 		}
 
-		die('this should be never executed');
+		throw new Exception('this should be never executed');
 	}
 
 
