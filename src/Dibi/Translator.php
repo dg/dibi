@@ -217,7 +217,7 @@ final class Translator
 								$v = $this->formatValue($v, FALSE);
 								$vx[] = $k . ($v === 'NULL' ? 'IS ' : '= ') . $v;
 
-							} elseif ($pair[1] === 'ex') { // TODO: this will be removed
+							} elseif ($pair[1] === 'ex') {
 								$vx[] = $k . $this->formatValue($v, 'ex');
 
 							} else {

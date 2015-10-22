@@ -369,18 +369,6 @@ class dibi
 	}
 
 
-	/**
-	 * Replacement for majority of dibi::methods() in future.
-	 */
-	public static function __callStatic($name, $args)
-	{
-		//if ($name = 'select', 'update', ...') {
-		// return self::command()->$name($args);
-		//}
-		return call_user_func_array([self::getConnection(), $name], $args);
-	}
-
-
 	/********************* fluent SQL builders ****************d*g**/
 
 

@@ -34,11 +34,6 @@ class MySqlReflector implements Dibi\Reflector
 	 */
 	public function getTables()
 	{
-		/*$this->query("
-			SELECT TABLE_NAME as name, TABLE_TYPE = 'VIEW' as view
-			FROM INFORMATION_SCHEMA.TABLES
-			WHERE TABLE_SCHEMA = DATABASE()
-		");*/
 		$res = $this->driver->query('SHOW FULL TABLES');
 		$tables = [];
 		while ($row = $res->fetch(FALSE)) {
@@ -58,12 +53,6 @@ class MySqlReflector implements Dibi\Reflector
 	 */
 	public function getColumns($table)
 	{
-		/*$table = $this->escapeText($table);
-		$this->query("
-			SELECT *
-			FROM INFORMATION_SCHEMA.COLUMNS
-			WHERE TABLE_NAME = $table AND TABLE_SCHEMA = DATABASE()
-		");*/
 		$res = $this->driver->query("SHOW FULL COLUMNS FROM {$this->driver->escapeIdentifier($table)}");
 		$columns = [];
 		while ($row = $res->fetch(TRUE)) {
@@ -91,13 +80,6 @@ class MySqlReflector implements Dibi\Reflector
 	 */
 	public function getIndexes($table)
 	{
-		/*$table = $this->escapeText($table);
-		$this->query("
-			SELECT *
-			FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
-			WHERE TABLE_NAME = $table AND TABLE_SCHEMA = DATABASE()
-			AND REFERENCED_COLUMN_NAME IS NULL
-		");*/
 		$res = $this->driver->query("SHOW INDEX FROM {$this->driver->escapeIdentifier($table)}");
 		$indexes = [];
 		while ($row = $res->fetch(TRUE)) {

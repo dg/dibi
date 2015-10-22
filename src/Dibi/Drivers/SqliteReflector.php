@@ -55,12 +55,6 @@ class SqliteReflector implements Dibi\Reflector
 	 */
 	public function getColumns($table)
 	{
-		$meta = $this->driver->query("
-			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = {$this->driver->escapeText($table)}
-			UNION ALL
-			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = {$this->driver->escapeText($table)}
-		")->fetch(TRUE);
-
 		$res = $this->driver->query("PRAGMA table_info({$this->driver->escapeIdentifier($table)})");
 		$columns = [];
 		while ($row = $res->fetch(TRUE)) {
