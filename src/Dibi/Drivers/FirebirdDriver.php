@@ -374,10 +374,10 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if (ibase_errcode()) {
 			if (ibase_errcode() == self::ERROR_EXCEPTION_THROWN) {
 				preg_match('/exception (\d+) (\w+) (.*)/is', ibase_errmsg(), $match);
-				throw new Dibi\ProcedureException($match[3], $match[1], $match[2], \dibi::$sql);
+				throw new Dibi\ProcedureException($match[3], $match[1], $match[2]);
 
 			} else {
-				throw new Dibi\DriverException($msg, ibase_errcode(), \dibi::$sql);
+				throw new Dibi\DriverException($msg, ibase_errcode());
 			}
 		}
 
