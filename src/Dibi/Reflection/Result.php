@@ -98,7 +98,7 @@ class Result
 			$this->columns = [];
 			$reflector = $this->driver instanceof Dibi\Reflector ? $this->driver : NULL;
 			foreach ($this->driver->getResultColumns() as $info) {
-				$this->columns[] = $this->names[$info['name']] = new Column($reflector, $info);
+				$this->columns[] = $this->names[strtolower($info['name'])] = new Column($reflector, $info);
 			}
 		}
 	}
