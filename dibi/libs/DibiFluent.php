@@ -188,6 +188,7 @@ class DibiFluent extends DibiObject implements IDataSource
 
 		foreach ($args as $arg) {
 			if ($arg instanceof self) {
+				$this->cursor[] = '%SQL';
 				$arg = "($arg)";
 			}
 			$this->cursor[] = $arg;
