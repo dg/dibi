@@ -85,7 +85,7 @@ try {
 } catch (Exception $e) {
 }
 Assert::same(
-	reformat('SELECT * FROM [table] LIMIT 1'),
+	reformat(' SELECT * FROM [table] LIMIT 1'),
 	dibi::$sql
 );
 
@@ -102,7 +102,7 @@ $fluent = $conn->select('*')
 	->offset(0);
 
 Assert::same(
-	reformat('SELECT * , (SELECT count(*) FROM [precteni] AS [P] WHERE P.id_clanku = C.id_clanku) FROM [clanky] AS [C] WHERE id_clanku=123 LIMIT 1 OFFSET 0'),
+	reformat('  SELECT * , (SELECT count(*) FROM [precteni] AS [P] WHERE P.id_clanku = C.id_clanku) FROM [clanky] AS [C] WHERE id_clanku=123 LIMIT 1'),
 	(string) $fluent
 );
 
@@ -139,5 +139,15 @@ $fluent = $conn->select('*')
 
 Assert::same(
 	reformat('SELECT * FROM [me] AS [t] WHERE col > 10 AND ([x] = \'a\') AND (b) AND (c)'),
+	(string) $fluent
+);
+
+
+$fluent = $conn->select('*')
+	->limit(' 1; DROP TABLE users')
+	->offset(' 1; DROP TABLE users');
+
+Assert::same(
+	reformat('  SELECT * LIMIT 1 OFFSET 1'),
 	(string) $fluent
 );

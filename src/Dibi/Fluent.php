@@ -319,11 +319,10 @@ class Fluent implements IDataSource
 	public function fetch()
 	{
 		if ($this->command === 'SELECT' && !$this->clauses['LIMIT']) {
-			$result = $this->query($this->limit(1)->_export())->fetch();
-			$this->removeClause('LIMIT');
-			return $result;
+			return $this->query($this->_export(NULL, ['%lmt', 1]))->fetch();
+		} else {
+			return $this->query($this->_export())->fetch();
 		}
-		return $this->query($this->_export())->fetch();
 	}
 
 
@@ -334,11 +333,10 @@ class Fluent implements IDataSource
 	public function fetchSingle()
 	{
 		if ($this->command === 'SELECT' && !$this->clauses['LIMIT']) {
-			$result = $this->query($this->limit(1)->_export())->fetchSingle();
-			$this->removeClause('LIMIT');
-			return $result;
+			return $this->query($this->_export(NULL, ['%lmt', 1]))->fetchSingle();
+		} else {
+			return $this->query($this->_export())->fetchSingle();
 		}
-		return $this->query($this->_export())->fetchSingle();
 	}
 
 
@@ -459,6 +457,10 @@ class Fluent implements IDataSource
 	{
 		if ($clause === NULL) {
 			$data = $this->clauses;
+			if ($this->command === 'SELECT' && ($data['LIMIT'] || $data['OFFSET'])) {
+				$args = array_merge(['%lmt %ofs', $data['LIMIT'][0], $data['OFFSET'][0]], $args);
+				unset($data['LIMIT'], $data['OFFSET']);
+			}
 
 		} else {
 			$clause = self::$normalizer->$clause;
