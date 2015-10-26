@@ -75,19 +75,26 @@ class DibiConnection extends DibiObject
 			$config['driver'] = dibi::$defaultDriver;
 		}
 
-		$class = preg_replace(array('#\W#', '#sql#'), array('_', 'Sql'), ucfirst(strtolower($config['driver'])));
-		$class = "Dibi{$class}Driver";
-		if (!class_exists($class)) {
-			include_once dirname(__FILE__) . "/../drivers/$class.php";
+		if ($config['driver'] instanceof IDibiDriver) {
+			$this->driver = $config['driver'];
+			$config['driver'] = get_class($this->driver);
+		} elseif (PHP_VERSION_ID >= 50307 && is_subclass_of($config['driver'], 'IDibiDriver')) {
+			$this->driver = new $config['driver'];
+		} else {
+			$class = preg_replace(array('#\W#', '#sql#'), array('_', 'Sql'), ucfirst(strtolower($config['driver'])));
+			$class = "Dibi{$class}Driver";
+			if (!class_exists($class)) {
+				include_once dirname(__FILE__) . "/../drivers/$class.php";
 
-			if (!class_exists($class, FALSE)) {
-				throw new DibiException("Unable to create instance of dibi driver '$class'.");
+				if (!class_exists($class, FALSE)) {
+					throw new DibiException("Unable to create instance of dibi driver '$class'.");
+				}
 			}
+			$this->driver = new $class;
 		}
 
 		$config['name'] = $name;
 		$this->config = $config;
-		$this->driver = new $class;
 		$this->translator = new DibiTranslator($this);
 
 		// profiler
