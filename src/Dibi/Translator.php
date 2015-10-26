@@ -353,8 +353,11 @@ final class Translator
 				case 'sn':
 					return $value == '' ? 'NULL' : $this->driver->escapeText($value); // notice two equal signs
 
-				case 'iN': // signed int or NULL
 				case 'in': // deprecated
+					trigger_error('Modifier %in is deprecated, use %iN.', E_USER_DEPRECATED);
+					// intentionally break omitted
+
+				case 'iN': // signed int or NULL
 					if ($value == '') {
 						$value = NULL;
 					}

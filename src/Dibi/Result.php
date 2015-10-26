@@ -67,6 +67,7 @@ class Result implements IDataSource
 	 */
 	final public function getResource()
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use getResultDriver()->getResultResource().', E_USER_DEPRECATED);
 		return $this->getResultDriver()->getResultResource();
 	}
 
@@ -597,7 +598,7 @@ class Result implements IDataSource
 
 
 	/**
-	 * @deprecated
+	 * @return Reflection\Column[]
 	 */
 	final public function getColumns()
 	{
