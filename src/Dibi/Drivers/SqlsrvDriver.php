@@ -301,7 +301,10 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-		if (version_compare($this->version, 11, '<')) { // 11 == SQL Server 2012
+		if ($limit < 0 || $offset < 0) {
+			throw new Dibi\NotSupportedException('Negative offset or limit.');
+
+		} elseif (version_compare($this->version, 11, '<')) { // 11 == SQL Server 2012
 			if ($offset) {
 				throw new Dibi\NotSupportedException('Offset is not supported by this database.');
 

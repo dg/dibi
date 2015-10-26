@@ -397,35 +397,43 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-		if ($limit < 0 && $offset < 1) {
-			return;
+		if ($limit < 0 || $offset < 0) {
+			throw new Dibi\NotSupportedException('Negative offset or limit.');
 		}
 
 		switch ($this->driverName) {
 			case 'mysql':
-				$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
-					. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+				if ($limit !== NULL || $offset) {
+					// see http://dev.mysql.com/doc/refman/5.0/en/select.html
+					$sql .= ' LIMIT ' . ($limit === NULL ? '18446744073709551615' : (int) $limit)
+						. ($offset ? ' OFFSET ' . (int) $offset : '');
+				}
 				break;
 
 			case 'pgsql':
-				if ($limit >= 0) {
+				if ($limit !== NULL) {
 					$sql .= ' LIMIT ' . (int) $limit;
 				}
-				if ($offset > 0) {
+				if ($offset) {
 					$sql .= ' OFFSET ' . (int) $offset;
 				}
 				break;
 
 			case 'sqlite':
-				$sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+				if ($limit !== NULL || $offset) {
+					$sql .= ' LIMIT ' . ($limit === NULL ? '-1' : (int) $limit)
+						. ($offset ? ' OFFSET ' . (int) $offset : '');
+				}
 				break;
 
 			case 'oci':
-				if ($offset > 0) {
+				if ($offset) {
+					// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
 					$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
-						. ($limit >= 0 ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
+						. ($limit !== NULL ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
 						. ') WHERE "__rnum" > '. (int) $offset;
-				} elseif ($limit >= 0) {
+
+				} elseif ($limit !== NULL) {
 					$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
 				}
 				break;
@@ -433,17 +441,21 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 			case 'mssql':
 			case 'sqlsrv':
 			case 'dblib':
-				if (version_compare($this->serverVersion, '11.0') >= 0) {
-					if ($offset >= 0 || $limit >= 0) {
-						$sql .= ' OFFSET ' . (int) $offset . ' ROWS'
-							. ($limit > 0 ? ' FETCH NEXT ' . (int) $limit . ' ROWS ONLY' : '');
+				if (version_compare($this->serverVersion, '11.0') >= 0) { // 11 == SQL Server 2012
+					if ($limit !== NULL || $offset) {
+						// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
+						$sql .= ' OFFSET ' . (int) $offset . ' ROWS '
+							. 'FETCH NEXT ' . (int) $limit . ' ROWS ONLY';
 					}
 					break;
 				}
 				// intentionally break omitted
 
 			case 'odbc':
-				if ($offset < 1) {
+				if ($offset) {
+					throw new Dibi\NotSupportedException('Offset is not supported by this database.');
+
+				} elseif ($limit !== NULL) {
 					$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
 					break;
 				}

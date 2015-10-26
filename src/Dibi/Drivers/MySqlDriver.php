@@ -368,10 +368,13 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-		if ($limit >= 0 || $offset > 0) {
+		if ($limit < 0 || $offset < 0) {
+			throw new Dibi\NotSupportedException('Negative offset or limit.');
+
+		} elseif ($limit !== NULL || $offset) {
 			// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-			$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
-				. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+			$sql .= ' LIMIT ' . ($limit === NULL ? '18446744073709551615' : (int) $limit)
+				. ($offset ? ' OFFSET ' . (int) $offset : '');
 		}
 	}
 

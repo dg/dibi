@@ -327,8 +327,12 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-		if ($limit >= 0 || $offset > 0) {
-			$sql .= ' LIMIT ' . (int) $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+		if ($limit < 0 || $offset < 0) {
+			throw new Dibi\NotSupportedException('Negative offset or limit.');
+
+		} elseif ($limit !== NULL || $offset) {
+			$sql .= ' LIMIT ' . ($limit === NULL ? '-1' : (int) $limit)
+				. ($offset ? ' OFFSET ' . (int) $offset : '');
 		}
 	}
 

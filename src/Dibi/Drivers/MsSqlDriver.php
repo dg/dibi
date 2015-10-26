@@ -283,13 +283,14 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-		// offset support is missing
-		if ($limit >= 0) {
-			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
-		}
-
 		if ($offset) {
-			throw new Dibi\NotImplementedException('Offset is not implemented.');
+			throw new Dibi\NotSupportedException('Offset is not supported by this database.');
+
+		} elseif ($limit < 0) {
+			throw new Dibi\NotSupportedException('Negative offset or limit.');
+
+		} elseif ($limit !== NULL) {
+			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
 		}
 	}
 

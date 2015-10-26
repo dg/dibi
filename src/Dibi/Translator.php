@@ -74,8 +74,8 @@ final class Translator
 		}
 		$this->args = $args;
 
-		$this->limit = -1;
-		$this->offset = 0;
+		$this->limit = NULL;
+		$this->offset = NULL;
 		$this->hasError = FALSE;
 		$commandIns = NULL;
 		$lastArr = NULL;
@@ -171,7 +171,7 @@ final class Translator
 		}
 
 		// apply limit
-		if ($this->limit > -1 || $this->offset > 0) {
+		if ($this->limit !== NULL || $this->offset !== NULL) {
 			$this->driver->applyLimit($sql, $this->limit, $this->offset);
 		}
 
