@@ -79,15 +79,22 @@ class Connection
 			$config['driver'] = \dibi::$defaultDriver;
 		}
 
-		$class = $tmp = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($config['driver'])));
-		$class = "Dibi\\Drivers\\{$class}Driver";
-		if (!class_exists($class)) {
-			throw new Exception("Unable to create instance of dibi driver '$class'.");
+		if ($config['driver'] instanceof Driver) {
+			$this->driver = $config['driver'];
+			$config['driver'] = get_class($this->driver);
+		} elseif (is_subclass_of($config['driver'], 'Dibi\Driver')) {
+			$this->driver = new $config['driver'];
+		} else {
+			$class = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($config['driver'])));
+			$class = "Dibi\\Drivers\\{$class}Driver";
+			if (!class_exists($class)) {
+				throw new Exception("Unable to create instance of dibi driver '$class'.");
+			}
+			$this->driver = new $class;
 		}
 
 		$config['name'] = $name;
 		$this->config = $config;
-		$this->driver = new $class;
 		$this->translator = new Translator($this);
 
 		// profiler
