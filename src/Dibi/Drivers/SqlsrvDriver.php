@@ -40,6 +40,9 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	/** @var int|FALSE  Affected rows */
 	private $affectedRows = FALSE;
 
+	/** @var string */
+	private $version;
+
 
 	/**
 	 * @throws Dibi\NotSupportedException
@@ -80,6 +83,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			$info = sqlsrv_errors();
 			throw new Dibi\DriverException($info[0]['message'], $info[0]['code']);
 		}
+		$this->version = sqlsrv_server_info($this->connection)['SQLServerVersion'];
 	}
 
 
@@ -297,13 +301,18 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-		// offset support is missing
-		if ($limit >= 0) {
-			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') AS T ';
-		}
+		if (version_compare($this->version, 11, '<')) { // 11 == SQL Server 2012
+			if ($offset) {
+				throw new Dibi\NotSupportedException('Offset is not supported by this database.');
 
-		if ($offset) {
-			throw new Dibi\NotImplementedException('Offset is not implemented.');
+			} elseif ($limit !== NULL) {
+				$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
+			}
+
+		} elseif ($limit !== NULL || $offset) {
+			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
+			$sql .= ' OFFSET ' . (int) $offset . ' ROWS '
+				. 'FETCH NEXT ' . (int) $limit . ' ROWS ONLY';
 		}
 	}
 
