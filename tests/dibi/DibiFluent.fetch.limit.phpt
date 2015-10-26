@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @dataProvider ../databases.ini
+ * @dataProvider ../databases.ini !=mssql
  */
 
 use Tester\Assert;
@@ -59,14 +59,20 @@ Assert::same(
 
 
 $fluent->removeClause('limit');
-$fluent->fetch();
+try {
+	$fluent->fetch();
+} catch (DibiException $e) {
+}
 Assert::same(
-	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 3'),
 	dibi::$sql
 );
-$fluent->fetchSingle();
+try {
+	$fluent->fetchSingle();
+} catch (DibiException $e) {
+}
 Assert::same(
-	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 3'),
 	dibi::$sql
 );
 Assert::same(
@@ -78,12 +84,12 @@ Assert::same(
 $fluent->removeClause('offset');
 $fluent->fetch();
 Assert::same(
-	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1'),
+	reformat(' SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1'),
 	dibi::$sql
 );
 $fluent->fetchSingle();
 Assert::same(
-	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1'),
+	reformat(' SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1'),
 	dibi::$sql
 );
 Assert::same(
