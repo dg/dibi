@@ -69,8 +69,8 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				$string = $config['string'];
 			} else {
 				$string = '';
-				Dibi\Connection::alias($config, 'user', 'username');
-				Dibi\Connection::alias($config, 'dbname', 'database');
+				Dibi\Helpers::alias($config, 'user', 'username');
+				Dibi\Helpers::alias($config, 'dbname', 'database');
 				foreach (['host', 'hostaddr', 'port', 'dbname', 'user', 'password', 'connect_timeout', 'options', 'sslmode', 'service'] as $key) {
 					if (isset($config[$key])) {
 						$string .= $key . '=' . $config[$key] . ' ';

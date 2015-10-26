@@ -9,6 +9,7 @@ namespace Dibi\Drivers;
 
 use Dibi;
 use Dibi\Connection;
+use Dibi\Helpers;
 
 
 /**
@@ -62,10 +63,10 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function connect(array & $config)
 	{
-		Connection::alias($config, 'options|UID', 'username');
-		Connection::alias($config, 'options|PWD', 'password');
-		Connection::alias($config, 'options|Database', 'database');
-		Connection::alias($config, 'options|CharacterSet', 'charset');
+		Helpers::alias($config, 'options|UID', 'username');
+		Helpers::alias($config, 'options|PWD', 'password');
+		Helpers::alias($config, 'options|Database', 'database');
+		Helpers::alias($config, 'options|CharacterSet', 'charset');
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
@@ -291,7 +292,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	/** @deprecated */
 	public function escape($value, $type)
 	{
-		return Dibi\Helpers::escape($this, $value, $type);
+		return Helpers::escape($this, $value, $type);
 	}
 
 

@@ -69,11 +69,11 @@ class Connection
 			throw new \InvalidArgumentException('Configuration must be array, string or object.');
 		}
 
-		self::alias($config, 'username', 'user');
-		self::alias($config, 'password', 'pass');
-		self::alias($config, 'host', 'hostname');
-		self::alias($config, 'result|formatDate', 'resultDate');
-		self::alias($config, 'result|formatDateTime', 'resultDateTime');
+		Helpers::alias($config, 'username', 'user');
+		Helpers::alias($config, 'password', 'pass');
+		Helpers::alias($config, 'host', 'hostname');
+		Helpers::alias($config, 'result|formatDate', 'resultDate');
+		Helpers::alias($config, 'result|formatDateTime', 'resultDateTime');
 
 		if (!isset($config['driver'])) {
 			$config['driver'] = \dibi::$defaultDriver;
@@ -204,24 +204,10 @@ class Connection
 	}
 
 
-	/**
-	 * Apply configuration alias or default values.
-	 * @param  array  connect configuration
-	 * @param  string key
-	 * @param  string alias key
-	 * @return void
-	 */
+	/** @deprecated */
 	public static function alias(& $config, $key, $alias)
 	{
-		$foo = & $config;
-		foreach (explode('|', $key) as $key) {
-			$foo = & $foo[$key];
-		}
-
-		if (!isset($foo) && isset($config[$alias])) {
-			$foo = $config[$alias];
-			unset($config[$alias]);
-		}
+		Helpers::alias($config, $key, $alias);
 	}
 
 
@@ -618,44 +604,13 @@ class Connection
 
 
 	/**
-	 * Import SQL dump from file - extreme fast!
+	 * Import SQL dump from file.
 	 * @param  string  filename
 	 * @return int  count of sql commands
 	 */
 	public function loadFile($file)
 	{
-		$this->connected || $this->connect();
-		@set_time_limit(0); // intentionally @
-
-		$handle = @fopen($file, 'r'); // intentionally @
-		if (!$handle) {
-			throw new \RuntimeException("Cannot open file '$file'.");
-		}
-
-		$count = 0;
-		$delimiter = ';';
-		$sql = '';
-		while (!feof($handle)) {
-			$s = rtrim(fgets($handle));
-			if (substr($s, 0, 10) === 'DELIMITER ') {
-				$delimiter = substr($s, 10);
-
-			} elseif (substr($s, -strlen($delimiter)) === $delimiter) {
-				$sql .= substr($s, 0, -strlen($delimiter));
-				$this->driver->query($sql);
-				$sql = '';
-				$count++;
-
-			} else {
-				$sql .= $s . "\n";
-			}
-		}
-		if (trim($sql) !== '') {
-			$this->driver->query($sql);
-			$count++;
-		}
-		fclose($handle);
-		return $count;
+		return Helpers::loadFromFile($this, $file);
 	}
 
 

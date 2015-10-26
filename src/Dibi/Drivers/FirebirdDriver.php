@@ -62,7 +62,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function connect(array & $config)
 	{
-		Dibi\Connection::alias($config, 'database', 'db');
+		Dibi\Helpers::alias($config, 'database', 'db');
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];

@@ -55,4 +55,4 @@ class DateTime extends \DateTime
 		return $this->format('Y-m-d H:i:s');
 	}
 
-		}
+}

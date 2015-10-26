@@ -212,4 +212,66 @@ class Helpers
 		return self::$types;
 	}
 
+
+	/**
+	 * Apply configuration alias or default values.
+	 * @param  array  connect configuration
+	 * @param  string key
+	 * @param  string alias key
+	 * @return void
+	 */
+	public static function alias(& $config, $key, $alias)
+	{
+		$foo = & $config;
+		foreach (explode('|', $key) as $key) {
+			$foo = & $foo[$key];
+		}
+
+		if (!isset($foo) && isset($config[$alias])) {
+			$foo = $config[$alias];
+			unset($config[$alias]);
+		}
+	}
+
+
+	/**
+	 * Import SQL dump from file.
+	 * @return int  count of sql commands
+	 */
+	public static function loadFromFile(Connection $connection, $file)
+	{
+		@set_time_limit(0); // intentionally @
+
+		$handle = @fopen($file, 'r'); // intentionally @
+		if (!$handle) {
+			throw new \RuntimeException("Cannot open file '$file'.");
+		}
+
+		$count = 0;
+		$delimiter = ';';
+		$sql = '';
+		$driver = $connection->getDriver();
+		while (!feof($handle)) {
+			$s = rtrim(fgets($handle));
+			if (substr($s, 0, 10) === 'DELIMITER ') {
+				$delimiter = substr($s, 10);
+
+			} elseif (substr($s, -strlen($delimiter)) === $delimiter) {
+				$sql .= substr($s, 0, -strlen($delimiter));
+				$driver->query($sql);
+				$sql = '';
+				$count++;
+
+			} else {
+				$sql .= $s . "\n";
+			}
+		}
+		if (trim($sql) !== '') {
+			$driver->query($sql);
+			$count++;
+		}
+		fclose($handle);
+		return $count;
+	}
+
 }

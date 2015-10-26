@@ -63,7 +63,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	{
 		$foo = & $config['dsn'];
 		$foo = & $config['options'];
-		Dibi\Connection::alias($config, 'resource', 'pdo');
+		Dibi\Helpers::alias($config, 'resource', 'pdo');
 
 		if ($config['resource'] instanceof PDO) {
 			$this->connection = $config['resource'];

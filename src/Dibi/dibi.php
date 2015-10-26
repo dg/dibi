@@ -365,7 +365,7 @@ class dibi
 	 */
 	public static function loadFile($file)
 	{
-		return self::getConnection()->loadFile($file);
+		return Dibi\Helpers::loadFromFile(self::getConnection(), $file);
 	}
 
 

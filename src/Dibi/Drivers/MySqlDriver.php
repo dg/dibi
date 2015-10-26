@@ -72,7 +72,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 		} else {
 			// default values
-			Dibi\Connection::alias($config, 'flags', 'options');
+			Dibi\Helpers::alias($config, 'flags', 'options');
 			$config += [
 				'charset' => 'utf8',
 				'timezone' => date('P'),
