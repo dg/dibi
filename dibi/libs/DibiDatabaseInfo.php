@@ -390,7 +390,7 @@ class DibiResultInfo extends DibiObject
 			$this->columns = array();
 			$reflector = $this->driver instanceof IDibiReflector ? $this->driver : NULL;
 			foreach ($this->driver->getResultColumns() as $info) {
-				$this->columns[] = $this->names[$info['name']] = new DibiColumnInfo($reflector, $info);
+				$this->columns[] = $this->names[strtolower($info['name'])] = new DibiColumnInfo($reflector, $info);
 			}
 		}
 	}
