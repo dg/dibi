@@ -9,19 +9,22 @@
 /**
  * dibi SQL builder via fluent interfaces. EXPERIMENTAL!
  *
- * @package    dibi
- *
- * @method DibiFluent select($field)
+ * @method DibiFluent select(...$field)
  * @method DibiFluent distinct()
  * @method DibiFluent from($table)
- * @method DibiFluent where($cond)
- * @method DibiFluent groupBy($field)
- * @method DibiFluent having($cond)
- * @method DibiFluent orderBy($field)
+ * @method DibiFluent where(...$cond)
+ * @method DibiFluent groupBy(...$field)
+ * @method DibiFluent having(...$cond)
+ * @method DibiFluent orderBy(...$field)
  * @method DibiFluent limit(int $limit)
  * @method DibiFluent offset(int $offset)
- * @method DibiFluent leftJoin($table)
- * @method DibiFluent on($cond)
+ * @method DibiFluent join(...$table)
+ * @method DibiFluent leftJoin(...$table)
+ * @method DibiFluent innerJoin(...$table)
+ * @method DibiFluent rightJoin(...$table)
+ * @method DibiFluent outerJoin(...$table)
+ * @method DibiFluent on(...$cond)
+ * @method DibiFluent using(...$cond)
  */
 class DibiFluent extends DibiObject implements IDataSource
 {
