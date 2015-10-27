@@ -11,17 +11,22 @@ namespace Dibi;
 /**
  * dibi SQL builder via fluent interfaces. EXPERIMENTAL!
  *
- * @method Fluent select($field)
+ * @method Fluent select(...$field)
  * @method Fluent distinct()
  * @method Fluent from($table)
- * @method Fluent where($cond)
- * @method Fluent groupBy($field)
- * @method Fluent having($cond)
- * @method Fluent orderBy($field)
+ * @method Fluent where(...$cond)
+ * @method Fluent groupBy(...$field)
+ * @method Fluent having(...$cond)
+ * @method Fluent orderBy(...$field)
  * @method Fluent limit(int $limit)
  * @method Fluent offset(int $offset)
- * @method Fluent leftJoin($table)
- * @method Fluent on($cond)
+ * @method Fluent Join(...$table)
+ * @method Fluent leftJoin(...$table)
+ * @method Fluent innerJoin(...$table)
+ * @method Fluent rightJoin(...$table)
+ * @method Fluent outerJoin(...$table)
+ * @method Fluent on(...$cond)
+ * @method Fluent using(...$cond)
  */
 class Fluent implements IDataSource
 {
