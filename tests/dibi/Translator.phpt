@@ -190,6 +190,11 @@ Assert::same(
 	'b9%t' => NULL,
 ]));
 
+Assert::exception(function () use ($conn) {
+	$conn->translate('SELECT %s', new DateTime('1212-09-26'));
+}, 'Dibi\Exception', 'SQL translate error: Invalid combination of type Dibi\DateTime and modifier %s');
+
+
 
 
 // like

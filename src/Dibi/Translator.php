@@ -333,7 +333,7 @@ final class Translator
 			if ($value !== NULL && !is_scalar($value)) {  // array is already processed
 				if ($value instanceof Literal && ($modifier === 'sql' || $modifier === 'SQL')) {
 					$modifier = 'SQL';
-				} elseif ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
+				} elseif (($value instanceof \DateTime || $value instanceof \DateTimeInterface) && ($modifier === 'd' || $modifier === 't')) {
 					// continue
 				} else {
 					$type = is_object($value) ? get_class($value) : gettype($value);
