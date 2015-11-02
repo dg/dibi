@@ -151,3 +151,12 @@ Assert::same(
 	reformat('  SELECT * LIMIT 1 OFFSET 1'),
 	(string) $fluent
 );
+
+
+$fluent = $conn->select('*')->from('abc')
+	->where('x IN (%SQL)', $conn->select('id')->from('xyz'));
+
+Assert::same(
+	reformat('SELECT * FROM [abc] WHERE x IN ((SELECT [id] FROM [xyz]))'),
+	(string) $fluent
+);

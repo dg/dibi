@@ -189,8 +189,7 @@ class Fluent implements IDataSource
 
 		foreach ($args as $arg) {
 			if ($arg instanceof self) {
-				$this->cursor[] = '%SQL';
-				$arg = "($arg)";
+				$arg = new Literal("($arg)");
 			}
 			$this->cursor[] = $arg;
 		}
