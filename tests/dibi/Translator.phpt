@@ -519,6 +519,10 @@ Assert::same(
 	$conn->translate('SELECT', new Dibi\Literal('* FROM table'))
 );
 
+Assert::same(
+	reformat('SELECT * FROM table'),
+	$conn->translate('SELECT %SQL', new Dibi\Literal('* FROM table'))
+);
 
 Assert::same(
 	reformat('SELECT * FROM table'),

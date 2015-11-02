@@ -330,9 +330,15 @@ final class Translator
 
 		// with modifier procession
 		if ($modifier) {
-			if ($value !== NULL && !is_scalar($value) && !$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {  // array is already processed
-				$type = is_object($value) ? get_class($value) : gettype($value);
-				return $this->errors[] = "**Invalid combination of type $type and modifier %$modifier**";
+			if ($value !== NULL && !is_scalar($value)) {  // array is already processed
+				if ($value instanceof Literal && ($modifier === 'sql' || $modifier === 'SQL')) {
+					$modifier = 'SQL';
+				} elseif ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
+					// continue
+				} else {
+					$type = is_object($value) ? get_class($value) : gettype($value);
+					return $this->errors[] = "**Invalid combination of type $type and modifier %$modifier**";
+				}
 			}
 
 			switch ($modifier) {
