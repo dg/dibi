@@ -137,22 +137,20 @@ final class Translator
 				$arg = iterator_to_array($arg);
 			}
 
-			if (is_array($arg)) {
-				if (is_string(key($arg))) {
-					// associative array -> autoselect between SET or VALUES & LIST
-					if ($commandIns === NULL) {
-						$commandIns = strtoupper(substr(ltrim($this->args[0]), 0, 6));
-						$commandIns = $commandIns === 'INSERT' || $commandIns === 'REPLAC';
-						$sql[] = $this->formatValue($arg, $commandIns ? 'v' : 'a');
-					} else {
-						if ($lastArr === $cursor - 1) {
-							$sql[] = ',';
-						}
-						$sql[] = $this->formatValue($arg, $commandIns ? 'l' : 'a');
+			if (is_array($arg) && is_string(key($arg))) {
+				// associative array -> autoselect between SET or VALUES & LIST
+				if ($commandIns === NULL) {
+					$commandIns = strtoupper(substr(ltrim($this->args[0]), 0, 6));
+					$commandIns = $commandIns === 'INSERT' || $commandIns === 'REPLAC';
+					$sql[] = $this->formatValue($arg, $commandIns ? 'v' : 'a');
+				} else {
+					if ($lastArr === $cursor - 1) {
+						$sql[] = ',';
 					}
-					$lastArr = $cursor;
-					continue;
+					$sql[] = $this->formatValue($arg, $commandIns ? 'l' : 'a');
 				}
+				$lastArr = $cursor;
+				continue;
 			}
 
 			// default processing

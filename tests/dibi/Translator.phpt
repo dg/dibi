@@ -294,7 +294,8 @@ WHERE (`test`.`a` LIKE '1995-03-01'
 	OR `b6` IN ('one', 'two', 'three')
 	OR `b7` IN (NULL)
 	OR `b8` IN (RAND() `col1` > `col2` )
-	OR `b9` IN (  )
+	OR `b9` IN (RAND(), [col1] > [col2] )
+	OR `b10` IN (  )
 	AND `c` = 'embedded \' string'
 	OR `d`=10
 	OR `e`=NULL
@@ -314,7 +315,8 @@ WHERE ("test"."a" LIKE \'1995-03-01\'
 	OR "b6" IN (\'one\', \'two\', \'three\')
 	OR "b7" IN (NULL)
 	OR "b8" IN (RAND() "col1" > "col2" )
-	OR "b9" IN (  )
+	OR "b9" IN (RAND(), [col1] > [col2] )
+	OR "b10" IN (  )
 	AND "c" = \'embedded \'\' string\'
 	OR "d"=10
 	OR "e"=NULL
@@ -334,7 +336,8 @@ WHERE ([test].[a] LIKE #03/01/1995#
 	OR [b6] IN ('one', 'two', 'three')
 	OR [b7] IN (NULL)
 	OR [b8] IN (RAND() [col1] > [col2] )
-	OR [b9] IN (  )
+	OR [b9] IN (RAND(), [col1] > [col2] )
+	OR [b10] IN (  )
 	AND [c] = 'embedded '' string'
 	OR [d]=10
 	OR [e]=NULL
@@ -354,7 +357,8 @@ WHERE ([test].[a] LIKE '1995-03-01'
 	OR [b6] IN ('one', 'two', 'three')
 	OR [b7] IN (NULL)
 	OR [b8] IN (RAND() [col1] > [col2] )
-	OR [b9] IN (  )
+	OR [b9] IN (RAND(), [col1] > [col2] )
+	OR [b10] IN (  )
 	AND [c] = 'embedded '' string'
 	OR [d]=10
 	OR [e]=NULL
@@ -376,7 +380,8 @@ WHERE ([test.a] LIKE %d', '1995-03-01', '
 	OR [b6] IN %l', $array3, '
 	OR [b7] IN %in', [], '
 	OR [b8] IN (%sql', $array5, ')
-	OR [b9] IN (', [], ")
+	OR [b9] IN (%SQL', $array5, ')
+	OR [b10] IN (', [], ")
 	AND [c] = 'embedded '' string'
 	OR [d]=%i", 10.3, '
 	OR [e]=%i', NULL, '
@@ -506,6 +511,18 @@ Assert::same(
 Assert::same(
 	reformat('INSERT INTO 0'),
 	$conn->translate('INSERT INTO %f', 'ahoj')
+);
+
+
+Assert::same(
+	reformat('SELECT * FROM table'),
+	$conn->translate('SELECT', new Dibi\Literal('* FROM table'))
+);
+
+
+Assert::same(
+	reformat('SELECT * FROM table'),
+	$conn->translate(new Dibi\Literal('SELECT * FROM table'))
 );
 
 
