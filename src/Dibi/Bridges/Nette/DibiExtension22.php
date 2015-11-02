@@ -39,6 +39,12 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 			->setClass('Dibi\Connection', [$config])
 			->setAutowired(isset($config['autowired']) ? $config['autowired'] : TRUE);
 
+		if (class_exists('Tracy\Debugger')) {
+			$connection->addSetup(
+				[new Nette\DI\Statement('Tracy\Debugger::getBlueScreen'), 'addPanel'],
+				[['Dibi\Bridges\Tracy\Panel', 'renderException']]
+			);
+		}
 		if ($useProfiler) {
 			$panel = $container->addDefinition($this->prefix('panel'))
 				->setClass('Dibi\Bridges\Tracy\Panel');
