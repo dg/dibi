@@ -172,10 +172,9 @@ class Result implements IDataSource
 
 	/**
 	 * Set a factory to create fetched object instances. These should extend the Row class.
-	 * @param  callback
 	 * @return self
 	 */
-	public function setRowFactory($callback)
+	public function setRowFactory(callable $callback)
 	{
 		$this->rowFactory = $callback;
 		return $this;

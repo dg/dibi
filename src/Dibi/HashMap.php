@@ -17,18 +17,14 @@ abstract class HashMapBase
 	private $callback;
 
 
-	public function __construct($callback)
+	public function __construct(callable $callback)
 	{
-		$this->setCallback($callback);
+		$this->callback = $callback;
 	}
 
 
-	public function setCallback($callback)
+	public function setCallback(callable $callback)
 	{
-		if (!is_callable($callback)) {
-			$able = is_callable($callback, TRUE, $textual);
-			throw new \InvalidArgumentException("Handler '$textual' is not " . ($able ? 'callable.' : 'valid PHP callback.'));
-		}
 		$this->callback = $callback;
 	}
 

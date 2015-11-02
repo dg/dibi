@@ -450,7 +450,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 * @param  int     num of arguments
 	 * @return void
 	 */
-	public function registerFunction($name, $callback, $numArgs = -1)
+	public function registerFunction($name, callable $callback, $numArgs = -1)
 	{
 		$this->connection->createFunction($name, $callback, $numArgs);
 	}
@@ -464,7 +464,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 * @param  int     num of arguments
 	 * @return void
 	 */
-	public function registerAggregateFunction($name, $rowCallback, $agrCallback, $numArgs = -1)
+	public function registerAggregateFunction($name, callable $rowCallback, callable $agrCallback, $numArgs = -1)
 	{
 		$this->connection->createAggregate($name, $rowCallback, $agrCallback, $numArgs);
 	}
