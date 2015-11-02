@@ -27,8 +27,8 @@ final class Translator
 	/** @var array */
 	private $args;
 
-	/** @var bool */
-	private $hasError;
+	/** @var string[] */
+	private $errors;
 
 	/** @var bool */
 	private $comment;
@@ -76,7 +76,7 @@ final class Translator
 
 		$this->limit = NULL;
 		$this->offset = NULL;
-		$this->hasError = FALSE;
+		$this->errors = [];
 		$commandIns = NULL;
 		$lastArr = NULL;
 		// shortcuts
@@ -164,8 +164,8 @@ final class Translator
 
 		$sql = implode(' ', $sql);
 
-		if ($this->hasError) {
-			throw new Exception('SQL translate error', 0, $sql);
+		if ($this->errors) {
+			throw new Exception('SQL translate error: ' . trim(reset($this->errors), '*'), 0, $sql);
 		}
 
 		// apply limit
@@ -281,15 +281,13 @@ final class Translator
 						if (is_array($v)) {
 							if (isset($proto)) {
 								if ($proto !== array_keys($v)) {
-									$this->hasError = TRUE;
-									return '**Multi-insert array "' . $k . '" is different.**';
+									return $this->errors[] = '**Multi-insert array "' . $k . '" is different**';
 								}
 							} else {
 								$proto = array_keys($v);
 							}
 						} else {
-							$this->hasError = TRUE;
-							return '**Unexpected type ' . gettype($v) . '**';
+							return $this->errors[] = '**Unexpected type ' . (is_object($v) ? get_class($v) : gettype($v)) . '**';
 						}
 
 						$pair = explode('%', $k, 2); // split into identifier & modifier
@@ -333,8 +331,8 @@ final class Translator
 		// with modifier procession
 		if ($modifier) {
 			if ($value !== NULL && !is_scalar($value) && !$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {  // array is already processed
-				$this->hasError = TRUE;
-				return '**Unexpected type ' . gettype($value) . '**';
+				$type = is_object($value) ? get_class($value) : gettype($value);
+				return $this->errors[] = "**Invalid combination of type $type and modifier %$modifier**";
 			}
 
 			switch ($modifier) {
@@ -430,12 +428,11 @@ final class Translator
 				case 'a':
 				case 'l':
 				case 'v':
-					$this->hasError = TRUE;
-					return '**Unexpected type ' . gettype($value) . '**';
+					$type = gettype($value);
+					return $this->errors[] = "**Invalid combination of type $type and modifier %$modifier**";
 
 				default:
-					$this->hasError = TRUE;
-					return "**Unknown or invalid modifier %$modifier**";
+					return $this->errors[] = "**Unknown or unexpected modifier %$modifier**";
 			}
 		}
 
@@ -463,8 +460,8 @@ final class Translator
 			return (string) $value;
 
 		} else {
-			$this->hasError = TRUE;
-			return '**Unexpected ' . gettype($value) . '**';
+			$type = is_object($value) ? get_class($value) : gettype($value);
+			return $this->errors[] = "**Unexpected $type**";
 		}
 	}
 
@@ -493,8 +490,7 @@ final class Translator
 			$cursor = & $this->cursor;
 
 			if ($cursor >= count($this->args)) {
-				$this->hasError = TRUE;
-				return '**Extra placeholder**';
+				return $this->errors[] = '**Extra placeholder**';
 			}
 
 			$cursor++;
@@ -506,8 +502,7 @@ final class Translator
 			$cursor = & $this->cursor;
 
 			if ($cursor >= count($this->args) && $mod !== 'else' && $mod !== 'end') {
-				$this->hasError = TRUE;
-				return "**Extra modifier %$mod**";
+				return $this->errors[] = "**Extra modifier %$mod**";
 			}
 
 			if ($mod === 'if') {
@@ -589,8 +584,7 @@ final class Translator
 			return $this->driver->escapeText(str_replace('""', '"', $matches[6]));
 
 		} elseif ($matches[7]) { // string quote
-			$this->hasError = TRUE;
-			return '**Alone quote**';
+			return $this->errors[] = '**Alone quote**';
 		}
 
 		if ($matches[8]) { // SQL identifier substitution

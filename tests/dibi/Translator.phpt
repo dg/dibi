@@ -77,8 +77,8 @@ Assert::same(
 // invalid input
 $e = Assert::exception(function () use ($conn) {
 	$conn->translate('SELECT %s', (object) [123], ', %m', 123);
-}, 'Dibi\Exception', 'SQL translate error');
-Assert::same('SELECT **Unexpected type object** , **Unknown or invalid modifier %m**', $e->getSql());
+}, 'Dibi\Exception', 'SQL translate error: Invalid combination of type stdClass and modifier %s');
+Assert::same('SELECT **Invalid combination of type stdClass and modifier %s** , **Unknown or unexpected modifier %m**', $e->getSql());
 
 Assert::same(
 	reformat('SELECT * FROM [table] WHERE id=10 AND name=\'ahoj\''),
@@ -228,7 +228,7 @@ if ($config['system'] === 'postgre') {
 
 $e = Assert::exception(function () use ($conn) {
 	$conn->translate("SELECT '");
-}, 'Dibi\Exception', 'SQL translate error');
+}, 'Dibi\Exception', 'SQL translate error: Alone quote');
 Assert::same('SELECT **Alone quote**', $e->getSql());
 
 Assert::match(
@@ -478,8 +478,8 @@ $e = Assert::exception(function () use ($conn) {
 		'num%i' => ['1', ''],
 	];
 	$conn->translate('INSERT INTO test %m', $array6);
-}, 'Dibi\Exception', 'SQL translate error');
-Assert::same('INSERT INTO test **Multi-insert array "num%i" is different.**', $e->getSql());
+}, 'Dibi\Exception', 'SQL translate error: Multi-insert array "num%i" is different');
+Assert::same('INSERT INTO test **Multi-insert array "num%i" is different**', $e->getSql());
 
 $array6 = [
 	'id' => [1, 2, 3, 4],
