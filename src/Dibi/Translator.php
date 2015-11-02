@@ -22,7 +22,7 @@ final class Translator
 	private $driver;
 
 	/** @var int */
-	private $cursor;
+	private $cursor = 0;
 
 	/** @var array */
 	private $args;
@@ -31,13 +31,13 @@ final class Translator
 	private $errors;
 
 	/** @var bool */
-	private $comment;
+	private $comment = FALSE;
 
 	/** @var int */
-	private $ifLevel;
+	private $ifLevel = 0;
 
 	/** @var int */
-	private $ifLevelStart;
+	private $ifLevelStart = 0;
 
 	/** @var int */
 	private $limit;
@@ -52,41 +52,29 @@ final class Translator
 	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
+		$this->driver = $connection->getDriver();
 		$this->identifiers = new HashMap([$this, 'delimite']);
 	}
 
 
 	/**
-	 * Generates SQL.
+	 * Generates SQL. Can be called only once.
 	 * @param  array
 	 * @return string
 	 * @throws Exception
 	 */
 	public function translate(array $args)
 	{
-		if (!$this->driver) {
-			$this->driver = $this->connection->getDriver();
-		}
-
 		$args = array_values($args);
 		while (count($args) === 1 && is_array($args[0])) { // implicit array expansion
 			$args = array_values($args[0]);
 		}
 		$this->args = $args;
 
-		$this->limit = NULL;
-		$this->offset = NULL;
-		$this->errors = [];
 		$commandIns = NULL;
 		$lastArr = NULL;
-		// shortcuts
 		$cursor = & $this->cursor;
-		$cursor = 0;
-
-		// conditional sql
-		$this->ifLevel = $this->ifLevelStart = 0;
 		$comment = & $this->comment;
-		$comment = FALSE;
 
 		// iterate
 		$sql = [];
@@ -187,10 +175,6 @@ final class Translator
 	{
 		if ($this->comment) {
 			return '...';
-		}
-
-		if (!$this->driver) {
-			$this->driver = $this->connection->getDriver();
 		}
 
 		// array processing (with or without modifier)
@@ -316,8 +300,7 @@ final class Translator
 
 				case 'ex':
 				case 'sql':
-					$translator = new self($this->connection);
-					return $translator->translate($value);
+					return call_user_func_array([$this->connection, 'translate'], $value);
 
 				default:  // value, value, value - all with the same modifier
 					foreach ($value as $v) {

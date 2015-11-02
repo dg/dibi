@@ -95,7 +95,6 @@ class Connection
 
 		$config['name'] = $name;
 		$this->config = $config;
-		$this->translator = new Translator($this);
 
 		// profiler
 		$profilerCfg = & $config['profiler'];
@@ -293,7 +292,11 @@ class Connection
 	private function translateArgs($args)
 	{
 		$this->connected || $this->connect();
-		return $this->translator->translate($args);
+		if (!$this->translator) {
+			$this->translator = new Translator($this);
+		}
+		$translator = clone $this->translator;
+		return $translator->translate($args);
 	}
 
 
