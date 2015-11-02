@@ -604,6 +604,15 @@ class Connection
 	}
 
 
+	/**
+	 * @return Literal
+	 */
+	public static function literal($value)
+	{
+		return new Literal($value);
+	}
+
+
 	/********************* misc ****************d*g**/
 
 
