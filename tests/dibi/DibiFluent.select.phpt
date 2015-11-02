@@ -141,3 +141,12 @@ Assert::same(
 	reformat('SELECT * FROM [me] AS [t] WHERE col > 10 AND ([x] = \'a\') AND (b) AND (c)'),
 	(string) $fluent
 );
+
+
+$fluent = $conn->select('*')->from('abc')
+	->where('x IN (%SQL)', $conn->select('id')->from('xyz'));
+
+Assert::same(
+	reformat('SELECT * FROM [abc] WHERE x IN ((SELECT [id] FROM [xyz]))'),
+	(string) $fluent
+);

@@ -175,7 +175,10 @@ class DibiFluent extends DibiObject implements IDataSource
 			} elseif (is_string($arg) && preg_match('#^[a-z:_][a-z0-9_.:]*\z#i', $arg)) { // identifier
 				$args = array('%n', $arg);
 
-			} elseif (is_array($arg) || ($arg instanceof Traversable && !$arg instanceof self)) { // any array
+			} elseif ($arg instanceof self) {
+				$args = array('%SQL', $arg);
+
+			} elseif (is_array($arg) || $arg instanceof Traversable) { // any array
 				if (isset(self::$modifiers[$clause])) {
 					$args = array(self::$modifiers[$clause], $arg);
 
@@ -187,7 +190,6 @@ class DibiFluent extends DibiObject implements IDataSource
 
 		foreach ($args as $arg) {
 			if ($arg instanceof self) {
-				$this->cursor[] = '%SQL';
 				$arg = "($arg)";
 			}
 			$this->cursor[] = $arg;
