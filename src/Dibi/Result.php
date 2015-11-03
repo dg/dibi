@@ -515,7 +515,7 @@ class Result implements IDataSource
 			} elseif ($type === Type::BOOL) {
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
 
-			} elseif ($type === Type::DATE || $type === Type::DATETIME) {
+			} elseif ($type === Type::DATETIME || $type === Type::DATE || $type === Type::TIME) {
 				if ((int) $value !== 0 || substr((string) $value, 0, 3) === '00:') { // '', NULL, FALSE, '0000-00-00', ...
 					$value = new DateTime($value);
 					$row[$key] = empty($this->formats[$type]) ? $value : $value->format($this->formats[$type]);

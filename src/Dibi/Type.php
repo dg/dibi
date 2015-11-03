@@ -20,7 +20,7 @@ class Type
 		INTEGER = 'i',
 		FLOAT = 'f',
 		DATE = 'd',
-		DATETIME = 't',
+		DATETIME = 'dt',
 		TIME = 't',
 		TIME_INTERVAL = 'ti';
 

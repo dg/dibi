@@ -192,3 +192,36 @@ test(function () {
 	Assert::equal(['col' => '2015-10-13 00:00:00'], $result->test(['col' => '2015-10-13']));
 	Assert::equal(['col' => '2015-10-13 14:30:00'], $result->test(['col' => '2015-10-13 14:30']));
 });
+
+
+test(function () {
+	$result = new MockResult;
+	$result->setType('col', Type::DATE);
+
+	Assert::same(['col' => NULL], $result->test(['col' => NULL]));
+	Assert::exception(function () use ($result) {
+		$result->test(['col' => TRUE]);
+	}, 'Exception');
+	Assert::same(['col' => NULL], $result->test(['col' => FALSE]));
+
+	Assert::same(['col' => NULL], $result->test(['col' => '']));
+	Assert::same(['col' => NULL], $result->test(['col' => '0000-00-00']));
+	Assert::equal(['col' => new Dibi\DateTime('2015-10-13')], $result->test(['col' => '2015-10-13']));
+});
+
+
+test(function () {
+	$result = new MockResult;
+	$result->setType('col', Type::TIME);
+
+	Assert::same(['col' => NULL], $result->test(['col' => NULL]));
+	Assert::exception(function () use ($result) {
+		$result->test(['col' => TRUE]);
+	}, 'Exception');
+	Assert::same(['col' => NULL], $result->test(['col' => FALSE]));
+
+	Assert::same(['col' => NULL], $result->test(['col' => '']));
+	Assert::same(['col' => NULL], $result->test(['col' => '0000-00-00']));
+	Assert::equal(['col' => new Dibi\DateTime('00:00:00')], $result->test(['col' => '00:00:00']));
+	Assert::equal(['col' => new Dibi\DateTime('14:30')], $result->test(['col' => '14:30']));
+});
