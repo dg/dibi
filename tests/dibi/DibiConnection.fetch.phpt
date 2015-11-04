@@ -12,16 +12,6 @@ $conn = new DibiConnection($config);
 $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 
-function num($n)
-{
-	global $config;
-	if (substr(@$config['dsn'], 0, 5) === 'odbc:' || $config['driver'] === 'sqlite') {
-		$n = is_float($n) ? "$n.0" : (string) $n;
-	}
-	return $n;
-}
-
-
 // fetch a single value
 $res = $conn->query('SELECT [title] FROM [products]');
 Assert::same('Chair', $res->fetchSingle());

@@ -80,16 +80,6 @@ Assert::same(
 );
 
 
-try {
-	$fluent = $conn->select('*')->from('table')->fetch();
-} catch (Exception $e) {
-}
-Assert::same(
-	reformat(' SELECT * FROM [table] LIMIT 1'),
-	dibi::$sql
-);
-
-
 $fluent = $conn->select('*')
 	->select(
 		$conn->select('count(*)')
