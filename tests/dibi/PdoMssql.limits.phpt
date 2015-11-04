@@ -8,7 +8,7 @@ use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
 
-if ($config['system'] !== 'mssql' || $config['driver'] !== 'pdo') {
+if ($config['system'] !== 'sqlsrv' || $config['driver'] !== 'pdo') {
 	Tester\Environment::skip("Not supported system '$config[system]'.");
 }
 

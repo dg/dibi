@@ -19,7 +19,7 @@ try {
 	$config = Tester\Environment::loadData();
 } catch (Exception $e) {
 	$config = parse_ini_file(__DIR__ . '/../databases.ini', TRUE);
-	$config = $config['sqlite3'];
+	$config = reset($config);
 }
 
 
@@ -63,7 +63,7 @@ function reformat($s)
 		return strtr($s, '[]', '``');
 	} elseif ($config['system'] === 'postgre') {
 		return strtr($s, '[]', '""');
-	} elseif ($config['system'] === 'odbc' || $config['system'] === 'sqlite') {
+	} elseif (in_array($config['system'], array('odbc', 'sqlite', 'sqlsrv'))) {
 		return $s;
 	} else {
 		trigger_error("Unsupported driver $config[system]", E_USER_WARNING);
