@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @dataProvider ../databases.ini !=mssql
+ * @dataProvider? ../databases.ini mysql
  */
 
 use Tester\Assert;
