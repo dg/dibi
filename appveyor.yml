@@ -6,6 +6,8 @@ cache:
 clone_folder: c:\projects\dibi
 
 services:
+    - mssql2012sp1
+    - mssql2014
     - mysql
 
 init:
@@ -21,6 +23,10 @@ install:
     - IF %PHP%==1 7z x php-5.6.14-Win32-VC11-x86.zip >nul
     - IF %PHP%==1 echo extension_dir=ext >> php.ini
     - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
+    - IF %PHP%==1 appveyor DownloadFile https://files.nette.org/misc/php-sqlsrv.zip
+    - IF %PHP%==1 7z x php-sqlsrv.zip >nul
+    - IF %PHP%==1 copy SQLSRV\php_sqlsrv_56_ts.dll ext\php_sqlsrv_ts.dll
+    - IF %PHP%==1 copy SQLSRV\php_pdo_sqlsrv_56_ts.dll ext\php_pdo_sqlsrv_ts.dll
     - IF %PHP%==1 del /Q *.zip
     - cd c:\projects\dibi
 
