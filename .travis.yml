@@ -24,7 +24,7 @@ before_script:
     - travis_retry composer create-project nette/code-checker temp/code-checker ~2.5 --no-interaction
 
     # Create databases.ini
-    - cp ./tests/databases.sample.ini ./tests/databases.ini
+    - cp ./tests/databases.travis.ini ./tests/databases.ini
 
     # Create Postgre database
     - psql -c 'CREATE DATABASE dibi_test' -U postgres
