@@ -291,7 +291,6 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 				return '[' . strtr($value, '[]', '  ') . ']';
 
 			case 'odbc':
-			case 'mssql':
 				return '[' . str_replace(['[', ']'], ['[[', ']]'], $value) . ']';
 
 			case 'dblib':
@@ -361,7 +360,6 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
 
 			case 'odbc':
-			case 'mssql':
 			case 'dblib':
 			case 'sqlsrv':
 				$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
@@ -439,7 +437,6 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 				}
 				break;
 
-			case 'mssql':
 			case 'sqlsrv':
 			case 'dblib':
 				if (version_compare($this->serverVersion, '11.0') >= 0) { // 11 == SQL Server 2012
