@@ -1,16 +1,12 @@
 <?php
 
 /**
- * @dataProvider ../databases.ini
+ * @dataProvider? ../databases.ini sqlsrv
  */
 
 use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
-
-if ($config['system'] !== 'mssql') {
-	Tester\Environment::skip("Not supported system '$config[system]'.");
-}
 
 $tests = function ($conn) {
 	$version = $conn->getDriver()->getResource()->getAttribute(PDO::ATTR_SERVER_VERSION);

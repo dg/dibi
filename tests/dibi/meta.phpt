@@ -1,22 +1,21 @@
 <?php
 
 /**
- * @dataProvider ../databases.ini
+ * @dataProvider ../databases.ini !=odbc
  */
 
 use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
 
-if ($config['system'] === 'odbc' || $config['driver'] === 'pdo') {
-	Tester\Environment::skip('Not supported.');
-}
-
 $conn = new Dibi\Connection($config);
 $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
-
-$meta = $conn->getDatabaseInfo();
+try {
+	$meta = $conn->getDatabaseInfo();
+} catch (Dibi\NotSupportedException $e) {
+	Tester\Environment::skip($e->getMessage());
+}
 
 Assert::same(3, count($meta->getTables()));
 

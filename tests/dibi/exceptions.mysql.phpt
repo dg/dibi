@@ -2,7 +2,7 @@
 
 /**
  * Test: query exceptions.
- * @dataProvider ../databases.ini mysql
+ * @dataProvider? ../databases.ini mysql
  */
 
 use Tester\Assert;
@@ -22,14 +22,14 @@ Assert::same('SELECT', $e->getSql());
 
 $e = Assert::exception(function () use ($conn) {
 	$conn->query('INSERT INTO products (product_id, title) VALUES (1, "New")');
-}, 'Dibi\UniqueConstraintViolationException', "Duplicate entry '1' for key 'PRIMARY'", 1062);
+}, 'Dibi\UniqueConstraintViolationException', "%a?%Duplicate entry '1' for key 'PRIMARY'", 1062);
 
 Assert::same("INSERT INTO products (product_id, title) VALUES (1, 'New')", $e->getSql());
 
 
 $e = Assert::exception(function () use ($conn) {
 	$conn->query('INSERT INTO products (title) VALUES (NULL)');
-}, 'Dibi\NotNullConstraintViolationException', "Column 'title' cannot be null", 1048);
+}, 'Dibi\NotNullConstraintViolationException', "%a?%Column 'title' cannot be null", 1048);
 
 Assert::same('INSERT INTO products (title) VALUES (NULL)', $e->getSql());
 

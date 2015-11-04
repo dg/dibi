@@ -1,16 +1,12 @@
 <?php
 
 /**
- * @dataProvider ../databases.ini
+ * @dataProvider ../databases.ini !=odbc
  */
 
 use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
-
-if ($config['system'] === 'odbc') {
-	Tester\Environment::skip('Not supported.');
-}
 
 $conn = new Dibi\Connection($config);
 $conn->loadFile(__DIR__ . "/data/$config[system].sql");

@@ -1,16 +1,12 @@
 <?php
 
 /**
- * @dataProvider ../databases.ini
+ * @dataProvider? ../databases.ini postgre
  */
 
 use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
-
-if ($config['system'] !== 'postgre') {
-	Tester\Environment::skip("Not supported system '$config[system]'.");
-}
 
 
 $tests = function ($conn) {
