@@ -80,16 +80,6 @@ Assert::same(
 );
 
 
-try {
-	$fluent = $conn->select('*')->from('table')->fetch();
-} catch (Exception $e) {
-}
-Assert::same(
-	reformat(' SELECT * FROM [table] LIMIT 1'),
-	dibi::$sql
-);
-
-
 $fluent = $conn->select('*')
 	->select(
 		$conn->select('count(*)')
@@ -102,7 +92,10 @@ $fluent = $conn->select('*')
 	->offset(0);
 
 Assert::same(
-	reformat('  SELECT * , (SELECT count(*) FROM [precteni] AS [P] WHERE P.id_clanku = C.id_clanku) FROM [clanky] AS [C] WHERE id_clanku=123 LIMIT 1'),
+	reformat([
+		'odbc' => 'SELECT TOP 1 * FROM (  SELECT * , (SELECT count(*) FROM [precteni] AS [P] WHERE P.id_clanku = C.id_clanku) FROM [clanky] AS [C] WHERE id_clanku=123) t',
+		'  SELECT * , (SELECT count(*) FROM [precteni] AS [P] WHERE P.id_clanku = C.id_clanku) FROM [clanky] AS [C] WHERE id_clanku=123 LIMIT 1',
+	]),
 	(string) $fluent
 );
 
@@ -143,14 +136,16 @@ Assert::same(
 );
 
 
-$fluent = $conn->select('*')
-	->limit(' 1; DROP TABLE users')
-	->offset(' 1; DROP TABLE users');
+if ($config['system'] === 'mysql') {
+	$fluent = $conn->select('*')
+		->limit(' 1; DROP TABLE users')
+		->offset(' 1; DROP TABLE users');
 
-Assert::same(
-	reformat('  SELECT * LIMIT 1 OFFSET 1'),
-	(string) $fluent
-);
+	Assert::same(
+		reformat('  SELECT * LIMIT 1 OFFSET 1'),
+		(string) $fluent
+	);
+}
 
 
 $fluent = $conn->select('*')->from('abc')

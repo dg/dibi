@@ -69,3 +69,13 @@ function reformat($s)
 		trigger_error("Unsupported driver $config[system]", E_USER_WARNING);
 	}
 }
+
+
+function num($n)
+{
+	global $config;
+	if (substr(@$config['dsn'], 0, 5) === 'odbc:' || $config['driver'] === 'sqlite') {
+		$n = is_float($n) ? "$n.0" : (string) $n;
+	}
+	return $n;
+}

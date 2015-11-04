@@ -9,9 +9,9 @@ CREATE TABLE products (
 );
 
 INSERT INTO products (product_id, title) VALUES
-(1,	'Chair'),
-(2,	'Table'),
-(3,	'Computer');
+(1, 'Chair'),
+(2, 'Table'),
+(3, 'Computer');
 SELECT setval('products_product_id_seq', 3, TRUE);
 
 CREATE INDEX title ON products USING btree (title);

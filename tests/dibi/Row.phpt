@@ -45,8 +45,8 @@ Assert::error(function () use ($row) {
 
 
 // to array
-Assert::same(['product_id' => 1, 'title' => 'Chair'], iterator_to_array($row));
-Assert::same(['product_id' => 1, 'title' => 'Chair'], $row->toArray());
+Assert::same(['product_id' => num(1), 'title' => 'Chair'], iterator_to_array($row));
+Assert::same(['product_id' => num(1), 'title' => 'Chair'], $row->toArray());
 
 // counting
 Assert::same(2, count($row));
