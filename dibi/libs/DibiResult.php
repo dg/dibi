@@ -253,7 +253,7 @@ class DibiResult extends DibiObject implements IDataSource
 	 * - associative descriptor: col1|col2->col3=col4
 	 *   builds a tree:          $tree[$val1][$val2]->col3[$val3] = val4
 	 * @param  string  associative descriptor
-	 * @return DibiRow
+	 * @return array
 	 * @throws InvalidArgumentException
 	 */
 	final public function fetchAssoc($assoc)
