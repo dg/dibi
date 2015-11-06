@@ -255,7 +255,7 @@ class Result implements IDataSource
 	 * - associative descriptor: col1|col2->col3=col4
 	 *   builds a tree:          $tree[$val1][$val2]->col3[$val3] = val4
 	 * @param  string  associative descriptor
-	 * @return Row
+	 * @return array
 	 * @throws \InvalidArgumentException
 	 */
 	final public function fetchAssoc($assoc)

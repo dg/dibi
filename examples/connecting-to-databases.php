@@ -113,7 +113,7 @@ echo "</p>\n";
 
 
 // connects to SQLSRV
-echo '<p>Connecting to SQLSRV: ';
+echo '<p>Connecting to Microsoft SQL Server: ';
 try {
 	dibi::connect([
 		'driver' => 'sqlsrv',

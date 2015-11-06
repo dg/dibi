@@ -13,7 +13,7 @@ use Dibi\Helpers;
 
 
 /**
- * The dibi driver for SQLSRV database.
+ * The dibi driver for Microsoft SQL Server and SQL Azure databases.
  *
  * Driver options:
  *   - host => the MS SQL server host name. It can also include a port number (hostname:port)

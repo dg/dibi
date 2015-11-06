@@ -11,7 +11,7 @@ use Dibi;
 
 
 /**
- * The dibi reflector for SQLSRV databases.
+ * The dibi reflector for Microsoft SQL Server and SQL Azure databases.
  * @internal
  */
 class SqlsrvReflector implements Dibi\Reflector
