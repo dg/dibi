@@ -61,26 +61,9 @@ spl_autoload_register(function ($class) {
 		'Dibi\Drivers\MsSql2005Reflector' => 'Dibi\Drivers\SqlsrvReflector',
 	];
 	if (isset($old2new[$class])) {
+		$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		$location = isset($trace[1]['file']) ? 'used in ' . $trace[1]['file'] . ':' . $trace[1]['line'] : '';
+		trigger_error("Class $class $location has been renamed to {$old2new[$class]}.", E_USER_DEPRECATED);
 		class_alias($old2new[$class], $class);
 	}
 });
-
-
-// preload for compatiblity
-array_map('class_exists', [
-	'DibiConnection',
-	'DibiDateTime',
-	'DibiDriverException',
-	'DibiEvent',
-	'DibiException',
-	'DibiFluent',
-	'DibiLiteral',
-	'DibiNotImplementedException',
-	'DibiNotSupportedException',
-	'DibiPcreException',
-	'DibiProcedureException',
-	'DibiResult',
-	'DibiRow',
-	'IDataSource',
-	'IDibiDriver',
-]);
