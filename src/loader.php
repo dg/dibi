@@ -61,6 +61,7 @@ spl_autoload_register(function ($class) {
 		'Dibi\Drivers\MsSql2005Reflector' => 'Dibi\Drivers\SqlsrvReflector',
 	];
 	if (isset($old2new[$class])) {
+		trigger_error("Class $type has been renamed to {$this->renamed[$type]}.", E_USER_DEPRECATED);
 		class_alias($old2new[$class], $class);
 	}
 });
