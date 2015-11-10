@@ -172,9 +172,6 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 		} elseif (in_array($code, [1062, 1557, 1569, 1586], TRUE)) {
 			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
 
-		} elseif ($code >= 2001 && $code <= 2028) {
-			return new Dibi\ConnectionException($message, $code, $sql);
-
 		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], TRUE)) {
 			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
 
