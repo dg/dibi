@@ -93,6 +93,11 @@ class NotSupportedException extends Exception
 }
 
 
+class ConnectionException extends Exception
+{
+}
+
+
 /**
  * Database procedure exception.
  */
