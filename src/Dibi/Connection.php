@@ -545,7 +545,7 @@ class Connection
 	{
 		return strpos($value, ':') === FALSE
 			? $value
-			: preg_replace_callback('#:([^:\s]*):#', function ($m) { $this->substitutes->{$m[1]}; }, $value);
+			: preg_replace_callback('#:([^:\s]*):#', function ($m) { return $this->substitutes->{$m[1]}; }, $value);
 	}
 
 
