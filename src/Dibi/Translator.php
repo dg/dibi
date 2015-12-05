@@ -372,6 +372,7 @@ final class Translator
 
 				case 'd':  // date
 				case 't':  // datetime
+				case 'dt': // datetime
 					if ($value === NULL) {
 						return 'NULL';
 					} else {
