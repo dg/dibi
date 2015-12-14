@@ -2,7 +2,7 @@
 	"name": "dibi/dibi",
 	"description": "Dibi is Database Abstraction Library for PHP",
 	"keywords": ["database", "dbal", "mysql", "postgresql", "sqlite", "mssql", "oracle", "access", "pdo", "odbc"],
-	"homepage": "http://dibiphp.com",
+	"homepage": "https://dibiphp.com",
 	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"authors": [
 		{

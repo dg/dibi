@@ -1,4 +1,4 @@
-[Dibi](http://dibiphp.com) - smart database layer for PHP  [![Buy me a coffee](https://files.nette.org/images/coffee1s.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9XXL5ZJHAYQUN)
+[Dibi](https://dibiphp.com) - smart database layer for PHP  [![Buy me a coffee](https://files.nette.org/images/coffee1s.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9XXL5ZJHAYQUN)
 =========================================================
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/dibi/dibi.svg)](https://packagist.org/packages/dibi/dibi)
@@ -13,7 +13,7 @@ The best way to install Dibi is to use a [Composer](https://getcomposer.org/down
 
     php composer.phar require dibi/dibi
 
-Or you can download the latest package from http://dibiphp.com. In this
+Or you can download the latest package from https://dibiphp.com. In this
 package is also `Dibi.minified`, shrinked single-file version of whole Dibi,
 useful when you don't want to modify the library, but just use it.
 
@@ -24,7 +24,7 @@ Examples
 --------
 
 Refer to the `examples` directory for examples. Dibi documentation is
-available on the [homepage](http://dibiphp.com).
+available on the [homepage](https://dibiphp.com).
 
 Connect to database:
 
