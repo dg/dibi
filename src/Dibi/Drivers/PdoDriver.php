@@ -67,7 +67,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 		if ($config['resource'] instanceof PDO) {
 			$this->connection = $config['resource'];
-
+			unset($config['resource'], $config['pdo']);
 		} else {
 			try {
 				$this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
