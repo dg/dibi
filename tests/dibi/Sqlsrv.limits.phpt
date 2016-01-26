@@ -70,7 +70,7 @@ $tests = function ($conn) {
 		);
 	} else {
 		Assert::same(
-			'SELECT TOP 1 * FROM (SELECT 1) t',
+			'SELECT TOP (1) * FROM (SELECT 1) t',
 			$conn->translate('SELECT 1 %lmt', 1)
 		);
 
