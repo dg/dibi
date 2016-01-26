@@ -141,6 +141,7 @@ Assert::same(
 Assert::same(
 	reformat([
 		'odbc' => 'SELECT TOP 2 * FROM (SELECT * FROM [products] ) t',
+		'sqlsrv' => 'SELECT * FROM [products] OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY',
 		'SELECT * FROM [products]  LIMIT 2',
 	]),
 	$conn->translate('SELECT * FROM [products] %lmt', 2)
@@ -153,7 +154,10 @@ if ($config['system'] === 'odbc') {
 } else {
 	// with limit = 2, offset = 1
 	Assert::same(
-		reformat('SELECT * FROM [products]   LIMIT 2 OFFSET 1'),
+		reformat([
+			'sqlsrv' => 'SELECT * FROM [products] OFFSET 1 ROWS FETCH NEXT 2 ROWS ONLY',
+			'SELECT * FROM [products]   LIMIT 2 OFFSET 1'
+		]),
 		$conn->translate('SELECT * FROM [products] %lmt %ofs', 2, 1)
 	);
 
@@ -162,6 +166,7 @@ if ($config['system'] === 'odbc') {
 		reformat([
 			'mysql' => 'SELECT * FROM `products`  LIMIT 18446744073709551615 OFFSET 50',
 			'postgre' => 'SELECT * FROM "products"  OFFSET 50',
+			'sqlsrv' => 'SELECT * FROM [products] OFFSET 50 ROWS',
 			'SELECT * FROM [products]  LIMIT -1 OFFSET 50',
 		]),
 		$conn->translate('SELECT * FROM [products] %ofs', 50)
@@ -224,6 +229,7 @@ if ($config['system'] === 'postgre') {
 		reformat([
 			'sqlite' => "SELECT * FROM products WHERE (title LIKE 'C%' ESCAPE '\\' AND title LIKE '%r' ESCAPE '\\') OR title LIKE '%a\n\\%\\_\\\\''\"%' ESCAPE '\\'",
 			'odbc' => "SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n[%][_]\\''\"%'",
+			'sqlsrv' => "SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n[%][_]\\''\"%'",
 			"SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\\n\\%\\_\\\\\\\\\'\"%'",
 		]),
 		$conn->translate($args[0], $args[1], $args[2], $args[3])
@@ -425,6 +431,7 @@ Assert::same(
 Assert::same(
 	reformat([
 		'odbc' => 'SELECT TOP 10 * FROM (SELECT * FROM [test] WHERE [id] LIKE \'%d%t\' ) t',
+		'sqlsrv' => 'SELECT * FROM [test] WHERE [id] LIKE \'%d%t\' OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY',
 		'SELECT * FROM [test] WHERE [id] LIKE \'%d%t\'  LIMIT 10',
 	]),
 	$conn->translate("SELECT * FROM [test] WHERE %n LIKE '%d%t' %lmt", 'id', 10)

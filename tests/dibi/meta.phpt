@@ -48,7 +48,7 @@ Assert::same('title', $column->getName());
 Assert::same('products', $column->getTable()->getName());
 Assert::same('s', $column->getType());
 Assert::type('string', $column->getNativeType());
-Assert::same(100, $column->getSize());
+Assert::same($config['system'] === 'sqlsrv' ? 50 : 100, $column->getSize());
 Assert::false($column->isNullable());
 Assert::false($column->isAutoIncrement());
 //Assert::null($column->getDefault());

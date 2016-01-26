@@ -9,7 +9,9 @@ use Tester\Assert;
 require __DIR__ . '/bootstrap.php';
 
 $tests = function ($conn) {
-	$version = $conn->getDriver()->getResource()->getAttribute(PDO::ATTR_SERVER_VERSION);
+	$resource = $conn->getDriver()->getResource();
+	$version = is_resource($resource)? sqlsrv_server_info($resource)['SQLServerVersion']
+		: $resource->getAttribute(PDO::ATTR_SERVER_VERSION);
 
 	// MsSQL2012+
 	if (version_compare($version, '11.0') >= 0) {
@@ -32,27 +34,39 @@ $tests = function ($conn) {
 		);
 
 		// Offset invalid
-		Assert::same(
-			'SELECT 1',
-			$conn->translate('SELECT 1 %ofs', -10)
+		Assert::error(
+			function () use ($conn) {
+				$conn->translate('SELECT 1 %ofs', -10);
+			},
+			'Dibi\NotSupportedException',
+			'Negative offset or limit.'
 		);
 
 		// Limit invalid
-		Assert::same(
-			'SELECT 1',
-			$conn->translate('SELECT 1 %lmt', -10)
+		Assert::error(
+			function () use ($conn) {
+				$conn->translate('SELECT 1 %lmt', -10);
+			},
+			'Dibi\NotSupportedException',
+			'Negative offset or limit.'
 		);
 
 		// Limit invalid, offset valid
-		Assert::same(
-			'SELECT 1',
-			$conn->translate('SELECT 1 %ofs %lmt', 10, -10)
+		Assert::error(
+			function () use ($conn) {
+				$conn->translate('SELECT 1 %ofs %lmt', 10, -10);
+			},
+			'Dibi\NotSupportedException',
+			'Negative offset or limit.'
 		);
 
 		// Limit valid, offset invalid
-		Assert::same(
-			'SELECT 1',
-			$conn->translate('SELECT 1 %ofs %lmt', -10, 10)
+		Assert::error(
+			function () use ($conn) {
+				$conn->translate('SELECT 1 %ofs %lmt', -10, 10);
+			},
+			'Dibi\NotSupportedException',
+			'Negative offset or limit.'
 		);
 	} else {
 		Assert::same(
