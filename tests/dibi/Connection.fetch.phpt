@@ -14,7 +14,7 @@ $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 
 // fetch a single value
-$res = $conn->query('SELECT [title] FROM [products]');
+$res = $conn->query('SELECT [title] FROM [products] ORDER BY [product_id]');
 Assert::same('Chair', $res->fetchSingle());
 
 
@@ -63,7 +63,7 @@ Assert::equal([
 // more complex association array
 function query($conn) {
 
-	return $conn->query($conn->getConfig('system') === 'odbc' ? '
+	return $conn->query(in_array($conn->getConfig('system'), ['odbc', 'sqlsrv']) ? '
 		SELECT products.title, customers.name, orders.amount
 		FROM ([products]
 		INNER JOIN [orders] ON [products.product_id] = [orders.product_id])
