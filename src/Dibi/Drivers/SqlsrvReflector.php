@@ -34,7 +34,7 @@ class SqlsrvReflector implements Dibi\Reflector
 	 */
 	public function getTables()
 	{
-		$res = $this->driver->query('SELECT TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES');
+		$res = $this->driver->query("SELECT TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES WHERE [TABLE_SCHEMA] = 'dbo'");
 		$tables = [];
 		while ($row = $res->fetch(FALSE)) {
 			$tables[] = [
