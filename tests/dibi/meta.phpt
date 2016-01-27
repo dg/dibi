@@ -17,11 +17,12 @@ try {
 	Tester\Environment::skip($e->getMessage());
 }
 
-Assert::same(3, count($meta->getTables()));
-
-$names = $meta->getTableNames();
-sort($names);
-Assert::equal(['customers', 'orders', 'products'], $names);
+if ($config['system'] !== 'sqlsrv') {
+	Assert::same(3, count($meta->getTables()));
+	$names = $meta->getTableNames();
+	sort($names);
+	Assert::equal(['customers', 'orders', 'products'], $names);
+}
 
 Assert::false($meta->hasTable('xxxx'));
 
