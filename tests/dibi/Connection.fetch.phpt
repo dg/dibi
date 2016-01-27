@@ -14,11 +14,11 @@ $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 
 // fetch a single value
-if ($config['system'] === 'sqlsrv') {
-	$res = $conn->query('SELECT [title] FROM [products] ORDER BY [product_id]');
-} else {
-	$res = $conn->query('SELECT [title] FROM [products]');
-}
+$res = $conn->query($config['system'] === 'sqlsrv' ? '
+	SELECT [title] FROM [products] ORDER BY [product_id]
+' : '
+	SELECT [title] FROM [products]
+');
 Assert::same('Chair', $res->fetchSingle());
 
 
