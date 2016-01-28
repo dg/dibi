@@ -8,6 +8,7 @@ CREATE TABLE products (
 	title varchar(50) NOT NULL,
 	PRIMARY KEY(product_id)
 );
+CREATE INDEX [title] ON [dbo].[products] ([title]);
 
 SET IDENTITY_INSERT products ON;
 INSERT INTO products (product_id, title) VALUES (1, 'Chair');

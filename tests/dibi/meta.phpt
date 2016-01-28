@@ -17,11 +17,12 @@ try {
 	Tester\Environment::skip($e->getMessage());
 }
 
-Assert::same(3, count($meta->getTables()));
-
-$names = $meta->getTableNames();
-sort($names);
-Assert::equal(['customers', 'orders', 'products'], $names);
+if ($config['system'] !== 'sqlsrv') {
+	Assert::same(3, count($meta->getTables()));
+	$names = $meta->getTableNames();
+	sort($names);
+	Assert::equal(['customers', 'orders', 'products'], $names);
+}
 
 Assert::false($meta->hasTable('xxxx'));
 
@@ -48,7 +49,7 @@ Assert::same('title', $column->getName());
 Assert::same('products', $column->getTable()->getName());
 Assert::same('s', $column->getType());
 Assert::type('string', $column->getNativeType());
-Assert::same(100, $column->getSize());
+Assert::same($config['system'] === 'sqlsrv' ? 50 : 100, $column->getSize());
 Assert::false($column->isNullable());
 Assert::false($column->isAutoIncrement());
 //Assert::null($column->getDefault());
