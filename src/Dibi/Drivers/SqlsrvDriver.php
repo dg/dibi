@@ -311,13 +311,15 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 				throw new Dibi\NotSupportedException('Offset is not supported by this database.');
 
 			} elseif ($limit !== NULL) {
-				$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
+				$sql = sprintf('SELECT TOP (%d) * FROM (%s) t', $limit, $sql);
 			}
 
-		} elseif ($limit !== NULL || $offset) {
+		} elseif ($limit !== NULL) {
 			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
-			$sql .= ' OFFSET ' . (int) $offset . ' ROWS '
-				. 'FETCH NEXT ' . (int) $limit . ' ROWS ONLY';
+			$sql = sprintf('%s OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', rtrim($sql), $offset, $limit);
+		} elseif ($offset) {
+			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
+			$sql = sprintf('%s OFFSET %d ROWS', rtrim($sql), $offset);
 		}
 	}
 

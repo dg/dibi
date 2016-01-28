@@ -34,7 +34,7 @@ class SqlsrvReflector implements Dibi\Reflector
 	 */
 	public function getTables()
 	{
-		$res = $this->driver->query('SELECT TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES');
+		$res = $this->driver->query("SELECT TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES WHERE [TABLE_SCHEMA] = 'dbo'");
 		$tables = [];
 		while ($row = $res->fetch(FALSE)) {
 			$tables[] = [
@@ -105,19 +105,19 @@ class SqlsrvReflector implements Dibi\Reflector
 	 */
 	public function getIndexes($table)
 	{
-		$keyUsagesRes = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = {$this->driver->escapeText($table)}");
+		$keyUsagesRes = $this->driver->query(sprintf("EXEC [sys].[sp_helpindex] @objname = N%s", $this->driver->escapeText($table)));
 		$keyUsages = [];
 		while ($row = $keyUsagesRes->fetch(TRUE)) {
-			$keyUsages[$row['CONSTRAINT_NAME']][(int) $row['ORDINAL_POSITION'] - 1] = $row['COLUMN_NAME'];
+			$keyUsages[$row['index_name']] = explode(',', $row['index_keys']);
 		}
 
-		$res = $this->driver->query("SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = {$this->driver->escapeText($table)}");
+		$res = $this->driver->query("SELECT [i].* FROM [sys].[indexes] [i] INNER JOIN [sys].[tables] [t] ON [i].[object_id] = [t].[object_id] WHERE [t].[name] = {$this->driver->escapeText($table)}");
 		$indexes = [];
 		while ($row = $res->fetch(TRUE)) {
-			$indexes[$row['CONSTRAINT_NAME']]['name'] = $row['CONSTRAINT_NAME'];
-			$indexes[$row['CONSTRAINT_NAME']]['unique'] = $row['CONSTRAINT_TYPE'] === 'UNIQUE';
-			$indexes[$row['CONSTRAINT_NAME']]['primary'] = $row['CONSTRAINT_TYPE'] === 'PRIMARY KEY';
-			$indexes[$row['CONSTRAINT_NAME']]['columns'] = isset($keyUsages[$row['CONSTRAINT_NAME']]) ? $keyUsages[$row['CONSTRAINT_NAME']] : [];
+			$indexes[$row['name']]['name'] = $row['name'];
+			$indexes[$row['name']]['unique'] = $row['is_unique'] === 1;
+			$indexes[$row['name']]['primary'] = $row['is_primary_key'] === 1;
+			$indexes[$row['name']]['columns'] = isset($keyUsages[$row['name']]) ? $keyUsages[$row['name']] : [];
 		}
 		return array_values($indexes);
 	}
