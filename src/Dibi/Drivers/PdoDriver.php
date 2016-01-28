@@ -443,10 +443,11 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 			case 'sqlsrv':
 			case 'dblib':
 				if (version_compare($this->serverVersion, '11.0') >= 0) { // 11 == SQL Server 2012
-					if ($limit !== NULL || $offset) {
-						// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
-						$sql .= ' OFFSET ' . (int) $offset . ' ROWS '
-							. 'FETCH NEXT ' . (int) $limit . ' ROWS ONLY';
+					// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
+					if ($limit !== NULL) {
+						$sql = sprintf('%s OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', rtrim($sql), $offset, $limit);
+					} elseif ($offset) {
+						$sql = sprintf('%s OFFSET %d ROWS', rtrim($sql), $offset);
 					}
 					break;
 				}
