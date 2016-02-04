@@ -268,7 +268,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	public function escapeIdentifier($value)
 	{
-		return $value;
+		return '"' . str_replace('"', '""', $value). '"';
 	}
 
 
