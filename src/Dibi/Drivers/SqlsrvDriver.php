@@ -72,12 +72,17 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			$this->connection = $config['resource'];
 
 		} else {
-			// Default values
-			if (!isset($config['options']['CharacterSet'])) {
-				$config['options']['CharacterSet'] = 'UTF-8';
-			}
+			$options = & $config['options'];
 
-			$this->connection = sqlsrv_connect($config['host'], (array) $config['options']);
+			// Default values
+			if (!isset($options['CharacterSet'])) {
+				$options['CharacterSet'] = 'UTF-8';
+			}
+			$options['PWD'] = (string) $options['PWD'];
+			$options['UID'] = (string) $options['UID'];
+			$options['Database'] = (string) $options['Database'];
+
+			$this->connection = sqlsrv_connect($config['host'], $options);
 		}
 
 		if (!is_resource($this->connection)) {
