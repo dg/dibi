@@ -7,6 +7,7 @@
 
 namespace Dibi\Bridges\Nette;
 
+use Dibi;
 use Nette;
 
 
@@ -47,7 +48,10 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 		}
 		if ($useProfiler) {
 			$panel = $container->addDefinition($this->prefix('panel'))
-				->setClass('Dibi\Bridges\Tracy\Panel');
+				->setClass('Dibi\Bridges\Tracy\Panel', [
+					isset($config['explain']) ? $config['explain'] : TRUE,
+					isset($config['filter']) && $config['filter'] === FALSE ? Dibi\Event::ALL : Dibi\Event::QUERY,
+				]);
 			$connection->addSetup([$panel, 'register'], [$connection]);
 		}
 	}
