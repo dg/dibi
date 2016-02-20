@@ -183,7 +183,7 @@ class Helpers
 		static $patterns = [
 			'^_' => Type::TEXT, // PostgreSQL arrays
 			'BYTEA|BLOB|BIN' => Type::BINARY,
-			'TEXT|CHAR|POINT|INTERVAL' => Type::TEXT,
+			'TEXT|CHAR|POINT|INTERVAL|STRING' => Type::TEXT,
 			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT|^TINY$' => Type::INTEGER,
 			'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => Type::FLOAT,
 			'^TIME$' => Type::TIME,
