@@ -25,6 +25,7 @@ namespace Dibi;
  * @method Fluent innerJoin(...$table)
  * @method Fluent rightJoin(...$table)
  * @method Fluent outerJoin(...$table)
+ * @method Fluent as(...$field)
  * @method Fluent on(...$cond)
  * @method Fluent using(...$cond)
  */
