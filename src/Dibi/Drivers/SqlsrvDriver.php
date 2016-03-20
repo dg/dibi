@@ -72,7 +72,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			$this->connection = $config['resource'];
 
 		} else {
-			$options = & $config['options'];
+			$options = $config['options'];
 
 			// Default values
 			if (!isset($options['CharacterSet'])) {
