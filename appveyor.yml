@@ -51,8 +51,8 @@ install:
     - copy tests\databases.appveyor.ini tests\databases.ini
 
 test_script:
-    - vendor\bin\tester tests -s -p c:\php5\php -c tests\php-win.ini
-    - vendor\bin\tester tests -s -p c:\php7\php -c tests\php-win.ini
+    - vendor\bin\tester tests -s -p c:\php5\php -c tests\php5-win.ini
+    - vendor\bin\tester tests -s -p c:\php7\php -c tests\php7-win.ini
 
 on_failure:
     # Print *.actual content
