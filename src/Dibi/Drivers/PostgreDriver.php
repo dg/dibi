@@ -352,16 +352,16 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
      * @throws Dibi\Exception
      */
     public function escapeArray($value, $type)
-	{
+    {
         if($type == 'vchar') {
             $type = 'varchar';
         }
 
-		if (is_array($value)) {
-			$value = Dibi\Helpers::pgArrayCreate($value);
-		}
-		return $this->escapeText($value) . '::' . $type . '[]';
-	}
+        if (is_array($value)) {
+            $value = Dibi\Helpers::pgArrayCreate($value);
+        }
+        return $this->escapeText($value) . '::' . $type . '[]';
+    }
 
     /**
      * Creates JSON string from PHP array and adds the PostgreSQL ::json type
@@ -370,13 +370,14 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
      * @return string
      * @throws Dibi\Exception
      */
-    public function escapeJson($value) {
-		if (is_array($value)) {
-			$value = json_encode($value);
-		}
+    public function escapeJson($value)
+    {
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
         $value = $this->escapeText($value);
-		return $value . '::json';
-	}
+        return $value . '::json';
+    }
 
     /**
      * Creates JSON string from PHP array and adds the PostgreSQL ::jsonb type
@@ -385,13 +386,14 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
      * @return string
      * @throws Dibi\Exception
      */
-    public function escapeJsonb($value) {
+    public function escapeJsonb($value)
+    {
         if (is_array($value)) {
             $value = json_encode($value);
         }
         $value = $this->escapeText($value);
         return $value . '::jsonb';
-	}
+    }
 
 	/**
 	 * Encodes string for use in a LIKE statement.
