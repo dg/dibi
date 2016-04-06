@@ -13,8 +13,6 @@ namespace Dibi;
  */
 class Exception extends \Exception
 {
-	use Strict;
-
 	/** @var string|NULL */
 	private $sql;
 
@@ -66,7 +64,6 @@ class DriverException extends Exception
  */
 class PcreException extends Exception
 {
-	use Strict;
 
 	public function __construct($message = '%msg.')
 	{
