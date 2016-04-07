@@ -123,12 +123,12 @@ final class DibiTranslator extends DibiObject
 						(\')((?:\'\'|[^\'])*)\'|     ## 3,4) 'string'
 						(")((?:""|[^"])*)"|          ## 5,6) "string"
 						(\'|")|                      ## 7) lone quote
-						:(?:(\S*?:)([a-zA-Z0-9._]?)|([a-zA-Z0-9_]+)(?:%([a-zA-Z~][a-zA-Z0-9~]{0,5}))?)|    ## 8,9) :substitution:   10,11) :namedArgument%modifier  or :namedArgument
+						:(?:([a-zA-Z0-9_]*?:)([a-zA-Z0-9._]?)|([a-zA-Z0-9_]+)(?:%([a-zA-Z~][a-zA-Z0-9~]{0,5}))?)|    ## 8,9) :substitution:   10,11) :namedArgument%modifier  or :namedArgument
 						%([a-zA-Z~][a-zA-Z0-9~]{0,5})|## 12) modifier
 						(\?)                         ## 13) placeholder
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
-					. preg_replace_callback('/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(?:(\S*?:)([a-zA-Z0-9._]?)|([a-zA-Z0-9_]+)(?:%([a-zA-Z~][a-zA-Z0-9~]{0,5}))?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
+					. preg_replace_callback('/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(?:([a-zA-Z0-9_]*?:)([a-zA-Z0-9._]?)|([a-zA-Z0-9_]+)(?:%([a-zA-Z~][a-zA-Z0-9~]{0,5}))?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
 							array($this, 'cb'),
 							substr($arg, $toSkip)
 					);
@@ -415,7 +415,7 @@ final class DibiTranslator extends DibiObject
 					if (strlen($value) !== $toSkip) {
 						$value = substr($value, 0, $toSkip)
 						. preg_replace_callback(
-							'/(?=[`[\'":])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/s',
+							'/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(?:([a-zA-Z0-9_]*?:)([a-zA-Z0-9._]?)|([a-zA-Z0-9_]+)(?:%([a-zA-Z~][a-zA-Z0-9~]{0,5}))?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
 							array($this, 'cb'),
 							substr($value, $toSkip)
 						);
