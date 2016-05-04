@@ -18,7 +18,7 @@
 		"nette/tester": "~1.7"
 	},
 	"replace": {
-		"dg/dibi": "self.version"
+		"dg/dibi": "*"
 	},
 	"autoload": {
 		"classmap": ["src/"],
