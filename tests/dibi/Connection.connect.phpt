@@ -36,3 +36,15 @@ test(function () use ($config) { // query string
 	Assert::same($config['driver'], $conn->getConfig('driver'));
 	Assert::type('Dibi\Driver', $conn->getDriver());
 });
+
+
+test(function () use ($config) {
+	$conn = new Connection($config);
+	Assert::true($conn->isConnected());
+
+	$conn->disconnect();
+	Assert::false($conn->isConnected());
+
+	$conn->disconnect();
+	Assert::false($conn->isConnected());
+});
