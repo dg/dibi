@@ -139,7 +139,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function disconnect()
 	{
-		mysql_close($this->connection);
+		@mysql_close($this->connection); // @ - connection can be already disconnected
 	}
 
 
