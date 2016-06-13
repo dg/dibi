@@ -138,7 +138,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function disconnect()
 	{
-		mysqli_close($this->connection);
+		@mysqli_close($this->connection); // @ - connection can be already disconnected
 	}
 
 

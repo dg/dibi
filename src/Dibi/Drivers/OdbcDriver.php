@@ -88,7 +88,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function disconnect()
 	{
-		odbc_close($this->connection);
+		@odbc_close($this->connection); // @ - connection can be already disconnected
 	}
 
 

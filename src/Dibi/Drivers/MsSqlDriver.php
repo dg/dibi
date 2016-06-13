@@ -78,7 +78,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function disconnect()
 	{
-		mssql_close($this->connection);
+		@mssql_close($this->connection); // @ - connection can be already disconnected
 	}
 
 

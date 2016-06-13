@@ -99,7 +99,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function disconnect()
 	{
-		sqlsrv_close($this->connection);
+		@sqlsrv_close($this->connection); // @ - connection can be already disconnected
 	}
 
 

@@ -95,7 +95,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function disconnect()
 	{
-		oci_close($this->connection);
+		@oci_close($this->connection); // @ - connection can be already disconnected
 	}
 
 

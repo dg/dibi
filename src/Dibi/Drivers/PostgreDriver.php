@@ -111,7 +111,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function disconnect()
 	{
-		pg_close($this->connection);
+		@pg_close($this->connection); // @ - connection can be already disconnected
 	}
 
 

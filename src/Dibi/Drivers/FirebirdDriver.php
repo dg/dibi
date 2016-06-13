@@ -96,7 +96,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function disconnect()
 	{
-		ibase_close($this->connection);
+		@ibase_close($this->connection); // @ - connection can be already disconnected
 	}
 
 
