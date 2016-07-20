@@ -542,6 +542,12 @@ Assert::same(
 );
 
 
+Assert::same(
+	reformat('SELECT [a].[b] AS [c.d]'),
+	$conn->translate('SELECT %n AS %N', 'a.b', 'c.d')
+);
+
+
 setLocale(LC_ALL, 'czech');
 
 Assert::same(

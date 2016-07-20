@@ -380,8 +380,11 @@ final class Translator
 					}
 
 				case 'by':
-				case 'n':  // identifier name
+				case 'n':  // composed identifier name
 					return $this->identifiers->$value;
+
+				case 'N':  // identifier name
+					return $this->driver->escapeIdentifier($value);
 
 				case 'ex':
 				case 'sql': // preserve as dibi-SQL  (TODO: leave only %ex)
