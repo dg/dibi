@@ -55,4 +55,17 @@ class DateTime extends \DateTime
 		return $this->format('Y-m-d H:i:s');
 	}
 
+
+	public function __wakeup()
+	{
+		if (isset($this->fix)) {
+			if (isset($this->fix[1])) {
+				$this->__construct($this->fix[0], new \DateTimeZone($this->fix[1]));
+			} else {
+				$this->__construct($this->fix[0]);
+			}
+			unset($this->fix);
+		}
+	}
+
 }
