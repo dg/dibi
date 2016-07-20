@@ -1,5 +1,3 @@
-/*!40102 SET storage_engine = InnoDB */;
-
 DROP DATABASE IF EXISTS dibi_test;
 CREATE DATABASE dibi_test;
 USE dibi_test;
