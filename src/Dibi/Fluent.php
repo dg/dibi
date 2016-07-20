@@ -181,7 +181,7 @@ class Fluent implements IDataSource
 				return $this;
 
 			} elseif (is_string($arg) && preg_match('#^[a-z:_][a-z0-9_.:]*\z#i', $arg)) { // identifier
-				$args = ['%n', $arg];
+				$args = [$clause === 'AS' ? '%N' : '%n', $arg];
 
 			} elseif (is_array($arg) || ($arg instanceof \Traversable && !$arg instanceof self)) { // any array
 				if (isset(self::$modifiers[$clause])) {

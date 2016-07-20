@@ -26,19 +26,19 @@ Assert::same(
 	(string) $fluent
 );
 
-$fluent->from('table')->as('tableAlias')
+$fluent->from('table')->as('table.Alias')
 	->innerJoin('table1')->on('table.col = table1.col')
 	->innerJoin('table2')->on('table.col = table2.col');
 
 Assert::same(
-	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [table] AS [tableAlias] INNER JOIN [table1] ON table.col = table1.col INNER JOIN [table2] ON table.col = table2.col'),
+	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [table] AS [table.Alias] INNER JOIN [table1] ON table.col = table1.col INNER JOIN [table2] ON table.col = table2.col'),
 	(string) $fluent
 );
 
 $fluent->from('anotherTable');
 
 Assert::same(
-	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [table] AS [tableAlias] INNER JOIN [table1] ON table.col = table1.col INNER JOIN [table2] ON table.col = table2.col , [anotherTable]'),
+	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [table] AS [table.Alias] INNER JOIN [table1] ON table.col = table1.col INNER JOIN [table2] ON table.col = table2.col , [anotherTable]'),
 	(string) $fluent
 );
 

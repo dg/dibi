@@ -280,7 +280,7 @@ $array2 = ['one', 'two', 'three'];
 $array3 = [
 	'col1' => 'one',
 	'col2' => 'two',
-	'col3' => 'three',
+	'col3' => 'thr.ee',
 ];
 $array4 = [
 	'a' => 12,
@@ -301,8 +301,8 @@ WHERE (`test`.`a` LIKE '1995-03-01'
 	OR `b2` IN ('1', '2', '3' )
 	OR `b3` IN ( )
 	OR `b4` IN ( 'one', 'two', 'three' )
-	OR `b5` IN (`col1` AS `one`, `col2` AS `two`, `col3` AS `three` )
-	OR `b6` IN ('one', 'two', 'three')
+	OR `b5` IN (`col1` AS `one`, `col2` AS `two`, `col3` AS `thr.ee` )
+	OR `b6` IN ('one', 'two', 'thr.ee')
 	OR `b7` IN (NULL)
 	OR `b8` IN (RAND() `col1` > `col2` )
 	OR `b9` IN (RAND(), [col1] > [col2] )
@@ -322,8 +322,8 @@ WHERE ("test"."a" LIKE \'1995-03-01\'
 	OR "b2" IN (\'1\', \'2\', \'3\' )
 	OR "b3" IN ( )
 	OR "b4" IN ( \'one\', \'two\', \'three\' )
-	OR "b5" IN ("col1" AS "one", "col2" AS "two", "col3" AS "three" )
-	OR "b6" IN (\'one\', \'two\', \'three\')
+	OR "b5" IN ("col1" AS "one", "col2" AS "two", "col3" AS "thr.ee" )
+	OR "b6" IN (\'one\', \'two\', \'thr.ee\')
 	OR "b7" IN (NULL)
 	OR "b8" IN (RAND() "col1" > "col2" )
 	OR "b9" IN (RAND(), [col1] > [col2] )
@@ -343,8 +343,8 @@ WHERE ([test].[a] LIKE #03/01/1995#
 	OR [b2] IN ('1', '2', '3' )
 	OR [b3] IN ( )
 	OR [b4] IN ( 'one', 'two', 'three' )
-	OR [b5] IN ([col1] AS [one], [col2] AS [two], [col3] AS [three] )
-	OR [b6] IN ('one', 'two', 'three')
+	OR [b5] IN ([col1] AS [one], [col2] AS [two], [col3] AS [thr.ee] )
+	OR [b6] IN ('one', 'two', 'thr.ee')
 	OR [b7] IN (NULL)
 	OR [b8] IN (RAND() [col1] > [col2] )
 	OR [b9] IN (RAND(), [col1] > [col2] )
@@ -364,8 +364,8 @@ WHERE ([test].[a] LIKE '1995-03-01'
 	OR [b2] IN ('1', '2', '3' )
 	OR [b3] IN ( )
 	OR [b4] IN ( 'one', 'two', 'three' )
-	OR [b5] IN ([col1] AS [one], [col2] AS [two], [col3] AS [three] )
-	OR [b6] IN ('one', 'two', 'three')
+	OR [b5] IN ([col1] AS [one], [col2] AS [two], [col3] AS [thr.ee] )
+	OR [b6] IN ('one', 'two', 'thr.ee')
 	OR [b7] IN (NULL)
 	OR [b8] IN (RAND() [col1] > [col2] )
 	OR [b9] IN (RAND(), [col1] > [col2] )
