@@ -58,13 +58,14 @@ class DateTime extends \DateTime
 
 	public function __wakeup()
 	{
-		if (isset($this->fix)) {
-			if (isset($this->fix[1])) {
-				$this->__construct($this->fix[0], new \DateTimeZone($this->fix[1]));
-			} else {
-				$this->__construct($this->fix[0]);
-			}
+		if (isset($this->fix, $this->fix[1])) {
+			$this->__construct($this->fix[0], new \DateTimeZone($this->fix[1]));
 			unset($this->fix);
+		} elseif (isset($this->fix)) {
+			$this->__construct($this->fix[0]);
+			unset($this->fix);
+		} else {
+			parent::__wakeup();
 		}
 	}
 
