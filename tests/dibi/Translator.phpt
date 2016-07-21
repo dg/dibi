@@ -522,7 +522,7 @@ Assert::same(
 
 Assert::same(
 	reformat('INSERT INTO 0'),
-	$conn->translate('INSERT INTO %f', 'ahoj')
+	@$conn->translate('INSERT INTO %f', 'ahoj') // triggers warning in PHP 7.1
 );
 
 

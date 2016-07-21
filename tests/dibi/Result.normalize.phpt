@@ -139,7 +139,7 @@ test(function () {
 	Assert::same(['col' => 1], $result->test(['col' => TRUE]));
 	Assert::same(['col' => 0], $result->test(['col' => FALSE]));
 
-	Assert::same(['col' => 0], $result->test(['col' => '']));
+	Assert::same(['col' => 0], @$result->test(['col' => ''])); // triggers warning in PHP 7.1
 	Assert::same(['col' => 0], $result->test(['col' => '0']));
 	Assert::same(['col' => 1], $result->test(['col' => '1']));
 	Assert::same(['col' => 10], $result->test(['col' => '10']));
