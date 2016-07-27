@@ -110,7 +110,7 @@ class Panel implements Tracy\IBarPanel
 					$backup = [$event->connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime];
 					$event->connection->onEvent = NULL;
 					$cmd = is_string($this->explain) ? $this->explain : ($event->connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
-					$explain = Helpers::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);
+					$explain = Helpers::dump(@$event->connection->nativeQuery("$cmd $event->sql"), TRUE);
 				} catch (Dibi\Exception $e) {
 				}
 				list($event->connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime) = $backup;
