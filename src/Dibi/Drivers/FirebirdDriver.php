@@ -78,9 +78,9 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			];
 
 			if (empty($config['persistent'])) {
-				$this->connection = ibase_connect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
+				$this->connection = @ibase_connect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
 			} else {
-				$this->connection = ibase_pconnect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
+				$this->connection = @ibase_pconnect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
 			}
 
 			if (!is_resource($this->connection)) {
@@ -378,7 +378,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				throw new Dibi\ProcedureException($match[3], $match[1], $match[2]);
 
 			} else {
-				throw new Dibi\DriverException($msg, ibase_errcode());
+				throw new Dibi\DriverException(ibase_errmsg(), ibase_errcode());
 			}
 		}
 
