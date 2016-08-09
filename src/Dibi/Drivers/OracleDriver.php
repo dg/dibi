@@ -466,7 +466,20 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function getColumns($table)
 	{
-		throw new Dibi\NotImplementedException;
+		$res = $this->query('SELECT * FROM "ALL_TAB_COLUMNS" WHERE "TABLE_NAME" = ' . $this->escapeText($table));
+		$columns = [];
+		while ($row = $res->fetch(TRUE)) {
+			$columns[] = [
+				'table' => $row['TABLE_NAME'],
+				'name' => $row['COLUMN_NAME'],
+				'nativetype' => $row['DATA_TYPE'],
+				'size' => isset($row['DATA_LENGTH']) ? $row['DATA_LENGTH'] : NULL,
+				'nullable' => $row['NULLABLE'] === 'Y',
+				'default' => $row['DATA_DEFAULT'],
+				'vendor' => $row,
+			];
+		}
+		return $columns;
 	}
 
 
