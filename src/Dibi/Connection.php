@@ -594,7 +594,7 @@ class Connection
 	/**
 	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
 	 * @param  array|mixed    one or more arguments
-	 * @return string
+	 * @return array
 	 * @throws Exception
 	 */
 	public function fetchPairs($args)
