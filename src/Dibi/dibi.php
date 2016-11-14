@@ -254,7 +254,7 @@ class dibi
 	/**
 	 * Executes SQL query and fetch pairs - Monostate for Dibi\Connection::query() & fetchPairs().
 	 * @param  array|mixed    one or more arguments
-	 * @return string
+	 * @return array
 	 * @throws Dibi\Exception
 	 */
 	public static function fetchPairs($args)
