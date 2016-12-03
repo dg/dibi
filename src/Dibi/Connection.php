@@ -555,7 +555,7 @@ class Connection
 	/**
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
 	 * @param  array|mixed    one or more arguments
-	 * @return Row
+	 * @return Row|bool
 	 * @throws Exception
 	 */
 	public function fetch($args)
@@ -581,7 +581,7 @@ class Connection
 	/**
 	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
 	 * @param  array|mixed    one or more arguments
-	 * @return string
+	 * @return string|bool
 	 * @throws Exception
 	 */
 	public function fetchSingle($args)
