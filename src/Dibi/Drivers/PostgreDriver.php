@@ -100,7 +100,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		}
 
 		if (isset($config['schema'])) {
-			$this->query('SET search_path TO "' . $config['schema'] . '"');
+			$this->query('SET search_path TO "' . implode('", "', (array) $config['schema']) . '"');
 		}
 	}
 
