@@ -19,8 +19,7 @@ use Dibi;
  *   - password (or pass)
  *   - charset => character encoding to set
  *   - schema => alters session schema
- *   - formatDate => how to format date in SQL (@see date)
- *   - formatDateTime => how to format datetime in SQL (@see date)
+ *   - nativeDate => use native date format (defaults to FALSE)
  *   - resource (resource) => existing connection resource
  *   - persistent => Creates persistent connections with oci_pconnect instead of oci_new_connect
  *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
@@ -67,8 +66,14 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	public function connect(array & $config)
 	{
 		$foo = & $config['charset'];
-		$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
-		$this->fmtDateTime = isset($config['formatDateTime']) ? $config['formatDateTime'] : 'U';
+
+		if (isset($config['formatDate']) || isset($config['formatDateTime'])) {
+			trigger_error('OracleDriver: options formatDate and formatDateTime are deprecated.', E_USER_DEPRECATED);
+		}
+		if (empty($config['nativeDate'])) {
+			$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
+			$this->fmtDateTime = isset($config['formatDateTime']) ? $config['formatDateTime'] : 'U';
+		}
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
@@ -281,7 +286,9 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
-		return $value->format($this->fmtDate);
+		return $this->fmtDate
+			? $value->format($this->fmtDate)
+			: "to_date('" . $value->format('Y-m-d') . "', 'YYYY-mm-dd')";
 	}
 
 
@@ -290,7 +297,9 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
-		return $value->format($this->fmtDateTime);
+		return $this->fmtDateTime
+			? $value->format($this->fmtDateTime)
+			: "to_date('" . $value->format('Y-m-d G:i:s') . "', 'YYYY-mm-dd hh24:mi:ss')";
 	}
 
 
