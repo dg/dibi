@@ -289,7 +289,7 @@ class Connection
 	 * @param  array
 	 * @return string
 	 */
-	private function translateArgs($args)
+	protected function translateArgs($args)
 	{
 		$this->connected || $this->connect();
 		if (!$this->translator) {
