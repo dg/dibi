@@ -242,7 +242,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
-		return $value->format("'Y-m-d H:i:s'");
+		return $value->format("'Y-m-d H:i:s.u'");
 	}
 
 
