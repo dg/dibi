@@ -28,6 +28,7 @@ namespace Dibi;
  * @method Fluent as(...$field)
  * @method Fluent on(...$cond)
  * @method Fluent using(...$cond)
+ * @method Fluent forUpdate()
  */
 class Fluent implements IDataSource
 {
