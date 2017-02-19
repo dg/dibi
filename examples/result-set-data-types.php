@@ -1,7 +1,3 @@
-<!DOCTYPE html><link rel="stylesheet" href="data/style.css">
-
-<h1>Result Set Data Types | dibi</h1>
-
 <?php
 
 use Dibi\Type;
@@ -14,6 +10,12 @@ Tracy\Debugger::enable();
 
 date_default_timezone_set('Europe/Prague');
 
+?>
+<!DOCTYPE html><link rel="stylesheet" href="data/style.css">
+
+<h1>Result Set Data Types | dibi</h1>
+
+<?php
 
 dibi::connect([
 	'driver' => 'sqlite3',

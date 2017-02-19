@@ -1,7 +1,3 @@
-<!DOCTYPE html><link rel="stylesheet" href="data/style.css">
-
-<h1>Using Extension Methods | dibi</h1>
-
 <?php
 
 if (@!include __DIR__ . '/../vendor/autoload.php') {
@@ -10,6 +6,12 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 
 Tracy\Debugger::enable();
 
+?>
+<!DOCTYPE html><link rel="stylesheet" href="data/style.css">
+
+<h1>Using Extension Methods | dibi</h1>
+
+<?php
 
 dibi::connect([
 	'driver' => 'sqlite3',
