@@ -1,6 +1,5 @@
 build: off
 cache:
-    - c:\php5 -> appveyor.yml
     - c:\php7 -> appveyor.yml
     - '%LOCALAPPDATA%\Composer\files -> appveyor.yml'
 
@@ -12,34 +11,21 @@ services:
     - mysql
 
 init:
-    - SET PATH=c:\php5;%PATH%
+    - SET PATH=c:\php7;%PATH%
     - SET ANSICON=121x90 (121x90)
 
 install:
-    # Install PHP 5
-    - IF EXIST c:\php5 (SET PHP=0) ELSE (SET PHP=1)
-    - IF %PHP%==1 mkdir c:\php5
-    - IF %PHP%==1 cd c:\php5
-    - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/archives/php-5.6.14-Win32-VC11-x86.zip
-    - IF %PHP%==1 7z x php-5.6.14-Win32-VC11-x86.zip >nul
+    # Install PHP 7.1
+    - IF EXIST c:\php7 (SET PHP=0) ELSE (SET PHP=1)
+    - IF %PHP%==1 mkdir c:\php7
+    - IF %PHP%==1 cd c:\php7
+    - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/archives/php-7.1.5-Win32-VC14-x86.zip
+    - IF %PHP%==1 7z x php-7.1.5-Win32-VC14-x86.zip >nul
     - IF %PHP%==1 echo extension_dir=ext >> php.ini
     - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
     - IF %PHP%==1 appveyor DownloadFile https://files.nette.org/misc/php-sqlsrv.zip
     - IF %PHP%==1 7z x php-sqlsrv.zip >nul
-    - IF %PHP%==1 copy SQLSRV\php_sqlsrv_56_ts.dll ext\php_sqlsrv_ts.dll
-    - IF %PHP%==1 copy SQLSRV\php_pdo_sqlsrv_56_ts.dll ext\php_pdo_sqlsrv_ts.dll
-    - IF %PHP%==1 del /Q *.zip
-
-    # Install PHP 7
-    - IF EXIST c:\php7 (SET PHP=0) ELSE (SET PHP=1)
-    - IF %PHP%==1 mkdir c:\php7
-    - IF %PHP%==1 cd c:\php7
-    - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/archives/php-7.0.3-Win32-VC14-x86.zip
-    - IF %PHP%==1 7z x php-7.0.3-Win32-VC14-x86.zip >nul
-    - IF %PHP%==1 echo extension_dir=ext >> php.ini
-    - IF %PHP%==1 appveyor DownloadFile https://files.nette.org/misc/php-sqlsrv.zip
-    - IF %PHP%==1 7z x php-sqlsrv.zip >nul
-    - IF %PHP%==1 copy SQLSRV\php_sqlsrv_7_ts.dll ext\php_sqlsrv_ts.dll
+    - IF %PHP%==1 copy SQLSRV\php_sqlsrv_71_ts.dll ext\php_sqlsrv_71_ts.dll
     - IF %PHP%==1 del /Q *.zip
 
     # Install Nette Tester
@@ -51,8 +37,7 @@ install:
     - copy tests\databases.appveyor.ini tests\databases.ini
 
 test_script:
-    - vendor\bin\tester tests -s -p c:\php5\php -c tests\php5-win.ini
-    - vendor\bin\tester tests -s -p c:\php7\php -c tests\php7-win.ini
+    - vendor\bin\tester tests -s -p c:\php7\php -c tests\php-win.ini
 
 on_failure:
     # Print *.actual content

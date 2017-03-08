@@ -35,7 +35,6 @@ spl_autoload_register(function ($class) {
 		'DibiMsSql2005Reflector' => 'Dibi\Drivers\SqlsrvReflector',
 		'DibiMsSqlDriver' => 'Dibi\Drivers\MsSqlDriver',
 		'DibiMsSqlReflector' => 'Dibi\Drivers\MsSqlReflector',
-		'DibiMySqlDriver' => 'Dibi\Drivers\MySqlDriver',
 		'DibiMySqliDriver' => 'Dibi\Drivers\MySqliDriver',
 		'DibiMySqlReflector' => 'Dibi\Drivers\MySqlReflector',
 		'DibiNotImplementedException' => 'Dibi\NotImplementedException',
