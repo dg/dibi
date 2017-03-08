@@ -111,11 +111,6 @@ class Connection
 			if (Loggers\FirePhpLogger::isAvailable()) {
 				$this->onEvent[] = [new Loggers\FirePhpLogger($filter), 'logEvent'];
 			}
-
-			if (!interface_exists('Tracy\IBarPanel') && interface_exists('Nette\Diagnostics\IBarPanel') && class_exists('Dibi\Bridges\Nette\Panel')) {
-				$panel = new Bridges\Nette\Panel(isset($profilerCfg['explain']) ? $profilerCfg['explain'] : TRUE, $filter);
-				$panel->register($this);
-			}
 		}
 
 		$this->substitutes = new HashMap(function ($expr) { return ":$expr:"; });
