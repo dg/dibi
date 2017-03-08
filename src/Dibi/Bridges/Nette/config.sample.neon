@@ -1,5 +1,5 @@
 # This will create service named 'dibi.connection'.
-# Requires Nette Framework 2.2
+# Requires Nette Framework 2.2 or later
 
 extensions:
 	dibi: Dibi\Bridges\Nette\DibiExtension22

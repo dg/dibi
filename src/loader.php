@@ -15,8 +15,6 @@ spl_autoload_register(function ($class) {
 	static $map = [
 		'dibi' => 'dibi.php',
 		'Dibi\Bridges\Nette\DibiExtension22' => 'Bridges/Nette/DibiExtension22.php',
-		'Dibi\Bridges\Nette\DibiExtension21' => 'Bridges/Nette/DibiExtension21.php',
-		'Dibi\Bridges\Nette\Panel' => 'Bridges/Nette/Panel.php',
 		'Dibi\Bridges\Tracy\Panel' => 'Bridges/Tracy/Panel.php',
 		'Dibi\Connection' => 'Connection.php',
 		'Dibi\DataSource' => 'DataSource.php',
@@ -89,8 +87,6 @@ spl_autoload_register(function ($class) {
 		'DibiMsSqlReflector' => 'Dibi\Drivers\MsSqlReflector',
 		'DibiMySqliDriver' => 'Dibi\Drivers\MySqliDriver',
 		'DibiMySqlReflector' => 'Dibi\Drivers\MySqlReflector',
-		'DibiNette21Extension' => 'Dibi\Bridges\Nette\DibiExtension21',
-		'DibiNettePanel' => 'Dibi\Bridges\Nette\Panel',
 		'DibiNotImplementedException' => 'Dibi\NotImplementedException',
 		'DibiNotSupportedException' => 'Dibi\NotSupportedException',
 		'DibiOdbcDriver' => 'Dibi\Drivers\OdbcDriver',
