@@ -35,10 +35,6 @@ if ($config['system'] === 'odbc') {
 	$config['dsn'] = str_replace('data/odbc.mdb', TEMP_DIR . '/odbc.mdb', $config['dsn']);
 }
 
-if ($config['driver'] === 'mysql' && PHP_VERSION_ID >= 70000) {
-	Tester\Environment::skip('mysql driver is not supported on PHP 7');
-}
-
 
 $conn = new Dibi\Connection($config);
 
