@@ -6,8 +6,8 @@
  */
 
 
-if (PHP_VERSION_ID < 50404) {
-	throw new Exception('Dibi requires PHP 5.4.4 or newer.');
+if (PHP_VERSION_ID < 70000) {
+	throw new Exception('Dibi requires PHP 7.0 or newer.');
 }
 
 
