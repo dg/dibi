@@ -139,6 +139,7 @@ class Panel implements Tracy\IBarPanel
 			#tracy-debug .tracy-DibiProfiler-source { color: #999 !important }
 			#tracy-debug tracy-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
 			<h1>Queries: ' . count($this->events) . ($totalTime === NULL ? '' : sprintf(', time: %0.3f ms', $totalTime * 1000)) . '</h1>
+			<h2>' . $h($event->connection->getConfig('host')) . '</h2>
 			<div class="tracy-inner tracy-DibiProfiler">
 			<table>
 				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Rows</th><th>Connection</th></tr>' . $s . '
