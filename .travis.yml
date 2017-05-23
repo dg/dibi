@@ -2,11 +2,6 @@ language: php
 php:
     - 7.0
     - 7.1
-    - hhvm
-
-matrix:
-    allow_failures:
-        - php: hhvm
 
 script:
     - vendor/bin/tester tests -s -p php -c tests/php-unix.ini $COVERAGE
