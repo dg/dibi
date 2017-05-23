@@ -67,20 +67,7 @@ spl_autoload_register(function ($class) {
 
 
 // preload for compatiblity
-array_map('class_exists', [
-	'DibiConnection',
-	'DibiDateTime',
-	'DibiDriverException',
-	'DibiEvent',
-	'DibiException',
-	'DibiFluent',
-	'DibiLiteral',
-	'DibiNotImplementedException',
-	'DibiNotSupportedException',
-	'DibiPcreException',
-	'DibiProcedureException',
-	'DibiResult',
-	'DibiRow',
-	'IDataSource',
-	'IDibiDriver',
-]);
+class_alias('Dibi\DriverException', 'DibiDriverException');
+class_alias('Dibi\Exception', 'DibiException');
+class_alias('Dibi\ProcedureException', 'DibiProcedureException');
+class_alias('Dibi\IDataSource', 'IDataSource');
