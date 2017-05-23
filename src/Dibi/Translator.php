@@ -185,7 +185,35 @@ final class Translator
 		if (is_array($value)) {
 			$vx = $kx = [];
 			switch ($modifier) {
-				case 'and':
+
+                case 'j':  // json
+                    if ($value === NULL) {
+                        return 'NULL';
+                    } else {
+                        return $this->driver->escapeJson($value);
+                    }
+
+                case 'jb': // jsonb
+                    if ($value === NULL) {
+                        return 'NULL';
+                    } else {
+                        return $this->driver->escapeJsonb($value);
+                    }
+
+                case 'aint':
+                case 'aint4':
+                case 'aint2':
+                case 'aint8':
+                case 'achar':
+                case 'avchar':
+                case 'atext':
+                    if ($value === NULL) {
+                        return 'NULL';
+                    } else {
+                        return $this->driver->escapeArray($value, substr($modifier, 1));
+                    }
+
+                case 'and':
 				case 'or':  // key=val AND key IS NULL AND ...
 					if (empty($value)) {
 						return '1=1';
@@ -301,6 +329,9 @@ final class Translator
 				case 'ex':
 				case 'sql':
 					return call_user_func_array([$this->connection, 'translate'], $value);
+
+
+
 
 				default:  // value, value, value - all with the same modifier
 					foreach ($value as $v) {

@@ -7,6 +7,8 @@
 
 namespace Dibi;
 
+use Dibi\Drivers\PostgreDriver;
+
 
 /**
  * dibi SQL builder via fluent interfaces. EXPERIMENTAL!
@@ -28,6 +30,7 @@ namespace Dibi;
  * @method Fluent as(...$field)
  * @method Fluent on(...$cond)
  * @method Fluent using(...$cond)
+ * @method Fluent returning(...$field)
  */
 class Fluent implements IDataSource
 {
@@ -39,9 +42,9 @@ class Fluent implements IDataSource
 	public static $masks = [
 		'SELECT' => ['SELECT', 'DISTINCT', 'FROM', 'WHERE', 'GROUP BY',
 			'HAVING', 'ORDER BY', 'LIMIT', 'OFFSET'],
-		'UPDATE' => ['UPDATE', 'SET', 'WHERE', 'ORDER BY', 'LIMIT'],
-		'INSERT' => ['INSERT', 'INTO', 'VALUES', 'SELECT'],
-		'DELETE' => ['DELETE', 'FROM', 'USING', 'WHERE', 'ORDER BY', 'LIMIT'],
+		'UPDATE' => ['UPDATE', 'SET', 'WHERE', 'ORDER BY', 'LIMIT', 'RETURNING'],
+		'INSERT' => ['INSERT', 'INTO', 'VALUES', 'SELECT', 'RETURNING'],
+		'DELETE' => ['DELETE', 'FROM', 'USING', 'WHERE', 'ORDER BY', 'LIMIT', 'RETURNING'],
 	];
 
 	/** @var array  default modifiers for arrays */
@@ -55,6 +58,7 @@ class Fluent implements IDataSource
 		'HAVING' => '%and',
 		'ORDER BY' => '%by',
 		'GROUP BY' => '%by',
+		'RETURNING' => '%n',
 	];
 
 	/** @var array  clauses separators */
@@ -70,6 +74,7 @@ class Fluent implements IDataSource
 		'SET' => ',',
 		'VALUES' => ',',
 		'INTO' => FALSE,
+		'RETURNING' => ',',
 	];
 
 	/** @var array  clauses */
@@ -477,6 +482,10 @@ class Fluent implements IDataSource
 		}
 
 		foreach ($data as $clause => $statement) {
+			if ($clause === 'RETURNING' && !($this->connection->getDriver() instanceof PostgreDriver)) {
+				throw new NotSupportedException('RETURNING clause is supported only in PostgreSQL');
+			}
+
 			if ($statement !== NULL) {
 				$args[] = $clause;
 				if ($clause === $this->command && $this->flags) {

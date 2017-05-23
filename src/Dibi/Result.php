@@ -529,6 +529,10 @@ class Result implements IDataSource
 
 			} elseif ($type === Type::BINARY) {
 				$row[$key] = $this->getResultDriver()->unescapeBinary($value);
+			} elseif ($type === Type::ARRAY_TYPE) {
+				$row[$key] = Helpers::pgArrayParse($value);
+			} elseif ($type === Type::JSON || $type === Type::JSONB) {
+				$row[$key] = json_decode($value, TRUE);
 			}
 		}
 	}

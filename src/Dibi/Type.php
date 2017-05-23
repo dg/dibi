@@ -22,7 +22,10 @@ class Type
 		DATE = 'd',
 		DATETIME = 'dt',
 		TIME = 't',
-		TIME_INTERVAL = 'ti';
+		TIME_INTERVAL = 'ti',
+		ARRAY_TYPE = 'a',
+		JSON = 'j',
+		JSONB = 'jb';
 
 	final public function __construct()
 	{
