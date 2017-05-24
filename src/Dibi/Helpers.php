@@ -238,7 +238,7 @@ class Helpers
 	 * Import SQL dump from file.
 	 * @return int  count of sql commands
 	 */
-	public static function loadFromFile(Connection $connection, $file)
+	public static function loadFromFile(Connection $connection, $file, callable $onProgress = NULL)
 	{
 		@set_time_limit(0); // intentionally @
 
@@ -247,11 +247,13 @@ class Helpers
 			throw new \RuntimeException("Cannot open file '$file'.");
 		}
 
-		$count = 0;
+		$stat = fstat($handle);
+		$count = $size = 0;
 		$delimiter = ';';
 		$sql = '';
 		$driver = $connection->getDriver();
 		while (($s = fgets($handle)) !== FALSE) {
+			$size += strlen($s);
 			if (strtoupper(substr($s, 0, 10)) === 'DELIMITER ') {
 				$delimiter = trim(substr($s, 10));
 
@@ -260,6 +262,9 @@ class Helpers
 				$driver->query($sql);
 				$sql = '';
 				$count++;
+				if ($onProgress) {
+					call_user_func($onProgress, $count, isset($stat['size']) ? $size * 100 / $stat['size'] : NULL);
+				}
 
 			} else {
 				$sql .= $s;
@@ -269,6 +274,9 @@ class Helpers
 		if (rtrim($sql) !== '') {
 			$driver->query($sql);
 			$count++;
+			if ($onProgress) {
+				call_user_func($onProgress, $count, isset($stat['size']) ? 100 : NULL);
+			}
 		}
 		fclose($handle);
 		return $count;

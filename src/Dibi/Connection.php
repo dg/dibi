@@ -614,11 +614,12 @@ class Connection
 	/**
 	 * Import SQL dump from file.
 	 * @param  string  filename
+	 * @param  callable  function (int $count, ?float $percent): void
 	 * @return int  count of sql commands
 	 */
-	public function loadFile($file)
+	public function loadFile($file, callable $onProgress = NULL)
 	{
-		return Helpers::loadFromFile($this, $file);
+		return Helpers::loadFromFile($this, $file, $onProgress);
 	}
 
 
