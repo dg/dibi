@@ -251,22 +251,22 @@ class Helpers
 		$delimiter = ';';
 		$sql = '';
 		$driver = $connection->getDriver();
-		while (!feof($handle)) {
-			$s = rtrim(fgets($handle));
-			if (substr($s, 0, 10) === 'DELIMITER ') {
-				$delimiter = substr($s, 10);
+		while (($s = fgets($handle)) !== FALSE) {
+			if (strtoupper(substr($s, 0, 10)) === 'DELIMITER ') {
+				$delimiter = trim(substr($s, 10));
 
-			} elseif (substr($s, -strlen($delimiter)) === $delimiter) {
-				$sql .= substr($s, 0, -strlen($delimiter));
+			} elseif (substr($ts = rtrim($s), -strlen($delimiter)) === $delimiter) {
+				$sql .= substr($ts, 0, -strlen($delimiter));
 				$driver->query($sql);
 				$sql = '';
 				$count++;
 
 			} else {
-				$sql .= $s . "\n";
+				$sql .= $s;
 			}
 		}
-		if (trim($sql) !== '') {
+
+		if (rtrim($sql) !== '') {
 			$driver->query($sql);
 			$count++;
 		}
