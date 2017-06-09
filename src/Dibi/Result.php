@@ -174,20 +174,20 @@ class Result implements IDataSource
 	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
-	 * @return Row|FALSE
+	 * @return Row|NULL
 	 */
 	final public function fetch()
 	{
 		$row = $this->getResultDriver()->fetch(TRUE);
-		if (!is_array($row)) {
-			return FALSE;
+		if ($row === NULL) {
+			return NULL;
 		}
 		$this->fetched = TRUE;
 		$this->normalize($row);
 		if ($this->rowFactory) {
 			return ($this->rowFactory)($row);
 		} elseif ($this->rowClass) {
-			$row = new $this->rowClass($row);
+			return new $this->rowClass($row);
 		}
 		return $row;
 	}
@@ -195,13 +195,13 @@ class Result implements IDataSource
 
 	/**
 	 * Like fetch(), but returns only first field.
-	 * @return mixed value on success, FALSE if no next record
+	 * @return mixed value on success, NULL if no next record
 	 */
 	final public function fetchSingle()
 	{
 		$row = $this->getResultDriver()->fetch(TRUE);
-		if (!is_array($row)) {
-			return FALSE;
+		if ($row === NULL) {
+			return NULL;
 		}
 		$this->fetched = TRUE;
 		$this->normalize($row);

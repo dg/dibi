@@ -182,7 +182,7 @@ class dibi
 	/**
 	 * Executes SQL query and fetch result - Monostate for Dibi\Connection::query() & fetch().
 	 * @param  mixed    one or more arguments
-	 * @return Dibi\Row
+	 * @return Dibi\Row|NULL
 	 * @throws Dibi\Exception
 	 */
 	public static function fetch(...$args)

@@ -282,4 +282,13 @@ class Helpers
 		return $count;
 	}
 
+
+	/**
+	 * @internal
+	 */
+	public static function false2Null($val)
+	{
+		return $val === FALSE ? NULL : $val;
+	}
+
 }

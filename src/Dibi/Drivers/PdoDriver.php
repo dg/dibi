@@ -8,6 +8,7 @@
 namespace Dibi\Drivers;
 
 use Dibi;
+use Dibi\Helpers;
 use PDO;
 
 
@@ -33,8 +34,8 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	/** @var \PDOStatement|NULL  Resultset resource */
 	private $resultSet;
 
-	/** @var int|FALSE  Affected rows */
-	private $affectedRows = FALSE;
+	/** @var int|NULL  Affected rows */
+	private $affectedRows;
 
 	/** @var string */
 	private $driverName;
@@ -63,7 +64,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	{
 		$foo = &$config['dsn'];
 		$foo = &$config['options'];
-		Dibi\Helpers::alias($config, 'resource', 'pdo');
+		Helpers::alias($config, 'resource', 'pdo');
 
 		if ($config['resource'] instanceof PDO) {
 			$this->connection = $config['resource'];
@@ -106,11 +107,11 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 		// must detect if SQL returns result set or num of affected rows
 		$cmd = strtoupper(substr(ltrim($sql), 0, 6));
 		static $list = ['UPDATE' => 1, 'DELETE' => 1, 'INSERT' => 1, 'REPLAC' => 1];
-		$this->affectedRows = FALSE;
+		$this->affectedRows = NULL;
 
 		if (isset($list[$cmd])) {
-			$this->affectedRows = $this->connection->exec($sql);
-			if ($this->affectedRows !== FALSE) {
+			$this->affectedRows = Helpers::false2Null($this->connection->exec($sql));
+			if ($this->affectedRows !== NULL) {
 				return NULL;
 			}
 		} else {
@@ -143,7 +144,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|NULL  number of rows or NULL on error
 	 */
 	public function getAffectedRows()
 	{
@@ -153,11 +154,11 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|NULL  int on success or NULL on failure
 	 */
 	public function getInsertId($sequence)
 	{
-		return $this->connection->lastInsertId();
+		return Helpers::false2Null($this->connection->lastInsertId());
 	}
 
 
@@ -499,11 +500,11 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
-	 * @return array    array on success, nonarray if no next record
+	 * @return array|NULL    array on success, NULL if no next record
 	 */
 	public function fetch($assoc)
 	{
-		return $this->resultSet->fetch($assoc ? PDO::FETCH_ASSOC : PDO::FETCH_NUM);
+		return Helpers::false2Null($this->resultSet->fetch($assoc ? PDO::FETCH_ASSOC : PDO::FETCH_NUM));
 	}
 
 

@@ -317,7 +317,7 @@ class Connection
 	{
 		$this->connected || $this->connect();
 		$rows = $this->driver->getAffectedRows();
-		if (!is_int($rows) || $rows < 0) {
+		if ($rows === NULL || $rows < 0) {
 			throw new Exception('Cannot retrieve number of affected rows.');
 		}
 		return $rows;
@@ -531,7 +531,7 @@ class Connection
 	/**
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
 	 * @param  mixed    one or more arguments
-	 * @return Row|FALSE
+	 * @return Row|NULL
 	 * @throws Exception
 	 */
 	public function fetch(...$args)

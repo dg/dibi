@@ -168,7 +168,7 @@ class DataSource implements IDataSource
 
 	/**
 	 * Generates, executes SQL query and fetches the single row.
-	 * @return Row|FALSE
+	 * @return Row|NULL
 	 */
 	public function fetch()
 	{
@@ -178,7 +178,7 @@ class DataSource implements IDataSource
 
 	/**
 	 * Like fetch(), but returns only first field.
-	 * @return mixed  value on success, FALSE if no next record
+	 * @return mixed  value on success, NULL if no next record
 	 */
 	public function fetchSingle()
 	{

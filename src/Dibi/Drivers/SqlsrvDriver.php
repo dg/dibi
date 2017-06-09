@@ -38,8 +38,8 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	/** @var bool */
 	private $autoFree = TRUE;
 
-	/** @var int|FALSE  Affected rows */
-	private $affectedRows = FALSE;
+	/** @var int|NULL  Affected rows */
+	private $affectedRows;
 
 	/** @var string */
 	private $version = '';
@@ -109,7 +109,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function query($sql)
 	{
-		$this->affectedRows = FALSE;
+		$this->affectedRows = NULL;
 		$res = sqlsrv_query($this->connection, $sql);
 
 		if ($res === FALSE) {
@@ -117,7 +117,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			throw new Dibi\DriverException($info[0]['message'], $info[0]['code'], $sql);
 
 		} elseif (is_resource($res)) {
-			$this->affectedRows = sqlsrv_rows_affected($res);
+			$this->affectedRows = Helpers::false2Null(sqlsrv_rows_affected($res));
 			return $this->createResultDriver($res);
 		}
 		return NULL;
@@ -126,7 +126,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|NULL  number of rows or NULL on error
 	 */
 	public function getAffectedRows()
 	{
@@ -136,7 +136,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|NULL  int on success or NULL on failure
 	 */
 	public function getInsertId($sequence)
 	{
@@ -145,7 +145,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			$row = sqlsrv_fetch_array($res, SQLSRV_FETCH_NUMERIC);
 			return $row[0];
 		}
-		return FALSE;
+		return NULL;
 	}
 
 
@@ -369,7 +369,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
-	 * @return array    array on success, nonarray if no next record
+	 * @return array|NULL    array on success, NULL if no next record
 	 */
 	public function fetch($assoc)
 	{

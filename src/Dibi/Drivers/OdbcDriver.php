@@ -34,8 +34,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/** @var bool */
 	private $autoFree = TRUE;
 
-	/** @var int|FALSE  Affected rows */
-	private $affectedRows = FALSE;
+	/** @var int|NULL  Affected rows */
+	private $affectedRows;
 
 	/** @var int  Cursor */
 	private $row = 0;
@@ -100,14 +100,14 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function query($sql)
 	{
-		$this->affectedRows = FALSE;
+		$this->affectedRows = NULL;
 		$res = @odbc_exec($this->connection, $sql); // intentionally @
 
 		if ($res === FALSE) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
 
 		} elseif (is_resource($res)) {
-			$this->affectedRows = odbc_num_rows($res);
+			$this->affectedRows = Dibi\Helpers::false2Null(odbc_num_rows($res));
 			return $this->createResultDriver($res);
 		}
 		return NULL;
@@ -116,7 +116,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|NULL  number of rows or NULL on error
 	 */
 	public function getAffectedRows()
 	{
@@ -126,7 +126,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|NULL  int on success or NULL on failure
 	 */
 	public function getInsertId($sequence)
 	{
@@ -363,16 +363,16 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
-	 * @return array    array on success, nonarray if no next record
+	 * @return array|NULL    array on success, NULL if no next record
 	 */
 	public function fetch($assoc)
 	{
 		if ($assoc) {
-			return odbc_fetch_array($this->resultSet, ++$this->row);
+			return Dibi\Helpers::false2Null(odbc_fetch_array($this->resultSet, ++$this->row));
 		} else {
 			$set = $this->resultSet;
 			if (!odbc_fetch_row($set, ++$this->row)) {
-				return FALSE;
+				return NULL;
 			}
 			$count = odbc_num_fields($set);
 			$cols = [];

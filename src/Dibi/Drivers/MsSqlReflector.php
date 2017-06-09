@@ -57,7 +57,7 @@ class MsSqlReflector implements Dibi\Reflector
 	public function getTableCount($table, $fallback = TRUE)
 	{
 		if (empty($table)) {
-			return FALSE;
+			return NULL;
 		}
 		$result = $this->driver->query("
 			SELECT MAX(rowcnt)
@@ -71,7 +71,7 @@ class MsSqlReflector implements Dibi\Reflector
 				$row = $this->driver->query("SELECT COUNT(*) FROM {$this->driver->escapeIdentifier($table)}")->fetch(FALSE);
 				$count = intval($row[0]);
 			} else {
-				$count = FALSE;
+				$count = NULL;
 			}
 		} else {
 			$count = intval($row[0]);

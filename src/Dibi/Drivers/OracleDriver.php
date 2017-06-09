@@ -43,8 +43,8 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/** @var string  Date and datetime format */
 	private $fmtDate, $fmtDateTime;
 
-	/** @var int|FALSE Number of affected rows */
-	private $affectedRows = FALSE;
+	/** @var int|NULL Number of affected rows */
+	private $affectedRows;
 
 
 	/**
@@ -109,7 +109,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function query($sql)
 	{
-		$this->affectedRows = FALSE;
+		$this->affectedRows = NULL;
 		$res = oci_parse($this->connection, $sql);
 		if ($res) {
 			@oci_execute($res, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
@@ -118,7 +118,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				throw self::createException($err['message'], $err['code'], $sql);
 
 			} elseif (is_resource($res)) {
-				$this->affectedRows = oci_num_rows($res);
+				$this->affectedRows = Dibi\Helpers::false2Null(oci_num_rows($res));
 				return $this->createResultDriver($res);
 			}
 		} else {
@@ -151,7 +151,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|NULL  number of rows or NULL on error
 	 */
 	public function getAffectedRows()
 	{
@@ -161,12 +161,12 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|NULL  int on success or NULL on failure
 	 */
 	public function getInsertId($sequence)
 	{
 		$row = $this->query("SELECT $sequence.CURRVAL AS ID FROM DUAL")->fetch(TRUE);
-		return isset($row['ID']) ? (int) $row['ID'] : FALSE;
+		return isset($row['ID']) ? (int) $row['ID'] : NULL;
 	}
 
 
@@ -396,11 +396,11 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
-	 * @return array    array on success, nonarray if no next record
+	 * @return array|NULL    array on success, NULL if no next record
 	 */
 	public function fetch($assoc)
 	{
-		return oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS);
+		return Dibi\Helpers::false2Null(oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS));
 	}
 
 

@@ -8,6 +8,7 @@
 namespace Dibi\Drivers;
 
 use Dibi;
+use Dibi\Helpers;
 
 
 /**
@@ -35,8 +36,8 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/** @var bool */
 	private $autoFree = TRUE;
 
-	/** @var int|FALSE  Affected rows */
-	private $affectedRows = FALSE;
+	/** @var int|NULL  Affected rows */
+	private $affectedRows;
 
 
 	/**
@@ -69,8 +70,8 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				$string = $config['string'];
 			} else {
 				$string = '';
-				Dibi\Helpers::alias($config, 'user', 'username');
-				Dibi\Helpers::alias($config, 'dbname', 'database');
+				Helpers::alias($config, 'user', 'username');
+				Helpers::alias($config, 'dbname', 'database');
 				foreach (['host', 'hostaddr', 'port', 'dbname', 'user', 'password', 'connect_timeout', 'options', 'sslmode', 'service'] as $key) {
 					if (isset($config[$key])) {
 						$string .= $key . '=' . $config[$key] . ' ';
@@ -133,14 +134,14 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function query($sql)
 	{
-		$this->affectedRows = FALSE;
+		$this->affectedRows = NULL;
 		$res = @pg_query($this->connection, $sql); // intentionally @
 
 		if ($res === FALSE) {
 			throw self::createException(pg_last_error($this->connection), NULL, $sql);
 
 		} elseif (is_resource($res)) {
-			$this->affectedRows = pg_affected_rows($res);
+			$this->affectedRows = Helpers::false2Null(pg_affected_rows($res));
 			if (pg_num_fields($res)) {
 				return $this->createResultDriver($res);
 			}
@@ -179,7 +180,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|NULL  number of rows or NULL on error
 	 */
 	public function getAffectedRows()
 	{
@@ -189,7 +190,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|NULL  int on success or NULL on failure
 	 */
 	public function getInsertId($sequence)
 	{
@@ -201,11 +202,11 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		}
 
 		if (!$res) {
-			return FALSE;
+			return NULL;
 		}
 
 		$row = $res->fetch(FALSE);
-		return is_array($row) ? $row[0] : FALSE;
+		return is_array($row) ? $row[0] : NULL;
 	}
 
 
@@ -438,11 +439,11 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
-	 * @return array    array on success, nonarray if no next record
+	 * @return array|NULL    array on success, NULL if no next record
 	 */
 	public function fetch($assoc)
 	{
-		return pg_fetch_array($this->resultSet, NULL, $assoc ? PGSQL_ASSOC : PGSQL_NUM);
+		return Helpers::false2Null(pg_fetch_array($this->resultSet, NULL, $assoc ? PGSQL_ASSOC : PGSQL_NUM));
 	}
 
 

@@ -8,6 +8,7 @@
 namespace Dibi\Drivers;
 
 use Dibi;
+use Dibi\Helpers;
 
 
 /**
@@ -62,7 +63,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function connect(array &$config)
 	{
-		Dibi\Helpers::alias($config, 'database', 'db');
+		Helpers::alias($config, 'database', 'db');
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
@@ -129,22 +130,22 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|NULL  number of rows or NULL on error
 	 */
 	public function getAffectedRows()
 	{
-		return ibase_affected_rows($this->connection);
+		return Helpers::false2Null(ibase_affected_rows($this->connection));
 	}
 
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @param  string     generator name
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|NULL  int on success or NULL on failure
 	 */
 	public function getInsertId($sequence)
 	{
-		return ibase_gen_id($sequence, 0, $this->connection);
+		return Helpers::false2Null(ibase_gen_id($sequence, 0, $this->connection));
 	}
 
 
@@ -382,7 +383,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
-	 * @return array    array on success, nonarray if no next record
+	 * @return array|NULL  array on success, NULL if no next record
 	 */
 	public function fetch($assoc)
 	{
@@ -398,7 +399,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			}
 		}
 
-		return $result;
+		return Helpers::false2Null($result);
 	}
 
 

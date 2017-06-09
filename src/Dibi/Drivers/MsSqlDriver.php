@@ -104,17 +104,17 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|NULL  number of rows or NULL on error
 	 */
 	public function getAffectedRows()
 	{
-		return mssql_rows_affected($this->connection);
+		return Dibi\Helpers::false2Null(mssql_rows_affected($this->connection));
 	}
 
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|NULL  int on success or NULL on failure
 	 */
 	public function getInsertId($sequence)
 	{
@@ -123,7 +123,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 			$row = mssql_fetch_row($res);
 			return $row[0];
 		}
-		return FALSE;
+		return NULL;
 	}
 
 
@@ -338,18 +338,18 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
-	 * @return array    array on success, nonarray if no next record
+	 * @return array|NULL    array on success, NULL if no next record
 	 */
 	public function fetch($assoc)
 	{
-		return mssql_fetch_array($this->resultSet, $assoc ? MSSQL_ASSOC : MSSQL_NUM);
+		return Dibi\Helpers::false2Null(mssql_fetch_array($this->resultSet, $assoc ? MSSQL_ASSOC : MSSQL_NUM));
 	}
 
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @param  int      the 0-based cursor pos to seek to
-	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+	 * @param  int   the 0-based cursor pos to seek to
+	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
 	 */
 	public function seek($row)
 	{
