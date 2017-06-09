@@ -142,7 +142,7 @@ final class Translator
 			}
 
 			// default processing
-			$sql[] = $this->formatValue($arg, FALSE);
+			$sql[] = $this->formatValue($arg, NULL);
 		} // while
 
 
@@ -168,7 +168,7 @@ final class Translator
 	/**
 	 * Apply modifier to single value.
 	 * @param  mixed
-	 * @param  string
+	 * @param  string|NULL
 	 * @return string
 	 */
 	public function formatValue($value, $modifier)
@@ -196,7 +196,7 @@ final class Translator
 							$pair = explode('%', $k, 2); // split into identifier & modifier
 							$k = $this->identifiers->{$pair[0]} . ' ';
 							if (!isset($pair[1])) {
-								$v = $this->formatValue($v, FALSE);
+								$v = $this->formatValue($v, NULL);
 								$vx[] = $k . ($v === 'NULL' ? 'IS ' : '= ') . $v;
 
 							} elseif ($pair[1] === 'ex') {
@@ -238,7 +238,7 @@ final class Translator
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$vx[] = $this->identifiers->{$pair[0]} . '='
-							. $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : FALSE));
+							. $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : NULL));
 					}
 					return implode(', ', $vx);
 
@@ -247,7 +247,7 @@ final class Translator
 				case 'l': // (val, val, ...)
 					foreach ($value as $k => $v) {
 						$pair = explode('%', (string) $k, 2); // split into identifier & modifier
-						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : FALSE));
+						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : NULL));
 					}
 					return '(' . (($vx || $modifier === 'l') ? implode(', ', $vx) : 'NULL') . ')';
 
@@ -256,7 +256,7 @@ final class Translator
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$kx[] = $this->identifiers->{$pair[0]};
-						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : FALSE));
+						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : NULL));
 					}
 					return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
@@ -277,7 +277,7 @@ final class Translator
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$kx[] = $this->identifiers->{$pair[0]};
 						foreach ($v as $k2 => $v2) {
-							$vx[$k2][] = $this->formatValue($v2, $pair[1] ?? (is_array($v2) ? 'ex' : FALSE));
+							$vx[$k2][] = $this->formatValue($v2, $pair[1] ?? (is_array($v2) ? 'ex' : NULL));
 						}
 					}
 					foreach ($vx as $k => $v) {
@@ -480,7 +480,7 @@ final class Translator
 			}
 
 			$cursor++;
-			return $this->formatValue($this->args[$cursor - 1], FALSE);
+			return $this->formatValue($this->args[$cursor - 1], NULL);
 		}
 
 		if (!empty($matches[10])) { // modifier
@@ -576,7 +576,7 @@ final class Translator
 		if ($matches[8]) { // SQL identifier substitution
 			$m = substr($matches[8], 0, -1);
 			$m = $this->connection->getSubstitutes()->$m;
-			return $matches[9] == '' ? $this->formatValue($m, FALSE) : $m . $matches[9]; // value or identifier
+			return $matches[9] == '' ? $this->formatValue($m, NULL) : $m . $matches[9]; // value or identifier
 		}
 
 		throw new \Exception('this should be never executed');
