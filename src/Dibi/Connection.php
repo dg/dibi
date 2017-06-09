@@ -205,38 +205,35 @@ class Connection
 
 	/**
 	 * Generates (translates) and executes SQL query.
-	 * @param  array|mixed      one or more arguments
+	 * @param  mixed      one or more arguments
 	 * @return Result|int   result set or number of affected rows
 	 * @throws Exception
 	 */
-	final public function query($args)
+	final public function query(...$args)
 	{
-		$args = func_get_args();
 		return $this->nativeQuery($this->translateArgs($args));
 	}
 
 
 	/**
 	 * Generates SQL query.
-	 * @param  array|mixed      one or more arguments
+	 * @param  mixed      one or more arguments
 	 * @return string
 	 * @throws Exception
 	 */
-	final public function translate($args)
+	final public function translate(...$args)
 	{
-		$args = func_get_args();
 		return $this->translateArgs($args);
 	}
 
 
 	/**
 	 * Generates and prints SQL query.
-	 * @param  array|mixed  one or more arguments
+	 * @param  mixed  one or more arguments
 	 * @return bool
 	 */
-	final public function test($args)
+	final public function test(...$args)
 	{
-		$args = func_get_args();
 		try {
 			Helpers::dump($this->translateArgs($args));
 			return TRUE;
@@ -254,13 +251,12 @@ class Connection
 
 	/**
 	 * Generates (translates) and returns SQL query as DataSource.
-	 * @param  array|mixed      one or more arguments
+	 * @param  mixed      one or more arguments
 	 * @return DataSource
 	 * @throws Exception
 	 */
-	final public function dataSource($args)
+	final public function dataSource(...$args)
 	{
-		$args = func_get_args();
 		return new DataSource($this->translateArgs($args), $this);
 	}
 
@@ -457,10 +453,9 @@ class Connection
 	 * @param  mixed    column name
 	 * @return Fluent
 	 */
-	public function select($args)
+	public function select(...$args)
 	{
-		$args = func_get_args();
-		return $this->command()->__call('select', $args);
+		return $this->command()->select(...$args);
 	}
 
 
@@ -535,52 +530,48 @@ class Connection
 
 	/**
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
-	 * @param  array|mixed    one or more arguments
+	 * @param  mixed    one or more arguments
 	 * @return Row|FALSE
 	 * @throws Exception
 	 */
-	public function fetch($args)
+	public function fetch(...$args)
 	{
-		$args = func_get_args();
 		return $this->query($args)->fetch();
 	}
 
 
 	/**
 	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
-	 * @param  array|mixed    one or more arguments
+	 * @param  mixed    one or more arguments
 	 * @return Row[]
 	 * @throws Exception
 	 */
-	public function fetchAll($args)
+	public function fetchAll(...$args)
 	{
-		$args = func_get_args();
 		return $this->query($args)->fetchAll();
 	}
 
 
 	/**
 	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
-	 * @param  array|mixed    one or more arguments
+	 * @param  mixed    one or more arguments
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function fetchSingle($args)
+	public function fetchSingle(...$args)
 	{
-		$args = func_get_args();
 		return $this->query($args)->fetchSingle();
 	}
 
 
 	/**
 	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
-	 * @param  array|mixed    one or more arguments
+	 * @param  mixed    one or more arguments
 	 * @return array
 	 * @throws Exception
 	 */
-	public function fetchPairs($args)
+	public function fetchPairs(...$args)
 	{
-		$args = func_get_args();
 		return $this->query($args)->fetchPairs();
 	}
 

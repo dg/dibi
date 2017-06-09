@@ -136,13 +136,12 @@ class dibi
 
 	/**
 	 * Generates and executes SQL query - Monostate for Dibi\Connection::query().
-	 * @param  array|mixed      one or more arguments
+	 * @param  mixed      one or more arguments
 	 * @return Dibi\Result|int   result set or number of affected rows
 	 * @throws Dibi\Exception
 	 */
-	public static function query($args)
+	public static function query(...$args)
 	{
-		$args = func_get_args();
 		return self::getConnection()->query($args);
 	}
 
@@ -160,76 +159,70 @@ class dibi
 
 	/**
 	 * Generates and prints SQL query - Monostate for Dibi\Connection::test().
-	 * @param  array|mixed  one or more arguments
+	 * @param  mixed  one or more arguments
 	 * @return bool
 	 */
-	public static function test($args)
+	public static function test(...$args)
 	{
-		$args = func_get_args();
 		return self::getConnection()->test($args);
 	}
 
 
 	/**
 	 * Generates and returns SQL query as DataSource - Monostate for Dibi\Connection::test().
-	 * @param  array|mixed      one or more arguments
+	 * @param  mixed      one or more arguments
 	 * @return Dibi\DataSource
 	 */
-	public static function dataSource($args)
+	public static function dataSource(...$args)
 	{
-		$args = func_get_args();
 		return self::getConnection()->dataSource($args);
 	}
 
 
 	/**
 	 * Executes SQL query and fetch result - Monostate for Dibi\Connection::query() & fetch().
-	 * @param  array|mixed    one or more arguments
+	 * @param  mixed    one or more arguments
 	 * @return Dibi\Row
 	 * @throws Dibi\Exception
 	 */
-	public static function fetch($args)
+	public static function fetch(...$args)
 	{
-		$args = func_get_args();
 		return self::getConnection()->query($args)->fetch();
 	}
 
 
 	/**
 	 * Executes SQL query and fetch results - Monostate for Dibi\Connection::query() & fetchAll().
-	 * @param  array|mixed    one or more arguments
+	 * @param  mixed    one or more arguments
 	 * @return Dibi\Row[]
 	 * @throws Dibi\Exception
 	 */
-	public static function fetchAll($args)
+	public static function fetchAll(...$args)
 	{
-		$args = func_get_args();
 		return self::getConnection()->query($args)->fetchAll();
 	}
 
 
 	/**
 	 * Executes SQL query and fetch first column - Monostate for Dibi\Connection::query() & fetchSingle().
-	 * @param  array|mixed    one or more arguments
+	 * @param  mixed    one or more arguments
 	 * @return mixed
 	 * @throws Dibi\Exception
 	 */
-	public static function fetchSingle($args)
+	public static function fetchSingle(...$args)
 	{
-		$args = func_get_args();
 		return self::getConnection()->query($args)->fetchSingle();
 	}
 
 
 	/**
 	 * Executes SQL query and fetch pairs - Monostate for Dibi\Connection::query() & fetchPairs().
-	 * @param  array|mixed    one or more arguments
+	 * @param  mixed    one or more arguments
 	 * @return array
 	 * @throws Dibi\Exception
 	 */
-	public static function fetchPairs($args)
+	public static function fetchPairs(...$args)
 	{
-		$args = func_get_args();
 		return self::getConnection()->query($args)->fetchPairs();
 	}
 
@@ -355,10 +348,9 @@ class dibi
 	 * @param  mixed    column name
 	 * @return Dibi\Fluent
 	 */
-	public static function select($args)
+	public static function select(...$args)
 	{
-		$args = func_get_args();
-		return call_user_func_array([self::getConnection(), 'select'], $args);
+		return self::getConnection()->select(...$args);
 	}
 
 
