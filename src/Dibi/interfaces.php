@@ -121,13 +121,13 @@ interface Driver
 	function escapeBool($value);
 
 	/**
-	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int
 	 * @return string
 	 */
 	function escapeDate($value);
 
 	/**
-	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int
 	 * @return string
 	 */
 	function escapeDateTime($value);

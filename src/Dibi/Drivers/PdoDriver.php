@@ -326,12 +326,12 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 
 	/**
-	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int
 	 * @return string
 	 */
 	public function escapeDate($value)
 	{
-		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+		if (!$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
 		return $value->format($this->driverName === 'odbc' ? '#m/d/Y#' : "'Y-m-d'");
@@ -339,12 +339,12 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 
 	/**
-	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int
 	 * @return string
 	 */
 	public function escapeDateTime($value)
 	{
-		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+		if (!$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
 		return $value->format($this->driverName === 'odbc' ? "#m/d/Y H:i:s.u#" : "'Y-m-d H:i:s.u'");

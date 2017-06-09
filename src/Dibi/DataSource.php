@@ -266,7 +266,7 @@ FROM %SQL', $this->sql, '
 %ex', $this->sorting ? ['ORDER BY %by', $this->sorting] : NULL, '
 %ofs %lmt', $this->offset, $this->limit
 			);
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			trigger_error($e->getMessage(), E_USER_ERROR);
 		}
 	}

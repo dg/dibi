@@ -292,12 +292,12 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 
 	/**
-	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int
 	 * @return string
 	 */
 	public function escapeDate($value)
 	{
-		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+		if (!$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
 		return $value->format("'Y-m-d'");
@@ -305,12 +305,12 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 
 	/**
-	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int
 	 * @return string
 	 */
 	public function escapeDateTime($value)
 	{
-		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
+		if (!$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
 		return $value->format("'Y-m-d H:i:s.u'");
