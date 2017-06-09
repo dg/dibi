@@ -100,20 +100,24 @@ class Panel implements Tracy\IBarPanel
 	 */
 	public function getPanel()
 	{
+		if (!$this->events) {
+			return NULL;
+		}
+
 		$totalTime = $s = NULL;
-		$h = 'htmlSpecialChars';
 		foreach ($this->events as $event) {
 			$totalTime += $event->time;
+			$connection = $event->connection;
 			$explain = NULL; // EXPLAIN is called here to work SELECT FOUND_ROWS()
 			if ($this->explain && $event->type === Event::SELECT) {
 				try {
-					$backup = [$event->connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime];
-					$event->connection->onEvent = NULL;
-					$cmd = is_string($this->explain) ? $this->explain : ($event->connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
-					$explain = @Helpers::dump($event->connection->nativeQuery("$cmd $event->sql"), TRUE);
+					$backup = [$connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime];
+					$connection->onEvent = NULL;
+					$cmd = is_string($this->explain) ? $this->explain : ($connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
+					$explain = @Helpers::dump($connection->nativeQuery("$cmd $event->sql"), TRUE);
 				} catch (Dibi\Exception $e) {
 				}
-				list($event->connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime) = $backup;
+				list($connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime) = $backup;
 			}
 
 			$s .= '<tr><td>' . sprintf('%0.3f', $event->time * 1000);
@@ -131,17 +135,18 @@ class Panel implements Tracy\IBarPanel
 				$s .= Tracy\Helpers::editorLink($event->source[0], $event->source[1]);//->class('tracy-DibiProfiler-source');
 			}
 
-			$s .= "</td><td>{$event->count}</td><td>{$h($event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name'))}</td></tr>";
+			$s .= "</td><td>{$event->count}</td></tr>";
 		}
 
-		return empty($this->events) ? '' :
-			'<style> #tracy-debug td.tracy-DibiProfiler-sql { background: white !important }
+		return '<style> #tracy-debug td.tracy-DibiProfiler-sql { background: white !important }
 			#tracy-debug .tracy-DibiProfiler-source { color: #999 !important }
 			#tracy-debug tracy-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
-			<h1>Queries: ' . count($this->events) . ($totalTime === NULL ? '' : sprintf(', time: %0.3f ms', $totalTime * 1000)) . '</h1>
+			<h1>Queries: ' . count($this->events)
+				. ($totalTime === NULL ? '' : sprintf(', time: %0.3f ms', $totalTime * 1000)) . ', '
+				. htmlSpecialChars($connection->getConfig('driver') . ($connection->getConfig('name') ? '/' . $connection->getConfig('name') : '')) . '</h1>
 			<div class="tracy-inner tracy-DibiProfiler">
 			<table>
-				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Rows</th><th>Connection</th></tr>' . $s . '
+				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Rows</th></tr>' . $s . '
 			</table>
 			</div>';
 	}
