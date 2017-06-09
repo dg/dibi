@@ -25,10 +25,10 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
 	use Dibi\Strict;
 
-	/** @var resource  Connection resource */
+	/** @var resource|NULL */
 	private $connection;
 
-	/** @var resource  Resultset resource */
+	/** @var resource|NULL */
 	private $resultSet;
 
 	/** @var bool */
@@ -189,7 +189,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns the connection resource.
-	 * @return mixed
+	 * @return resource|NULL
 	 */
 	public function getResource()
 	{
@@ -225,7 +225,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  mixed     value
+	 * @param  string    value
 	 * @return string    encoded value
 	 */
 	public function escapeText($value)
@@ -234,24 +234,40 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	public function escapeBinary($value)
 	{
 		return "'" . str_replace("'", "''", $value) . "'";
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	public function escapeIdentifier($value)
 	{
 		return '[' . str_replace(['[', ']'], ['[[', ']]'], $value) . ']';
 	}
 
 
+	/**
+	 * @param  bool
+	 * @return string
+	 */
 	public function escapeBool($value)
 	{
 		return $value ? 1 : 0;
 	}
 
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	public function escapeDate($value)
 	{
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
@@ -261,6 +277,10 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	}
 
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	public function escapeDateTime($value)
 	{
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
@@ -304,6 +324,9 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
+	 * @param  string
+	 * @param  int|NULL
+	 * @param  int|NULL
 	 * @return void
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
@@ -413,7 +436,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns the result set resource.
-	 * @return mixed
+	 * @return resource|NULL
 	 */
 	public function getResultResource()
 	{

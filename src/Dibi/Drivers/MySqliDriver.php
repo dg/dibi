@@ -37,10 +37,10 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	const ERROR_DUPLICATE_ENTRY = 1062;
 	const ERROR_DATA_TRUNCATED = 1265;
 
-	/** @var mysqli  Connection resource */
+	/** @var \mysqli|NULL */
 	private $connection;
 
-	/** @var mysqli_result  Resultset resource */
+	/** @var \mysqli_result|NULL */
 	private $resultSet;
 
 	/** @var bool */
@@ -258,7 +258,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return mysqli
+	 * @return \mysqli
 	 */
 	public function getResource()
 	{
@@ -278,7 +278,6 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Result set driver factory.
-	 * @param  mysqli_result
 	 * @return Dibi\ResultDriver
 	 */
 	public function createResultDriver(\mysqli_result $resource)
@@ -294,7 +293,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  mixed     value
+	 * @param  string    value
 	 * @return string    encoded value
 	 */
 	public function escapeText($value)
@@ -303,24 +302,40 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	public function escapeBinary($value)
 	{
 		return "_binary'" . mysqli_real_escape_string($this->connection, $value) . "'";
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	public function escapeIdentifier($value)
 	{
 		return '`' . str_replace('`', '``', $value) . '`';
 	}
 
 
+	/**
+	 * @param  bool
+	 * @return string
+	 */
 	public function escapeBool($value)
 	{
 		return $value ? 1 : 0;
 	}
 
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	public function escapeDate($value)
 	{
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
@@ -330,6 +345,10 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	public function escapeDateTime($value)
 	{
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
@@ -373,6 +392,9 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
+	 * @param  string
+	 * @param  int|NULL
+	 * @param  int|NULL
 	 * @return void
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
@@ -488,7 +510,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return mysqli_result
+	 * @return \mysqli_result|NULL
 	 */
 	public function getResultResource()
 	{

@@ -19,10 +19,10 @@ use Dibi\Type;
  * @property-read Table $table
  * @property-read string $type
  * @property-read mixed $nativeType
- * @property-read int $size
- * @property-read bool $unsigned
- * @property-read bool $nullable
- * @property-read bool $autoIncrement
+ * @property-read int|NULL $size
+ * @property-read bool|NULL $unsigned
+ * @property-read bool|NULL $nullable
+ * @property-read bool|NULL $autoIncrement
  * @property-read mixed $default
  */
 class Column
@@ -83,7 +83,7 @@ class Column
 
 
 	/**
-	 * @return string
+	 * @return string|NULL
 	 */
 	public function getTableName()
 	{
@@ -101,7 +101,7 @@ class Column
 
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getNativeType()
 	{
@@ -110,7 +110,7 @@ class Column
 
 
 	/**
-	 * @return int
+	 * @return int|NULL
 	 */
 	public function getSize()
 	{
@@ -119,7 +119,7 @@ class Column
 
 
 	/**
-	 * @return bool
+	 * @return bool|NULL
 	 */
 	public function isUnsigned()
 	{
@@ -128,7 +128,7 @@ class Column
 
 
 	/**
-	 * @return bool
+	 * @return bool|NULL
 	 */
 	public function isNullable()
 	{
@@ -137,7 +137,7 @@ class Column
 
 
 	/**
-	 * @return bool
+	 * @return bool|NULL
 	 */
 	public function isAutoIncrement()
 	{

@@ -225,7 +225,7 @@ class Connection
 	/**
 	 * Generates (translates) and executes SQL query.
 	 * @param  array|mixed      one or more arguments
-	 * @return Result|int   result set object (if any)
+	 * @return Result|int   result set or number of affected rows
 	 * @throws Exception
 	 */
 	final public function query($args)
@@ -303,7 +303,7 @@ class Connection
 	/**
 	 * Executes the SQL query.
 	 * @param  string           SQL statement.
-	 * @return Result|int   result set object (if any)
+	 * @return Result|int   result set or number of affected rows
 	 * @throws Exception
 	 */
 	final public function nativeQuery($sql)
@@ -473,7 +473,7 @@ class Connection
 
 
 	/**
-	 * @param  string    column name
+	 * @param  mixed    column name
 	 * @return Fluent
 	 */
 	public function select($args)
@@ -555,7 +555,7 @@ class Connection
 	/**
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
 	 * @param  array|mixed    one or more arguments
-	 * @return Row|bool
+	 * @return Row|FALSE
 	 * @throws Exception
 	 */
 	public function fetch($args)
@@ -581,7 +581,7 @@ class Connection
 	/**
 	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
 	 * @param  array|mixed    one or more arguments
-	 * @return string|bool
+	 * @return mixed
 	 * @throws Exception
 	 */
 	public function fetchSingle($args)

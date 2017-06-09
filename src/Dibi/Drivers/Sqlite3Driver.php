@@ -27,10 +27,10 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var SQLite3  Connection resource */
+	/** @var SQLite3|NULL */
 	private $connection;
 
-	/** @var \SQLite3Result  Resultset resource */
+	/** @var \SQLite3Result|NULL */
 	private $resultSet;
 
 	/** @var bool */
@@ -209,7 +209,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return mixed
+	 * @return SQLite3
 	 */
 	public function getResource()
 	{
@@ -245,7 +245,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  mixed     value
+	 * @param  string    value
 	 * @return string    encoded value
 	 */
 	public function escapeText($value)
@@ -254,24 +254,40 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	public function escapeBinary($value)
 	{
 		return "X'" . bin2hex((string) $value) . "'";
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	public function escapeIdentifier($value)
 	{
 		return '[' . strtr($value, '[]', '  ') . ']';
 	}
 
 
+	/**
+	 * @param  bool
+	 * @return string
+	 */
 	public function escapeBool($value)
 	{
 		return $value ? 1 : 0;
 	}
 
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	public function escapeDate($value)
 	{
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
@@ -281,6 +297,10 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	public function escapeDateTime($value)
 	{
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
@@ -324,6 +344,9 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
+	 * @param  string
+	 * @param  int|NULL
+	 * @param  int|NULL
 	 * @return void
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
@@ -431,7 +454,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return mixed
+	 * @return \SQLite3Result|NULL
 	 */
 	public function getResultResource()
 	{

@@ -167,7 +167,7 @@ class dibi
 	/**
 	 * Generates and executes SQL query - Monostate for Dibi\Connection::query().
 	 * @param  array|mixed      one or more arguments
-	 * @return Dibi\Result|int   result set object (if any)
+	 * @return Dibi\Result|int   result set or number of affected rows
 	 * @throws Dibi\Exception
 	 */
 	public static function query($args)
@@ -180,7 +180,7 @@ class dibi
 	/**
 	 * Executes the SQL query - Monostate for Dibi\Connection::nativeQuery().
 	 * @param  string           SQL statement.
-	 * @return Dibi\Result|int   result set object (if any)
+	 * @return Dibi\Result|int   result set or number of affected rows
 	 */
 	public static function nativeQuery($sql)
 	{
@@ -241,7 +241,7 @@ class dibi
 	/**
 	 * Executes SQL query and fetch first column - Monostate for Dibi\Connection::query() & fetchSingle().
 	 * @param  array|mixed    one or more arguments
-	 * @return string
+	 * @return mixed
 	 * @throws Dibi\Exception
 	 */
 	public static function fetchSingle($args)
@@ -382,7 +382,7 @@ class dibi
 
 
 	/**
-	 * @param  string    column name
+	 * @param  mixed    column name
 	 * @return Dibi\Fluent
 	 */
 	public static function select($args)

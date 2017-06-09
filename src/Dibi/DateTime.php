@@ -15,6 +15,9 @@ class DateTime extends \DateTime
 {
 	use Strict;
 
+	/**
+	 * @param  string|int
+	 */
 	public function __construct($time = 'now', \DateTimeZone $timezone = NULL)
 	{
 		if (is_numeric($time)) {

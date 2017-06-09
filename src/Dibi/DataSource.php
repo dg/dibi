@@ -40,10 +40,10 @@ class DataSource implements IDataSource
 	/** @var array */
 	private $conds = [];
 
-	/** @var int */
+	/** @var int|NULL */
 	private $offset;
 
-	/** @var int */
+	/** @var int|NULL */
 	private $limit;
 
 
@@ -118,7 +118,7 @@ class DataSource implements IDataSource
 
 	/**
 	 * Limits number of rows.
-	 * @param  int limit
+	 * @param  int|NULL limit
 	 * @param  int offset
 	 * @return self
 	 */
@@ -168,7 +168,7 @@ class DataSource implements IDataSource
 
 	/**
 	 * Generates, executes SQL query and fetches the single row.
-	 * @return Row|FALSE  array on success, FALSE if no next record
+	 * @return Row|FALSE
 	 */
 	public function fetch()
 	{

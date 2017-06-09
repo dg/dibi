@@ -300,7 +300,7 @@ class Fluent implements IDataSource
 	/**
 	 * Generates and executes SQL query.
 	 * @param  mixed what to return?
-	 * @return Result|int  result set object (if any)
+	 * @return Result|int  result set or number of affected rows
 	 * @throws Exception
 	 */
 	public function execute($return = NULL)
@@ -319,7 +319,7 @@ class Fluent implements IDataSource
 
 	/**
 	 * Generates, executes SQL query and fetches the single row.
-	 * @return Row|FALSE  array on success, FALSE if no next record
+	 * @return Row|FALSE
 	 */
 	public function fetch()
 	{

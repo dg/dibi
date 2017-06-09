@@ -27,7 +27,7 @@ class ResultIterator implements \Iterator, \Countable
 	/** @var Result */
 	private $result;
 
-	/** @var int */
+	/** @var mixed */
 	private $row;
 
 	/** @var int */

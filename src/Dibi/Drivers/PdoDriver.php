@@ -30,7 +30,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	/** @var PDO  Connection resource */
 	private $connection;
 
-	/** @var \PDOStatement  Resultset resource */
+	/** @var \PDOStatement|NULL  Resultset resource */
 	private $resultSet;
 
 	/** @var int|FALSE  Affected rows */
@@ -254,7 +254,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  mixed     value
+	 * @param  string    value
 	 * @return string    encoded value
 	 */
 	public function escapeText($value)
@@ -267,6 +267,10 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	public function escapeBinary($value)
 	{
 		if ($this->driverName === 'odbc') {
@@ -277,6 +281,10 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	public function escapeIdentifier($value)
 	{
 		switch ($this->driverName) {
@@ -304,6 +312,10 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  bool
+	 * @return string
+	 */
 	public function escapeBool($value)
 	{
 		if ($this->driverName === 'pgsql') {
@@ -314,6 +326,10 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	public function escapeDate($value)
 	{
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
@@ -323,6 +339,10 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	public function escapeDateTime($value)
 	{
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
@@ -394,6 +414,9 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
+	 * @param  string
+	 * @param  int|NULL
+	 * @param  int|NULL
 	 * @return void
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
@@ -548,7 +571,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return \PDOStatement
+	 * @return \PDOStatement|NULL
 	 */
 	public function getResultResource()
 	{

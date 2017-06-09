@@ -184,7 +184,7 @@ class Result implements IDataSource
 	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
-	 * @return Row|FALSE array on success, FALSE if no next record
+	 * @return Row|FALSE
 	 */
 	final public function fetch()
 	{
@@ -558,9 +558,9 @@ class Result implements IDataSource
 
 
 	/**
-	 * Sets data format.
-	 * @param  string  type (use constant Type::*)
-	 * @param  string  format
+	 * Sets date format.
+	 * @param  string
+	 * @param  string|NULL  format
 	 * @return self
 	 */
 	final public function setFormat($type, $format)
@@ -572,7 +572,7 @@ class Result implements IDataSource
 
 	/**
 	 * Returns data format.
-	 * @return string
+	 * @return string|NULL
 	 */
 	final public function getFormat($type)
 	{

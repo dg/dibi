@@ -97,19 +97,39 @@ interface Driver
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  mixed     value
+	 * @param  string    value
 	 * @return string    encoded value
 	 */
 	function escapeText($value);
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	function escapeBinary($value);
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	function escapeIdentifier($value);
 
+	/**
+	 * @param  bool
+	 * @return string
+	 */
 	function escapeBool($value);
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	function escapeDate($value);
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	function escapeDateTime($value);
 
 	/**
@@ -122,6 +142,9 @@ interface Driver
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
+	 * @param  string
+	 * @param  int|NULL
+	 * @param  int|NULL
 	 * @return void
 	 */
 	function applyLimit(&$sql, $limit, $offset);

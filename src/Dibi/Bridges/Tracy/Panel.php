@@ -63,7 +63,7 @@ class Panel implements Tracy\IBarPanel
 
 	/**
 	 * Returns blue-screen custom tab.
-	 * @return mixed
+	 * @return array|NULL
 	 */
 	public static function renderException($e)
 	{
@@ -78,7 +78,7 @@ class Panel implements Tracy\IBarPanel
 
 	/**
 	 * Returns HTML code for custom tab. (Tracy\IBarPanel)
-	 * @return mixed
+	 * @return string
 	 */
 	public function getTab()
 	{
@@ -96,7 +96,7 @@ class Panel implements Tracy\IBarPanel
 
 	/**
 	 * Returns HTML code for custom panel. (Tracy\IBarPanel)
-	 * @return mixed
+	 * @return string|NULL
 	 */
 	public function getPanel()
 	{

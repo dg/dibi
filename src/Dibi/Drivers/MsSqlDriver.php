@@ -26,10 +26,10 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource  Connection resource */
+	/** @var resource|NULL */
 	private $connection;
 
-	/** @var resource  Resultset resource */
+	/** @var resource|NULL */
 	private $resultSet;
 
 	/** @var bool */
@@ -164,7 +164,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return mixed
+	 * @return resource|NULL
 	 */
 	public function getResource()
 	{
@@ -200,7 +200,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  mixed     value
+	 * @param  string    value
 	 * @return string    encoded value
 	 */
 	public function escapeText($value)
@@ -209,12 +209,20 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	public function escapeBinary($value)
 	{
 		return "'" . str_replace("'", "''", $value) . "'";
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
 	public function escapeIdentifier($value)
 	{
 		// @see https://msdn.microsoft.com/en-us/library/ms176027.aspx
@@ -222,12 +230,20 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  bool
+	 * @return string
+	 */
 	public function escapeBool($value)
 	{
 		return $value ? 1 : 0;
 	}
 
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	public function escapeDate($value)
 	{
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
@@ -237,6 +253,10 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
+	/**
+	 * @param  \DateTime|\DateTimeInterface|string|int
+	 * @return string
+	 */
 	public function escapeDateTime($value)
 	{
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
@@ -280,6 +300,9 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
+	 * @param  string
+	 * @param  int|NULL
+	 * @param  int|NULL
 	 * @return void
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
@@ -375,7 +398,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return mixed
+	 * @return resource|NULL
 	 */
 	public function getResultResource()
 	{
