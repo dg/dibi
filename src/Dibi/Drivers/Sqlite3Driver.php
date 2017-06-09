@@ -59,7 +59,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\Exception
 	 */
-	public function connect(array & $config)
+	public function connect(array &$config)
 	{
 		Dibi\Helpers::alias($config, 'database', 'file');
 		$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
@@ -326,7 +326,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @return void
 	 */
-	public function applyLimit(& $sql, $limit, $offset)
+	public function applyLimit(&$sql, $limit, $offset)
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');

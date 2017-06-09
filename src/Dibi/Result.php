@@ -291,12 +291,12 @@ class Result implements IDataSource
 
 		// make associative tree
 		do {
-			$x = & $data;
+			$x = &$data;
 
 			// iterative deepening
 			foreach ($assoc as $i => $as) {
 				if ($as === '[]') { // indexed-array node
-					$x = & $x[];
+					$x = &$x[];
 
 				} elseif ($as === '=') { // "value" node
 					$x = $row->{$assoc[$i + 1]};
@@ -305,14 +305,14 @@ class Result implements IDataSource
 				} elseif ($as === '->') { // "object" node
 					if ($x === NULL) {
 						$x = clone $row;
-						$x = & $x->{$assoc[$i + 1]};
+						$x = &$x->{$assoc[$i + 1]};
 						$x = NULL; // prepare child node
 					} else {
-						$x = & $x->{$assoc[$i + 1]};
+						$x = &$x->{$assoc[$i + 1]};
 					}
 
 				} elseif ($as !== '|') { // associative-array node
-					$x = & $x[$row->$as];
+					$x = &$x[$row->$as];
 				}
 			}
 
@@ -356,32 +356,32 @@ class Result implements IDataSource
 		}
 
 		do {
-			$x = & $data;
+			$x = &$data;
 
 			foreach ($assoc as $i => $as) {
 				if ($as === '#') { // indexed-array node
-					$x = & $x[];
+					$x = &$x[];
 
 				} elseif ($as === '=') { // "record" node
 					if ($x === NULL) {
 						$x = $row->toArray();
-						$x = & $x[ $assoc[$i + 1] ];
+						$x = &$x[ $assoc[$i + 1] ];
 						$x = NULL; // prepare child node
 					} else {
-						$x = & $x[ $assoc[$i + 1] ];
+						$x = &$x[ $assoc[$i + 1] ];
 					}
 
 				} elseif ($as === '@') { // "object" node
 					if ($x === NULL) {
 						$x = clone $row;
-						$x = & $x->{$assoc[$i + 1]};
+						$x = &$x->{$assoc[$i + 1]};
 						$x = NULL; // prepare child node
 					} else {
-						$x = & $x->{$assoc[$i + 1]};
+						$x = &$x->{$assoc[$i + 1]};
 					}
 
 				} else { // associative-array node
-					$x = & $x[$row->$as];
+					$x = &$x[$row->$as];
 				}
 			}
 
@@ -483,7 +483,7 @@ class Result implements IDataSource
 	 * @param  array
 	 * @return void
 	 */
-	private function normalize(array & $row)
+	private function normalize(array &$row)
 	{
 		foreach ($this->types as $key => $type) {
 			if (!isset($row[$key])) { // NULL

@@ -61,7 +61,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\Exception
 	 */
-	public function connect(array & $config)
+	public function connect(array &$config)
 	{
 		Helpers::alias($config, 'options|UID', 'username');
 		Helpers::alias($config, 'options|PWD', 'password');
@@ -306,7 +306,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @return void
 	 */
-	public function applyLimit(& $sql, $limit, $offset)
+	public function applyLimit(&$sql, $limit, $offset)
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');

@@ -130,19 +130,19 @@ class Fluent implements IDataSource
 			if (isset(self::$masks[$clause])) {
 				$this->clauses = array_fill_keys(self::$masks[$clause], NULL);
 			}
-			$this->cursor = & $this->clauses[$clause];
+			$this->cursor = &$this->clauses[$clause];
 			$this->cursor = [];
 			$this->command = $clause;
 		}
 
 		// auto-switch to a clause
 		if (isset(self::$clauseSwitches[$clause])) {
-			$this->cursor = & $this->clauses[self::$clauseSwitches[$clause]];
+			$this->cursor = &$this->clauses[self::$clauseSwitches[$clause]];
 		}
 
 		if (array_key_exists($clause, $this->clauses)) {
 			// append to clause
-			$this->cursor = & $this->clauses[$clause];
+			$this->cursor = &$this->clauses[$clause];
 
 			// TODO: really delete?
 			if ($args === [self::REMOVE]) {
@@ -211,7 +211,7 @@ class Fluent implements IDataSource
 	 */
 	public function clause($clause)
 	{
-		$this->cursor = & $this->clauses[self::$normalizer->$clause];
+		$this->cursor = &$this->clauses[self::$normalizer->$clause];
 		if ($this->cursor === NULL) {
 			$this->cursor = [];
 		}
@@ -512,10 +512,10 @@ class Fluent implements IDataSource
 	{
 		// remove references
 		foreach ($this->clauses as $clause => $val) {
-			$this->clauses[$clause] = & $val;
+			$this->clauses[$clause] = &$val;
 			unset($val);
 		}
-		$this->cursor = & $foo;
+		$this->cursor = &$foo;
 	}
 
 }

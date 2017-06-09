@@ -30,7 +30,7 @@ interface Driver
 	 * @return void
 	 * @throws Exception
 	 */
-	function connect(array & $config);
+	function connect(array &$config);
 
 	/**
 	 * Disconnects from a database.
@@ -124,7 +124,7 @@ interface Driver
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @return void
 	 */
-	function applyLimit(& $sql, $limit, $offset);
+	function applyLimit(&$sql, $limit, $offset);
 
 }
 

@@ -66,7 +66,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\Exception
 	 */
-	public function connect(array & $config)
+	public function connect(array &$config)
 	{
 		mysqli_report(MYSQLI_REPORT_OFF);
 		if (isset($config['resource'])) {
@@ -93,8 +93,8 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 				}
 			}
 
-			$foo = & $config['flags'];
-			$foo = & $config['database'];
+			$foo = &$config['flags'];
+			$foo = &$config['database'];
 
 			$this->connection = mysqli_init();
 			if (isset($config['options'])) {
@@ -375,7 +375,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @return void
 	 */
-	public function applyLimit(& $sql, $limit, $offset)
+	public function applyLimit(&$sql, $limit, $offset)
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');

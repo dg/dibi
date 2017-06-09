@@ -52,7 +52,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\Exception
 	 */
-	public function connect(array & $config)
+	public function connect(array &$config)
 	{
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
@@ -282,7 +282,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @return void
 	 */
-	public function applyLimit(& $sql, $limit, $offset)
+	public function applyLimit(&$sql, $limit, $offset)
 	{
 		if ($offset) {
 			throw new Dibi\NotSupportedException('Offset is not supported by this database.');

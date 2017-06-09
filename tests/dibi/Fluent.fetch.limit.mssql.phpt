@@ -10,7 +10,7 @@ class MockDriver extends Dibi\Drivers\SqlsrvDriver
 	function __construct()
 	{}
 
-	function connect(array & $config)
+	function connect(array &$config)
 	{}
 
 	function query($sql)

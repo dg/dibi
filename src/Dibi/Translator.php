@@ -73,8 +73,8 @@ final class Translator
 
 		$commandIns = NULL;
 		$lastArr = NULL;
-		$cursor = & $this->cursor;
-		$comment = & $this->comment;
+		$cursor = &$this->cursor;
+		$comment = &$this->comment;
 
 		// iterate
 		$sql = [];
@@ -480,7 +480,7 @@ final class Translator
 
 
 		if (!empty($matches[11])) { // placeholder
-			$cursor = & $this->cursor;
+			$cursor = &$this->cursor;
 
 			if ($cursor >= count($this->args)) {
 				return $this->errors[] = '**Extra placeholder**';
@@ -492,7 +492,7 @@ final class Translator
 
 		if (!empty($matches[10])) { // modifier
 			$mod = $matches[10];
-			$cursor = & $this->cursor;
+			$cursor = &$this->cursor;
 
 			if ($cursor >= count($this->args) && $mod !== 'else' && $mod !== 'end') {
 				return $this->errors[] = "**Extra modifier %$mod**";
@@ -600,7 +600,7 @@ final class Translator
 	{
 		$value = $this->connection->substitute($value);
 		$parts = explode('.', $value);
-		foreach ($parts as & $v) {
+		foreach ($parts as &$v) {
 			if ($v !== '*') {
 				$v = $this->driver->escapeIdentifier($v);
 			}

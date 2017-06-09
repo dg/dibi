@@ -59,10 +59,10 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\Exception
 	 */
-	public function connect(array & $config)
+	public function connect(array &$config)
 	{
-		$foo = & $config['dsn'];
-		$foo = & $config['options'];
+		$foo = &$config['dsn'];
+		$foo = &$config['options'];
 		Dibi\Helpers::alias($config, 'resource', 'pdo');
 
 		if ($config['resource'] instanceof PDO) {
@@ -396,7 +396,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @return void
 	 */
-	public function applyLimit(& $sql, $limit, $offset)
+	public function applyLimit(&$sql, $limit, $offset)
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');

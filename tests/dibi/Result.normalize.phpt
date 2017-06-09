@@ -15,7 +15,7 @@ class MockResult extends Dibi\Result
 	{
 		$normalize = new ReflectionMethod('Dibi\Result', 'normalize');
 		$normalize->setAccessible(TRUE);
-		$normalize->invokeArgs($this, [& $row]);
+		$normalize->invokeArgs($this, [&$row]);
 		return $row;
 	}
 }

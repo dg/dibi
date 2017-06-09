@@ -97,7 +97,7 @@ class Connection
 		$this->config = $config;
 
 		// profiler
-		$profilerCfg = & $config['profiler'];
+		$profilerCfg = &$config['profiler'];
 		if (is_scalar($profilerCfg)) {
 			$profilerCfg = ['run' => (bool) $profilerCfg];
 		}
@@ -204,7 +204,7 @@ class Connection
 
 
 	/** @deprecated */
-	public static function alias(& $config, $key, $alias)
+	public static function alias(&$config, $key, $alias)
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use Helpers::alias().', E_USER_DEPRECATED);
 		Helpers::alias($config, $key, $alias);

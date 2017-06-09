@@ -220,11 +220,11 @@ class Helpers
 	 * @param  string alias key
 	 * @return void
 	 */
-	public static function alias(& $config, $key, $alias)
+	public static function alias(&$config, $key, $alias)
 	{
-		$foo = & $config;
+		$foo = &$config;
 		foreach (explode('|', $key) as $key) {
-			$foo = & $foo[$key];
+			$foo = &$foo[$key];
 		}
 
 		if (!isset($foo) && isset($config[$alias])) {

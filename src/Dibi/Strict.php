@@ -131,7 +131,7 @@ trait Strict
 
 		$list = & self::$extMethods[strtolower($name)];
 		if ($callback === NULL) { // getter
-			$cache = & $list[''][$class];
+			$cache = &$list[''][$class];
 			if (isset($cache)) {
 				return $cache;
 			}
