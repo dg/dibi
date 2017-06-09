@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Dibi\Helpers;
 use Tester\Assert;
 

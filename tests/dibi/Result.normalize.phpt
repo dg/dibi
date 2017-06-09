@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Tester\Assert;
 use Dibi\Type;
 
@@ -164,7 +166,7 @@ test(function () {
 	Assert::same(['col' => NULL], $result->test(['col' => NULL]));
 	Assert::exception(function () use ($result) {
 		$result->test(['col' => TRUE]);
-	}, Exception::class);
+	}, TypeError::class);
 	Assert::same(['col' => NULL], $result->test(['col' => FALSE]));
 
 	Assert::same(['col' => NULL], $result->test(['col' => '']));
@@ -183,7 +185,7 @@ test(function () {
 	Assert::same(['col' => NULL], $result->test(['col' => NULL]));
 	Assert::exception(function () use ($result) {
 		$result->test(['col' => TRUE]);
-	}, Exception::class);
+	}, TypeError::class);
 	Assert::same(['col' => NULL], $result->test(['col' => FALSE]));
 
 	Assert::same(['col' => NULL], $result->test(['col' => '']));
@@ -201,7 +203,7 @@ test(function () {
 	Assert::same(['col' => NULL], $result->test(['col' => NULL]));
 	Assert::exception(function () use ($result) {
 		$result->test(['col' => TRUE]);
-	}, Exception::class);
+	}, TypeError::class);
 	Assert::same(['col' => NULL], $result->test(['col' => FALSE]));
 
 	Assert::same(['col' => NULL], $result->test(['col' => '']));
@@ -217,7 +219,7 @@ test(function () {
 	Assert::same(['col' => NULL], $result->test(['col' => NULL]));
 	Assert::exception(function () use ($result) {
 		$result->test(['col' => TRUE]);
-	}, Exception::class);
+	}, TypeError::class);
 	Assert::same(['col' => NULL], $result->test(['col' => FALSE]));
 
 	Assert::same(['col' => NULL], $result->test(['col' => '']));
