@@ -30,9 +30,8 @@ class SqliteReflector implements Dibi\Reflector
 
 	/**
 	 * Returns list of tables.
-	 * @return array
 	 */
-	public function getTables()
+	public function getTables(): array
 	{
 		$res = $this->driver->query("
 			SELECT name, type = 'view' as view FROM sqlite_master WHERE type IN ('table', 'view')
@@ -50,10 +49,8 @@ class SqliteReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getColumns($table)
+	public function getColumns(string $table): array
 	{
 		$res = $this->driver->query("PRAGMA table_info({$this->driver->escapeIdentifier($table)})");
 		$columns = [];
@@ -78,10 +75,8 @@ class SqliteReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all indexes in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getIndexes($table)
+	public function getIndexes(string $table): array
 	{
 		$res = $this->driver->query("PRAGMA index_list({$this->driver->escapeIdentifier($table)})");
 		$indexes = [];
@@ -129,10 +124,8 @@ class SqliteReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getForeignKeys($table)
+	public function getForeignKeys(string $table): array
 	{
 		$res = $this->driver->query("PRAGMA foreign_key_list({$this->driver->escapeIdentifier($table)})");
 		$keys = [];

@@ -30,9 +30,8 @@ class MsSqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns list of tables.
-	 * @return array
 	 */
-	public function getTables()
+	public function getTables(): array
 	{
 		$res = $this->driver->query('
 			SELECT TABLE_NAME, TABLE_TYPE
@@ -51,10 +50,8 @@ class MsSqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns count of rows in a table
-	 * @param  string
-	 * @return int
 	 */
-	public function getTableCount($table, $fallback = TRUE)
+	public function getTableCount(string $table, bool $fallback = TRUE): int
 	{
 		if (empty($table)) {
 			return NULL;
@@ -83,10 +80,8 @@ class MsSqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getColumns($table)
+	public function getColumns(string $table): array
 	{
 		$res = $this->driver->query("
 			SELECT * FROM
@@ -133,10 +128,8 @@ class MsSqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all indexes in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getIndexes($table)
+	public function getIndexes(string $table): array
 	{
 		$res = $this->driver->query(
 			"SELECT ind.name index_name, ind.index_id, ic.index_column_id,
@@ -174,10 +167,8 @@ class MsSqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getForeignKeys($table)
+	public function getForeignKeys(string $table): array
 	{
 		$res = $this->driver->query("
 			SELECT f.name AS foreign_key,

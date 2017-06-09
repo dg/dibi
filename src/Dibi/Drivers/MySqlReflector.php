@@ -30,9 +30,8 @@ class MySqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns list of tables.
-	 * @return array
 	 */
-	public function getTables()
+	public function getTables(): array
 	{
 		$res = $this->driver->query('SHOW FULL TABLES');
 		$tables = [];
@@ -48,10 +47,8 @@ class MySqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getColumns($table)
+	public function getColumns(string $table): array
 	{
 		$res = $this->driver->query("SHOW FULL COLUMNS FROM {$this->driver->escapeIdentifier($table)}");
 		$columns = [];
@@ -75,10 +72,8 @@ class MySqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all indexes in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getIndexes($table)
+	public function getIndexes(string $table): array
 	{
 		$res = $this->driver->query("SHOW INDEX FROM {$this->driver->escapeIdentifier($table)}");
 		$indexes = [];
@@ -94,11 +89,9 @@ class MySqlReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
-	 * @param  string
-	 * @return array
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function getForeignKeys($table)
+	public function getForeignKeys(string $table): array
 	{
 		$data = $this->driver->query("SELECT `ENGINE` FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = {$this->driver->escapeText($table)}")->fetch(TRUE);
 		if ($data['ENGINE'] !== 'InnoDB') {

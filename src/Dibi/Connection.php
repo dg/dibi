@@ -53,7 +53,7 @@ class Connection
 	 * @param  string  connection name
 	 * @throws Exception
 	 */
-	public function __construct($config, $name = NULL)
+	public function __construct($config, string $name = NULL)
 	{
 		if (is_string($config)) {
 			parse_str($config, $config);
@@ -128,7 +128,6 @@ class Connection
 
 	/**
 	 * Automatically frees the resources allocated for this result set.
-	 * @return void
 	 */
 	public function __destruct()
 	{
@@ -139,9 +138,8 @@ class Connection
 
 	/**
 	 * Connects to a database.
-	 * @return void
 	 */
-	final public function connect()
+	final public function connect(): void
 	{
 		$event = $this->onEvent ? new Event($this, Event::CONNECT) : NULL;
 		try {
@@ -158,9 +156,8 @@ class Connection
 
 	/**
 	 * Disconnects from a database.
-	 * @return void
 	 */
-	final public function disconnect()
+	final public function disconnect(): void
 	{
 		$this->driver->disconnect();
 		$this->connected = FALSE;
@@ -169,9 +166,8 @@ class Connection
 
 	/**
 	 * Returns TRUE when connection was established.
-	 * @return bool
 	 */
-	final public function isConnected()
+	final public function isConnected(): bool
 	{
 		return $this->connected;
 	}
@@ -180,11 +176,10 @@ class Connection
 	/**
 	 * Returns configuration variable. If no $key is passed, returns the entire array.
 	 * @see self::__construct
-	 * @param  string
-	 * @param  mixed  default value to use if key not found
+	 * @param  mixed $default  default value to use if key not found
 	 * @return mixed
 	 */
-	final public function getConfig($key = NULL, $default = NULL)
+	final public function getConfig(string $key = NULL, $default = NULL)
 	{
 		return $key === NULL
 			? $this->config
@@ -194,9 +189,8 @@ class Connection
 
 	/**
 	 * Returns the driver and connects to a database in lazy mode.
-	 * @return Driver
 	 */
-	final public function getDriver()
+	final public function getDriver(): Driver
 	{
 		$this->connected || $this->connect();
 		return $this->driver;
@@ -218,10 +212,9 @@ class Connection
 	/**
 	 * Generates SQL query.
 	 * @param  mixed      one or more arguments
-	 * @return string
 	 * @throws Exception
 	 */
-	final public function translate(...$args)
+	final public function translate(...$args): string
 	{
 		return $this->translateArgs($args);
 	}
@@ -230,9 +223,8 @@ class Connection
 	/**
 	 * Generates and prints SQL query.
 	 * @param  mixed  one or more arguments
-	 * @return bool
 	 */
-	final public function test(...$args)
+	final public function test(...$args): bool
 	{
 		try {
 			Helpers::dump($this->translateArgs($args));
@@ -252,10 +244,9 @@ class Connection
 	/**
 	 * Generates (translates) and returns SQL query as DataSource.
 	 * @param  mixed      one or more arguments
-	 * @return DataSource
 	 * @throws Exception
 	 */
-	final public function dataSource(...$args)
+	final public function dataSource(...$args): DataSource
 	{
 		return new DataSource($this->translateArgs($args), $this);
 	}
@@ -263,10 +254,8 @@ class Connection
 
 	/**
 	 * Generates SQL query.
-	 * @param  array
-	 * @return string
 	 */
-	protected function translateArgs($args)
+	protected function translateArgs(array $args): string
 	{
 		$this->connected || $this->connect();
 		if (!$this->translator) {
@@ -283,7 +272,7 @@ class Connection
 	 * @return Result|int   result set or number of affected rows
 	 * @throws Exception
 	 */
-	final public function nativeQuery($sql)
+	final public function nativeQuery(string $sql)
 	{
 		$this->connected || $this->connect();
 
@@ -313,7 +302,7 @@ class Connection
 	 * @return int  number of rows
 	 * @throws Exception
 	 */
-	public function getAffectedRows()
+	public function getAffectedRows(): int
 	{
 		$this->connected || $this->connect();
 		$rows = $this->driver->getAffectedRows();
@@ -329,7 +318,7 @@ class Connection
 	 * @return int  number of rows
 	 * @throws Exception
 	 */
-	public function affectedRows()
+	public function affectedRows(): int
 	{
 		return $this->getAffectedRows();
 	}
@@ -338,10 +327,9 @@ class Connection
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @param  string     optional sequence name
-	 * @return int
 	 * @throws Exception
 	 */
-	public function getInsertId($sequence = NULL)
+	public function getInsertId(string $sequence = NULL): int
 	{
 		$this->connected || $this->connect();
 		$id = $this->driver->getInsertId($sequence);
@@ -355,10 +343,9 @@ class Connection
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column. Alias for getInsertId().
 	 * @param  string     optional sequence name
-	 * @return int
 	 * @throws Exception
 	 */
-	public function insertId($sequence = NULL)
+	public function insertId(string $sequence = NULL): int
 	{
 		return $this->getInsertId($sequence);
 	}
@@ -367,9 +354,8 @@ class Connection
 	/**
 	 * Begins a transaction (if supported).
 	 * @param  string  optional savepoint name
-	 * @return void
 	 */
-	public function begin($savepoint = NULL)
+	public function begin(string $savepoint = NULL): void
 	{
 		$this->connected || $this->connect();
 		$event = $this->onEvent ? new Event($this, Event::BEGIN, $savepoint) : NULL;
@@ -387,9 +373,8 @@ class Connection
 	/**
 	 * Commits statements in a transaction.
 	 * @param  string  optional savepoint name
-	 * @return void
 	 */
-	public function commit($savepoint = NULL)
+	public function commit(string $savepoint = NULL): void
 	{
 		$this->connected || $this->connect();
 		$event = $this->onEvent ? new Event($this, Event::COMMIT, $savepoint) : NULL;
@@ -407,9 +392,8 @@ class Connection
 	/**
 	 * Rollback changes in a transaction.
 	 * @param  string  optional savepoint name
-	 * @return void
 	 */
-	public function rollback($savepoint = NULL)
+	public function rollback(string $savepoint = NULL): void
 	{
 		$this->connected || $this->connect();
 		$event = $this->onEvent ? new Event($this, Event::ROLLBACK, $savepoint) : NULL;
@@ -426,10 +410,8 @@ class Connection
 
 	/**
 	 * Result set factory.
-	 * @param  ResultDriver
-	 * @return Result
 	 */
-	public function createResultSet(ResultDriver $resultDriver)
+	public function createResultSet(ResultDriver $resultDriver): Result
 	{
 		$res = new Result($resultDriver);
 		return $res->setFormat(Type::DATE, $this->config['result']['formatDate'])
@@ -440,10 +422,7 @@ class Connection
 	/********************* fluent SQL builders ****************d*g**/
 
 
-	/**
-	 * @return Fluent
-	 */
-	public function command()
+	public function command(): Fluent
 	{
 		return new Fluent($this);
 	}
@@ -451,20 +430,14 @@ class Connection
 
 	/**
 	 * @param  mixed    column name
-	 * @return Fluent
 	 */
-	public function select(...$args)
+	public function select(...$args): Fluent
 	{
 		return $this->command()->select(...$args);
 	}
 
 
-	/**
-	 * @param  string   table
-	 * @param  array
-	 * @return Fluent
-	 */
-	public function update($table, $args)
+	public function update(string $table, array $args): Fluent
 	{
 		if (!(is_array($args) || $args instanceof Traversable)) {
 			throw new \InvalidArgumentException('Arguments must be array or Traversable.');
@@ -473,12 +446,7 @@ class Connection
 	}
 
 
-	/**
-	 * @param  string   table
-	 * @param  array
-	 * @return Fluent
-	 */
-	public function insert($table, $args)
+	public function insert(string $table, array $args): Fluent
 	{
 		if ($args instanceof Traversable) {
 			$args = iterator_to_array($args);
@@ -490,11 +458,7 @@ class Connection
 	}
 
 
-	/**
-	 * @param  string   table
-	 * @return Fluent
-	 */
-	public function delete($table)
+	public function delete(string $table): Fluent
 	{
 		return $this->command()->delete()->from('%n', $table);
 	}
@@ -505,9 +469,8 @@ class Connection
 
 	/**
 	 * Returns substitution hashmap.
-	 * @return HashMap
 	 */
-	public function getSubstitutes()
+	public function getSubstitutes(): HashMap
 	{
 		return $this->substitutes;
 	}
@@ -515,9 +478,8 @@ class Connection
 
 	/**
 	 * Provides substitution.
-	 * @return string
 	 */
-	public function substitute($value)
+	public function substitute(string $value): string
 	{
 		return strpos($value, ':') === FALSE
 			? $value
@@ -546,7 +508,7 @@ class Connection
 	 * @return Row[]
 	 * @throws Exception
 	 */
-	public function fetchAll(...$args)
+	public function fetchAll(...$args): array
 	{
 		return $this->query($args)->fetchAll();
 	}
@@ -567,19 +529,15 @@ class Connection
 	/**
 	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
 	 * @param  mixed    one or more arguments
-	 * @return array
 	 * @throws Exception
 	 */
-	public function fetchPairs(...$args)
+	public function fetchPairs(...$args): array
 	{
 		return $this->query($args)->fetchPairs();
 	}
 
 
-	/**
-	 * @return Literal
-	 */
-	public static function literal($value)
+	public static function literal($value): Literal
 	{
 		return new Literal($value);
 	}
@@ -594,7 +552,7 @@ class Connection
 	 * @param  callable  function (int $count, ?float $percent): void
 	 * @return int  count of sql commands
 	 */
-	public function loadFile($file, callable $onProgress = NULL)
+	public function loadFile(string $file, callable $onProgress = NULL): int
 	{
 		return Helpers::loadFromFile($this, $file, $onProgress);
 	}
@@ -602,9 +560,8 @@ class Connection
 
 	/**
 	 * Gets a information about the current database.
-	 * @return Reflection\Database
 	 */
-	public function getDatabaseInfo()
+	public function getDatabaseInfo(): Reflection\Database
 	{
 		$this->connected || $this->connect();
 		return new Reflection\Database($this->driver->getReflector(), $this->config['database'] ?? NULL);

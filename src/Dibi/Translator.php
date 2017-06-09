@@ -59,11 +59,9 @@ final class Translator
 
 	/**
 	 * Generates SQL. Can be called only once.
-	 * @param  array
-	 * @return string
 	 * @throws Exception
 	 */
-	public function translate(array $args)
+	public function translate(array $args): string
 	{
 		$args = array_values($args);
 		while (count($args) === 1 && is_array($args[0])) { // implicit array expansion
@@ -168,10 +166,8 @@ final class Translator
 	/**
 	 * Apply modifier to single value.
 	 * @param  mixed
-	 * @param  string|NULL
-	 * @return string
 	 */
-	public function formatValue($value, $modifier)
+	public function formatValue($value, ?string $modifier): string
 	{
 		if ($this->comment) {
 			return '...';
@@ -454,10 +450,8 @@ final class Translator
 
 	/**
 	 * PREG callback from translate() or formatValue().
-	 * @param  array
-	 * @return string
 	 */
-	private function cb($matches)
+	private function cb(array $matches): string
 	{
 		//    [1] => `ident`
 		//    [2] => [ident]
@@ -586,10 +580,9 @@ final class Translator
 	/**
 	 * Apply substitutions to indentifier and delimites it.
 	 * @param  string indentifier
-	 * @return string
 	 * @internal
 	 */
-	public function delimite($value)
+	public function delimite(string $value): string
 	{
 		$value = $this->connection->substitute($value);
 		$parts = explode('.', $value);

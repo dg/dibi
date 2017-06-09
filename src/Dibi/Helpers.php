@@ -19,9 +19,8 @@ class Helpers
 	 * Prints out a syntax highlighted version of the SQL command or Result.
 	 * @param  string|Result
 	 * @param  bool  return output instead of printing it?
-	 * @return string
 	 */
-	public static function dump($sql = NULL, $return = FALSE)
+	public static function dump($sql = NULL, bool $return = FALSE): string
 	{
 		ob_start();
 		if ($sql instanceof Result && PHP_SAPI === 'cli') {
@@ -135,10 +134,9 @@ class Helpers
 
 	/**
 	 * Finds the best suggestion.
-	 * @return string|NULL
 	 * @internal
 	 */
-	public static function getSuggestion(array $items, $value)
+	public static function getSuggestion(array $items, $value): ?string
 	{
 		$best = NULL;
 		$min = (strlen($value) / 4 + 1) * 10 + .1;
@@ -174,11 +172,9 @@ class Helpers
 
 	/**
 	 * Heuristic type detection.
-	 * @param  string
-	 * @return string|NULL
 	 * @internal
 	 */
-	public static function detectType($type)
+	public static function detectType(string $type): ?string
 	{
 		static $patterns = [
 			'^_' => Type::TEXT, // PostgreSQL arrays
@@ -216,11 +212,9 @@ class Helpers
 	/**
 	 * Apply configuration alias or default values.
 	 * @param  array  connect configuration
-	 * @param  string key
-	 * @param  string alias key
-	 * @return void
+	 * @param  string $alias alias key
 	 */
-	public static function alias(&$config, $key, $alias)
+	public static function alias(array &$config, string $key, string $alias): void
 	{
 		$foo = &$config;
 		foreach (explode('|', $key) as $key) {
@@ -238,7 +232,7 @@ class Helpers
 	 * Import SQL dump from file.
 	 * @return int  count of sql commands
 	 */
-	public static function loadFromFile(Connection $connection, $file, callable $onProgress = NULL)
+	public static function loadFromFile(Connection $connection, $file, callable $onProgress = NULL): int
 	{
 		@set_time_limit(0); // intentionally @
 

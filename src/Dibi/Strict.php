@@ -83,10 +83,7 @@ trait Strict
 	}
 
 
-	/**
-	 * @return bool
-	 */
-	public function __isset($name)
+	public function __isset($name): bool
 	{
 		return FALSE;
 	}
@@ -105,10 +102,9 @@ trait Strict
 
 	/**
 	 * @param  string  method name
-	 * @param  callable
 	 * @return mixed
 	 */
-	public static function extensionMethod($name, $callback = NULL)
+	public static function extensionMethod(string $name, callable $callback = NULL)
 	{
 		if (strpos($name, '::') === FALSE) {
 			$class = get_called_class();

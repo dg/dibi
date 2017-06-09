@@ -67,10 +67,9 @@ class dibi
 	 * Creates a new Connection object and connects it to specified database.
 	 * @param  mixed   connection parameters
 	 * @param  string  connection name
-	 * @return Dibi\Connection
 	 * @throws Dibi\Exception
 	 */
-	public static function connect($config = [], $name = '0')
+	public static function connect(array $config = [], string $name = '0'): Dibi\Connection
 	{
 		return self::$connection = self::$registry[$name] = new Dibi\Connection($config, $name);
 	}
@@ -78,9 +77,8 @@ class dibi
 
 	/**
 	 * Disconnects from database (doesn't destroy Connection object).
-	 * @return void
 	 */
-	public static function disconnect()
+	public static function disconnect(): void
 	{
 		self::getConnection()->disconnect();
 	}
@@ -88,9 +86,8 @@ class dibi
 
 	/**
 	 * Returns TRUE when connection was established.
-	 * @return bool
 	 */
-	public static function isConnected()
+	public static function isConnected(): bool
 	{
 		return (self::$connection !== NULL) && self::$connection->isConnected();
 	}
@@ -99,10 +96,9 @@ class dibi
 	/**
 	 * Retrieve active connection.
 	 * @param  string   connection registy name
-	 * @return Dibi\Connection
 	 * @throws Dibi\Exception
 	 */
-	public static function getConnection($name = NULL)
+	public static function getConnection(string $name = NULL): Dibi\Connection
 	{
 		if ($name === NULL) {
 			if (self::$connection === NULL) {
@@ -122,10 +118,8 @@ class dibi
 
 	/**
 	 * Sets connection.
-	 * @param  Dibi\Connection
-	 * @return Dibi\Connection
 	 */
-	public static function setConnection(Dibi\Connection $connection)
+	public static function setConnection(Dibi\Connection $connection): Dibi\Connection
 	{
 		return self::$connection = $connection;
 	}
@@ -151,7 +145,7 @@ class dibi
 	 * @param  string           SQL statement.
 	 * @return Dibi\Result|int   result set or number of affected rows
 	 */
-	public static function nativeQuery($sql)
+	public static function nativeQuery(string $sql)
 	{
 		return self::getConnection()->nativeQuery($sql);
 	}
@@ -160,9 +154,8 @@ class dibi
 	/**
 	 * Generates and prints SQL query - Monostate for Dibi\Connection::test().
 	 * @param  mixed  one or more arguments
-	 * @return bool
 	 */
-	public static function test(...$args)
+	public static function test(...$args): bool
 	{
 		return self::getConnection()->test($args);
 	}
@@ -171,9 +164,8 @@ class dibi
 	/**
 	 * Generates and returns SQL query as DataSource - Monostate for Dibi\Connection::test().
 	 * @param  mixed      one or more arguments
-	 * @return Dibi\DataSource
 	 */
-	public static function dataSource(...$args)
+	public static function dataSource(...$args): Dibi\DataSource
 	{
 		return self::getConnection()->dataSource($args);
 	}
@@ -197,7 +189,7 @@ class dibi
 	 * @return Dibi\Row[]
 	 * @throws Dibi\Exception
 	 */
-	public static function fetchAll(...$args)
+	public static function fetchAll(...$args): array
 	{
 		return self::getConnection()->query($args)->fetchAll();
 	}
@@ -218,10 +210,9 @@ class dibi
 	/**
 	 * Executes SQL query and fetch pairs - Monostate for Dibi\Connection::query() & fetchPairs().
 	 * @param  mixed    one or more arguments
-	 * @return array
 	 * @throws Dibi\Exception
 	 */
-	public static function fetchPairs(...$args)
+	public static function fetchPairs(...$args): array
 	{
 		return self::getConnection()->query($args)->fetchPairs();
 	}
@@ -230,10 +221,9 @@ class dibi
 	/**
 	 * Gets the number of affected rows.
 	 * Monostate for Dibi\Connection::getAffectedRows()
-	 * @return int  number of rows
 	 * @throws Dibi\Exception
 	 */
-	public static function getAffectedRows()
+	public static function getAffectedRows(): int
 	{
 		return self::getConnection()->getAffectedRows();
 	}
@@ -241,10 +231,9 @@ class dibi
 
 	/**
 	 * Gets the number of affected rows. Alias for getAffectedRows().
-	 * @return int  number of rows
 	 * @throws Dibi\Exception
 	 */
-	public static function affectedRows()
+	public static function affectedRows(): int
 	{
 		return self::getConnection()->getAffectedRows();
 	}
@@ -254,10 +243,9 @@ class dibi
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * Monostate for Dibi\Connection::getInsertId()
 	 * @param  string     optional sequence name
-	 * @return int
 	 * @throws Dibi\Exception
 	 */
-	public static function getInsertId($sequence = NULL)
+	public static function getInsertId(string $sequence = NULL): int
 	{
 		return self::getConnection()->getInsertId($sequence);
 	}
@@ -266,10 +254,9 @@ class dibi
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column. Alias for getInsertId().
 	 * @param  string     optional sequence name
-	 * @return int
 	 * @throws Dibi\Exception
 	 */
-	public static function insertId($sequence = NULL)
+	public static function insertId(string $sequence = NULL): int
 	{
 		return self::getConnection()->getInsertId($sequence);
 	}
@@ -278,10 +265,9 @@ class dibi
 	/**
 	 * Begins a transaction - Monostate for Dibi\Connection::begin().
 	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\Exception
 	 */
-	public static function begin($savepoint = NULL)
+	public static function begin(string $savepoint = NULL): void
 	{
 		self::getConnection()->begin($savepoint);
 	}
@@ -290,10 +276,9 @@ class dibi
 	/**
 	 * Commits statements in a transaction - Monostate for Dibi\Connection::commit($savepoint = NULL).
 	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\Exception
 	 */
-	public static function commit($savepoint = NULL)
+	public static function commit(string $savepoint = NULL): void
 	{
 		self::getConnection()->commit($savepoint);
 	}
@@ -302,10 +287,9 @@ class dibi
 	/**
 	 * Rollback changes in a transaction - Monostate for Dibi\Connection::rollback().
 	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\Exception
 	 */
-	public static function rollback($savepoint = NULL)
+	public static function rollback(string $savepoint = NULL): void
 	{
 		self::getConnection()->rollback($savepoint);
 	}
@@ -313,9 +297,8 @@ class dibi
 
 	/**
 	 * Gets a information about the current database - Monostate for Dibi\Connection::getDatabaseInfo().
-	 * @return Dibi\Reflection\Database
 	 */
-	public static function getDatabaseInfo()
+	public static function getDatabaseInfo(): Dibi\Reflection\Database
 	{
 		return self::getConnection()->getDatabaseInfo();
 	}
@@ -326,7 +309,7 @@ class dibi
 	 * @param  string  filename
 	 * @return int  count of sql commands
 	 */
-	public static function loadFile($file)
+	public static function loadFile(string $file): int
 	{
 		return Dibi\Helpers::loadFromFile(self::getConnection(), $file);
 	}
@@ -335,10 +318,7 @@ class dibi
 	/********************* fluent SQL builders ****************d*g**/
 
 
-	/**
-	 * @return Dibi\Fluent
-	 */
-	public static function command()
+	public static function command(): Dibi\Fluent
 	{
 		return self::getConnection()->command();
 	}
@@ -346,41 +326,26 @@ class dibi
 
 	/**
 	 * @param  mixed    column name
-	 * @return Dibi\Fluent
 	 */
-	public static function select(...$args)
+	public static function select(...$args): Dibi\Fluent
 	{
 		return self::getConnection()->select(...$args);
 	}
 
 
-	/**
-	 * @param  string   table
-	 * @param  array
-	 * @return Dibi\Fluent
-	 */
-	public static function update($table, $args)
+	public static function update(string $table, array $args): Dibi\Fluent
 	{
 		return self::getConnection()->update($table, $args);
 	}
 
 
-	/**
-	 * @param  string   table
-	 * @param  array
-	 * @return Dibi\Fluent
-	 */
-	public static function insert($table, $args)
+	public static function insert(string $table, array $args): Dibi\Fluent
 	{
 		return self::getConnection()->insert($table, $args);
 	}
 
 
-	/**
-	 * @param  string   table
-	 * @return Dibi\Fluent
-	 */
-	public static function delete($table)
+	public static function delete(string $table): Dibi\Fluent
 	{
 		return self::getConnection()->delete($table);
 	}
@@ -391,9 +356,8 @@ class dibi
 
 	/**
 	 * Returns substitution hashmap - Monostate for Dibi\Connection::getSubstitutes().
-	 * @return Dibi\HashMap
 	 */
-	public static function getSubstitutes()
+	public static function getSubstitutes(): Dibi\HashMap
 	{
 		return self::getConnection()->getSubstitutes();
 	}
@@ -406,9 +370,8 @@ class dibi
 	 * Prints out a syntax highlighted version of the SQL command or Result.
 	 * @param  string|Result
 	 * @param  bool  return output instead of printing it?
-	 * @return string
 	 */
-	public static function dump($sql = NULL, $return = FALSE)
+	public static function dump($sql = NULL, bool $return = FALSE): string
 	{
 		return Dibi\Helpers::dump($sql, $return);
 	}

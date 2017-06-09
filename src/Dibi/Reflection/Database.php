@@ -38,10 +38,7 @@ class Database
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->name;
 	}
@@ -50,7 +47,7 @@ class Database
 	/**
 	 * @return Table[]
 	 */
-	public function getTables()
+	public function getTables(): array
 	{
 		$this->init();
 		return array_values($this->tables);
@@ -60,7 +57,7 @@ class Database
 	/**
 	 * @return string[]
 	 */
-	public function getTableNames()
+	public function getTableNames(): array
 	{
 		$this->init();
 		$res = [];
@@ -71,11 +68,7 @@ class Database
 	}
 
 
-	/**
-	 * @param  string
-	 * @return Table
-	 */
-	public function getTable($name)
+	public function getTable(string $name): Table
 	{
 		$this->init();
 		$l = strtolower($name);
@@ -88,21 +81,14 @@ class Database
 	}
 
 
-	/**
-	 * @param  string
-	 * @return bool
-	 */
-	public function hasTable($name)
+	public function hasTable(string $name): bool
 	{
 		$this->init();
 		return isset($this->tables[strtolower($name)]);
 	}
 
 
-	/**
-	 * @return void
-	 */
-	protected function init()
+	protected function init(): void
 	{
 		if ($this->tables === NULL) {
 			$this->tables = [];

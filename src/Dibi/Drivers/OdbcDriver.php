@@ -54,10 +54,9 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Connects to a database.
-	 * @return void
 	 * @throws Dibi\Exception
 	 */
-	public function connect(array &$config)
+	public function connect(array &$config): void
 	{
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
@@ -84,9 +83,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Disconnects from a database.
-	 * @return void
 	 */
-	public function disconnect()
+	public function disconnect(): void
 	{
 		@odbc_close($this->connection); // @ - connection can be already disconnected
 	}
@@ -95,10 +93,9 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return Dibi\ResultDriver|NULL
 	 * @throws Dibi\DriverException
 	 */
-	public function query($sql)
+	public function query(string $sql): ?Dibi\ResultDriver
 	{
 		$this->affectedRows = NULL;
 		$res = @odbc_exec($this->connection, $sql); // intentionally @
@@ -116,9 +113,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|NULL  number of rows or NULL on error
 	 */
-	public function getAffectedRows()
+	public function getAffectedRows(): ?int
 	{
 		return $this->affectedRows;
 	}
@@ -126,9 +122,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|NULL  int on success or NULL on failure
 	 */
-	public function getInsertId($sequence)
+	public function getInsertId(?string $sequence): ?int
 	{
 		throw new Dibi\NotSupportedException('ODBC does not support autoincrementing.');
 	}
@@ -137,10 +132,9 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Begins a transaction (if supported).
 	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function begin($savepoint = NULL)
+	public function begin(string $savepoint = NULL): void
 	{
 		if (!odbc_autocommit($this->connection, FALSE)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
@@ -151,10 +145,9 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Commits statements in a transaction.
 	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function commit($savepoint = NULL)
+	public function commit(string $savepoint = NULL): void
 	{
 		if (!odbc_commit($this->connection)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
@@ -166,10 +159,9 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Rollback changes in a transaction.
 	 * @param  string  optional savepoint name
-	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback($savepoint = NULL)
+	public function rollback(string $savepoint = NULL): void
 	{
 		if (!odbc_rollback($this->connection)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
@@ -180,9 +172,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Is in transaction?
-	 * @return bool
 	 */
-	public function inTransaction()
+	public function inTransaction(): bool
 	{
 		return !odbc_autocommit($this->connection);
 	}
@@ -200,9 +191,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns the connection reflector.
-	 * @return Dibi\Reflector
 	 */
-	public function getReflector()
+	public function getReflector(): Dibi\Reflector
 	{
 		return $this;
 	}
@@ -211,9 +201,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Result set driver factory.
 	 * @param  resource
-	 * @return Dibi\ResultDriver
 	 */
-	public function createResultDriver($resource)
+	public function createResultDriver($resource): Dibi\ResultDriver
 	{
 		$res = clone $this;
 		$res->resultSet = $resource;
@@ -226,40 +215,26 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Encodes data for use in a SQL statement.
-	 * @param  string    value
-	 * @return string    encoded value
 	 */
-	public function escapeText($value)
+	public function escapeText(string $value): string
 	{
 		return "'" . str_replace("'", "''", $value) . "'";
 	}
 
 
-	/**
-	 * @param  string
-	 * @return string
-	 */
-	public function escapeBinary($value)
+	public function escapeBinary(string $value): string
 	{
 		return "'" . str_replace("'", "''", $value) . "'";
 	}
 
 
-	/**
-	 * @param  string
-	 * @return string
-	 */
-	public function escapeIdentifier($value)
+	public function escapeIdentifier(string $value): string
 	{
 		return '[' . str_replace(['[', ']'], ['[[', ']]'], $value) . ']';
 	}
 
 
-	/**
-	 * @param  bool
-	 * @return string
-	 */
-	public function escapeBool($value)
+	public function escapeBool(bool $value): string
 	{
 		return $value ? '1' : '0';
 	}
@@ -267,9 +242,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * @param  \DateTimeInterface|string|int
-	 * @return string
 	 */
-	public function escapeDate($value)
+	public function escapeDate($value): string
 	{
 		if (!$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
@@ -280,9 +254,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * @param  \DateTimeInterface|string|int
-	 * @return string
 	 */
-	public function escapeDateTime($value)
+	public function escapeDateTime($value): string
 	{
 		if (!$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
@@ -293,11 +266,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Encodes string for use in a LIKE statement.
-	 * @param  string
-	 * @param  int
-	 * @return string
 	 */
-	public function escapeLike($value, $pos)
+	public function escapeLike(string $value, int $pos): string
 	{
 		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
@@ -306,10 +276,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Decodes data from result set.
-	 * @param  string
-	 * @return string
 	 */
-	public function unescapeBinary($value)
+	public function unescapeBinary(string $value): string
 	{
 		return $value;
 	}
@@ -317,12 +285,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string
-	 * @param  int|NULL
-	 * @param  int|NULL
-	 * @return void
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($offset) {
 			throw new Dibi\NotSupportedException('Offset is not supported by this database.');
@@ -341,7 +305,6 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Automatically frees the resources allocated for this result set.
-	 * @return void
 	 */
 	public function __destruct()
 	{
@@ -351,9 +314,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns the number of rows in a result set.
-	 * @return int
 	 */
-	public function getRowCount()
+	public function getRowCount(): int
 	{
 		// will return -1 with many drivers :-(
 		return odbc_num_rows($this->resultSet);
@@ -363,9 +325,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool     TRUE for associative array, FALSE for numeric
-	 * @return array|NULL    array on success, NULL if no next record
 	 */
-	public function fetch($assoc)
+	public function fetch(bool $assoc): ?array
 	{
 		if ($assoc) {
 			return Dibi\Helpers::false2Null(odbc_fetch_array($this->resultSet, ++$this->row));
@@ -386,10 +347,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @param  int   the 0-based cursor pos to seek to
-	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
 	 */
-	public function seek($row)
+	public function seek(int $row): bool
 	{
 		$this->row = $row;
 		return TRUE;
@@ -398,9 +357,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Frees the resources allocated for this result set.
-	 * @return void
 	 */
-	public function free()
+	public function free(): void
 	{
 		odbc_free_result($this->resultSet);
 		$this->resultSet = NULL;
@@ -409,9 +367,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns metadata for all columns in a result set.
-	 * @return array
 	 */
-	public function getResultColumns()
+	public function getResultColumns(): array
 	{
 		$count = odbc_num_fields($this->resultSet);
 		$columns = [];
@@ -443,9 +400,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns list of tables.
-	 * @return array
 	 */
-	public function getTables()
+	public function getTables(): array
 	{
 		$res = odbc_tables($this->connection);
 		$tables = [];
@@ -464,10 +420,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getColumns($table)
+	public function getColumns(string $table): array
 	{
 		$res = odbc_columns($this->connection);
 		$columns = [];
@@ -490,10 +444,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns metadata for all indexes in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getIndexes($table)
+	public function getIndexes(string $table): array
 	{
 		throw new Dibi\NotImplementedException;
 	}
@@ -501,10 +453,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getForeignKeys($table)
+	public function getForeignKeys(string $table): array
 	{
 		throw new Dibi\NotImplementedException;
 	}

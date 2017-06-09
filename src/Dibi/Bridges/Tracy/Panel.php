@@ -33,7 +33,7 @@ class Panel implements Tracy\IBarPanel
 	private $events = [];
 
 
-	public function __construct($explain = TRUE, $filter = NULL)
+	public function __construct(bool $explain = TRUE, int $filter = NULL)
 	{
 		$this->filter = $filter ? (int) $filter : Event::QUERY;
 		$this->explain = $explain;
@@ -50,9 +50,8 @@ class Panel implements Tracy\IBarPanel
 
 	/**
 	 * After event notification.
-	 * @return void
 	 */
-	public function logEvent(Event $event)
+	public function logEvent(Event $event): void
 	{
 		if (($event->type & $this->filter) === 0) {
 			return;
@@ -63,9 +62,8 @@ class Panel implements Tracy\IBarPanel
 
 	/**
 	 * Returns blue-screen custom tab.
-	 * @return array|NULL
 	 */
-	public static function renderException($e)
+	public static function renderException($e): ?array
 	{
 		if ($e instanceof Dibi\Exception && $e->getSql()) {
 			return [
@@ -78,9 +76,8 @@ class Panel implements Tracy\IBarPanel
 
 	/**
 	 * Returns HTML code for custom tab. (Tracy\IBarPanel)
-	 * @return string
 	 */
-	public function getTab()
+	public function getTab(): string
 	{
 		$totalTime = 0;
 		$count = count($this->events);
@@ -96,9 +93,8 @@ class Panel implements Tracy\IBarPanel
 
 	/**
 	 * Returns HTML code for custom panel. (Tracy\IBarPanel)
-	 * @return string|NULL
 	 */
-	public function getPanel()
+	public function getPanel(): ?string
 	{
 		if (!$this->events) {
 			return NULL;

@@ -43,37 +43,25 @@ class Column
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->info['name'];
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getFullName()
+	public function getFullName(): string
 	{
 		return $this->info['fullname'] ?? NULL;
 	}
 
 
-	/**
-	 * @return bool
-	 */
-	public function hasTable()
+	public function hasTable(): bool
 	{
 		return !empty($this->info['table']);
 	}
 
 
-	/**
-	 * @return Table
-	 */
-	public function getTable()
+	public function getTable(): Table
 	{
 		if (empty($this->info['table']) || !$this->reflector) {
 			throw new Dibi\Exception("Table is unknown or not available.");
@@ -82,64 +70,43 @@ class Column
 	}
 
 
-	/**
-	 * @return string|NULL
-	 */
-	public function getTableName()
+	public function getTableName(): ?string
 	{
 		return isset($this->info['table']) && $this->info['table'] != NULL ? $this->info['table'] : NULL; // intentionally ==
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getType()
+	public function getType(): string
 	{
 		return Dibi\Helpers::getTypeCache()->{$this->info['nativetype']};
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getNativeType()
+	public function getNativeType(): string
 	{
 		return $this->info['nativetype'];
 	}
 
 
-	/**
-	 * @return int|NULL
-	 */
-	public function getSize()
+	public function getSize(): ?int
 	{
 		return isset($this->info['size']) ? (int) $this->info['size'] : NULL;
 	}
 
 
-	/**
-	 * @return bool|NULL
-	 */
-	public function isUnsigned()
+	public function isUnsigned(): ?bool
 	{
 		return isset($this->info['unsigned']) ? (bool) $this->info['unsigned'] : NULL;
 	}
 
 
-	/**
-	 * @return bool|NULL
-	 */
-	public function isNullable()
+	public function isNullable(): ?bool
 	{
 		return isset($this->info['nullable']) ? (bool) $this->info['nullable'] : NULL;
 	}
 
 
-	/**
-	 * @return bool|NULL
-	 */
-	public function isAutoIncrement()
+	public function isAutoIncrement(): ?bool
 	{
 		return isset($this->info['autoincrement']) ? (bool) $this->info['autoincrement'] : NULL;
 	}
@@ -155,10 +122,9 @@ class Column
 
 
 	/**
-	 * @param  string
 	 * @return mixed
 	 */
-	public function getVendorInfo($key)
+	public function getVendorInfo(string $key)
 	{
 		return $this->info['vendor'][$key] ?? NULL;
 	}

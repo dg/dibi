@@ -30,9 +30,8 @@ class SqlsrvReflector implements Dibi\Reflector
 
 	/**
 	 * Returns list of tables.
-	 * @return array
 	 */
-	public function getTables()
+	public function getTables(): array
 	{
 		$res = $this->driver->query("SELECT TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES WHERE [TABLE_SCHEMA] = 'dbo'");
 		$tables = [];
@@ -48,10 +47,8 @@ class SqlsrvReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getColumns($table)
+	public function getColumns(string $table): array
 	{
 		$res = $this->driver->query("
 			SELECT c.name as COLUMN_NAME, c.is_identity AS AUTO_INCREMENT
@@ -100,10 +97,8 @@ class SqlsrvReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all indexes in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getIndexes($table)
+	public function getIndexes(string $table): array
 	{
 		$keyUsagesRes = $this->driver->query(sprintf("EXEC [sys].[sp_helpindex] @objname = N%s", $this->driver->escapeText($table)));
 		$keyUsages = [];
@@ -125,10 +120,8 @@ class SqlsrvReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
-	 * @param  string
-	 * @return array
 	 */
-	public function getForeignKeys($table)
+	public function getForeignKeys(string $table): array
 	{
 		throw new Dibi\NotImplementedException;
 	}

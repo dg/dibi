@@ -39,16 +39,13 @@ class FirePhpLogger
 	private static $fireTable = [['Time', 'SQL Statement', 'Rows', 'Connection']];
 
 
-	/**
-	 * @return bool
-	 */
-	public static function isAvailable()
+	public static function isAvailable(): bool
 	{
 		return isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'FirePHP/');
 	}
 
 
-	public function __construct($filter = NULL)
+	public function __construct(int $filter = NULL)
 	{
 		$this->filter = $filter ? (int) $filter : Dibi\Event::QUERY;
 	}
@@ -56,9 +53,8 @@ class FirePhpLogger
 
 	/**
 	 * After event notification.
-	 * @return void
 	 */
-	public function logEvent(Dibi\Event $event)
+	public function logEvent(Dibi\Event $event): void
 	{
 		if (headers_sent() || ($event->type & $this->filter) === 0 || count(self::$fireTable) > self::$maxQueries) {
 			return;

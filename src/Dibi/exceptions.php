@@ -23,7 +23,7 @@ class Exception extends \Exception
 	 * @param  mixed
 	 * @param  string  SQL command
 	 */
-	public function __construct($message = '', $code = 0, $sql = NULL)
+	public function __construct(string $message = '', $code = 0, string $sql = NULL)
 	{
 		parent::__construct($message);
 		$this->code = $code;
@@ -31,19 +31,13 @@ class Exception extends \Exception
 	}
 
 
-	/**
-	 * @return string  The SQL passed to the constructor
-	 */
-	final public function getSql()
+	final public function getSql(): ?string
 	{
 		return $this->sql;
 	}
 
 
-	/**
-	 * @return string  string represenation of exception with SQL command
-	 */
-	public function __toString()
+	public function __toString(): string
 	{
 		return parent::__toString() . ($this->sql ? "\nSQL: " . $this->sql : '');
 	}
@@ -65,7 +59,7 @@ class DriverException extends Exception
 class PcreException extends Exception
 {
 
-	public function __construct($message = '%msg.')
+	public function __construct(string $message = '%msg.')
 	{
 		static $messages = [
 			PREG_INTERNAL_ERROR => 'Internal error',
@@ -105,7 +99,7 @@ class ProcedureException extends Exception
 	 * @param  int     Some code
 	 * @param  string SQL command
 	 */
-	public function __construct($message = NULL, $code = 0, $severity = NULL, $sql = NULL)
+	public function __construct(string $message = NULL, int $code = 0, string $severity = NULL, $sql = NULL)
 	{
 		parent::__construct($message, (int) $code, $sql);
 		$this->severity = $severity;
@@ -114,9 +108,8 @@ class ProcedureException extends Exception
 
 	/**
 	 * Gets the exception severity.
-	 * @return string
 	 */
-	public function getSeverity()
+	public function getSeverity(): string
 	{
 		$this->severity;
 	}

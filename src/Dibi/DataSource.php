@@ -49,9 +49,8 @@ class DataSource implements IDataSource
 
 	/**
 	 * @param  string  SQL command or table or view name, as data source
-	 * @param  Connection  connection
 	 */
-	public function __construct($sql, Connection $connection)
+	public function __construct(string $sql, Connection $connection)
 	{
 		if (strpbrk($sql, " \t\r\n") === FALSE) {
 			$this->sql = $connection->getDriver()->escapeIdentifier($sql); // table name
@@ -66,9 +65,8 @@ class DataSource implements IDataSource
 	 * Selects columns to query.
 	 * @param  string|array  column name or array of column names
 	 * @param  string        column alias
-	 * @return self
 	 */
-	public function select($col, $as = NULL)
+	public function select($col, string $as = NULL): self
 	{
 		if (is_array($col)) {
 			$this->cols = $col;
@@ -83,9 +81,8 @@ class DataSource implements IDataSource
 	/**
 	 * Adds conditions to query.
 	 * @param  mixed  conditions
-	 * @return self
 	 */
-	public function where($cond)
+	public function where($cond): self
 	{
 		if (is_array($cond)) {
 			// TODO: not consistent with select and orderBy
@@ -102,9 +99,8 @@ class DataSource implements IDataSource
 	 * Selects columns to order by.
 	 * @param  string|array  column name or array of column names
 	 * @param  string        sorting direction
-	 * @return self
 	 */
-	public function orderBy($row, $sorting = 'ASC')
+	public function orderBy($row, string $sorting = 'ASC'): self
 	{
 		if (is_array($row)) {
 			$this->sorting = $row;
@@ -118,11 +114,8 @@ class DataSource implements IDataSource
 
 	/**
 	 * Limits number of rows.
-	 * @param  int|NULL limit
-	 * @param  int offset
-	 * @return self
 	 */
-	public function applyLimit($limit, $offset = NULL)
+	public function applyLimit(int $limit, int $offset = NULL): self
 	{
 		$this->limit = $limit;
 		$this->offset = $offset;
@@ -133,9 +126,8 @@ class DataSource implements IDataSource
 
 	/**
 	 * Returns the dibi connection.
-	 * @return Connection
 	 */
-	final public function getConnection()
+	final public function getConnection(): Connection
 	{
 		return $this->connection;
 	}
@@ -146,9 +138,8 @@ class DataSource implements IDataSource
 
 	/**
 	 * Returns (and queries) Result.
-	 * @return Result
 	 */
-	public function getResult()
+	public function getResult(): Result
 	{
 		if ($this->result === NULL) {
 			$this->result = $this->connection->nativeQuery($this->__toString());
@@ -157,10 +148,7 @@ class DataSource implements IDataSource
 	}
 
 
-	/**
-	 * @return ResultIterator
-	 */
-	public function getIterator()
+	public function getIterator(): ResultIterator
 	{
 		return $this->getResult()->getIterator();
 	}
@@ -188,9 +176,8 @@ class DataSource implements IDataSource
 
 	/**
 	 * Fetches all records from table.
-	 * @return array
 	 */
-	public function fetchAll()
+	public function fetchAll(): array
 	{
 		return $this->getResult()->fetchAll();
 	}
@@ -199,9 +186,8 @@ class DataSource implements IDataSource
 	/**
 	 * Fetches all records from table and returns associative tree.
 	 * @param  string  associative descriptor
-	 * @return array
 	 */
-	public function fetchAssoc($assoc)
+	public function fetchAssoc(string $assoc): array
 	{
 		return $this->getResult()->fetchAssoc($assoc);
 	}
@@ -210,10 +196,8 @@ class DataSource implements IDataSource
 	/**
 	 * Fetches all records from table like $key => $value pairs.
 	 * @param  string  associative key
-	 * @param  string  value
-	 * @return array
 	 */
-	public function fetchPairs($key = NULL, $value = NULL)
+	public function fetchPairs(string $key = NULL, string $value = NULL): array
 	{
 		return $this->getResult()->fetchPairs($key, $value);
 	}
@@ -221,9 +205,8 @@ class DataSource implements IDataSource
 
 	/**
 	 * Discards the internal cache.
-	 * @return void
 	 */
-	public function release()
+	public function release(): void
 	{
 		$this->result = $this->count = $this->totalCount = NULL;
 	}
@@ -234,9 +217,8 @@ class DataSource implements IDataSource
 
 	/**
 	 * Returns this data source wrapped in Fluent object.
-	 * @return Fluent
 	 */
-	public function toFluent()
+	public function toFluent(): Fluent
 	{
 		return $this->connection->select('*')->from('(%SQL) t', $this->__toString());
 	}
@@ -244,9 +226,8 @@ class DataSource implements IDataSource
 
 	/**
 	 * Returns this data source wrapped in DataSource object.
-	 * @return DataSource
 	 */
-	public function toDataSource()
+	public function toDataSource(): DataSource
 	{
 		return new self($this->__toString(), $this->connection);
 	}
@@ -254,9 +235,8 @@ class DataSource implements IDataSource
 
 	/**
 	 * Returns SQL query.
-	 * @return string
 	 */
-	public function __toString()
+	public function __toString(): string
 	{
 		try {
 			return $this->connection->translate('
@@ -277,9 +257,8 @@ FROM %SQL', $this->sql, '
 
 	/**
 	 * Returns the number of rows in a given data source.
-	 * @return int
 	 */
-	public function count()
+	public function count(): int
 	{
 		if ($this->count === NULL) {
 			$this->count = $this->conds || $this->offset || $this->limit
@@ -294,9 +273,8 @@ FROM %SQL', $this->sql, '
 
 	/**
 	 * Returns the number of rows in a given data source.
-	 * @return int
 	 */
-	public function getTotalCount()
+	public function getTotalCount(): int
 	{
 		if ($this->totalCount === NULL) {
 			$this->totalCount = (int) $this->connection->nativeQuery(

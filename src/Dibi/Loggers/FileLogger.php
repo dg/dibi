@@ -24,7 +24,7 @@ class FileLogger
 	public $filter;
 
 
-	public function __construct($file, $filter = NULL)
+	public function __construct(string $file, int $filter = NULL)
 	{
 		$this->file = $file;
 		$this->filter = $filter ? (int) $filter : Dibi\Event::QUERY;
@@ -33,9 +33,8 @@ class FileLogger
 
 	/**
 	 * After event notification.
-	 * @return void
 	 */
-	public function logEvent(Dibi\Event $event)
+	public function logEvent(Dibi\Event $event): void
 	{
 		if (($event->type & $this->filter) === 0) {
 			return;

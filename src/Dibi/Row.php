@@ -30,11 +30,8 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 
 	/**
 	 * Converts value to DateTime object.
-	 * @param  string key
-	 * @param  string format
-	 * @return \DateTime
 	 */
-	public function asDateTime($key, $format = NULL)
+	public function asDateTime(string $key, string $format = NULL): \DateTime
 	{
 		$time = $this[$key];
 		if (!$time instanceof DateTime) {

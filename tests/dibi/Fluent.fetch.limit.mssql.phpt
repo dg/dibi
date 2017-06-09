@@ -10,20 +10,20 @@ class MockDriver extends Dibi\Drivers\SqlsrvDriver
 	function __construct()
 	{}
 
-	function connect(array &$config)
+	function connect(array & $config): void
 	{}
 
-	function query($sql)
+	function query(string $sql): ?Dibi\ResultDriver
 	{
 		return $this;
 	}
 
-	function getResultColumns()
+	function getResultColumns(): array
 	{
 		return [];
 	}
 
-	function fetch($assoc)
+	function fetch(bool $type): ?array
 	{
 		return NULL;
 	}
