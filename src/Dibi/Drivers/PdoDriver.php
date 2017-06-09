@@ -80,8 +80,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 		}
 
 		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
-		$this->serverVersion = $config['version']
-			?? @$this->connection->getAttribute(PDO::ATTR_SERVER_VERSION); // @ - may be not supported
+		$this->serverVersion = (string) ($config['version'] ?? @$this->connection->getAttribute(PDO::ATTR_SERVER_VERSION)); // @ - may be not supported
 	}
 
 

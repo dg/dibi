@@ -69,9 +69,9 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			];
 
 			if (empty($config['persistent'])) {
-				$this->connection = @odbc_connect($config['dsn'], $config['username'], $config['password']); // intentionally @
+				$this->connection = @odbc_connect($config['dsn'], $config['username'] ?? '', $config['password'] ?? ''); // intentionally @
 			} else {
-				$this->connection = @odbc_pconnect($config['dsn'], $config['username'], $config['password']); // intentionally @
+				$this->connection = @odbc_pconnect($config['dsn'], $config['username'] ?? '', $config['password'] ?? ''); // intentionally @
 			}
 		}
 
@@ -134,7 +134,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function begin(string $savepoint = NULL): void
 	{
-		if (!odbc_autocommit($this->connection, FALSE)) {
+		if (!odbc_autocommit($this->connection, 0/*FALSE*/)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 	}
@@ -149,7 +149,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if (!odbc_commit($this->connection)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
-		odbc_autocommit($this->connection, TRUE);
+		odbc_autocommit($this->connection, 1/*TRUE*/);
 	}
 
 
@@ -162,7 +162,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if (!odbc_rollback($this->connection)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
-		odbc_autocommit($this->connection, TRUE);
+		odbc_autocommit($this->connection, 1/*TRUE*/);
 	}
 
 
