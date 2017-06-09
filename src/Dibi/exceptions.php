@@ -75,7 +75,7 @@ class PcreException extends Exception
 			5 => 'Offset didn\'t correspond to the begin of a valid UTF-8 code point', // PREG_BAD_UTF8_OFFSET_ERROR
 		];
 		$code = preg_last_error();
-		parent::__construct(str_replace('%msg', isset($messages[$code]) ? $messages[$code] : 'Unknown error', $message), $code);
+		parent::__construct(str_replace('%msg', $messages[$code] ?? 'Unknown error', $message), $code);
 	}
 }
 

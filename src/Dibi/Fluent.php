@@ -421,7 +421,8 @@ class Fluent implements IDataSource
 	{
 		$res = $this->connection->query($args);
 		foreach ($this->setups as $setup) {
-			call_user_func_array([$res, array_shift($setup)], $setup);
+			$method = array_shift($setup);
+			$res->$method(...$setup);
 		}
 		return $res;
 	}

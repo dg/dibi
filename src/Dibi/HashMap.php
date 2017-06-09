@@ -58,9 +58,9 @@ final class HashMap extends HashMapBase
 	{
 		if ($nm == '') {
 			$nm = "\xFF";
-			return isset($this->$nm) ? $this->$nm : $this->$nm = call_user_func($this->getCallback(), '');
+			return $this->$nm = $this->$nm ?? $this->getCallback()('');
 		} else {
-			return $this->$nm = call_user_func($this->getCallback(), $nm);
+			return $this->$nm = $this->getCallback()($nm);
 		}
 	}
 

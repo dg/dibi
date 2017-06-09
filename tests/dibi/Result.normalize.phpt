@@ -13,7 +13,7 @@ class MockResult extends Dibi\Result
 
 	function test($row)
 	{
-		$normalize = new ReflectionMethod('Dibi\Result', 'normalize');
+		$normalize = new ReflectionMethod(Dibi\Result::class, 'normalize');
 		$normalize->setAccessible(TRUE);
 		$normalize->invokeArgs($this, [&$row]);
 		return $row;
@@ -164,7 +164,7 @@ test(function () {
 	Assert::same(['col' => NULL], $result->test(['col' => NULL]));
 	Assert::exception(function () use ($result) {
 		$result->test(['col' => TRUE]);
-	}, 'Exception');
+	}, Exception::class);
 	Assert::same(['col' => NULL], $result->test(['col' => FALSE]));
 
 	Assert::same(['col' => NULL], $result->test(['col' => '']));
@@ -183,7 +183,7 @@ test(function () {
 	Assert::same(['col' => NULL], $result->test(['col' => NULL]));
 	Assert::exception(function () use ($result) {
 		$result->test(['col' => TRUE]);
-	}, 'Exception');
+	}, Exception::class);
 	Assert::same(['col' => NULL], $result->test(['col' => FALSE]));
 
 	Assert::same(['col' => NULL], $result->test(['col' => '']));
@@ -201,7 +201,7 @@ test(function () {
 	Assert::same(['col' => NULL], $result->test(['col' => NULL]));
 	Assert::exception(function () use ($result) {
 		$result->test(['col' => TRUE]);
-	}, 'Exception');
+	}, Exception::class);
 	Assert::same(['col' => NULL], $result->test(['col' => FALSE]));
 
 	Assert::same(['col' => NULL], $result->test(['col' => '']));
@@ -217,7 +217,7 @@ test(function () {
 	Assert::same(['col' => NULL], $result->test(['col' => NULL]));
 	Assert::exception(function () use ($result) {
 		$result->test(['col' => TRUE]);
-	}, 'Exception');
+	}, Exception::class);
 	Assert::same(['col' => NULL], $result->test(['col' => FALSE]));
 
 	Assert::same(['col' => NULL], $result->test(['col' => '']));

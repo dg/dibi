@@ -263,7 +263,7 @@ class Helpers
 				$sql = '';
 				$count++;
 				if ($onProgress) {
-					call_user_func($onProgress, $count, isset($stat['size']) ? $size * 100 / $stat['size'] : NULL);
+					$onProgress($count, isset($stat['size']) ? $size * 100 / $stat['size'] : NULL);
 				}
 
 			} else {
@@ -275,7 +275,7 @@ class Helpers
 			$driver->query($sql);
 			$count++;
 			if ($onProgress) {
-				call_user_func($onProgress, $count, isset($stat['size']) ? 100 : NULL);
+				$onProgress($count, isset($stat['size']) ? 100 : NULL);
 			}
 		}
 		fclose($handle);

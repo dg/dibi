@@ -39,7 +39,7 @@ $tests = function ($conn) {
 			function () use ($conn) {
 				$conn->translate('SELECT 1 %ofs', -10);
 			},
-			'Dibi\NotSupportedException',
+			Dibi\NotSupportedException::class,
 			'Negative offset or limit.'
 		);
 
@@ -48,7 +48,7 @@ $tests = function ($conn) {
 			function () use ($conn) {
 				$conn->translate('SELECT 1 %lmt', -10);
 			},
-			'Dibi\NotSupportedException',
+			Dibi\NotSupportedException::class,
 			'Negative offset or limit.'
 		);
 
@@ -57,7 +57,7 @@ $tests = function ($conn) {
 			function () use ($conn) {
 				$conn->translate('SELECT 1 %ofs %lmt', 10, -10);
 			},
-			'Dibi\NotSupportedException',
+			Dibi\NotSupportedException::class,
 			'Negative offset or limit.'
 		);
 
@@ -66,7 +66,7 @@ $tests = function ($conn) {
 			function () use ($conn) {
 				$conn->translate('SELECT 1 %ofs %lmt', -10, 10);
 			},
-			'Dibi\NotSupportedException',
+			Dibi\NotSupportedException::class,
 			'Negative offset or limit.'
 		);
 	} else {
@@ -82,7 +82,7 @@ $tests = function ($conn) {
 
 		Assert::exception(
 			$conn->translate('SELECT 1 %ofs %lmt', 10, 10),
-			'DibiNotSupportedException'
+			Dibi\NotSupportedException::class
 		);
 	}
 };

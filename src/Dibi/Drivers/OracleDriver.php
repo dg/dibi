@@ -68,8 +68,8 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		$foo = &$config['charset'];
 
 		if (empty($config['nativeDate'])) {
-			$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
-			$this->fmtDateTime = isset($config['formatDateTime']) ? $config['formatDateTime'] : 'U';
+			$this->fmtDate = $config['formatDate'] ?? 'U';
+			$this->fmtDateTime = $config['formatDateTime'] ?? 'U';
 		}
 
 		if (isset($config['resource'])) {
@@ -495,7 +495,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				'table' => $row['TABLE_NAME'],
 				'name' => $row['COLUMN_NAME'],
 				'nativetype' => $row['DATA_TYPE'],
-				'size' => isset($row['DATA_LENGTH']) ? $row['DATA_LENGTH'] : NULL,
+				'size' => $row['DATA_LENGTH'] ?? NULL,
 				'nullable' => $row['NULLABLE'] === 'Y',
 				'default' => $row['DATA_DEFAULT'],
 				'vendor' => $row,

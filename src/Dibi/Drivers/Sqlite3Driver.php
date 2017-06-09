@@ -62,8 +62,8 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	public function connect(array &$config)
 	{
 		Dibi\Helpers::alias($config, 'database', 'file');
-		$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
-		$this->fmtDateTime = isset($config['formatDateTime']) ? $config['formatDateTime'] : 'U';
+		$this->fmtDate = $config['formatDate'] ?? 'U';
+		$this->fmtDateTime = $config['formatDateTime'] ?? 'U';
 
 		if (isset($config['resource']) && $config['resource'] instanceof SQLite3) {
 			$this->connection = $config['resource'];

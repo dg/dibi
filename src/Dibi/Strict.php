@@ -29,7 +29,7 @@ trait Strict
 	{
 		if ($cb = self::extensionMethod(get_class($this) . '::' . $name)) { // back compatiblity
 			array_unshift($args, $this);
-			return call_user_func_array($cb, $args);
+			return $cb(...$args);
 		}
 		$class = method_exists($this, $name) ? 'parent' : get_class($this);
 		$items = (new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC);
@@ -113,7 +113,7 @@ trait Strict
 		if (strpos($name, '::') === FALSE) {
 			$class = get_called_class();
 		} else {
-			list($class, $name) = explode('::', $name);
+			[$class, $name] = explode('::', $name);
 			$class = (new ReflectionClass($class))->getName();
 		}
 

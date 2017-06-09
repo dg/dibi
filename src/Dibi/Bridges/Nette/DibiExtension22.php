@@ -9,6 +9,7 @@ namespace Dibi\Bridges\Nette;
 
 use Dibi;
 use Nette;
+use Tracy;
 
 
 /**
@@ -35,9 +36,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 			$this->debugMode = $container->parameters['debugMode'];
 		}
 
-		$useProfiler = isset($config['profiler'])
-			? $config['profiler']
-			: class_exists('Tracy\Debugger') && $this->debugMode;
+		$useProfiler = $config['profiler'] ?? (class_exists(Tracy\Debugger::class) && $this->debugMode);
 
 		unset($config['profiler']);
 
@@ -50,19 +49,19 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 		}
 
 		$connection = $container->addDefinition($this->prefix('connection'))
-			->setClass('Dibi\Connection', [$config])
-			->setAutowired(isset($config['autowired']) ? $config['autowired'] : TRUE);
+			->setClass(Dibi\Connection::class, [$config])
+			->setAutowired($config['autowired'] ?? TRUE);
 
-		if (class_exists('Tracy\Debugger')) {
+		if (class_exists(Tracy\Debugger::class)) {
 			$connection->addSetup(
 				[new Nette\DI\Statement('Tracy\Debugger::getBlueScreen'), 'addPanel'],
-				[['Dibi\Bridges\Tracy\Panel', 'renderException']]
+				[[Dibi\Bridges\Tracy\Panel::class, 'renderException']]
 			);
 		}
 		if ($useProfiler) {
 			$panel = $container->addDefinition($this->prefix('panel'))
-				->setClass('Dibi\Bridges\Tracy\Panel', [
-					isset($config['explain']) ? $config['explain'] : TRUE,
+				->setClass(Dibi\Bridges\Tracy\Panel::class, [
+					$config['explain'] ?? TRUE,
 					isset($config['filter']) && $config['filter'] === FALSE ? Dibi\Event::ALL : Dibi\Event::QUERY,
 				]);
 			$connection->addSetup([$panel, 'register'], [$connection]);

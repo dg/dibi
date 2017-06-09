@@ -117,7 +117,7 @@ class Panel implements Tracy\IBarPanel
 					$explain = @Helpers::dump($connection->nativeQuery("$cmd $event->sql"), TRUE);
 				} catch (Dibi\Exception $e) {
 				}
-				list($connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime) = $backup;
+				[$connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime] = $backup;
 			}
 
 			$s .= '<tr><td>' . number_format($event->time * 1000, 3, '.', ' ');

@@ -82,7 +82,7 @@ class Connection
 		if ($config['driver'] instanceof Driver) {
 			$this->driver = $config['driver'];
 			$config['driver'] = get_class($this->driver);
-		} elseif (is_subclass_of($config['driver'], 'Dibi\Driver')) {
+		} elseif (is_subclass_of($config['driver'], Driver::class)) {
 			$this->driver = new $config['driver'];
 		} else {
 			$class = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($config['driver'])));
@@ -102,7 +102,7 @@ class Connection
 			$profilerCfg = ['run' => (bool) $profilerCfg];
 		}
 		if (!empty($profilerCfg['run'])) {
-			$filter = isset($profilerCfg['filter']) ? $profilerCfg['filter'] : Event::QUERY;
+			$filter = $profilerCfg['filter'] ?? Event::QUERY;
 
 			if (isset($profilerCfg['file'])) {
 				$this->onEvent[] = [new Loggers\FileLogger($profilerCfg['file'], $filter), 'logEvent'];
@@ -186,15 +186,9 @@ class Connection
 	 */
 	final public function getConfig($key = NULL, $default = NULL)
 	{
-		if ($key === NULL) {
-			return $this->config;
-
-		} elseif (isset($this->config[$key])) {
-			return $this->config[$key];
-
-		} else {
-			return $default;
-		}
+		return $key === NULL
+			? $this->config
+			: ($this->config[$key] ?? $default);
 	}
 
 
@@ -622,7 +616,7 @@ class Connection
 	public function getDatabaseInfo()
 	{
 		$this->connected || $this->connect();
-		return new Reflection\Database($this->driver->getReflector(), isset($this->config['database']) ? $this->config['database'] : NULL);
+		return new Reflection\Database($this->driver->getReflector(), $this->config['database'] ?? NULL);
 	}
 
 
@@ -647,7 +641,7 @@ class Connection
 	protected function onEvent($arg)
 	{
 		foreach ($this->onEvent ?: [] as $handler) {
-			call_user_func($handler, $arg);
+			$handler($arg);
 		}
 	}
 

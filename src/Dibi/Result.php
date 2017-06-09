@@ -43,7 +43,7 @@ class Result implements IDataSource
 	private $fetched = FALSE;
 
 	/** @var string  returned object class */
-	private $rowClass = 'Dibi\Row';
+	private $rowClass = Row::class;
 
 	/** @var callable  returned object factory*/
 	private $rowFactory;
@@ -185,7 +185,7 @@ class Result implements IDataSource
 		$this->fetched = TRUE;
 		$this->normalize($row);
 		if ($this->rowFactory) {
-			return call_user_func($this->rowFactory, $row);
+			return ($this->rowFactory)($row);
 		} elseif ($this->rowClass) {
 			$row = new $this->rowClass($row);
 		}
@@ -461,7 +461,7 @@ class Result implements IDataSource
 		$cache = Helpers::getTypeCache();
 		try {
 			foreach ($this->getResultDriver()->getResultColumns() as $col) {
-				$this->types[$col['name']] = isset($col['type']) ? $col['type'] : $cache->{$col['nativetype']};
+				$this->types[$col['name']] = $col['type'] ?? $cache->{$col['nativetype']};
 			}
 		} catch (NotSupportedException $e) {
 		}
@@ -543,7 +543,7 @@ class Result implements IDataSource
 	 */
 	final public function getType($col)
 	{
-		return isset($this->types[$col]) ? $this->types[$col] : NULL;
+		return $this->types[$col] ?? NULL;
 	}
 
 
@@ -566,7 +566,7 @@ class Result implements IDataSource
 	 */
 	final public function getFormat($type)
 	{
-		return isset($this->formats[$type]) ? $this->formats[$type] : NULL;
+		return $this->formats[$type] ?? NULL;
 	}
 
 

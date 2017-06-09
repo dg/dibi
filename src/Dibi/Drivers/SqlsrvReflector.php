@@ -117,7 +117,7 @@ class SqlsrvReflector implements Dibi\Reflector
 			$indexes[$row['name']]['name'] = $row['name'];
 			$indexes[$row['name']]['unique'] = $row['is_unique'] === 1;
 			$indexes[$row['name']]['primary'] = $row['is_primary_key'] === 1;
-			$indexes[$row['name']]['columns'] = isset($keyUsages[$row['name']]) ? $keyUsages[$row['name']] : [];
+			$indexes[$row['name']]['columns'] = $keyUsages[$row['name']] ?? [];
 		}
 		return array_values($indexes);
 	}

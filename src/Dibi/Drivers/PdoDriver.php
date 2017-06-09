@@ -80,9 +80,8 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 		}
 
 		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
-		$this->serverVersion = isset($config['version'])
-			? $config['version']
-			: @$this->connection->getAttribute(PDO::ATTR_SERVER_VERSION); // @ - may be not supported
+		$this->serverVersion = $config['version']
+			?? @$this->connection->getAttribute(PDO::ATTR_SERVER_VERSION); // @ - may be not supported
 	}
 
 
@@ -121,7 +120,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 			}
 		}
 
-		list($sqlState, $code, $message) = $this->connection->errorInfo();
+		[$sqlState, $code, $message] = $this->connection->errorInfo();
 		$message = "SQLSTATE[$sqlState]: $message";
 		switch ($this->driverName) {
 			case 'mysql':

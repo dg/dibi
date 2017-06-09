@@ -238,7 +238,7 @@ final class Translator
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$vx[] = $this->identifiers->{$pair[0]} . '='
-							. $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
+							. $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : FALSE));
 					}
 					return implode(', ', $vx);
 
@@ -247,7 +247,7 @@ final class Translator
 				case 'l': // (val, val, ...)
 					foreach ($value as $k => $v) {
 						$pair = explode('%', (string) $k, 2); // split into identifier & modifier
-						$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
+						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : FALSE));
 					}
 					return '(' . (($vx || $modifier === 'l') ? implode(', ', $vx) : 'NULL') . ')';
 
@@ -256,7 +256,7 @@ final class Translator
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$kx[] = $this->identifiers->{$pair[0]};
-						$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
+						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : FALSE));
 					}
 					return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
@@ -277,7 +277,7 @@ final class Translator
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$kx[] = $this->identifiers->{$pair[0]};
 						foreach ($v as $k2 => $v2) {
-							$vx[$k2][] = $this->formatValue($v2, isset($pair[1]) ? $pair[1] : (is_array($v2) ? 'ex' : FALSE));
+							$vx[$k2][] = $this->formatValue($v2, $pair[1] ?? (is_array($v2) ? 'ex' : FALSE));
 						}
 					}
 					foreach ($vx as $k => $v) {
@@ -300,7 +300,7 @@ final class Translator
 
 				case 'ex':
 				case 'sql':
-					return call_user_func_array([$this->connection, 'translate'], $value);
+					return $this->connection->translate(...$value);
 
 				default:  // value, value, value - all with the same modifier
 					foreach ($value as $v) {

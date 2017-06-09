@@ -57,7 +57,7 @@ class Column
 	 */
 	public function getFullName()
 	{
-		return isset($this->info['fullname']) ? $this->info['fullname'] : NULL;
+		return $this->info['fullname'] ?? NULL;
 	}
 
 
@@ -150,7 +150,7 @@ class Column
 	 */
 	public function getDefault()
 	{
-		return isset($this->info['default']) ? $this->info['default'] : NULL;
+		return $this->info['default'] ?? NULL;
 	}
 
 
@@ -160,7 +160,7 @@ class Column
 	 */
 	public function getVendorInfo($key)
 	{
-		return isset($this->info['vendor'][$key]) ? $this->info['vendor'][$key] : NULL;
+		return $this->info['vendor'][$key] ?? NULL;
 	}
 
 }

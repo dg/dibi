@@ -25,13 +25,13 @@ for ($i = 0; $i < 20; $i++) {
 
 // display output
 ?>
-<p>Last query: <strong><?php echo dibi::$sql; ?></strong></p>
+<p>Last query: <strong><?= dibi::$sql; ?></strong></p>
 
-<p>Number of queries: <strong><?php echo dibi::$numOfQueries; ?></strong></p>
+<p>Number of queries: <strong><?= dibi::$numOfQueries; ?></strong></p>
 
-<p>Elapsed time for last query: <strong><?php echo sprintf('%0.3f', dibi::$elapsedTime * 1000); ?> ms</strong></p>
+<p>Elapsed time for last query: <strong><?= sprintf('%0.3f', dibi::$elapsedTime * 1000); ?> ms</strong></p>
 
-<p>Total elapsed time: <strong><?php echo sprintf('%0.3f', dibi::$totalTime * 1000); ?> ms</strong></p>
+<p>Total elapsed time: <strong><?= sprintf('%0.3f', dibi::$totalTime * 1000); ?> ms</strong></p>
 
 <br>
 

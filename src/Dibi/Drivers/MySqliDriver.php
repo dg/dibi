@@ -476,7 +476,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 		if ($types === NULL) {
 			$consts = get_defined_constants(TRUE);
 			$types = [];
-			foreach (isset($consts['mysqli']) ? $consts['mysqli'] : [] as $key => $value) {
+			foreach ($consts['mysqli'] ?? [] as $key => $value) {
 				if (strncmp($key, 'MYSQLI_TYPE_', 12) === 0) {
 					$types[$value] = substr($key, 12);
 				}
@@ -492,7 +492,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 				'name' => $row['name'],
 				'table' => $row['orgtable'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
-				'nativetype' => isset($types[$row['type']]) ? $types[$row['type']] : $row['type'],
+				'nativetype' => $types[$row['type']] ?? $row['type'],
 				'type' => $row['type'] === MYSQLI_TYPE_TIME ? Dibi\Type::TIME_INTERVAL : NULL,
 				'vendor' => $row,
 			];

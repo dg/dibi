@@ -77,7 +77,7 @@ Assert::same(
 // invalid input
 $e = Assert::exception(function () use ($conn) {
 	$conn->translate('SELECT %s', (object) [123], ', %m', 123);
-}, 'Dibi\Exception', 'SQL translate error: Invalid combination of type stdClass and modifier %s');
+}, Dibi\Exception::class, 'SQL translate error: Invalid combination of type stdClass and modifier %s');
 Assert::same('SELECT **Invalid combination of type stdClass and modifier %s** , **Unknown or unexpected modifier %m**', $e->getSql());
 
 Assert::same(
@@ -150,7 +150,7 @@ Assert::same(
 if ($config['system'] === 'odbc') {
 	Assert::exception(function () use ($conn) {
 		$conn->translate('SELECT * FROM [products] %lmt %ofs', 2, 1);
-	}, 'Dibi\Exception');
+	}, Dibi\Exception::class);
 } else {
 	// with limit = 2, offset = 1
 	Assert::same(
@@ -198,7 +198,7 @@ Assert::same(
 
 Assert::exception(function () use ($conn) {
 	$conn->translate('SELECT %s', new DateTime('1212-09-26'));
-}, 'Dibi\Exception', 'SQL translate error: Invalid combination of type Dibi\DateTime and modifier %s');
+}, Dibi\Exception::class, 'SQL translate error: Invalid combination of type Dibi\DateTime and modifier %s');
 
 
 
@@ -240,7 +240,7 @@ if ($config['system'] === 'postgre') {
 
 $e = Assert::exception(function () use ($conn) {
 	$conn->translate("SELECT '");
-}, 'Dibi\Exception', 'SQL translate error: Alone quote');
+}, Dibi\Exception::class, 'SQL translate error: Alone quote');
 Assert::same('SELECT **Alone quote**', $e->getSql());
 
 Assert::match(
@@ -491,7 +491,7 @@ $e = Assert::exception(function () use ($conn) {
 		'num%i' => ['1', ''],
 	];
 	$conn->translate('INSERT INTO test %m', $array6);
-}, 'Dibi\Exception', 'SQL translate error: Multi-insert array "num%i" is different');
+}, Dibi\Exception::class, 'SQL translate error: Multi-insert array "num%i" is different');
 Assert::same('INSERT INTO test **Multi-insert array "num%i" is different**', $e->getSql());
 
 $array6 = [
