@@ -19,9 +19,6 @@ class Exception extends \Exception
 
 	/**
 	 * Construct a dibi exception.
-	 * @param  string  Message describing the exception
-	 * @param  mixed
-	 * @param  string  SQL command
 	 */
 	public function __construct(string $message = '', $code = 0, string $sql = NULL)
 	{
@@ -95,9 +92,6 @@ class ProcedureException extends Exception
 
 	/**
 	 * Construct the exception.
-	 * @param  string  Message describing the exception
-	 * @param  int     Some code
-	 * @param  string SQL command
 	 */
 	public function __construct(string $message = NULL, int $code = 0, string $severity = NULL, $sql = NULL)
 	{

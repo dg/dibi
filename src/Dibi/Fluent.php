@@ -114,8 +114,6 @@ class Fluent implements IDataSource
 
 	/**
 	 * Appends new argument to the clause.
-	 * @param  string clause name
-	 * @param  array  arguments
 	 */
 	public function __call(string $clause, array $args): self
 	{
@@ -202,7 +200,6 @@ class Fluent implements IDataSource
 
 	/**
 	 * Switch to a clause.
-	 * @param  string clause name
 	 */
 	public function clause(string $clause): self
 	{
@@ -217,7 +214,6 @@ class Fluent implements IDataSource
 
 	/**
 	 * Removes a clause.
-	 * @param  string clause name
 	 */
 	public function removeClause(string $clause): self
 	{
@@ -228,7 +224,6 @@ class Fluent implements IDataSource
 
 	/**
 	 * Change a SQL flag.
-	 * @param  string  flag name
 	 */
 	public function setFlag(string $flag, bool $value = TRUE): self
 	{
@@ -244,7 +239,6 @@ class Fluent implements IDataSource
 
 	/**
 	 * Is a flag set?
-	 * @param  string  flag name
 	 */
 	final public function getFlag(string $flag): bool
 	{

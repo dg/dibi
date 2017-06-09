@@ -99,7 +99,6 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Executes the SQL query.
-	 * @param  string      SQL statement.
 	 * @throws Dibi\DriverException
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
@@ -166,7 +165,6 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Begins a transaction (if supported).
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function begin(string $savepoint = NULL): void
@@ -177,7 +175,6 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Commits statements in a transaction.
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function commit(string $savepoint = NULL): void
@@ -188,7 +185,6 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Rollback changes in a transaction.
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function rollback(string $savepoint = NULL): void
@@ -416,9 +412,6 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Registers an user defined function for use in SQL statements.
-	 * @param  string  function name
-	 * @param  mixed
-	 * @param  int     num of arguments
 	 */
 	public function registerFunction(string $name, callable $callback, int $numArgs = -1): void
 	{
@@ -428,10 +421,6 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Registers an aggregating user defined function for use in SQL statements.
-	 * @param  string  function name
-	 * @param  mixed   callback called for each row of the result set
-	 * @param  mixed   callback called to aggregate the "stepped" data from each row
-	 * @param  int     num of arguments
 	 */
 	public function registerAggregateFunction(string $name, callable $rowCallback, callable $agrCallback, int $numArgs = -1): void
 	{

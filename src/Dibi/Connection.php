@@ -176,7 +176,6 @@ class Connection
 	/**
 	 * Returns configuration variable. If no $key is passed, returns the entire array.
 	 * @see self::__construct
-	 * @param  mixed $default  default value to use if key not found
 	 * @return mixed
 	 */
 	final public function getConfig(string $key = NULL, $default = NULL)
@@ -268,7 +267,6 @@ class Connection
 
 	/**
 	 * Executes the SQL query.
-	 * @param  string           SQL statement.
 	 * @return Result|int   result set or number of affected rows
 	 * @throws Exception
 	 */
@@ -299,7 +297,6 @@ class Connection
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int  number of rows
 	 * @throws Exception
 	 */
 	public function getAffectedRows(): int
@@ -315,7 +312,6 @@ class Connection
 
 	/**
 	 * Gets the number of affected rows. Alias for getAffectedRows().
-	 * @return int  number of rows
 	 * @throws Exception
 	 */
 	public function affectedRows(): int
@@ -326,7 +322,6 @@ class Connection
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @param  string     optional sequence name
 	 * @throws Exception
 	 */
 	public function getInsertId(string $sequence = NULL): int
@@ -342,7 +337,6 @@ class Connection
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column. Alias for getInsertId().
-	 * @param  string     optional sequence name
 	 * @throws Exception
 	 */
 	public function insertId(string $sequence = NULL): int
@@ -353,7 +347,6 @@ class Connection
 
 	/**
 	 * Begins a transaction (if supported).
-	 * @param  string  optional savepoint name
 	 */
 	public function begin(string $savepoint = NULL): void
 	{
@@ -372,7 +365,6 @@ class Connection
 
 	/**
 	 * Commits statements in a transaction.
-	 * @param  string  optional savepoint name
 	 */
 	public function commit(string $savepoint = NULL): void
 	{
@@ -391,7 +383,6 @@ class Connection
 
 	/**
 	 * Rollback changes in a transaction.
-	 * @param  string  optional savepoint name
 	 */
 	public function rollback(string $savepoint = NULL): void
 	{
@@ -428,9 +419,6 @@ class Connection
 	}
 
 
-	/**
-	 * @param  mixed    column name
-	 */
 	public function select(...$args): Fluent
 	{
 		return $this->command()->select(...$args);
@@ -548,8 +536,7 @@ class Connection
 
 	/**
 	 * Import SQL dump from file.
-	 * @param  string  filename
-	 * @param  callable  function (int $count, ?float $percent): void
+	 * @param  callable $onProgress function (int $count, ?float $percent): void
 	 * @return int  count of sql commands
 	 */
 	public function loadFile(string $file, callable $onProgress = NULL): int

@@ -65,8 +65,6 @@ class dibi
 
 	/**
 	 * Creates a new Connection object and connects it to specified database.
-	 * @param  mixed   connection parameters
-	 * @param  string  connection name
 	 * @throws Dibi\Exception
 	 */
 	public static function connect(array $config = [], string $name = '0'): Dibi\Connection
@@ -95,7 +93,6 @@ class dibi
 
 	/**
 	 * Retrieve active connection.
-	 * @param  string   connection registy name
 	 * @throws Dibi\Exception
 	 */
 	public static function getConnection(string $name = NULL): Dibi\Connection
@@ -142,7 +139,6 @@ class dibi
 
 	/**
 	 * Executes the SQL query - Monostate for Dibi\Connection::nativeQuery().
-	 * @param  string           SQL statement.
 	 * @return Dibi\Result|int   result set or number of affected rows
 	 */
 	public static function nativeQuery(string $sql)
@@ -242,7 +238,6 @@ class dibi
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * Monostate for Dibi\Connection::getInsertId()
-	 * @param  string     optional sequence name
 	 * @throws Dibi\Exception
 	 */
 	public static function getInsertId(string $sequence = NULL): int
@@ -253,7 +248,6 @@ class dibi
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column. Alias for getInsertId().
-	 * @param  string     optional sequence name
 	 * @throws Dibi\Exception
 	 */
 	public static function insertId(string $sequence = NULL): int
@@ -264,7 +258,6 @@ class dibi
 
 	/**
 	 * Begins a transaction - Monostate for Dibi\Connection::begin().
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\Exception
 	 */
 	public static function begin(string $savepoint = NULL): void
@@ -275,7 +268,6 @@ class dibi
 
 	/**
 	 * Commits statements in a transaction - Monostate for Dibi\Connection::commit($savepoint = NULL).
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\Exception
 	 */
 	public static function commit(string $savepoint = NULL): void
@@ -286,7 +278,6 @@ class dibi
 
 	/**
 	 * Rollback changes in a transaction - Monostate for Dibi\Connection::rollback().
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\Exception
 	 */
 	public static function rollback(string $savepoint = NULL): void
@@ -306,7 +297,6 @@ class dibi
 
 	/**
 	 * Import SQL dump from file - extreme fast!
-	 * @param  string  filename
 	 * @return int  count of sql commands
 	 */
 	public static function loadFile(string $file): int
@@ -324,9 +314,6 @@ class dibi
 	}
 
 
-	/**
-	 * @param  mixed    column name
-	 */
 	public static function select(...$args): Dibi\Fluent
 	{
 		return self::getConnection()->select(...$args);

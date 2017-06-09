@@ -101,7 +101,6 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Executes the SQL query.
-	 * @param  string      SQL statement.
 	 * @throws Dibi\DriverException
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
@@ -146,7 +145,6 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Begins a transaction (if supported).
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function begin(string $savepoint = NULL): void
@@ -157,7 +155,6 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Commits statements in a transaction.
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function commit(string $savepoint = NULL): void
@@ -168,7 +165,6 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Rollback changes in a transaction.
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function rollback(string $savepoint = NULL): void

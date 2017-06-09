@@ -578,8 +578,7 @@ final class Translator
 
 
 	/**
-	 * Apply substitutions to indentifier and delimites it.
-	 * @param  string indentifier
+	 * Apply substitutions to identifier and delimites it.
 	 * @internal
 	 */
 	public function delimite(string $value): string

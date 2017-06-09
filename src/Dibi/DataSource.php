@@ -80,7 +80,6 @@ class DataSource implements IDataSource
 
 	/**
 	 * Adds conditions to query.
-	 * @param  mixed  conditions
 	 */
 	public function where($cond): self
 	{
@@ -98,14 +97,13 @@ class DataSource implements IDataSource
 	/**
 	 * Selects columns to order by.
 	 * @param  string|array  column name or array of column names
-	 * @param  string        sorting direction
 	 */
-	public function orderBy($row, string $sorting = 'ASC'): self
+	public function orderBy($row, string $direction = 'ASC'): self
 	{
 		if (is_array($row)) {
 			$this->sorting = $row;
 		} else {
-			$this->sorting[$row] = $sorting;
+			$this->sorting[$row] = $direction;
 		}
 		$this->result = NULL;
 		return $this;
@@ -185,7 +183,6 @@ class DataSource implements IDataSource
 
 	/**
 	 * Fetches all records from table and returns associative tree.
-	 * @param  string  associative descriptor
 	 */
 	public function fetchAssoc(string $assoc): array
 	{
@@ -195,7 +192,6 @@ class DataSource implements IDataSource
 
 	/**
 	 * Fetches all records from table like $key => $value pairs.
-	 * @param  string  associative key
 	 */
 	public function fetchPairs(string $key = NULL, string $value = NULL): array
 	{

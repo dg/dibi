@@ -227,7 +227,6 @@ class Result implements IDataSource
 	 *   builds a tree:          $tree[$val1][$index][$val2]->col3[$val3] = {record}
 	 * - associative descriptor: col1|col2->col3=col4
 	 *   builds a tree:          $tree[$val1][$val2]->col3[$val3] = val4
-	 * @param  string  associative descriptor
 	 * @throws \InvalidArgumentException
 	 */
 	final public function fetchAssoc(string $assoc): array
@@ -374,7 +373,6 @@ class Result implements IDataSource
 
 	/**
 	 * Fetches all records from table like $key => $value pairs.
-	 * @param  string  associative key
 	 * @throws \InvalidArgumentException
 	 */
 	final public function fetchPairs(string $key = NULL, string $value = NULL): array
@@ -503,12 +501,11 @@ class Result implements IDataSource
 
 	/**
 	 * Define column type.
-	 * @param  string  column
-	 * @param  string  type (use constant Type::*)
+	 * @param  string  $type use constant Type::*
 	 */
-	final public function setType(string $col, string $type): self
+	final public function setType(string $column, string $type): self
 	{
-		$this->types[$col] = $type;
+		$this->types[$column] = $type;
 		return $this;
 	}
 
@@ -516,15 +513,14 @@ class Result implements IDataSource
 	/**
 	 * Returns column type.
 	 */
-	final public function getType($col): string
+	final public function getType($column): string
 	{
-		return $this->types[$col] ?? NULL;
+		return $this->types[$column] ?? NULL;
 	}
 
 
 	/**
 	 * Sets date format.
-	 * @param  string
 	 */
 	final public function setFormat(string $type, ?string $format): self
 	{

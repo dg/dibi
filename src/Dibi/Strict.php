@@ -101,7 +101,6 @@ trait Strict
 
 
 	/**
-	 * @param  string  method name
 	 * @return mixed
 	 */
 	public static function extensionMethod(string $name, callable $callback = NULL)

@@ -101,7 +101,6 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Executes the SQL query.
-	 * @param  string      SQL statement.
 	 * @throws Dibi\DriverException|Dibi\Exception
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
@@ -145,7 +144,6 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Begins a transaction (if supported).
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function begin(string $savepoint = NULL): void
@@ -160,7 +158,6 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Commits statements in a transaction.
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function commit(string $savepoint = NULL): void
@@ -179,7 +176,6 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Rollback changes in a transaction.
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function rollback(string $savepoint = NULL): void
@@ -662,7 +658,6 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns metadata from stored procedures and their input and output parameters.
-	 * @param  string
 	 */
 	public function getProceduresMeta(): array
 	{

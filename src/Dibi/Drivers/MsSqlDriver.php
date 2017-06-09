@@ -82,7 +82,6 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Executes the SQL query.
-	 * @param  string      SQL statement.
 	 * @throws Dibi\DriverException
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
@@ -124,7 +123,6 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Begins a transaction (if supported).
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function begin(string $savepoint = NULL): void
@@ -135,7 +133,6 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Commits statements in a transaction.
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function commit(string $savepoint = NULL): void
@@ -146,7 +143,6 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Rollback changes in a transaction.
-	 * @param  string  optional savepoint name
 	 * @throws Dibi\DriverException
 	 */
 	public function rollback(string $savepoint = NULL): void
@@ -310,7 +306,6 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @param  int   the 0-based cursor pos to seek to
 	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
 	 */
 	public function seek(int $row): bool

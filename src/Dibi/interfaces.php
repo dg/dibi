@@ -38,7 +38,6 @@ interface Driver
 
 	/**
 	 * Internal: Executes the SQL query.
-	 * @param  string      SQL statement.
 	 * @throws DriverException
 	 */
 	function query(string $sql): ?ResultDriver;
@@ -55,21 +54,18 @@ interface Driver
 
 	/**
 	 * Begins a transaction (if supported).
-	 * @param  string  optional savepoint name
 	 * @throws DriverException
 	 */
 	function begin(string $savepoint = NULL): void;
 
 	/**
 	 * Commits statements in a transaction.
-	 * @param  string  optional savepoint name
 	 * @throws DriverException
 	 */
 	function commit(string $savepoint = NULL): void;
 
 	/**
 	 * Rollback changes in a transaction.
-	 * @param  string  optional savepoint name
 	 * @throws DriverException
 	 */
 	function rollback(string $savepoint = NULL): void;
@@ -132,7 +128,6 @@ interface ResultDriver
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @param  int   the 0-based cursor pos to seek to
 	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
 	 * @throws Exception
 	 */

@@ -18,7 +18,6 @@ class Helpers
 	/**
 	 * Prints out a syntax highlighted version of the SQL command or Result.
 	 * @param  string|Result
-	 * @param  bool  return output instead of printing it?
 	 */
 	public static function dump($sql = NULL, bool $return = FALSE): string
 	{
@@ -211,8 +210,6 @@ class Helpers
 
 	/**
 	 * Apply configuration alias or default values.
-	 * @param  array  connect configuration
-	 * @param  string $alias alias key
 	 */
 	public static function alias(array &$config, string $key, string $alias): void
 	{
