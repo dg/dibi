@@ -98,6 +98,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 		} elseif (is_resource($res)) {
 			return $this->createResultDriver($res);
 		}
+		return NULL;
 	}
 
 
@@ -236,7 +237,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function escapeBool($value)
 	{
-		return $value ? 1 : 0;
+		return $value ? '1' : '0';
 	}
 
 

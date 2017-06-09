@@ -118,6 +118,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 		} elseif ($res instanceof \SQLite3Result) {
 			return $this->createResultDriver($res);
 		}
+		return NULL;
 	}
 
 
@@ -280,7 +281,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function escapeBool($value)
 	{
-		return $value ? 1 : 0;
+		return $value ? '1' : '0';
 	}
 
 

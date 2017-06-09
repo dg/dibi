@@ -271,7 +271,7 @@ class Result implements IDataSource
 		}
 
 		$data = NULL;
-		$assoc = preg_split('#(\[\]|->|=|\|)#', $assoc, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+		$assoc = preg_split('#(\[\]|->|=|\|)#', $assoc, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
 		// check columns
 		foreach ($assoc as $as) {
@@ -499,7 +499,7 @@ class Result implements IDataSource
 					: $tmp;
 
 			} elseif ($type === Type::FLOAT) {
-				$value = ltrim($value, '0');
+				$value = ltrim((string) $value, '0');
 				$p = strpos($value, '.');
 				if ($p !== FALSE) {
 					$value = rtrim(rtrim($value, '0'), '.');

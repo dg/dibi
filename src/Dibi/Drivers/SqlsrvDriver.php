@@ -42,7 +42,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	private $affectedRows = FALSE;
 
 	/** @var string */
-	private $version;
+	private $version = '';
 
 
 	/**
@@ -122,6 +122,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			$this->affectedRows = sqlsrv_rows_affected($res);
 			return $this->createResultDriver($res);
 		}
+		return NULL;
 	}
 
 
@@ -260,7 +261,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function escapeBool($value)
 	{
-		return $value ? 1 : 0;
+		return $value ? '1' : '0';
 	}
 
 
@@ -334,7 +335,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
-		} elseif (version_compare($this->version, 11, '<')) { // 11 == SQL Server 2012
+		} elseif (version_compare($this->version, '11', '<')) { // 11 == SQL Server 2012
 			if ($offset) {
 				throw new Dibi\NotSupportedException('Offset is not supported by this database.');
 

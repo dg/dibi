@@ -110,6 +110,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			$this->affectedRows = odbc_num_rows($res);
 			return $this->createResultDriver($res);
 		}
+		return NULL;
 	}
 
 
@@ -260,7 +261,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function escapeBool($value)
 	{
-		return $value ? 1 : 0;
+		return $value ? '1' : '0';
 	}
 
 

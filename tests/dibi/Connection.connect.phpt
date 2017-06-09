@@ -29,7 +29,7 @@ test(function () use ($config) { // lazy
 
 
 test(function () use ($config) { // query string
-	$conn = new Connection(http_build_query($config, NULL, '&'));
+	$conn = new Connection(http_build_query($config, '', '&'));
 	Assert::true($conn->isConnected());
 
 	Assert::null($conn->getConfig('lazy'));

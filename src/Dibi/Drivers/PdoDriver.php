@@ -40,7 +40,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	private $driverName;
 
 	/** @var string */
-	private $serverVersion;
+	private $serverVersion = '';
 
 
 	/**
@@ -112,7 +112,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 		if (isset($list[$cmd])) {
 			$this->affectedRows = $this->connection->exec($sql);
 			if ($this->affectedRows !== FALSE) {
-				return;
+				return NULL;
 			}
 		} else {
 			$res = $this->connection->query($sql);
@@ -321,7 +321,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 		if ($this->driverName === 'pgsql') {
 			return $value ? 'TRUE' : 'FALSE';
 		} else {
-			return $value ? 1 : 0;
+			return $value ? '1' : '0';
 		}
 	}
 

@@ -123,6 +123,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			$err = oci_error($this->connection);
 			throw new Dibi\DriverException($err['message'], $err['code'], $sql);
 		}
+		return NULL;
 	}
 
 
@@ -284,7 +285,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function escapeBool($value)
 	{
-		return $value ? 1 : 0;
+		return $value ? '1' : '0';
 	}
 
 

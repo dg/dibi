@@ -90,7 +90,7 @@ class dibi
 	 * @return Dibi\Connection
 	 * @throws Dibi\Exception
 	 */
-	public static function connect($config = [], $name = 0)
+	public static function connect($config = [], $name = '0')
 	{
 		return self::$connection = self::$registry[$name] = new Dibi\Connection($config, $name);
 	}

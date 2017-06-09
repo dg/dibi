@@ -246,7 +246,7 @@ final class Translator
 				case 'in':// replaces scalar %in modifier!
 				case 'l': // (val, val, ...)
 					foreach ($value as $k => $v) {
-						$pair = explode('%', $k, 2); // split into identifier & modifier
+						$pair = explode('%', (string) $k, 2); // split into identifier & modifier
 						$vx[] = $this->formatValue($v, isset($pair[1]) ? $pair[1] : (is_array($v) ? 'ex' : FALSE));
 					}
 					return '(' . (($vx || $modifier === 'l') ? implode(', ', $vx) : 'NULL') . ')';
@@ -326,7 +326,7 @@ final class Translator
 
 			switch ($modifier) {
 				case 's':  // string
-					return $value === NULL ? 'NULL' : $this->driver->escapeText($value);
+					return $value === NULL ? 'NULL' : $this->driver->escapeText((string) $value);
 
 				case 'bin':// binary
 					return $value === NULL ? 'NULL' : $this->driver->escapeBinary($value);
@@ -336,7 +336,7 @@ final class Translator
 
 				case 'sN': // string or NULL
 				case 'sn':
-					return $value == '' ? 'NULL' : $this->driver->escapeText($value); // notice two equal signs
+					return $value == '' ? 'NULL' : $this->driver->escapeText((string) $value); // notice two equal signs
 
 				case 'in': // deprecated
 					trigger_error('Modifier %in is deprecated, use %iN.', E_USER_DEPRECATED);
