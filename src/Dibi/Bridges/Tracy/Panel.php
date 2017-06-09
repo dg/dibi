@@ -88,8 +88,8 @@ class Panel implements Tracy\IBarPanel
 			$totalTime += $event->time;
 		}
 		return '<span title="dibi"><svg viewBox="0 0 2048 2048" style="vertical-align: bottom; width:1.23em; height:1.55em"><path fill="' . ($count ? '#b079d6' : '#aaa') . '" d="M1024 896q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128v-170q119 84 325 127t443 43zm0 768q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128v-170q119 84 325 127t443 43zm0-384q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128v-170q119 84 325 127t443 43zm0-1152q208 0 385 34.5t280 93.5 103 128v128q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128v-128q0-69 103-128t280-93.5 385-34.5z"/></svg><span class="tracy-label">'
-			. $count . ' queries'
-			. ($totalTime ? sprintf(' / %0.1f ms', $totalTime * 1000) : '')
+			. $count . ' queries'
+			. ($totalTime ? ' / ' . number_format($totalTime * 1000, 1, '.', ' ') . ' ms' : '')
 			. '</span></span>';
 	}
 
@@ -120,7 +120,7 @@ class Panel implements Tracy\IBarPanel
 				list($connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime) = $backup;
 			}
 
-			$s .= '<tr><td>' . sprintf('%0.3f', $event->time * 1000);
+			$s .= '<tr><td>' . number_format($event->time * 1000, 3, '.', ' ');
 			if ($explain) {
 				static $counter;
 				$counter++;
@@ -141,10 +141,10 @@ class Panel implements Tracy\IBarPanel
 		return '<style> #tracy-debug td.tracy-DibiProfiler-sql { background: white !important }
 			#tracy-debug .tracy-DibiProfiler-source { color: #999 !important }
 			#tracy-debug tracy-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
-			<h1>Queries: ' . count($this->events)
-				. ($totalTime === NULL ? '' : sprintf(', time: %0.3f ms', $totalTime * 1000)) . ', '
+			<h1>Queries: ' . count($this->events)
+				. ($totalTime === NULL ? '' : ', time: ' . number_format($totalTime * 1000, 1, '.', ' ') . ' ms') . ', '
 				. htmlSpecialChars($connection->getConfig('driver') . ($connection->getConfig('name') ? '/' . $connection->getConfig('name') : '')
-				. ($connection->getConfig('host') ? ' @ ' . $connection->getConfig('host') : '')) . '</h1>
+				. ($connection->getConfig('host') ? ' @ ' . $connection->getConfig('host') : '')) . '</h1>
 			<div class="tracy-inner tracy-DibiProfiler">
 			<table>
 				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Rows</th></tr>' . $s . '
