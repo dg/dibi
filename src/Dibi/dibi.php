@@ -22,32 +22,12 @@ class dibi
 
 	/** version */
 	const
-		VERSION = '4.0-dev',
-		REVISION = 'released on 2017-06-09';
+		VERSION = '4.0-dev';
 
 	/** sorting order */
 	const
 		ASC = 'ASC',
 		DESC = 'DESC';
-
-	/** @deprecated */
-	const
-		TEXT = Type::TEXT,
-		BINARY = Type::BINARY,
-		BOOL = Type::BOOL,
-		INTEGER = Type::INTEGER,
-		FLOAT = Type::FLOAT,
-		DATE = Type::DATE,
-		DATETIME = Type::DATETIME,
-		TIME = Type::TIME,
-		FIELD_TEXT = Type::TEXT,
-		FIELD_BINARY = Type::BINARY,
-		FIELD_BOOL = Type::BOOL,
-		FIELD_INTEGER = Type::INTEGER,
-		FIELD_FLOAT = Type::FLOAT,
-		FIELD_DATE = Type::DATE,
-		FIELD_DATETIME = Type::DATETIME,
-		FIELD_TIME = Type::TIME;
 
 	/** @var Dibi\Connection[]  Connection registry storage for DibiConnection objects */
 	private static $registry = [];
@@ -148,16 +128,6 @@ class dibi
 	public static function setConnection(Dibi\Connection $connection)
 	{
 		return self::$connection = $connection;
-	}
-
-
-	/**
-	 * @deprecated
-	 */
-	public static function activate($name)
-	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
-		self::$connection = self::getConnection($name);
 	}
 
 

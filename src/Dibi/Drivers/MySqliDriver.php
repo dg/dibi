@@ -383,14 +383,6 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	}
 
 
-	/** @deprecated */
-	public function escape($value, $type)
-	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
-		return Dibi\Helpers::escape($this, $value, $type);
-	}
-
-
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string

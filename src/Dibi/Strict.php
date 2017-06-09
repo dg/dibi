@@ -117,18 +117,6 @@ trait Strict
 			$class = (new ReflectionClass($class))->getName();
 		}
 
-		if (self::$extMethods === NULL) { // for backwards compatibility
-			$list = get_defined_functions();
-			foreach ($list['user'] as $fce) {
-				$pair = explode('_prototype_', $fce);
-				if (count($pair) === 2) {
-					trigger_error("Extension method defined as $fce() is deprecated, use $class::extensionMethod('$name', ...).", E_USER_DEPRECATED);
-					self::$extMethods[$pair[1]][(new ReflectionClass($pair[0]))->getName()] = $fce;
-					self::$extMethods[$pair[1]][''] = NULL;
-				}
-			}
-		}
-
 		$list = & self::$extMethods[strtolower($name)];
 		if ($callback === NULL) { // getter
 			$cache = &$list[''][$class];

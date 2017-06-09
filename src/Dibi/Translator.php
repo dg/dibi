@@ -338,10 +338,6 @@ final class Translator
 				case 'sn':
 					return $value == '' ? 'NULL' : $this->driver->escapeText((string) $value); // notice two equal signs
 
-				case 'in': // deprecated
-					trigger_error('Modifier %in is deprecated, use %iN.', E_USER_DEPRECATED);
-					// intentionally break omitted
-
 				case 'iN': // signed int or NULL
 					if ($value == '') {
 						$value = NULL;
@@ -354,9 +350,6 @@ final class Translator
 						return 'NULL';
 					} elseif (is_string($value) && preg_match('#[+-]?\d++(?:e\d+)?\z#A', $value)) {
 						return $value; // support for long numbers - keep them unchanged
-					} elseif (is_string($value) && substr($value, 1, 1) === 'x' && is_numeric($value)) {
-						trigger_error('Support for hex strings has been deprecated.', E_USER_DEPRECATED);
-						return (string) hexdec($value);
 					} else {
 						return (string) (int) $value;
 					}

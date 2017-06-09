@@ -63,16 +63,6 @@ class Result implements IDataSource
 
 
 	/**
-	 * @deprecated
-	 */
-	final public function getResource()
-	{
-		trigger_error(__METHOD__ . '() is deprecated, use getResultDriver()->getResultResource().', E_USER_DEPRECATED);
-		return $this->getResultDriver()->getResultResource();
-	}
-
-
-	/**
 	 * Frees the resources allocated for this result set.
 	 * @return void
 	 */

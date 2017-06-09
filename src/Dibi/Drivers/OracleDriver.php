@@ -67,9 +67,6 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	{
 		$foo = &$config['charset'];
 
-		if (isset($config['formatDate']) || isset($config['formatDateTime'])) {
-			trigger_error('OracleDriver: options formatDate and formatDateTime are deprecated.', E_USER_DEPRECATED);
-		}
 		if (empty($config['nativeDate'])) {
 			$this->fmtDate = isset($config['formatDate']) ? $config['formatDate'] : 'U';
 			$this->fmtDateTime = isset($config['formatDateTime']) ? $config['formatDateTime'] : 'U';
@@ -346,14 +343,6 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	public function unescapeBinary($value)
 	{
 		return $value;
-	}
-
-
-	/** @deprecated */
-	public function escape($value, $type)
-	{
-		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
-		return Dibi\Helpers::escape($this, $value, $type);
 	}
 
 
