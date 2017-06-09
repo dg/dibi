@@ -8,7 +8,7 @@ clone_folder: c:\projects\dibi
 
 services:
     - mssql2012sp1
-    - mssql2014
+#    - mssql2014
     - mysql
 
 init:
