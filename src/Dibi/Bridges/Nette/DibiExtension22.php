@@ -16,15 +16,28 @@ use Nette;
  */
 class DibiExtension22 extends Nette\DI\CompilerExtension
 {
+	/** @var bool */
+	private $debugMode;
+
+
+	public function __construct($debugMode = NULL)
+	{
+		$this->debugMode = $debugMode;
+	}
+
 
 	public function loadConfiguration()
 	{
 		$container = $this->getContainerBuilder();
 		$config = $this->getConfig();
 
+		if ($this->debugMode === NULL) {
+			$this->debugMode = $container->parameters['debugMode'];
+		}
+
 		$useProfiler = isset($config['profiler'])
 			? $config['profiler']
-			: class_exists('Tracy\Debugger') && $container->parameters['debugMode'];
+			: class_exists('Tracy\Debugger') && $this->debugMode;
 
 		unset($config['profiler']);
 
