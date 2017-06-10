@@ -236,7 +236,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	public function escapeBinary(string $value): string
 	{
-		return "X'" . bin2hex((string) $value) . "'";
+		return "X'" . bin2hex($value) . "'";
 	}
 
 

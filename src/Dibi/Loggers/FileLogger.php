@@ -27,7 +27,7 @@ class FileLogger
 	public function __construct(string $file, int $filter = NULL)
 	{
 		$this->file = $file;
-		$this->filter = $filter ? (int) $filter : Dibi\Event::QUERY;
+		$this->filter = $filter ?: Dibi\Event::QUERY;
 	}
 
 
