@@ -10,15 +10,16 @@
 Database access functions in PHP are not standardised. This library
 hides the differences between them, and above all, it gives you a very handy interface.
 
-The best way to install Dibi is to use a [Composer](https://getcomposer.org/download):
+Installation
+============
 
-    php composer.phar require dibi/dibi
+The best way how to install Dibi is to [download a latest package](https://github.com/dg/dibi/releases) or use a Composer:
 
-Or you can download the latest package from https://dibiphp.com. In this
-package is also `Dibi.minified`, shrinked single-file version of whole Dibi,
-useful when you don't want to modify the library, but just use it.
+```bash
+composer require dibi/dibi
+```
 
-Dibi requires PHP 5.4.4 or later. It has been tested with PHP 7 too.
+The Dibi 3 requires PHP version 5.4.4 or newer (is compatible with PHP 7.0 and 7.1), version 4 requires PHP 7.1.
 
 
 Examples
