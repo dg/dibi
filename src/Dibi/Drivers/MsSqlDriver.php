@@ -28,14 +28,14 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $connection;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $resultSet;
 
 	/** @var bool */
-	private $autoFree = TRUE;
+	private $autoFree = true;
 
 
 	/**
@@ -58,7 +58,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
 		} elseif (empty($config['persistent'])) {
-			$this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE); // intentionally @
+			$this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], true); // intentionally @
 		} else {
 			$this->connection = @mssql_pconnect($config['host'], $config['username'], $config['password']); // intentionally @
 		}
@@ -90,13 +90,13 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	{
 		$res = @mssql_query($sql, $this->connection); // intentionally @
 
-		if ($res === FALSE) {
+		if ($res === false) {
 			throw new Dibi\DriverException(mssql_get_last_message(), 0, $sql);
 
 		} elseif (is_resource($res)) {
 			return $this->createResultDriver($res);
 		}
-		return NULL;
+		return null;
 	}
 
 
@@ -119,7 +119,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 			$row = mssql_fetch_row($res);
 			return $row[0];
 		}
-		return NULL;
+		return null;
 	}
 
 
@@ -127,7 +127,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Begins a transaction (if supported).
 	 * @throws Dibi\DriverException
 	 */
-	public function begin(string $savepoint = NULL): void
+	public function begin(string $savepoint = null): void
 	{
 		$this->query('BEGIN TRANSACTION');
 	}
@@ -137,7 +137,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Commits statements in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function commit(string $savepoint = NULL): void
+	public function commit(string $savepoint = null): void
 	{
 		$this->query('COMMIT');
 	}
@@ -147,7 +147,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Rollback changes in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback(string $savepoint = NULL): void
+	public function rollback(string $savepoint = null): void
 	{
 		$this->query('ROLLBACK');
 	}
@@ -155,11 +155,11 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResource()
 	{
-		return is_resource($this->connection) ? $this->connection : NULL;
+		return is_resource($this->connection) ? $this->connection : null;
 	}
 
 
@@ -269,7 +269,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 		} elseif ($limit < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
-		} elseif ($limit !== NULL) {
+		} elseif ($limit !== null) {
 			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
 		}
 	}
@@ -298,7 +298,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 */
 	public function fetch(bool $assoc): ?array
 	{
@@ -308,7 +308,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
+	 * @return bool  true on success, false if unable to seek to specified record
 	 */
 	public function seek(int $row): bool
 	{
@@ -322,7 +322,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	public function free(): void
 	{
 		mssql_free_result($this->resultSet);
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
@@ -348,11 +348,11 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResultResource()
 	{
-		$this->autoFree = FALSE;
-		return is_resource($this->resultSet) ? $this->resultSet : NULL;
+		$this->autoFree = false;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 }

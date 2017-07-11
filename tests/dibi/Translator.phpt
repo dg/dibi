@@ -27,7 +27,7 @@ Assert::same(
 $array = [
 	'title' => 'Super Product',
 	'price' => 12,
-	'brand' => NULL,
+	'brand' => null,
 ];
 Assert::same(
 	reformat('INSERT INTO [products] ([title], [price], [brand]) VALUES (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL)'),
@@ -108,7 +108,7 @@ Assert::same(
 
 
 $where = [];
-$where['age'] = NULL;
+$where['age'] = null;
 $where['email'] = 'ahoj';
 $where['id%l'] = [10, 20, 30];
 Assert::same(
@@ -130,8 +130,8 @@ $order = [
 	'field2' => 'desc',
 	'field3' => 1,
 	'field4' => -1,
-	'field5' => TRUE,
-	'field6' => FALSE,
+	'field5' => true,
+	'field6' => false,
 ];
 Assert::same(
 	reformat('SELECT * FROM [people] ORDER BY [field1] ASC, [field2] DESC, [field3] ASC, [field4] DESC, [field5] ASC, [field6] DESC'),
@@ -193,8 +193,8 @@ Assert::same(
 	'b5' => new DateTime('1212-09-26'),
 	'b6%d' => new DateTime('1212-09-26'),
 	'b7%t' => new DateTime('1212-09-26'),
-	'b8%d' => NULL,
-	'b9%t' => NULL,
+	'b8%d' => null,
+	'b9%t' => null,
 	'c1%t' => new DateTime('1212-09-26 16:51:34.0124'),
 ]));
 
@@ -287,7 +287,7 @@ $array3 = [
 ];
 $array4 = [
 	'a' => 12,
-	'b' => NULL,
+	'b' => null,
 	'c' => new DateTime('12.3.2007'),
 	'd' => 'any string',
 ];
@@ -398,9 +398,9 @@ WHERE ([test.a] LIKE %d', '1995-03-01', '
 	OR [b10] IN (', [], ")
 	AND [c] = 'embedded '' string'
 	OR [d]=%i", 10.3, '
-	OR [e]=%i', NULL, '
-	OR [true]=', TRUE, '
-	OR [false]=', FALSE, '
+	OR [e]=%i', null, '
+	OR [true]=', true, '
+	OR [false]=', false, '
 	OR [str_null]=%sn', '', '
 	OR [str_not_null]=%sn', 'hello', '
 LIMIT 10')
@@ -452,7 +452,7 @@ Assert::same(
 
 Assert::same(
 	reformat('SELECT FROM ... '),
-	$conn->translate('SELECT FROM ... %lmt', NULL)
+	$conn->translate('SELECT FROM ... %lmt', null)
 );
 
 Assert::same(

@@ -32,7 +32,7 @@ class MockDriver extends Dibi\Drivers\SqlsrvDriver
 
 	function fetch(bool $type): ?array
 	{
-		return NULL;
+		return null;
 	}
 }
 

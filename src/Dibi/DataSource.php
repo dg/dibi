@@ -42,10 +42,10 @@ class DataSource implements IDataSource
 	/** @var array */
 	private $conds = [];
 
-	/** @var int|NULL */
+	/** @var int|null */
 	private $offset;
 
-	/** @var int|NULL */
+	/** @var int|null */
 	private $limit;
 
 
@@ -54,7 +54,7 @@ class DataSource implements IDataSource
 	 */
 	public function __construct(string $sql, Connection $connection)
 	{
-		if (strpbrk($sql, " \t\r\n") === FALSE) {
+		if (strpbrk($sql, " \t\r\n") === false) {
 			$this->sql = $connection->getDriver()->escapeIdentifier($sql); // table name
 		} else {
 			$this->sql = '(' . $sql . ') t'; // SQL command
@@ -68,14 +68,14 @@ class DataSource implements IDataSource
 	 * @param  string|array  column name or array of column names
 	 * @param  string        column alias
 	 */
-	public function select($col, string $as = NULL): self
+	public function select($col, string $as = null): self
 	{
 		if (is_array($col)) {
 			$this->cols = $col;
 		} else {
 			$this->cols[$col] = $as;
 		}
-		$this->result = NULL;
+		$this->result = null;
 		return $this;
 	}
 
@@ -91,7 +91,7 @@ class DataSource implements IDataSource
 		} else {
 			$this->conds[] = func_get_args();
 		}
-		$this->result = $this->count = NULL;
+		$this->result = $this->count = null;
 		return $this;
 	}
 
@@ -107,7 +107,7 @@ class DataSource implements IDataSource
 		} else {
 			$this->sorting[$row] = $direction;
 		}
-		$this->result = NULL;
+		$this->result = null;
 		return $this;
 	}
 
@@ -115,11 +115,11 @@ class DataSource implements IDataSource
 	/**
 	 * Limits number of rows.
 	 */
-	public function applyLimit(int $limit, int $offset = NULL): self
+	public function applyLimit(int $limit, int $offset = null): self
 	{
 		$this->limit = $limit;
 		$this->offset = $offset;
-		$this->result = $this->count = NULL;
+		$this->result = $this->count = null;
 		return $this;
 	}
 
@@ -141,7 +141,7 @@ class DataSource implements IDataSource
 	 */
 	public function getResult(): Result
 	{
-		if ($this->result === NULL) {
+		if ($this->result === null) {
 			$this->result = $this->connection->nativeQuery($this->__toString());
 		}
 		return $this->result;
@@ -166,7 +166,7 @@ class DataSource implements IDataSource
 
 	/**
 	 * Like fetch(), but returns only first field.
-	 * @return mixed  value on success, NULL if no next record
+	 * @return mixed  value on success, null if no next record
 	 */
 	public function fetchSingle()
 	{
@@ -195,7 +195,7 @@ class DataSource implements IDataSource
 	/**
 	 * Fetches all records from table like $key => $value pairs.
 	 */
-	public function fetchPairs(string $key = NULL, string $value = NULL): array
+	public function fetchPairs(string $key = null, string $value = null): array
 	{
 		return $this->getResult()->fetchPairs($key, $value);
 	}
@@ -206,7 +206,7 @@ class DataSource implements IDataSource
 	 */
 	public function release(): void
 	{
-		$this->result = $this->count = $this->totalCount = NULL;
+		$this->result = $this->count = $this->totalCount = null;
 	}
 
 
@@ -240,8 +240,8 @@ class DataSource implements IDataSource
 			return $this->connection->translate('
 SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
 FROM %SQL', $this->sql, '
-%ex', $this->conds ? ['WHERE %and', $this->conds] : NULL, '
-%ex', $this->sorting ? ['ORDER BY %by', $this->sorting] : NULL, '
+%ex', $this->conds ? ['WHERE %and', $this->conds] : null, '
+%ex', $this->sorting ? ['ORDER BY %by', $this->sorting] : null, '
 %ofs %lmt', $this->offset, $this->limit
 			);
 		} catch (\Throwable $e) {
@@ -258,7 +258,7 @@ FROM %SQL', $this->sql, '
 	 */
 	public function count(): int
 	{
-		if ($this->count === NULL) {
+		if ($this->count === null) {
 			$this->count = $this->conds || $this->offset || $this->limit
 				? (int) $this->connection->nativeQuery(
 					'SELECT COUNT(*) FROM (' . $this->__toString() . ') t'
@@ -274,7 +274,7 @@ FROM %SQL', $this->sql, '
 	 */
 	public function getTotalCount(): int
 	{
-		if ($this->totalCount === NULL) {
+		if ($this->totalCount === null) {
 			$this->totalCount = (int) $this->connection->nativeQuery(
 				'SELECT COUNT(*) FROM ' . $this->sql
 			)->fetchSingle();

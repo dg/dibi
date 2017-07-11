@@ -35,7 +35,7 @@ class Panel implements Tracy\IBarPanel
 	private $events = [];
 
 
-	public function __construct(bool $explain = TRUE, int $filter = NULL)
+	public function __construct(bool $explain = true, int $filter = null)
 	{
 		$this->filter = $filter ?: Event::QUERY;
 		$this->explain = $explain;
@@ -70,7 +70,7 @@ class Panel implements Tracy\IBarPanel
 		if ($e instanceof Dibi\Exception && $e->getSql()) {
 			return [
 				'tab' => 'SQL',
-				'panel' => Helpers::dump($e->getSql(), TRUE),
+				'panel' => Helpers::dump($e->getSql(), true),
 			];
 		}
 	}
@@ -99,20 +99,20 @@ class Panel implements Tracy\IBarPanel
 	public function getPanel(): ?string
 	{
 		if (!$this->events) {
-			return NULL;
+			return null;
 		}
 
-		$totalTime = $s = NULL;
+		$totalTime = $s = null;
 		foreach ($this->events as $event) {
 			$totalTime += $event->time;
 			$connection = $event->connection;
-			$explain = NULL; // EXPLAIN is called here to work SELECT FOUND_ROWS()
+			$explain = null; // EXPLAIN is called here to work SELECT FOUND_ROWS()
 			if ($this->explain && $event->type === Event::SELECT) {
 				try {
 					$backup = [$connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime];
-					$connection->onEvent = NULL;
+					$connection->onEvent = null;
 					$cmd = is_string($this->explain) ? $this->explain : ($connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
-					$explain = @Helpers::dump($connection->nativeQuery("$cmd $event->sql"), TRUE);
+					$explain = @Helpers::dump($connection->nativeQuery("$cmd $event->sql"), true);
 				} catch (Dibi\Exception $e) {
 				}
 				[$connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime] = $backup;
@@ -125,7 +125,7 @@ class Panel implements Tracy\IBarPanel
 				$s .= "<br /><a href='#tracy-debug-DibiProfiler-row-$counter' class='tracy-toggle tracy-collapsed' rel='#tracy-debug-DibiProfiler-row-$counter'>explain</a>";
 			}
 
-			$s .= '</td><td class="tracy-DibiProfiler-sql">' . Helpers::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, TRUE);
+			$s .= '</td><td class="tracy-DibiProfiler-sql">' . Helpers::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, true);
 			if ($explain) {
 				$s .= "<div id='tracy-debug-DibiProfiler-row-$counter' class='tracy-collapsed'>{$explain}</div>";
 			}
@@ -140,7 +140,7 @@ class Panel implements Tracy\IBarPanel
 			#tracy-debug .tracy-DibiProfiler-source { color: #999 !important }
 			#tracy-debug tracy-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
 			<h1>Queries: ' . count($this->events)
-				. ($totalTime === NULL ? '' : ', time: ' . number_format($totalTime * 1000, 1, '.', ' ') . ' ms') . ', '
+				. ($totalTime === null ? '' : ', time: ' . number_format($totalTime * 1000, 1, '.', ' ') . ' ms') . ', '
 				. htmlSpecialChars($connection->getConfig('driver') . ($connection->getConfig('name') ? '/' . $connection->getConfig('name') : '')
 				. ($connection->getConfig('host') ? ' @ ' . $connection->getConfig('host') : '')) . '</h1>
 			<div class="tracy-inner tracy-DibiProfiler">

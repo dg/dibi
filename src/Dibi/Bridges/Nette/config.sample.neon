@@ -9,4 +9,4 @@ dibi:
 	username: root
 	password: ***
 	database: foo
-	lazy: TRUE
+	lazy: true

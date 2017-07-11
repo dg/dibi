@@ -58,19 +58,19 @@ interface Driver
 	 * Begins a transaction (if supported).
 	 * @throws DriverException
 	 */
-	function begin(string $savepoint = NULL): void;
+	function begin(string $savepoint = null): void;
 
 	/**
 	 * Commits statements in a transaction.
 	 * @throws DriverException
 	 */
-	function commit(string $savepoint = NULL): void;
+	function commit(string $savepoint = null): void;
 
 	/**
 	 * Rollback changes in a transaction.
 	 * @throws DriverException
 	 */
-	function rollback(string $savepoint = NULL): void;
+	function rollback(string $savepoint = null): void;
 
 	/**
 	 * Returns the connection resource.
@@ -129,14 +129,14 @@ interface ResultDriver
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
+	 * @return bool  true on success, false if unable to seek to specified record
 	 * @throws Exception
 	 */
 	function seek(int $row): bool;
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool          TRUE for associative array, FALSE for numeric
+	 * @param  bool          true for associative array, false for numeric
 	 * @internal
 	 */
 	function fetch(bool $type): ?array;

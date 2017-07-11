@@ -22,7 +22,7 @@ test(function () use ($config) {
 
 
 test(function () use ($config) { // lazy
-	$conn = new Connection($config + ['lazy' => TRUE]);
+	$conn = new Connection($config + ['lazy' => true]);
 	Assert::false($conn->isConnected());
 
 	$conn->query('SELECT 1');

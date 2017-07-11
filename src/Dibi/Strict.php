@@ -87,7 +87,7 @@ trait Strict
 
 	public function __isset($name): bool
 	{
-		return FALSE;
+		return false;
 	}
 
 
@@ -105,9 +105,9 @@ trait Strict
 	/**
 	 * @return mixed
 	 */
-	public static function extensionMethod(string $name, callable $callback = NULL)
+	public static function extensionMethod(string $name, callable $callback = null)
 	{
-		if (strpos($name, '::') === FALSE) {
+		if (strpos($name, '::') === false) {
 			$class = get_called_class();
 		} else {
 			[$class, $name] = explode('::', $name);
@@ -115,7 +115,7 @@ trait Strict
 		}
 
 		$list = & self::$extMethods[strtolower($name)];
-		if ($callback === NULL) { // getter
+		if ($callback === null) { // getter
 			$cache = &$list[''][$class];
 			if (isset($cache)) {
 				return $cache;
@@ -126,11 +126,11 @@ trait Strict
 					return $cache = $list[$cl];
 				}
 			}
-			return $cache = FALSE;
+			return $cache = false;
 
 		} else { // setter
 			$list[$class] = $callback;
-			$list[''] = NULL;
+			$list[''] = null;
 		}
 	}
 }

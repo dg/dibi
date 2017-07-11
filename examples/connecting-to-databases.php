@@ -89,7 +89,7 @@ try {
 	dibi::connect([
 		'driver' => 'postgre',
 		'string' => 'host=localhost port=5432 dbname=mary',
-		'persistent' => TRUE,
+		'persistent' => true,
 	]);
 	echo 'OK';
 } catch (Dibi\Exception $e) {

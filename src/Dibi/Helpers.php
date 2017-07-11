@@ -22,7 +22,7 @@ class Helpers
 	 * Prints out a syntax highlighted version of the SQL command or Result.
 	 * @param  string|Result
 	 */
-	public static function dump($sql = NULL, bool $return = FALSE): string
+	public static function dump($sql = null, bool $return = false): string
 	{
 		ob_start();
 		if ($sql instanceof Result && PHP_SAPI === 'cli') {
@@ -68,7 +68,7 @@ class Helpers
 				: "</tbody>\n</table>\n";
 
 		} else {
-			if ($sql === NULL) {
+			if ($sql === null) {
 				$sql = \dibi::$sql;
 			}
 
@@ -140,7 +140,7 @@ class Helpers
 	 */
 	public static function getSuggestion(array $items, $value): ?string
 	{
-		$best = NULL;
+		$best = null;
 		$min = (strlen($value) / 4 + 1) * 10 + .1;
 		foreach (array_unique($items, SORT_REGULAR) as $item) {
 			$item = is_object($item) ? $item->getName() : $item;
@@ -195,7 +195,7 @@ class Helpers
 				return $val;
 			}
 		}
-		return NULL;
+		return null;
 	}
 
 
@@ -204,7 +204,7 @@ class Helpers
 	 */
 	public static function getTypeCache()
 	{
-		if (self::$types === NULL) {
+		if (self::$types === null) {
 			self::$types = new HashMap([__CLASS__, 'detectType']);
 		}
 		return self::$types;
@@ -232,7 +232,7 @@ class Helpers
 	 * Import SQL dump from file.
 	 * @return int  count of sql commands
 	 */
-	public static function loadFromFile(Connection $connection, $file, callable $onProgress = NULL): int
+	public static function loadFromFile(Connection $connection, $file, callable $onProgress = null): int
 	{
 		@set_time_limit(0); // intentionally @
 
@@ -246,7 +246,7 @@ class Helpers
 		$delimiter = ';';
 		$sql = '';
 		$driver = $connection->getDriver();
-		while (($s = fgets($handle)) !== FALSE) {
+		while (($s = fgets($handle)) !== false) {
 			$size += strlen($s);
 			if (strtoupper(substr($s, 0, 10)) === 'DELIMITER ') {
 				$delimiter = trim(substr($s, 10));
@@ -257,7 +257,7 @@ class Helpers
 				$sql = '';
 				$count++;
 				if ($onProgress) {
-					$onProgress($count, isset($stat['size']) ? $size * 100 / $stat['size'] : NULL);
+					$onProgress($count, isset($stat['size']) ? $size * 100 / $stat['size'] : null);
 				}
 
 			} else {
@@ -269,7 +269,7 @@ class Helpers
 			$driver->query($sql);
 			$count++;
 			if ($onProgress) {
-				$onProgress($count, isset($stat['size']) ? 100 : NULL);
+				$onProgress($count, isset($stat['size']) ? 100 : null);
 			}
 		}
 		fclose($handle);
@@ -282,6 +282,6 @@ class Helpers
 	 */
 	public static function false2Null($val)
 	{
-		return $val === FALSE ? NULL : $val;
+		return $val === false ? null : $val;
 	}
 }

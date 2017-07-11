@@ -39,14 +39,14 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	const ERROR_DUPLICATE_ENTRY = 1062;
 	const ERROR_DATA_TRUNCATED = 1265;
 
-	/** @var \mysqli|NULL */
+	/** @var \mysqli|null */
 	private $connection;
 
-	/** @var \mysqli_result|NULL */
+	/** @var \mysqli_result|null */
 	private $resultSet;
 
 	/** @var bool */
-	private $autoFree = TRUE;
+	private $autoFree = true;
 
 	/** @var bool  Is buffered (seekable and countable)? */
 	private $buffered;
@@ -81,7 +81,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 				'username' => ini_get('mysqli.default_user'),
 				'password' => ini_get('mysqli.default_pw'),
 				'socket' => (string) ini_get('mysqli.default_socket'),
-				'port' => NULL,
+				'port' => null,
 			];
 			if (!isset($config['host'])) {
 				$host = ini_get('mysqli.default_host');
@@ -89,8 +89,8 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 					$config['host'] = $host;
 					$config['port'] = ini_get('mysqli.default_port');
 				} else {
-					$config['host'] = NULL;
-					$config['port'] = NULL;
+					$config['host'] = null;
+					$config['port'] = null;
 				}
 			}
 
@@ -156,19 +156,19 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 		} elseif (is_object($res)) {
 			return $this->createResultDriver($res);
 		}
-		return NULL;
+		return null;
 	}
 
 
 	public static function createException(string $message, $code, string $sql): Dibi\DriverException
 	{
-		if (in_array($code, [1216, 1217, 1451, 1452, 1701], TRUE)) {
+		if (in_array($code, [1216, 1217, 1451, 1452, 1701], true)) {
 			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
 
-		} elseif (in_array($code, [1062, 1557, 1569, 1586], TRUE)) {
+		} elseif (in_array($code, [1062, 1557, 1569, 1586], true)) {
 			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
 
-		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], TRUE)) {
+		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], true)) {
 			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
 
 		} else {
@@ -200,7 +200,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function getAffectedRows(): ?int
 	{
-		return mysqli_affected_rows($this->connection) === -1 ? NULL : mysqli_affected_rows($this->connection);
+		return mysqli_affected_rows($this->connection) === -1 ? null : mysqli_affected_rows($this->connection);
 	}
 
 
@@ -217,7 +217,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Begins a transaction (if supported).
 	 * @throws Dibi\DriverException
 	 */
-	public function begin(string $savepoint = NULL): void
+	public function begin(string $savepoint = null): void
 	{
 		$this->query($savepoint ? "SAVEPOINT $savepoint" : 'START TRANSACTION');
 	}
@@ -227,7 +227,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Commits statements in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function commit(string $savepoint = NULL): void
+	public function commit(string $savepoint = null): void
 	{
 		$this->query($savepoint ? "RELEASE SAVEPOINT $savepoint" : 'COMMIT');
 	}
@@ -237,7 +237,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Rollback changes in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback(string $savepoint = NULL): void
+	public function rollback(string $savepoint = null): void
 	{
 		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT $savepoint" : 'ROLLBACK');
 	}
@@ -248,7 +248,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function getResource(): \mysqli
 	{
-		return @$this->connection->thread_id ? $this->connection : NULL;
+		return @$this->connection->thread_id ? $this->connection : null;
 	}
 
 
@@ -353,9 +353,9 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
-		} elseif ($limit !== NULL || $offset) {
+		} elseif ($limit !== null || $offset) {
 			// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-			$sql .= ' LIMIT ' . ($limit === NULL ? '18446744073709551615' : (int) $limit)
+			$sql .= ' LIMIT ' . ($limit === null ? '18446744073709551615' : (int) $limit)
 				. ($offset ? ' OFFSET ' . (int) $offset : '');
 		}
 	}
@@ -387,7 +387,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 */
 	public function fetch(bool $assoc): ?array
 	{
@@ -414,7 +414,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	public function free(): void
 	{
 		mysqli_free_result($this->resultSet);
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
@@ -424,8 +424,8 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	public function getResultColumns(): array
 	{
 		static $types;
-		if ($types === NULL) {
-			$consts = get_defined_constants(TRUE);
+		if ($types === null) {
+			$consts = get_defined_constants(true);
 			$types = [];
 			foreach ($consts['mysqli'] ?? [] as $key => $value) {
 				if (strncmp($key, 'MYSQLI_TYPE_', 12) === 0) {
@@ -444,7 +444,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 				'table' => $row['orgtable'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
 				'nativetype' => $types[$row['type']] ?? $row['type'],
-				'type' => $row['type'] === MYSQLI_TYPE_TIME ? Dibi\Type::TIME_INTERVAL : NULL,
+				'type' => $row['type'] === MYSQLI_TYPE_TIME ? Dibi\Type::TIME_INTERVAL : null,
 				'vendor' => $row,
 			];
 		}
@@ -457,7 +457,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function getResultResource(): ?\mysqli_result
 	{
-		$this->autoFree = FALSE;
+		$this->autoFree = false;
 		return $this->resultSet;
 	}
 }

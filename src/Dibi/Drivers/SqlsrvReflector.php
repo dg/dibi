@@ -37,7 +37,7 @@ class SqlsrvReflector implements Dibi\Reflector
 	{
 		$res = $this->driver->query("SELECT TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES WHERE [TABLE_SCHEMA] = 'dbo'");
 		$tables = [];
-		while ($row = $res->fetch(FALSE)) {
+		while ($row = $res->fetch(false)) {
 			$tables[] = [
 				'name' => $row[0],
 				'view' => isset($row[1]) && $row[1] === 'VIEW',
@@ -60,7 +60,7 @@ class SqlsrvReflector implements Dibi\Reflector
 		");
 
 		$autoIncrements = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$autoIncrements[$row['COLUMN_NAME']] = (bool) $row['AUTO_INCREMENT'];
 		}
 
@@ -80,13 +80,13 @@ class SqlsrvReflector implements Dibi\Reflector
 			WHERE C.TABLE_NAME = {$this->driver->escapeText($table)}
 		");
 		$columns = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$columns[] = [
 				'name' => $row['COLUMN_NAME'],
 				'table' => $table,
 				'nativetype' => strtoupper($row['DATA_TYPE']),
 				'size' => $row['CHARACTER_MAXIMUM_LENGTH'],
-				'unsigned' => TRUE,
+				'unsigned' => true,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
 				'autoincrement' => $autoIncrements[$row['COLUMN_NAME']],
@@ -104,13 +104,13 @@ class SqlsrvReflector implements Dibi\Reflector
 	{
 		$keyUsagesRes = $this->driver->query(sprintf("EXEC [sys].[sp_helpindex] @objname = N%s", $this->driver->escapeText($table)));
 		$keyUsages = [];
-		while ($row = $keyUsagesRes->fetch(TRUE)) {
+		while ($row = $keyUsagesRes->fetch(true)) {
 			$keyUsages[$row['index_name']] = explode(',', $row['index_keys']);
 		}
 
 		$res = $this->driver->query("SELECT [i].* FROM [sys].[indexes] [i] INNER JOIN [sys].[tables] [t] ON [i].[object_id] = [t].[object_id] WHERE [t].[name] = {$this->driver->escapeText($table)}");
 		$indexes = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$indexes[$row['name']]['name'] = $row['name'];
 			$indexes[$row['name']]['unique'] = $row['is_unique'] === 1;
 			$indexes[$row['name']]['primary'] = $row['is_primary_key'] === 1;

@@ -31,20 +31,20 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	const ERROR_EXCEPTION_THROWN = -836;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $connection;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $resultSet;
 
 	/** @var bool */
-	private $autoFree = TRUE;
+	private $autoFree = true;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $transaction;
 
 	/** @var bool */
-	private $inTransaction = FALSE;
+	private $inTransaction = false;
 
 
 	/**
@@ -110,7 +110,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		$resource = $this->inTransaction ? $this->transaction : $this->connection;
 		$res = ibase_query($resource, $sql);
 
-		if ($res === FALSE) {
+		if ($res === false) {
 			if (ibase_errcode() == self::ERROR_EXCEPTION_THROWN) {
 				preg_match('/exception (\d+) (\w+) (.*)/i', ibase_errmsg(), $match);
 				throw new Dibi\ProcedureException($match[3], $match[1], $match[2], $sql);
@@ -122,7 +122,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		} elseif (is_resource($res)) {
 			return $this->createResultDriver($res);
 		}
-		return NULL;
+		return null;
 	}
 
 
@@ -148,13 +148,13 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * Begins a transaction (if supported).
 	 * @throws Dibi\DriverException
 	 */
-	public function begin(string $savepoint = NULL): void
+	public function begin(string $savepoint = null): void
 	{
-		if ($savepoint !== NULL) {
+		if ($savepoint !== null) {
 			throw new Dibi\NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 		$this->transaction = ibase_trans($this->getResource());
-		$this->inTransaction = TRUE;
+		$this->inTransaction = true;
 	}
 
 
@@ -162,9 +162,9 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * Commits statements in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function commit(string $savepoint = NULL): void
+	public function commit(string $savepoint = null): void
 	{
-		if ($savepoint !== NULL) {
+		if ($savepoint !== null) {
 			throw new Dibi\NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 
@@ -172,7 +172,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			throw new Dibi\DriverException('Unable to handle operation - failure when commiting transaction.');
 		}
 
-		$this->inTransaction = FALSE;
+		$this->inTransaction = false;
 	}
 
 
@@ -180,9 +180,9 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * Rollback changes in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback(string $savepoint = NULL): void
+	public function rollback(string $savepoint = null): void
 	{
-		if ($savepoint !== NULL) {
+		if ($savepoint !== null) {
 			throw new Dibi\NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
 
@@ -190,7 +190,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			throw new Dibi\DriverException('Unable to handle operation - failure when rolbacking transaction.');
 		}
 
-		$this->inTransaction = FALSE;
+		$this->inTransaction = false;
 	}
 
 
@@ -205,11 +205,11 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns the connection resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResource()
 	{
-		return is_resource($this->connection) ? $this->connection : NULL;
+		return is_resource($this->connection) ? $this->connection : null;
 	}
 
 
@@ -341,7 +341,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 */
 	public function fetch(bool $assoc): ?array
 	{
@@ -377,18 +377,18 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	public function free(): void
 	{
 		ibase_free_result($this->resultSet);
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResultResource()
 	{
-		$this->autoFree = FALSE;
-		return is_resource($this->resultSet) ? $this->resultSet : NULL;
+		$this->autoFree = false;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 
 
@@ -427,7 +427,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			WHERE RDB\$SYSTEM_FLAG = 0;"
 		);
 		$tables = [];
-		while ($row = $res->fetch(FALSE)) {
+		while ($row = $res->fetch(false)) {
 			$tables[] = [
 				'name' => $row[0],
 				'view' => $row[1] === 'TRUE',
@@ -474,7 +474,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 		);
 		$columns = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$key = $row['FIELD_NAME'];
 			$columns[$key] = [
 				'name' => $key,
@@ -483,7 +483,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				'size' => $row['FIELD_LENGTH'],
 				'nullable' => $row['NULLABLE'] === 'TRUE',
 				'default' => $row['DEFAULT_VALUE'],
-				'autoincrement' => FALSE,
+				'autoincrement' => false,
 			];
 		}
 		return $columns;
@@ -510,7 +510,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			ORDER BY s.RDB\$FIELD_POSITION"
 		);
 		$indexes = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$key = $row['INDEX_NAME'];
 			$indexes[$key]['name'] = $key;
 			$indexes[$key]['unique'] = $row['UNIQUE_FLAG'] === 1;
@@ -538,7 +538,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			ORDER BY s.RDB\$FIELD_POSITION"
 		);
 		$keys = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$key = $row['INDEX_NAME'];
 			$keys[$key] = [
 				'name' => $key,
@@ -563,7 +563,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				AND RDB\$FOREIGN_KEY IS NULL;"
 		);
 		$indices = [];
-		while ($row = $res->fetch(FALSE)) {
+		while ($row = $res->fetch(false)) {
 			$indices[] = $row[0];
 		}
 		return $indices;
@@ -585,7 +585,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			);"
 		);
 		$constraints = [];
-		while ($row = $res->fetch(FALSE)) {
+		while ($row = $res->fetch(false)) {
 			$constraints[] = $row[0];
 		}
 		return $constraints;
@@ -596,7 +596,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * Returns metadata for all triggers in a table or database.
 	 * (Only if user has permissions on ALTER TABLE, INSERT/UPDATE/DELETE record in table)
 	 */
-	public function getTriggersMeta(string $table = NULL): array
+	public function getTriggersMeta(string $table = null): array
 	{
 		$res = $this->query("
 			SELECT TRIM(RDB\$TRIGGER_NAME) AS TRIGGER_NAME,
@@ -622,10 +622,10 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				END AS TRIGGER_ENABLED
 			FROM RDB\$TRIGGERS
 			WHERE RDB\$SYSTEM_FLAG = 0"
-			. ($table === NULL ? ';' : " AND RDB\$RELATION_NAME = UPPER('$table');")
+			. ($table === null ? ';' : " AND RDB\$RELATION_NAME = UPPER('$table');")
 		);
 		$triggers = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$triggers[$row['TRIGGER_NAME']] = [
 				'name' => $row['TRIGGER_NAME'],
 				'table' => $row['TABLE_NAME'],
@@ -642,16 +642,16 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * Returns list of triggers for given table.
 	 * (Only if user has permissions on ALTER TABLE, INSERT/UPDATE/DELETE record in table)
 	 */
-	public function getTriggers(string $table = NULL): array
+	public function getTriggers(string $table = null): array
 	{
 		$q = "SELECT TRIM(RDB\$TRIGGER_NAME)
 			FROM RDB\$TRIGGERS
 			WHERE RDB\$SYSTEM_FLAG = 0";
-		$q .= $table === NULL ? ';' : " AND RDB\$RELATION_NAME = UPPER('$table')";
+		$q .= $table === null ? ';' : " AND RDB\$RELATION_NAME = UPPER('$table')";
 
 		$res = $this->query($q);
 		$triggers = [];
-		while ($row = $res->fetch(FALSE)) {
+		while ($row = $res->fetch(false)) {
 			$triggers[] = $row[0];
 		}
 		return $triggers;
@@ -696,7 +696,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			ORDER BY p.RDB\$PARAMETER_TYPE, p.RDB\$PARAMETER_NUMBER;"
 		);
 		$procedures = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$key = $row['PROCEDURE_NAME'];
 			$io = trim($row['PARAMETER_TYPE']);
 			$num = $row['PARAMETER_NUMBER'];
@@ -719,7 +719,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			FROM RDB\$PROCEDURES;"
 		);
 		$procedures = [];
-		while ($row = $res->fetch(FALSE)) {
+		while ($row = $res->fetch(false)) {
 			$procedures[] = $row[0];
 		}
 		return $procedures;
@@ -737,7 +737,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			WHERE RDB\$SYSTEM_FLAG = 0;"
 		);
 		$generators = [];
-		while ($row = $res->fetch(FALSE)) {
+		while ($row = $res->fetch(false)) {
 			$generators[] = $row[0];
 		}
 		return $generators;
@@ -755,7 +755,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			WHERE RDB\$SYSTEM_FLAG = 0;"
 		);
 		$functions = [];
-		while ($row = $res->fetch(FALSE)) {
+		while ($row = $res->fetch(false)) {
 			$functions[] = $row[0];
 		}
 		return $functions;

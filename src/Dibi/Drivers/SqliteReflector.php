@@ -42,7 +42,7 @@ class SqliteReflector implements Dibi\Reflector
 			ORDER BY name
 		");
 		$tables = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$tables[] = $row;
 		}
 		return $tables;
@@ -56,7 +56,7 @@ class SqliteReflector implements Dibi\Reflector
 	{
 		$res = $this->driver->query("PRAGMA table_info({$this->driver->escapeIdentifier($table)})");
 		$columns = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$column = $row['name'];
 			$type = explode('(', $row['type']);
 			$columns[] = [
@@ -64,7 +64,7 @@ class SqliteReflector implements Dibi\Reflector
 				'table' => $table,
 				'fullname' => "$table.$column",
 				'nativetype' => strtoupper($type[0]),
-				'size' => isset($type[1]) ? (int) $type[1] : NULL,
+				'size' => isset($type[1]) ? (int) $type[1] : null,
 				'nullable' => $row['notnull'] == '0',
 				'default' => $row['dflt_value'],
 				'autoincrement' => $row['pk'] && $type[0] === 'INTEGER',
@@ -82,14 +82,14 @@ class SqliteReflector implements Dibi\Reflector
 	{
 		$res = $this->driver->query("PRAGMA index_list({$this->driver->escapeIdentifier($table)})");
 		$indexes = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$indexes[$row['name']]['name'] = $row['name'];
 			$indexes[$row['name']]['unique'] = (bool) $row['unique'];
 		}
 
 		foreach ($indexes as $index => $values) {
 			$res = $this->driver->query("PRAGMA index_info({$this->driver->escapeIdentifier($index)})");
-			while ($row = $res->fetch(TRUE)) {
+			while ($row = $res->fetch(true)) {
 				$indexes[$index]['columns'][$row['seqno']] = $row['name'];
 			}
 		}
@@ -97,7 +97,7 @@ class SqliteReflector implements Dibi\Reflector
 		$columns = $this->getColumns($table);
 		foreach ($indexes as $index => $values) {
 			$column = $indexes[$index]['columns'][0];
-			$primary = FALSE;
+			$primary = false;
 			foreach ($columns as $info) {
 				if ($column == $info['name']) {
 					$primary = $info['vendor']['pk'];
@@ -111,8 +111,8 @@ class SqliteReflector implements Dibi\Reflector
 				if ($column['vendor']['pk']) {
 					$indexes[] = [
 						'name' => 'ROWID',
-						'unique' => TRUE,
-						'primary' => TRUE,
+						'unique' => true,
+						'primary' => true,
 						'columns' => [$column['name']],
 					];
 					break;
@@ -131,7 +131,7 @@ class SqliteReflector implements Dibi\Reflector
 	{
 		$res = $this->driver->query("PRAGMA foreign_key_list({$this->driver->escapeIdentifier($table)})");
 		$keys = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$keys[$row['id']]['name'] = $row['id']; // foreign key name
 			$keys[$row['id']]['local'][$row['seq']] = $row['from']; // local columns
 			$keys[$row['id']]['table'] = $row['table']; // referenced table
@@ -139,8 +139,8 @@ class SqliteReflector implements Dibi\Reflector
 			$keys[$row['id']]['onDelete'] = $row['on_delete'];
 			$keys[$row['id']]['onUpdate'] = $row['on_update'];
 
-			if ($keys[$row['id']]['foreign'][0] == NULL) {
-				$keys[$row['id']]['foreign'] = NULL;
+			if ($keys[$row['id']]['foreign'][0] == null) {
+				$keys[$row['id']]['foreign'] = null;
 			}
 		}
 		return array_values($keys);

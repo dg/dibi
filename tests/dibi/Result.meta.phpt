@@ -30,7 +30,7 @@ Assert::same(
 if (!in_array($config['driver'], ['sqlite3', 'pdo', 'sqlsrv'])) {
 	Assert::same(
 		['products.product_id', 'orders.order_id', 'customers.name', 'xXx'],
-		$info->getColumnNames(TRUE)
+		$info->getColumnNames(true)
 	);
 }
 

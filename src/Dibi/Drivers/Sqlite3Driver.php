@@ -29,14 +29,14 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var SQLite3|NULL */
+	/** @var SQLite3|null */
 	private $connection;
 
-	/** @var \SQLite3Result|NULL */
+	/** @var \SQLite3Result|null */
 	private $resultSet;
 
 	/** @var bool */
-	private $autoFree = TRUE;
+	private $autoFree = true;
 
 	/** @var string  Date and datetime format */
 	private $fmtDate, $fmtDateTime;
@@ -79,7 +79,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 		$this->dbcharset = empty($config['dbcharset']) ? 'UTF-8' : $config['dbcharset'];
 		$this->charset = empty($config['charset']) ? 'UTF-8' : $config['charset'];
 		if (strcasecmp($this->dbcharset, $this->charset) === 0) {
-			$this->dbcharset = $this->charset = NULL;
+			$this->dbcharset = $this->charset = null;
 		}
 
 		// enable foreign keys support (defaultly disabled; if disabled then foreign key constraints are not enforced)
@@ -105,7 +105,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
-		if ($this->dbcharset !== NULL) {
+		if ($this->dbcharset !== null) {
 			$sql = iconv($this->charset, $this->dbcharset . '//IGNORE', $sql);
 		}
 
@@ -116,7 +116,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 		} elseif ($res instanceof \SQLite3Result) {
 			return $this->createResultDriver($res);
 		}
-		return NULL;
+		return null;
 	}
 
 
@@ -125,19 +125,19 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 		if ($code !== 19) {
 			return new Dibi\DriverException($message, $code, $sql);
 
-		} elseif (strpos($message, 'must be unique') !== FALSE
-			|| strpos($message, 'is not unique') !== FALSE
-			|| strpos($message, 'UNIQUE constraint failed') !== FALSE
+		} elseif (strpos($message, 'must be unique') !== false
+			|| strpos($message, 'is not unique') !== false
+			|| strpos($message, 'UNIQUE constraint failed') !== false
 		) {
 			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
 
-		} elseif (strpos($message, 'may not be NULL') !== FALSE
-			|| strpos($message, 'NOT NULL constraint failed') !== FALSE
+		} elseif (strpos($message, 'may not be null') !== false
+			|| strpos($message, 'NOT NULL constraint failed') !== false
 		) {
 			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
 
-		} elseif (strpos($message, 'foreign key constraint failed') !== FALSE
-			|| strpos($message, 'FOREIGN KEY constraint failed') !== FALSE
+		} elseif (strpos($message, 'foreign key constraint failed') !== false
+			|| strpos($message, 'FOREIGN KEY constraint failed') !== false
 		) {
 			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
 
@@ -169,7 +169,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 * Begins a transaction (if supported).
 	 * @throws Dibi\DriverException
 	 */
-	public function begin(string $savepoint = NULL): void
+	public function begin(string $savepoint = null): void
 	{
 		$this->query($savepoint ? "SAVEPOINT $savepoint" : 'BEGIN');
 	}
@@ -179,7 +179,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 * Commits statements in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function commit(string $savepoint = NULL): void
+	public function commit(string $savepoint = null): void
 	{
 		$this->query($savepoint ? "RELEASE SAVEPOINT $savepoint" : 'COMMIT');
 	}
@@ -189,7 +189,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 * Rollback changes in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback(string $savepoint = NULL): void
+	public function rollback(string $savepoint = null): void
 	{
 		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT $savepoint" : 'ROLLBACK');
 	}
@@ -305,8 +305,8 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
-		} elseif ($limit !== NULL || $offset) {
-			$sql .= ' LIMIT ' . ($limit === NULL ? '-1' : (int) $limit)
+		} elseif ($limit !== null || $offset) {
+			$sql .= ' LIMIT ' . ($limit === null ? '-1' : (int) $limit)
 				. ($offset ? ' OFFSET ' . (int) $offset : '');
 		}
 	}
@@ -336,19 +336,19 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 */
 	public function fetch(bool $assoc): ?array
 	{
 		$row = $this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM);
 		if (!$row) {
-			return NULL;
+			return null;
 		}
-		$charset = $this->charset === NULL ? NULL : $this->charset . '//TRANSLIT';
+		$charset = $this->charset === null ? null : $this->charset . '//TRANSLIT';
 		if ($row && ($assoc || $charset)) {
 			$tmp = [];
 			foreach ($row as $k => $v) {
-				if ($charset !== NULL && is_string($v)) {
+				if ($charset !== null && is_string($v)) {
 					$v = iconv($this->dbcharset, $charset, $v);
 				}
 				$tmp[str_replace(['[', ']'], '', $k)] = $v;
@@ -375,7 +375,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	public function free(): void
 	{
 		$this->resultSet->finalize();
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
@@ -390,7 +390,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 		for ($i = 0; $i < $count; $i++) {
 			$columns[] = [
 				'name' => $this->resultSet->columnName($i),
-				'table' => NULL,
+				'table' => null,
 				'fullname' => $this->resultSet->columnName($i),
 				'nativetype' => $types[$this->resultSet->columnType($i)],
 			];
@@ -404,7 +404,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function getResultResource(): ?\SQLite3Result
 	{
-		$this->autoFree = FALSE;
+		$this->autoFree = false;
 		return $this->resultSet;
 	}
 

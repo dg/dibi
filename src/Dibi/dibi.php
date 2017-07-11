@@ -83,11 +83,11 @@ class dibi
 
 
 	/**
-	 * Returns TRUE when connection was established.
+	 * Returns true when connection was established.
 	 */
 	public static function isConnected(): bool
 	{
-		return (self::$connection !== NULL) && self::$connection->isConnected();
+		return (self::$connection !== null) && self::$connection->isConnected();
 	}
 
 
@@ -95,10 +95,10 @@ class dibi
 	 * Retrieve active connection.
 	 * @throws Dibi\Exception
 	 */
-	public static function getConnection(string $name = NULL): Dibi\Connection
+	public static function getConnection(string $name = null): Dibi\Connection
 	{
-		if ($name === NULL) {
-			if (self::$connection === NULL) {
+		if ($name === null) {
+			if (self::$connection === null) {
 				throw new Dibi\Exception('Dibi is not connected to database.');
 			}
 
@@ -240,7 +240,7 @@ class dibi
 	 * Monostate for Dibi\Connection::getInsertId()
 	 * @throws Dibi\Exception
 	 */
-	public static function getInsertId(string $sequence = NULL): int
+	public static function getInsertId(string $sequence = null): int
 	{
 		return self::getConnection()->getInsertId($sequence);
 	}
@@ -250,7 +250,7 @@ class dibi
 	 * Retrieves the ID generated for an AUTO_INCREMENT column. Alias for getInsertId().
 	 * @throws Dibi\Exception
 	 */
-	public static function insertId(string $sequence = NULL): int
+	public static function insertId(string $sequence = null): int
 	{
 		return self::getConnection()->getInsertId($sequence);
 	}
@@ -260,17 +260,17 @@ class dibi
 	 * Begins a transaction - Monostate for Dibi\Connection::begin().
 	 * @throws Dibi\Exception
 	 */
-	public static function begin(string $savepoint = NULL): void
+	public static function begin(string $savepoint = null): void
 	{
 		self::getConnection()->begin($savepoint);
 	}
 
 
 	/**
-	 * Commits statements in a transaction - Monostate for Dibi\Connection::commit($savepoint = NULL).
+	 * Commits statements in a transaction - Monostate for Dibi\Connection::commit($savepoint = null).
 	 * @throws Dibi\Exception
 	 */
-	public static function commit(string $savepoint = NULL): void
+	public static function commit(string $savepoint = null): void
 	{
 		self::getConnection()->commit($savepoint);
 	}
@@ -280,7 +280,7 @@ class dibi
 	 * Rollback changes in a transaction - Monostate for Dibi\Connection::rollback().
 	 * @throws Dibi\Exception
 	 */
-	public static function rollback(string $savepoint = NULL): void
+	public static function rollback(string $savepoint = null): void
 	{
 		self::getConnection()->rollback($savepoint);
 	}
@@ -358,7 +358,7 @@ class dibi
 	 * @param  string|Result
 	 * @param  bool  return output instead of printing it?
 	 */
-	public static function dump($sql = NULL, bool $return = FALSE): string
+	public static function dump($sql = null, bool $return = false): string
 	{
 		return Dibi\Helpers::dump($sql, $return);
 	}

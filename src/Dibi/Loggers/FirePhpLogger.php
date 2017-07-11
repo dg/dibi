@@ -47,7 +47,7 @@ class FirePhpLogger
 	}
 
 
-	public function __construct(int $filter = NULL)
+	public function __construct(int $filter = null)
 	{
 		$this->filter = $filter ?: Dibi\Event::QUERY;
 	}

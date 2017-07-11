@@ -14,7 +14,7 @@ dibi::connect([
 	'database' => 'data/sample.s3db',
 	// enable query logging to this file
 	'profiler' => [
-		'run' => TRUE,
+		'run' => true,
 		'file' => 'data/log.sql',
 	],
 ]);

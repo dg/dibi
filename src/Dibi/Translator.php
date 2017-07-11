@@ -33,7 +33,7 @@ final class Translator
 	private $errors;
 
 	/** @var bool */
-	private $comment = FALSE;
+	private $comment = false;
 
 	/** @var int */
 	private $ifLevel = 0;
@@ -71,8 +71,8 @@ final class Translator
 		}
 		$this->args = $args;
 
-		$commandIns = NULL;
-		$lastArr = NULL;
+		$commandIns = null;
+		$lastArr = null;
 		$cursor = &$this->cursor;
 		$comment = &$this->comment;
 
@@ -127,7 +127,7 @@ final class Translator
 
 			if (is_array($arg) && is_string(key($arg))) {
 				// associative array -> autoselect between SET or VALUES & LIST
-				if ($commandIns === NULL) {
+				if ($commandIns === null) {
 					$commandIns = strtoupper(substr(ltrim($this->args[0]), 0, 6));
 					$commandIns = $commandIns === 'INSERT' || $commandIns === 'REPLAC';
 					$sql[] = $this->formatValue($arg, $commandIns ? 'v' : 'a');
@@ -142,7 +142,7 @@ final class Translator
 			}
 
 			// default processing
-			$sql[] = $this->formatValue($arg, NULL);
+			$sql[] = $this->formatValue($arg, null);
 		} // while
 
 
@@ -157,7 +157,7 @@ final class Translator
 		}
 
 		// apply limit
-		if ($this->limit !== NULL || $this->offset !== NULL) {
+		if ($this->limit !== null || $this->offset !== null) {
 			$this->driver->applyLimit($sql, $this->limit, $this->offset);
 		}
 
@@ -194,7 +194,7 @@ final class Translator
 							$pair = explode('%', $k, 2); // split into identifier & modifier
 							$k = $this->identifiers->{$pair[0]} . ' ';
 							if (!isset($pair[1])) {
-								$v = $this->formatValue($v, NULL);
+								$v = $this->formatValue($v, null);
 								$vx[] = $k . ($v === 'NULL' ? 'IS ' : '= ') . $v;
 
 							} elseif ($pair[1] === 'ex') {
@@ -204,7 +204,7 @@ final class Translator
 								$v = $this->formatValue($v, $pair[1]);
 								if ($pair[1] === 'l' || $pair[1] === 'in') {
 									$op = 'IN ';
-								} elseif (strpos($pair[1], 'like') !== FALSE) {
+								} elseif (strpos($pair[1], 'like') !== false) {
 									$op = 'LIKE ';
 								} elseif ($v === 'NULL') {
 									$op = 'IS ';
@@ -236,7 +236,7 @@ final class Translator
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$vx[] = $this->identifiers->{$pair[0]} . '='
-							. $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : NULL));
+							. $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : null));
 					}
 					return implode(', ', $vx);
 
@@ -245,7 +245,7 @@ final class Translator
 				case 'l': // (val, val, ...)
 					foreach ($value as $k => $v) {
 						$pair = explode('%', (string) $k, 2); // split into identifier & modifier
-						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : NULL));
+						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : null));
 					}
 					return '(' . (($vx || $modifier === 'l') ? implode(', ', $vx) : 'NULL') . ')';
 
@@ -254,7 +254,7 @@ final class Translator
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$kx[] = $this->identifiers->{$pair[0]};
-						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : NULL));
+						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : null));
 					}
 					return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
@@ -275,7 +275,7 @@ final class Translator
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$kx[] = $this->identifiers->{$pair[0]};
 						foreach ($v as $k2 => $v2) {
-							$vx[$k2][] = $this->formatValue($v2, $pair[1] ?? (is_array($v2) ? 'ex' : NULL));
+							$vx[$k2][] = $this->formatValue($v2, $pair[1] ?? (is_array($v2) ? 'ex' : null));
 						}
 					}
 					foreach ($vx as $k => $v) {
@@ -311,7 +311,7 @@ final class Translator
 
 		// with modifier procession
 		if ($modifier) {
-			if ($value !== NULL && !is_scalar($value)) {  // array is already processed
+			if ($value !== null && !is_scalar($value)) {  // array is already processed
 				if ($value instanceof Literal && ($modifier === 'sql' || $modifier === 'SQL')) {
 					$modifier = 'SQL';
 				} elseif ($value instanceof \DateTimeInterface && ($modifier === 'd' || $modifier === 't')) {
@@ -324,27 +324,27 @@ final class Translator
 
 			switch ($modifier) {
 				case 's':  // string
-					return $value === NULL ? 'NULL' : $this->driver->escapeText((string) $value);
+					return $value === null ? 'NULL' : $this->driver->escapeText((string) $value);
 
 				case 'bin':// binary
-					return $value === NULL ? 'NULL' : $this->driver->escapeBinary($value);
+					return $value === null ? 'NULL' : $this->driver->escapeBinary($value);
 
 				case 'b':  // boolean
-					return $value === NULL ? 'NULL' : $this->driver->escapeBool($value);
+					return $value === null ? 'NULL' : $this->driver->escapeBool($value);
 
-				case 'sN': // string or NULL
+				case 'sN': // string or null
 				case 'sn':
 					return $value == '' ? 'NULL' : $this->driver->escapeText((string) $value); // notice two equal signs
 
-				case 'iN': // signed int or NULL
+				case 'iN': // signed int or null
 					if ($value == '') {
-						$value = NULL;
+						$value = null;
 					}
 					// intentionally break omitted
 
 				case 'i':  // signed int
 				case 'u':  // unsigned int, ignored
-					if ($value === NULL) {
+					if ($value === null) {
 						return 'NULL';
 					} elseif (is_string($value) && preg_match('#[+-]?\d++(?:e\d+)?\z#A', $value)) {
 						return $value; // support for long numbers - keep them unchanged
@@ -353,7 +353,7 @@ final class Translator
 					}
 
 				case 'f':  // float
-					if ($value === NULL) {
+					if ($value === null) {
 						return 'NULL';
 					} elseif (is_string($value) && is_numeric($value) && substr($value, 1, 1) !== 'x') {
 						return $value; // support for extreme numbers - keep them unchanged
@@ -364,7 +364,7 @@ final class Translator
 				case 'd':  // date
 				case 't':  // datetime
 				case 'dt': // datetime
-					if ($value === NULL) {
+					if ($value === null) {
 						return 'NULL';
 					} else {
 						return $modifier === 'd' ? $this->driver->escapeDate($value) : $this->driver->escapeDateTime($value);
@@ -434,7 +434,7 @@ final class Translator
 		} elseif (is_bool($value)) {
 			return $this->driver->escapeBool($value);
 
-		} elseif ($value === NULL) {
+		} elseif ($value === null) {
 			return 'NULL';
 
 		} elseif ($value instanceof \DateTimeInterface) {
@@ -476,7 +476,7 @@ final class Translator
 			}
 
 			$cursor++;
-			return $this->formatValue($this->args[$cursor - 1], NULL);
+			return $this->formatValue($this->args[$cursor - 1], null);
 		}
 
 		if (!empty($matches[10])) { // modifier
@@ -493,7 +493,7 @@ final class Translator
 				if (!$this->comment && !$this->args[$cursor - 1]) {
 					// open comment
 					$this->ifLevelStart = $this->ifLevel;
-					$this->comment = TRUE;
+					$this->comment = true;
 					return '/*';
 				}
 				return '';
@@ -501,11 +501,11 @@ final class Translator
 			} elseif ($mod === 'else') {
 				if ($this->ifLevelStart === $this->ifLevel) {
 					$this->ifLevelStart = 0;
-					$this->comment = FALSE;
+					$this->comment = false;
 					return '*/';
 				} elseif (!$this->comment) {
 					$this->ifLevelStart = $this->ifLevel;
-					$this->comment = TRUE;
+					$this->comment = true;
 					return '/*';
 				}
 
@@ -514,7 +514,7 @@ final class Translator
 				if ($this->ifLevelStart === $this->ifLevel + 1) {
 					// close comment
 					$this->ifLevelStart = 0;
-					$this->comment = FALSE;
+					$this->comment = false;
 					return '*/';
 				}
 				return '';
@@ -525,7 +525,7 @@ final class Translator
 
 			} elseif ($mod === 'lmt') { // apply limit
 				$arg = $this->args[$cursor++];
-				if ($arg === NULL) {
+				if ($arg === null) {
 				} elseif ($this->comment) {
 					return "(limit $arg)";
 				} else {
@@ -535,7 +535,7 @@ final class Translator
 
 			} elseif ($mod === 'ofs') { // apply offset
 				$arg = $this->args[$cursor++];
-				if ($arg === NULL) {
+				if ($arg === null) {
 				} elseif ($this->comment) {
 					return "(offset $arg)";
 				} else {
@@ -572,7 +572,7 @@ final class Translator
 		if ($matches[8]) { // SQL identifier substitution
 			$m = substr($matches[8], 0, -1);
 			$m = $this->connection->getSubstitutes()->$m;
-			return $matches[9] == '' ? $this->formatValue($m, NULL) : $m . $matches[9]; // value or identifier
+			return $matches[9] == '' ? $this->formatValue($m, null) : $m . $matches[9]; // value or identifier
 		}
 
 		throw new \Exception('this should be never executed');

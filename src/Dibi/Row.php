@@ -32,16 +32,16 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	/**
 	 * Converts value to DateTime object.
 	 */
-	public function asDateTime(string $key, string $format = NULL): \DateTime
+	public function asDateTime(string $key, string $format = null): \DateTime
 	{
 		$time = $this[$key];
 		if (!$time instanceof DateTime) {
-			if (!$time || substr((string) $time, 0, 3) === '000') { // '', NULL, FALSE, '0000-00-00', ...
-				return NULL;
+			if (!$time || substr((string) $time, 0, 3) === '000') { // '', null, false, '0000-00-00', ...
+				return null;
 			}
 			$time = new DateTime($time);
 		}
-		return $format === NULL ? $time : $time->format($format);
+		return $format === null ? $time : $time->format($format);
 	}
 
 

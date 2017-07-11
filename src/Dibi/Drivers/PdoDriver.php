@@ -33,10 +33,10 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	/** @var PDO  Connection resource */
 	private $connection;
 
-	/** @var \PDOStatement|NULL  Resultset resource */
+	/** @var \PDOStatement|null  Resultset resource */
 	private $resultSet;
 
-	/** @var int|NULL  Affected rows */
+	/** @var int|null  Affected rows */
 	private $affectedRows;
 
 	/** @var string */
@@ -91,7 +91,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function disconnect(): void
 	{
-		$this->connection = NULL;
+		$this->connection = null;
 	}
 
 
@@ -104,12 +104,12 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 		// must detect if SQL returns result set or num of affected rows
 		$cmd = strtoupper(substr(ltrim($sql), 0, 6));
 		static $list = ['UPDATE' => 1, 'DELETE' => 1, 'INSERT' => 1, 'REPLAC' => 1];
-		$this->affectedRows = NULL;
+		$this->affectedRows = null;
 
 		if (isset($list[$cmd])) {
 			$this->affectedRows = Helpers::false2Null($this->connection->exec($sql));
-			if ($this->affectedRows !== NULL) {
-				return NULL;
+			if ($this->affectedRows !== null) {
+				return null;
 			}
 		} else {
 			$res = $this->connection->query($sql);
@@ -161,7 +161,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Begins a transaction (if supported).
 	 * @throws Dibi\DriverException
 	 */
-	public function begin(string $savepoint = NULL): void
+	public function begin(string $savepoint = null): void
 	{
 		if (!$this->connection->beginTransaction()) {
 			$err = $this->connection->errorInfo();
@@ -174,7 +174,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Commits statements in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function commit(string $savepoint = NULL): void
+	public function commit(string $savepoint = null): void
 	{
 		if (!$this->connection->commit()) {
 			$err = $this->connection->errorInfo();
@@ -187,7 +187,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Rollback changes in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback(string $savepoint = NULL): void
+	public function rollback(string $savepoint = null): void
 	{
 		if (!$this->connection->rollBack()) {
 			$err = $this->connection->errorInfo();
@@ -379,15 +379,15 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 		switch ($this->driverName) {
 			case 'mysql':
-				if ($limit !== NULL || $offset) {
+				if ($limit !== null || $offset) {
 					// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-					$sql .= ' LIMIT ' . ($limit === NULL ? '18446744073709551615' : (int) $limit)
+					$sql .= ' LIMIT ' . ($limit === null ? '18446744073709551615' : (int) $limit)
 						. ($offset ? ' OFFSET ' . (int) $offset : '');
 				}
 				break;
 
 			case 'pgsql':
-				if ($limit !== NULL) {
+				if ($limit !== null) {
 					$sql .= ' LIMIT ' . (int) $limit;
 				}
 				if ($offset) {
@@ -396,8 +396,8 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 				break;
 
 			case 'sqlite':
-				if ($limit !== NULL || $offset) {
-					$sql .= ' LIMIT ' . ($limit === NULL ? '-1' : (int) $limit)
+				if ($limit !== null || $offset) {
+					$sql .= ' LIMIT ' . ($limit === null ? '-1' : (int) $limit)
 						. ($offset ? ' OFFSET ' . (int) $offset : '');
 				}
 				break;
@@ -406,10 +406,10 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 				if ($offset) {
 					// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
 					$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
-						. ($limit !== NULL ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
+						. ($limit !== null ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
 						. ') WHERE "__rnum" > '. (int) $offset;
 
-				} elseif ($limit !== NULL) {
+				} elseif ($limit !== null) {
 					$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
 				}
 				break;
@@ -419,7 +419,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 			case 'dblib':
 				if (version_compare($this->serverVersion, '11.0') >= 0) { // 11 == SQL Server 2012
 					// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
-					if ($limit !== NULL) {
+					if ($limit !== null) {
 						$sql = sprintf('%s OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', rtrim($sql), $offset, $limit);
 					} elseif ($offset) {
 						$sql = sprintf('%s OFFSET %d ROWS', rtrim($sql), $offset);
@@ -432,7 +432,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 				if ($offset) {
 					throw new Dibi\NotSupportedException('Offset is not supported by this database.');
 
-				} elseif ($limit !== NULL) {
+				} elseif ($limit !== null) {
 					$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
 					break;
 				}
@@ -458,7 +458,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 */
 	public function fetch(bool $assoc): ?array
 	{
@@ -480,7 +480,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function free(): void
 	{
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
@@ -494,11 +494,11 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 		$columns = [];
 		for ($i = 0; $i < $count; $i++) {
 			$row = @$this->resultSet->getColumnMeta($i); // intentionally @
-			if ($row === FALSE) {
+			if ($row === false) {
 				throw new Dibi\NotSupportedException('Driver does not support meta data.');
 			}
 			$row = $row + [
-				'table' => NULL,
+				'table' => null,
 				'native_type' => 'VAR_STRING',
 			];
 
@@ -506,7 +506,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 				'name' => $row['name'],
 				'table' => $row['table'],
 				'nativetype' => $row['native_type'],
-				'type' => $row['native_type'] === 'TIME' && $this->driverName === 'mysql' ? Dibi\Type::TIME_INTERVAL : NULL,
+				'type' => $row['native_type'] === 'TIME' && $this->driverName === 'mysql' ? Dibi\Type::TIME_INTERVAL : null,
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
 				'vendor' => $row,
 			];

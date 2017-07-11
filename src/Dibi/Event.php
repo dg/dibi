@@ -39,7 +39,7 @@ class Event
 	/** @var string */
 	public $sql;
 
-	/** @var Result|DriverException|NULL */
+	/** @var Result|DriverException|null */
 	public $result;
 
 	/** @var float */
@@ -52,12 +52,12 @@ class Event
 	public $source;
 
 
-	public function __construct(Connection $connection, $type, $sql = NULL)
+	public function __construct(Connection $connection, $type, $sql = null)
 	{
 		$this->connection = $connection;
 		$this->type = $type;
 		$this->sql = trim($sql);
-		$this->time = -microtime(TRUE);
+		$this->time = -microtime(true);
 
 		if ($type === self::QUERY && preg_match('#\(?\s*(SELECT|UPDATE|INSERT|DELETE)#iA', $this->sql, $matches)) {
 			static $types = [
@@ -76,22 +76,22 @@ class Event
 			}
 		}
 
-		\dibi::$elapsedTime = FALSE;
+		\dibi::$elapsedTime = false;
 		\dibi::$numOfQueries++;
 		\dibi::$sql = $sql;
 	}
 
 
-	public function done($result = NULL)
+	public function done($result = null)
 	{
 		$this->result = $result;
 		try {
-			$this->count = $result instanceof Result ? count($result) : NULL;
+			$this->count = $result instanceof Result ? count($result) : null;
 		} catch (Exception $e) {
-			$this->count = NULL;
+			$this->count = null;
 		}
 
-		$this->time += microtime(TRUE);
+		$this->time += microtime(true);
 		\dibi::$elapsedTime = $this->time;
 		\dibi::$totalTime += $this->time;
 		return $this;

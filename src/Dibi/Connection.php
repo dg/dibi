@@ -35,7 +35,7 @@ class Connection
 	private $translator;
 
 	/** @var bool  Is connected? */
-	private $connected = FALSE;
+	private $connected = false;
 
 	/** @var HashMap Substitutes for identifiers */
 	private $substitutes;
@@ -43,7 +43,7 @@ class Connection
 
 	/**
 	 * Connection options: (see driver-specific options too)
-	 *   - lazy (bool) => if TRUE, connection will be established only when required
+	 *   - lazy (bool) => if true, connection will be established only when required
 	 *   - result (array) => result set options
 	 *       - formatDateTime => date-time format (if empty, DateTime objects will be returned)
 	 *   - profiler (array or bool)
@@ -54,7 +54,7 @@ class Connection
 	 * @param  string  connection name
 	 * @throws Exception
 	 */
-	public function __construct($config, string $name = NULL)
+	public function __construct($config, string $name = null)
 	{
 		if (is_string($config)) {
 			parse_str($config, $config);
@@ -142,10 +142,10 @@ class Connection
 	 */
 	final public function connect(): void
 	{
-		$event = $this->onEvent ? new Event($this, Event::CONNECT) : NULL;
+		$event = $this->onEvent ? new Event($this, Event::CONNECT) : null;
 		try {
 			$this->driver->connect($this->config);
-			$this->connected = TRUE;
+			$this->connected = true;
 			$event && $this->onEvent($event->done());
 
 		} catch (Exception $e) {
@@ -161,12 +161,12 @@ class Connection
 	final public function disconnect(): void
 	{
 		$this->driver->disconnect();
-		$this->connected = FALSE;
+		$this->connected = false;
 	}
 
 
 	/**
-	 * Returns TRUE when connection was established.
+	 * Returns true when connection was established.
 	 */
 	final public function isConnected(): bool
 	{
@@ -179,9 +179,9 @@ class Connection
 	 * @see self::__construct
 	 * @return mixed
 	 */
-	final public function getConfig(string $key = NULL, $default = NULL)
+	final public function getConfig(string $key = null, $default = null)
 	{
-		return $key === NULL
+		return $key === null
 			? $this->config
 			: ($this->config[$key] ?? $default);
 	}
@@ -228,7 +228,7 @@ class Connection
 	{
 		try {
 			Helpers::dump($this->translateArgs($args));
-			return TRUE;
+			return true;
 
 		} catch (Exception $e) {
 			if ($e->getSql()) {
@@ -236,7 +236,7 @@ class Connection
 			} else {
 				echo get_class($e) . ': ' . $e->getMessage() . (PHP_SAPI === 'cli' ? "\n" : '<br>');
 			}
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -276,7 +276,7 @@ class Connection
 		$this->connected || $this->connect();
 
 		\dibi::$sql = $sql;
-		$event = $this->onEvent ? new Event($this, Event::QUERY, $sql) : NULL;
+		$event = $this->onEvent ? new Event($this, Event::QUERY, $sql) : null;
 		try {
 			$res = $this->driver->query($sql);
 
@@ -304,7 +304,7 @@ class Connection
 	{
 		$this->connected || $this->connect();
 		$rows = $this->driver->getAffectedRows();
-		if ($rows === NULL || $rows < 0) {
+		if ($rows === null || $rows < 0) {
 			throw new Exception('Cannot retrieve number of affected rows.');
 		}
 		return $rows;
@@ -325,7 +325,7 @@ class Connection
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @throws Exception
 	 */
-	public function getInsertId(string $sequence = NULL): int
+	public function getInsertId(string $sequence = null): int
 	{
 		$this->connected || $this->connect();
 		$id = $this->driver->getInsertId($sequence);
@@ -340,7 +340,7 @@ class Connection
 	 * Retrieves the ID generated for an AUTO_INCREMENT column. Alias for getInsertId().
 	 * @throws Exception
 	 */
-	public function insertId(string $sequence = NULL): int
+	public function insertId(string $sequence = null): int
 	{
 		return $this->getInsertId($sequence);
 	}
@@ -349,10 +349,10 @@ class Connection
 	/**
 	 * Begins a transaction (if supported).
 	 */
-	public function begin(string $savepoint = NULL): void
+	public function begin(string $savepoint = null): void
 	{
 		$this->connected || $this->connect();
-		$event = $this->onEvent ? new Event($this, Event::BEGIN, $savepoint) : NULL;
+		$event = $this->onEvent ? new Event($this, Event::BEGIN, $savepoint) : null;
 		try {
 			$this->driver->begin($savepoint);
 			$event && $this->onEvent($event->done());
@@ -367,10 +367,10 @@ class Connection
 	/**
 	 * Commits statements in a transaction.
 	 */
-	public function commit(string $savepoint = NULL): void
+	public function commit(string $savepoint = null): void
 	{
 		$this->connected || $this->connect();
-		$event = $this->onEvent ? new Event($this, Event::COMMIT, $savepoint) : NULL;
+		$event = $this->onEvent ? new Event($this, Event::COMMIT, $savepoint) : null;
 		try {
 			$this->driver->commit($savepoint);
 			$event && $this->onEvent($event->done());
@@ -385,10 +385,10 @@ class Connection
 	/**
 	 * Rollback changes in a transaction.
 	 */
-	public function rollback(string $savepoint = NULL): void
+	public function rollback(string $savepoint = null): void
 	{
 		$this->connected || $this->connect();
-		$event = $this->onEvent ? new Event($this, Event::ROLLBACK, $savepoint) : NULL;
+		$event = $this->onEvent ? new Event($this, Event::ROLLBACK, $savepoint) : null;
 		try {
 			$this->driver->rollback($savepoint);
 			$event && $this->onEvent($event->done());
@@ -470,7 +470,7 @@ class Connection
 	 */
 	public function substitute(string $value): string
 	{
-		return strpos($value, ':') === FALSE
+		return strpos($value, ':') === false
 			? $value
 			: preg_replace_callback('#:([^:\s]*):#', function ($m) { return $this->substitutes->{$m[1]}; }, $value);
 	}
@@ -540,7 +540,7 @@ class Connection
 	 * @param  callable $onProgress function (int $count, ?float $percent): void
 	 * @return int  count of sql commands
 	 */
-	public function loadFile(string $file, callable $onProgress = NULL): int
+	public function loadFile(string $file, callable $onProgress = null): int
 	{
 		return Helpers::loadFromFile($this, $file, $onProgress);
 	}
@@ -552,7 +552,7 @@ class Connection
 	public function getDatabaseInfo(): Reflection\Database
 	{
 		$this->connected || $this->connect();
-		return new Reflection\Database($this->driver->getReflector(), $this->config['database'] ?? NULL);
+		return new Reflection\Database($this->driver->getReflector(), $this->config['database'] ?? null);
 	}
 
 

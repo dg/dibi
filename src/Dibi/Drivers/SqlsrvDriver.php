@@ -31,16 +31,16 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $connection;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $resultSet;
 
 	/** @var bool */
-	private $autoFree = TRUE;
+	private $autoFree = true;
 
-	/** @var int|NULL  Affected rows */
+	/** @var int|null  Affected rows */
 	private $affectedRows;
 
 	/** @var string */
@@ -107,10 +107,10 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
-		$this->affectedRows = NULL;
+		$this->affectedRows = null;
 		$res = sqlsrv_query($this->connection, $sql);
 
-		if ($res === FALSE) {
+		if ($res === false) {
 			$info = sqlsrv_errors();
 			throw new Dibi\DriverException($info[0]['message'], $info[0]['code'], $sql);
 
@@ -118,7 +118,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			$this->affectedRows = Helpers::false2Null(sqlsrv_rows_affected($res));
 			return $this->createResultDriver($res);
 		}
-		return NULL;
+		return null;
 	}
 
 
@@ -141,7 +141,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			$row = sqlsrv_fetch_array($res, SQLSRV_FETCH_NUMERIC);
 			return (int) $row[0];
 		}
-		return NULL;
+		return null;
 	}
 
 
@@ -149,7 +149,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Begins a transaction (if supported).
 	 * @throws Dibi\DriverException
 	 */
-	public function begin(string $savepoint = NULL): void
+	public function begin(string $savepoint = null): void
 	{
 		sqlsrv_begin_transaction($this->connection);
 	}
@@ -159,7 +159,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Commits statements in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function commit(string $savepoint = NULL): void
+	public function commit(string $savepoint = null): void
 	{
 		sqlsrv_commit($this->connection);
 	}
@@ -169,7 +169,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * Rollback changes in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback(string $savepoint = NULL): void
+	public function rollback(string $savepoint = null): void
 	{
 		sqlsrv_rollback($this->connection);
 	}
@@ -177,11 +177,11 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResource()
 	{
-		return is_resource($this->connection) ? $this->connection : NULL;
+		return is_resource($this->connection) ? $this->connection : null;
 	}
 
 
@@ -292,11 +292,11 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			if ($offset) {
 				throw new Dibi\NotSupportedException('Offset is not supported by this database.');
 
-			} elseif ($limit !== NULL) {
+			} elseif ($limit !== null) {
 				$sql = sprintf('SELECT TOP (%d) * FROM (%s) t', $limit, $sql);
 			}
 
-		} elseif ($limit !== NULL) {
+		} elseif ($limit !== null) {
 			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
 			$sql = sprintf('%s OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', rtrim($sql), $offset, $limit);
 		} elseif ($offset) {
@@ -329,7 +329,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 */
 	public function fetch(bool $assoc): ?array
 	{
@@ -352,7 +352,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	public function free(): void
 	{
 		sqlsrv_free_stmt($this->resultSet);
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
@@ -375,11 +375,11 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResultResource()
 	{
-		$this->autoFree = FALSE;
-		return is_resource($this->resultSet) ? $this->resultSet : NULL;
+		$this->autoFree = false;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 }

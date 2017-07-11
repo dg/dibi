@@ -33,7 +33,7 @@ dibi::test('
 	REPLACE INTO products', [
 		'title' => 'Super product',
 		'price' => 318,
-		'active' => TRUE,
+		'active' => true,
 ]);
 // -> REPLACE INTO products ([title], [price], [active]) VALUES ('Super product', 318, 1)
 
@@ -42,7 +42,7 @@ dibi::test('
 $array = [
 	'title' => 'Super Product',
 	'price' => 12,
-	'brand' => NULL,
+	'brand' => null,
 	'created' => new DateTime,
 ];
 dibi::test('INSERT INTO products', $array, $array, $array);

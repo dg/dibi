@@ -12,7 +12,7 @@ $conn = new Dibi\Connection($config);
 $arr = [
 	'title' => 'Super Product',
 	'price' => 12,
-	'brand' => NULL,
+	'brand' => null,
 ];
 
 $fluent = $conn->update('table', $arr)

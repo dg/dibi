@@ -14,7 +14,7 @@ $connection = dibi::connect([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 	'profiler' => [
-		'run' => TRUE,
+		'run' => true,
 	],
 ]);
 

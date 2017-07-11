@@ -15,14 +15,14 @@ namespace Dibi;
  */
 class Exception extends \Exception
 {
-	/** @var string|NULL */
+	/** @var string|null */
 	private $sql;
 
 
 	/**
 	 * Construct a dibi exception.
 	 */
-	public function __construct(string $message = '', $code = 0, string $sql = NULL)
+	public function __construct(string $message = '', $code = 0, string $sql = null)
 	{
 		parent::__construct($message);
 		$this->code = $code;
@@ -93,7 +93,7 @@ class ProcedureException extends Exception
 	/**
 	 * Construct the exception.
 	 */
-	public function __construct(string $message = NULL, int $code = 0, string $severity = NULL, $sql = NULL)
+	public function __construct(string $message = null, int $code = 0, string $severity = null, $sql = null)
 	{
 		parent::__construct($message, $code, $sql);
 		$this->severity = $severity;
