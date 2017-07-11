@@ -246,7 +246,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if (!$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
-		return $value->format("#m/d/Y#");
+		return $value->format('#m/d/Y#');
 	}
 
 
@@ -258,7 +258,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if (!$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
-		return $value->format("#m/d/Y H:i:s.u#");
+		return $value->format('#m/d/Y H:i:s.u#');
 	}
 
 

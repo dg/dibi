@@ -12,7 +12,6 @@ namespace Dibi;
 
 /**
  * Default implementation of IDataSource for dibi.
- *
  */
 class DataSource implements IDataSource
 {

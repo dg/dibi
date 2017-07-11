@@ -66,7 +66,7 @@ class Column
 	public function getTable(): Table
 	{
 		if (empty($this->info['table']) || !$this->reflector) {
-			throw new Dibi\Exception("Table is unknown or not available.");
+			throw new Dibi\Exception('Table is unknown or not available.');
 		}
 		return new Table($this->reflector, ['name' => $this->info['table']]);
 	}

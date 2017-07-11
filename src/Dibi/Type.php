@@ -15,7 +15,7 @@ namespace Dibi;
  */
 class Type
 {
-	const
+	public const
 		TEXT = 's', // as 'string'
 		BINARY = 'bin',
 		BOOL = 'b',

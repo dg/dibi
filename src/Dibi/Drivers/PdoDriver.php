@@ -317,7 +317,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 		if (!$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
-		return $value->format($this->driverName === 'odbc' ? "#m/d/Y H:i:s.u#" : "'Y-m-d H:i:s.u'");
+		return $value->format($this->driverName === 'odbc' ? '#m/d/Y H:i:s.u#' : "'Y-m-d H:i:s.u'");
 	}
 
 
@@ -407,7 +407,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 					// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
 					$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
 						. ($limit !== null ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
-						. ') WHERE "__rnum" > '. (int) $offset;
+						. ') WHERE "__rnum" > ' . (int) $offset;
 
 				} elseif ($limit !== null) {
 					$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
@@ -426,7 +426,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 					}
 					break;
 				}
-				// intentionally break omitted
+				// break omitted
 
 			case 'odbc':
 				if ($offset) {
@@ -436,7 +436,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 					$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
 					break;
 				}
-				// intentionally break omitted
+				// break omitted
 
 			default:
 				throw new Dibi\NotSupportedException('PDO or driver does not support applying limit or offset.');

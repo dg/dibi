@@ -60,7 +60,7 @@ function reformat($s)
 		return strtr($s, '[]', '``');
 	} elseif ($config['system'] === 'postgre') {
 		return strtr($s, '[]', '""');
-	} elseif (in_array($config['system'], ['odbc', 'sqlite', 'sqlsrv'])) {
+	} elseif (in_array($config['system'], ['odbc', 'sqlite', 'sqlsrv'], true)) {
 		return $s;
 	} else {
 		trigger_error("Unsupported driver $config[system]", E_USER_WARNING);

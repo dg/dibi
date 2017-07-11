@@ -27,7 +27,7 @@ Assert::same(
 );
 
 
-if (!in_array($config['driver'], ['sqlite3', 'pdo', 'sqlsrv'])) {
+if (!in_array($config['driver'], ['sqlite3', 'pdo', 'sqlsrv'], true)) {
 	Assert::same(
 		['products.product_id', 'orders.order_id', 'customers.name', 'xXx'],
 		$info->getColumnNames(true)
@@ -38,18 +38,18 @@ if (!in_array($config['driver'], ['sqlite3', 'pdo', 'sqlsrv'])) {
 $columns = $info->getColumns();
 
 Assert::same('product_id', $columns[0]->getName());
-if (!in_array($config['driver'], ['sqlite3', 'pdo', 'sqlsrv'])) {
+if (!in_array($config['driver'], ['sqlite3', 'pdo', 'sqlsrv'], true)) {
 	Assert::same('products', $columns[0]->getTableName());
 }
 Assert::null($columns[0]->getVendorInfo('xxx'));
-if (!in_array($config['system'], ['sqlite', 'sqlsrv'])) {
+if (!in_array($config['system'], ['sqlite', 'sqlsrv'], true)) {
 	Assert::same('i', $columns[0]->getType());
 }
 Assert::null($columns[0]->isNullable());
 
 Assert::same('xXx', $columns[3]->getName());
 Assert::null($columns[3]->getTableName());
-if (!in_array($config['system'], ['sqlite', 'sqlsrv'])) {
+if (!in_array($config['system'], ['sqlite', 'sqlsrv'], true)) {
 	Assert::same('i', $columns[0]->getType());
 }
 Assert::null($columns[3]->isNullable());

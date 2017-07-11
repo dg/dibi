@@ -9,12 +9,12 @@ require __DIR__ . '/bootstrap.php';
 
 class MockResult extends Dibi\Result
 {
-	function __construct()
+	public function __construct()
 	{
 	}
 
 
-	function test($row)
+	public function test($row)
 	{
 		$normalize = new ReflectionMethod(Dibi\Result::class, 'normalize');
 		$normalize->setAccessible(true);

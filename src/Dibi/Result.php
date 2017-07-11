@@ -337,10 +337,10 @@ class Result implements IDataSource
 				} elseif ($as === '=') { // "record" node
 					if ($x === null) {
 						$x = $row->toArray();
-						$x = &$x[ $assoc[$i + 1] ];
+						$x = &$x[$assoc[$i + 1]];
 						$x = null; // prepare child node
 					} else {
-						$x = &$x[ $assoc[$i + 1] ];
+						$x = &$x[$assoc[$i + 1]];
 					}
 
 				} elseif ($as === '@') { // "object" node
@@ -420,7 +420,7 @@ class Result implements IDataSource
 		}
 
 		do {
-			$data[ (string) $row[$key] ] = $row[$value];
+			$data[(string) $row[$key]] = $row[$value];
 		} while ($row = $this->fetch());
 
 		return $data;

@@ -39,10 +39,12 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	private $autoFree = true;
 
 	/** @var string  Date and datetime format */
-	private $fmtDate, $fmtDateTime;
+	private $fmtDate;
+	private $fmtDateTime;
 
 	/** @var string  character encoding */
-	private $dbcharset, $charset;
+	private $dbcharset;
+	private $charset;
 
 
 	/**

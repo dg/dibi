@@ -16,24 +16,18 @@ class dibi
 {
 	use Dibi\Strict;
 
-	const
+	public const
 		AFFECTED_ROWS = 'a',
 		IDENTIFIER = 'n';
 
 	/** version */
-	const
+	public const
 		VERSION = '4.0-dev';
 
 	/** sorting order */
-	const
+	public const
 		ASC = 'ASC',
 		DESC = 'DESC';
-
-	/** @var Dibi\Connection[]  Connection registry storage for DibiConnection objects */
-	private static $registry = [];
-
-	/** @var Dibi\Connection  Current connection */
-	private static $connection;
 
 	/** @var string  Last SQL command @see dibi::query() */
 	public static $sql;
@@ -49,6 +43,12 @@ class dibi
 
 	/** @var string  Default dibi driver */
 	public static $defaultDriver = 'mysqli';
+
+	/** @var Dibi\Connection[]  Connection registry storage for DibiConnection objects */
+	private static $registry = [];
+
+	/** @var Dibi\Connection  Current connection */
+	private static $connection;
 
 
 	/**

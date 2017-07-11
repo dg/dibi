@@ -18,7 +18,8 @@ class Event
 	use Strict;
 
 	/** event type */
-	const CONNECT = 1,
+	public const
+		CONNECT = 1,
 		SELECT = 4,
 		INSERT = 8,
 		DELETE = 16,

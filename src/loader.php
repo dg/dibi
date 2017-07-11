@@ -5,6 +5,7 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
+declare(strict_types=1);
 
 if (PHP_VERSION_ID < 70100) {
 	throw new Exception('Dibi requires PHP 7.1 or newer.');

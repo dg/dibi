@@ -30,7 +30,7 @@ Assert::equal([
 
 
 // more complex association array
-if (!in_array($config['system'], ['odbc', 'sqlsrv'])) {
+if (!in_array($config['system'], ['odbc', 'sqlsrv'], true)) {
 	$res = $conn->select(['products.title' => 'title', 'customers.name' => 'name'])->select('orders.amount')->as('amount')
 		->from('products')
 		->innerJoin('orders')->using('(product_id)')

@@ -97,7 +97,7 @@ Assert::same(
 	$conn->translate('TEST %and', ['[cond] > 2', '[cond2] = "3"', 'cond3 < RAND()'])
 );
 
-//
+
 $where = [];
 $where[] = '[age] > 20';
 $where[] = '[email] IS NOT NULL';
@@ -158,7 +158,7 @@ if ($config['system'] === 'odbc') {
 	Assert::same(
 		reformat([
 			'sqlsrv' => 'SELECT * FROM [products] OFFSET 1 ROWS FETCH NEXT 2 ROWS ONLY',
-			'SELECT * FROM [products]   LIMIT 2 OFFSET 1'
+			'SELECT * FROM [products]   LIMIT 2 OFFSET 1',
 		]),
 		$conn->translate('SELECT * FROM [products] %lmt %ofs', 2, 1)
 	);
@@ -551,7 +551,7 @@ Assert::same(
 );
 
 
-setLocale(LC_ALL, 'czech');
+setlocale(LC_ALL, 'czech');
 
 Assert::same(
 	reformat("UPDATE [colors] SET [color]='blue', [price]=-12.4, [spec]=-9E-005, [spec2]=1000, [spec3]=10000, [spec4]=10000 WHERE [price]=123.5"),

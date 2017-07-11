@@ -35,7 +35,7 @@ class DateTime extends \DateTime
 
 	public function modifyClone(string $modify = '')
 	{
-		$dolly = clone($this);
+		$dolly = clone $this;
 		return $modify ? $dolly->modify($modify) : $dolly;
 	}
 

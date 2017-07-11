@@ -17,7 +17,7 @@ $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 $e = Assert::exception(function () use ($conn) {
 	$conn->query('SELECT');
-}, Dibi\DriverException::class, "%a% error in your SQL syntax;%a%", 1064);
+}, Dibi\DriverException::class, '%a% error in your SQL syntax;%a%', 1064);
 
 Assert::same('SELECT', $e->getSql());
 

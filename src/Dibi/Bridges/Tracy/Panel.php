@@ -141,7 +141,7 @@ class Panel implements Tracy\IBarPanel
 			#tracy-debug tracy-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
 			<h1>Queries: ' . count($this->events)
 				. ($totalTime === null ? '' : ', time: ' . number_format($totalTime * 1000, 1, '.', ' ') . ' ms') . ', '
-				. htmlSpecialChars($connection->getConfig('driver') . ($connection->getConfig('name') ? '/' . $connection->getConfig('name') : '')
+				. htmlspecialchars($connection->getConfig('driver') . ($connection->getConfig('name') ? '/' . $connection->getConfig('name') : '')
 				. ($connection->getConfig('host') ? ' @ ' . $connection->getConfig('host') : '')) . '</h1>
 			<div class="tracy-inner tracy-DibiProfiler">
 			<table>
