@@ -99,5 +99,4 @@ class ResultIterator implements \Iterator, \Countable
 	{
 		return $this->result->getRowCount();
 	}
-
 }

@@ -1,9 +1,8 @@
 <?php
-
 declare(strict_types=1);
 
-use Tester\Assert;
 use Dibi\Type;
+use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -11,7 +10,9 @@ require __DIR__ . '/bootstrap.php';
 class MockResult extends Dibi\Result
 {
 	function __construct()
-	{}
+	{
+	}
+
 
 	function test($row)
 	{

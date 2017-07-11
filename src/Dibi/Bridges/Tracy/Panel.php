@@ -149,5 +149,4 @@ class Panel implements Tracy\IBarPanel
 			</table>
 			</div>';
 	}
-
 }

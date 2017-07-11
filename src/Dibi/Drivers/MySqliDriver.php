@@ -460,5 +460,4 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 		$this->autoFree = FALSE;
 		return $this->resultSet;
 	}
-
 }

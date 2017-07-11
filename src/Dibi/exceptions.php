@@ -40,7 +40,6 @@ class Exception extends \Exception
 	{
 		return parent::__toString() . ($this->sql ? "\nSQL: " . $this->sql : '');
 	}
-
 }
 
 
@@ -57,7 +56,6 @@ class DriverException extends Exception
  */
 class PcreException extends Exception
 {
-
 	public function __construct(string $message = '%msg.')
 	{
 		static $messages = [
@@ -109,7 +107,6 @@ class ProcedureException extends Exception
 	{
 		$this->severity;
 	}
-
 }
 
 

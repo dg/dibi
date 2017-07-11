@@ -478,5 +478,4 @@ class Fluent implements IDataSource
 		}
 		$this->cursor = &$foo;
 	}
-
 }

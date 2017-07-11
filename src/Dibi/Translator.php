@@ -594,5 +594,4 @@ final class Translator
 		}
 		return implode('.', $parts);
 	}
-
 }

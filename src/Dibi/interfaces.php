@@ -113,7 +113,6 @@ interface Driver
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
 	function applyLimit(string &$sql, ?int $limit, ?int $offset): void;
-
 }
 
 
@@ -164,7 +163,6 @@ interface ResultDriver
 	 * Decodes data from result set.
 	 */
 	function unescapeBinary(string $value): string;
-
 }
 
 
@@ -196,5 +194,4 @@ interface Reflector
 	 * Returns metadata for all foreign keys in a table.
 	 */
 	function getForeignKeys(string $table): array;
-
 }

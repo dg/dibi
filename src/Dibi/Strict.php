@@ -133,5 +133,4 @@ trait Strict
 			$list[''] = NULL;
 		}
 	}
-
 }

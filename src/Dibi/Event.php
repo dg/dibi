@@ -96,5 +96,4 @@ class Event
 		\dibi::$totalTime += $this->time;
 		return $this;
 	}
-
 }

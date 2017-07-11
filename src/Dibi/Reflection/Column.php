@@ -130,5 +130,4 @@ class Column
 	{
 		return $this->info['vendor'][$key] ?? NULL;
 	}
-
 }

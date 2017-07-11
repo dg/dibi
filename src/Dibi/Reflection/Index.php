@@ -56,5 +56,4 @@ class Index
 	{
 		return !empty($this->info['primary']);
 	}
-
 }

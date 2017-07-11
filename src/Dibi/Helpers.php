@@ -17,6 +17,7 @@ class Helpers
 	/** @var array */
 	private static $types;
 
+
 	/**
 	 * Prints out a syntax highlighted version of the SQL command or Result.
 	 * @param  string|Result
@@ -283,5 +284,4 @@ class Helpers
 	{
 		return $val === FALSE ? NULL : $val;
 	}
-
 }

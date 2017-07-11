@@ -456,5 +456,4 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	{
 		throw new Dibi\NotImplementedException;
 	}
-
 }

@@ -7,8 +7,6 @@
 
 declare(strict_types=1);
 
-use Dibi\Type;
-
 
 /**
  * This class is static container class for creating DB objects and
@@ -364,5 +362,4 @@ class dibi
 	{
 		return Dibi\Helpers::dump($sql, $return);
 	}
-
 }

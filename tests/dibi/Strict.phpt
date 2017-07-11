@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 use Tester\Assert;
@@ -17,22 +16,32 @@ class TestClass
 
 	public static $publicStatic;
 
+
 	public function publicMethod()
-	{}
+	{
+	}
+
 
 	public static function publicMethodStatic()
-	{}
+	{
+	}
+
 
 	protected function protectedMethod()
-	{}
+	{
+	}
+
 
 	protected static function protectedMethodS()
-	{}
+	{
+	}
+
 
 	public function getBar()
 	{
 		return 123;
 	}
+
 
 	public function isFoo()
 	{

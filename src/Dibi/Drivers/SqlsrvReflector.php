@@ -127,5 +127,4 @@ class SqlsrvReflector implements Dibi\Reflector
 	{
 		throw new Dibi\NotImplementedException;
 	}
-
 }

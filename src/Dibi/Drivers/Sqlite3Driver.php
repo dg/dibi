@@ -428,5 +428,4 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	{
 		$this->connection->createAggregate($name, $rowCallback, $agrCallback, $numArgs);
 	}
-
 }

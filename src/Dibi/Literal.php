@@ -31,5 +31,4 @@ class Literal
 	{
 		return $this->value;
 	}
-
 }

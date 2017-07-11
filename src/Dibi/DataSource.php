@@ -281,5 +281,4 @@ FROM %SQL', $this->sql, '
 		}
 		return $this->totalCount;
 	}
-
 }
