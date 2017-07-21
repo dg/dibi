@@ -355,8 +355,8 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 
 		} elseif ($limit !== null || $offset) {
 			// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-			$sql .= ' LIMIT ' . ($limit === null ? '18446744073709551615' : (int) $limit)
-				. ($offset ? ' OFFSET ' . (int) $offset : '');
+			$sql .= ' LIMIT ' . ($limit === null ? '18446744073709551615' : $limit)
+				. ($offset ? ' OFFSET ' . $offset : '');
 		}
 	}
 

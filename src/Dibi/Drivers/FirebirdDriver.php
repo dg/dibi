@@ -313,7 +313,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	{
 		if ($limit > 0 || $offset > 0) {
 			// http://www.firebirdsql.org/refdocs/langrefupd20-select.html
-			$sql = 'SELECT ' . ($limit > 0 ? 'FIRST ' . (int) $limit : '') . ($offset > 0 ? ' SKIP ' . (int) $offset : '') . ' * FROM (' . $sql . ')';
+			$sql = 'SELECT ' . ($limit > 0 ? 'FIRST ' . $limit : '') . ($offset > 0 ? ' SKIP ' . $offset : '') . ' * FROM (' . $sql . ')';
 		}
 	}
 

@@ -321,11 +321,11 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		} elseif ($offset) {
 			// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
 			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
-				. ($limit !== null ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
-				. ') WHERE "__rnum" > ' . (int) $offset;
+				. ($limit !== null ? 'WHERE ROWNUM <= ' . ($offset + $limit) : '')
+				. ') WHERE "__rnum" > ' . $offset;
 
 		} elseif ($limit !== null) {
-			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
+			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . $limit;
 		}
 	}
 
