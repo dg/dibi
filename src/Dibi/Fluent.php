@@ -449,6 +449,7 @@ class Fluent implements IDataSource
 			return $this->connection->translate($this->_export());
 		} catch (\Exception $e) {
 			trigger_error($e->getMessage(), E_USER_ERROR);
+			return '';
 		}
 	}
 
