@@ -67,7 +67,7 @@ class dibi
 	 * Creates a new Connection object and connects it to specified database.
 	 * @throws Dibi\Exception
 	 */
-	public static function connect(array $config = [], string $name = '0'): Dibi\Connection
+	public static function connect($config = [], string $name = '0'): Dibi\Connection
 	{
 		return self::$connection = self::$registry[$name] = new Dibi\Connection($config, $name);
 	}
@@ -358,7 +358,7 @@ class dibi
 	 * @param  string|Result
 	 * @param  bool  return output instead of printing it?
 	 */
-	public static function dump($sql = null, bool $return = false): string
+	public static function dump($sql = null, bool $return = false): ?string
 	{
 		return Dibi\Helpers::dump($sql, $return);
 	}

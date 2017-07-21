@@ -57,7 +57,7 @@ class Event
 	{
 		$this->connection = $connection;
 		$this->type = $type;
-		$this->sql = trim($sql);
+		$this->sql = trim((string) $sql);
 		$this->time = -microtime(true);
 
 		if ($type === self::QUERY && preg_match('#\(?\s*(SELECT|UPDATE|INSERT|DELETE)#iA', $this->sql, $matches)) {

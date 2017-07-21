@@ -22,11 +22,11 @@ class Helpers
 	 * Prints out a syntax highlighted version of the SQL command or Result.
 	 * @param  string|Result
 	 */
-	public static function dump($sql = null, bool $return = false): string
+	public static function dump($sql = null, bool $return = false): ?string
 	{
 		ob_start();
 		if ($sql instanceof Result && PHP_SAPI === 'cli') {
-			$hasColors = (substr(getenv('TERM'), 0, 5) === 'xterm');
+			$hasColors = (substr((string) getenv('TERM'), 0, 5) === 'xterm');
 			$maxLen = 0;
 			foreach ($sql as $i => $row) {
 				if ($i === 0) {
@@ -88,7 +88,7 @@ class Helpers
 			// syntax highlight
 			$highlighter = "#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is";
 			if (PHP_SAPI === 'cli') {
-				if (substr(getenv('TERM'), 0, 5) === 'xterm') {
+				if (substr((string) getenv('TERM'), 0, 5) === 'xterm') {
 					$sql = preg_replace_callback($highlighter, function ($m) {
 						if (!empty($m[1])) { // comment
 							return "\033[1;30m" . $m[1] . "\033[0m";
@@ -130,6 +130,7 @@ class Helpers
 			return ob_get_clean();
 		} else {
 			ob_end_flush();
+			return null;
 		}
 	}
 

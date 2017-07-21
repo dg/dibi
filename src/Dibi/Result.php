@@ -44,7 +44,7 @@ class Result implements IDataSource
 	/** @var bool  Already fetched? Used for allowance for first seek(0) */
 	private $fetched = false;
 
-	/** @var string  returned object class */
+	/** @var ?string  returned object class */
 	private $rowClass = Row::class;
 
 	/** @var callable  returned object factory*/
@@ -133,7 +133,7 @@ class Result implements IDataSource
 	/**
 	 * Set fetched object class. This class should extend the Row class.
 	 */
-	public function setRowClass(string $class): self
+	public function setRowClass(?string $class): self
 	{
 		$this->rowClass = $class;
 		return $this;
@@ -143,7 +143,7 @@ class Result implements IDataSource
 	/**
 	 * Returns fetched object class name.
 	 */
-	public function getRowClass(): string
+	public function getRowClass(): ?string
 	{
 		return $this->rowClass;
 	}
