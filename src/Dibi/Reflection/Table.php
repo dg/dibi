@@ -197,5 +197,4 @@ class Table
 	{
 		throw new Dibi\NotImplementedException;
 	}
-
 }

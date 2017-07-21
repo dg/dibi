@@ -13,7 +13,6 @@ namespace Dibi;
  */
 class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 {
-
 	public function __construct($arr)
 	{
 		foreach ($arr as $k => $v) {
@@ -91,5 +90,4 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		unset($this->$nm);
 	}
-
 }

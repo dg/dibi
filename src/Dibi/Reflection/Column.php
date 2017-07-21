@@ -162,5 +162,4 @@ class Column
 	{
 		return isset($this->info['vendor'][$key]) ? $this->info['vendor'][$key] : NULL;
 	}
-
 }

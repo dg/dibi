@@ -24,9 +24,9 @@ class Type
 		TIME = 't',
 		TIME_INTERVAL = 'ti';
 
+
 	final public function __construct()
 	{
 		throw new \LogicException('Cannot instantiate static class ' . __CLASS__);
 	}
-
 }

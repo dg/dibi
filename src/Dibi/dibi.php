@@ -450,5 +450,4 @@ class dibi
 	{
 		return Dibi\Helpers::dump($sql, $return);
 	}
-
 }

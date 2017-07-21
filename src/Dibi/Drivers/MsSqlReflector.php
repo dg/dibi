@@ -212,5 +212,4 @@ class MsSqlReflector implements Dibi\Reflector
 		}
 		return array_values($keys);
 	}
-
 }

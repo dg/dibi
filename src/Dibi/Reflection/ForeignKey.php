@@ -50,5 +50,4 @@ class ForeignKey
 	{
 		return $this->references;
 	}
-
 }

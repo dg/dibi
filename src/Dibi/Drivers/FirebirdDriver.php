@@ -834,5 +834,4 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		}
 		return $functions;
 	}
-
 }

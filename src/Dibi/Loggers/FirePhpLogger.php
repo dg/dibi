@@ -91,5 +91,4 @@ class FirePhpLogger
 		}
 		header("X-Wf-dibi-1-1-d$num: |$s|");
 	}
-
 }

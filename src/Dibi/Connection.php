@@ -48,7 +48,7 @@ class Connection
 	 *       - run (bool) => enable profiler?
 	 *       - file => file to log
 	 *   - substitutes (array) => map of driver specific substitutes (under development)
-
+	 
 	 * @param  mixed   connection parameters
 	 * @param  string  connection name
 	 * @throws Exception
@@ -658,5 +658,4 @@ class Connection
 			call_user_func($handler, $arg);
 		}
 	}
-
 }

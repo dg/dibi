@@ -33,7 +33,6 @@ abstract class HashMapBase
 	{
 		return $this->callback;
 	}
-
 }
 
 
@@ -44,7 +43,6 @@ abstract class HashMapBase
  */
 final class HashMap extends HashMapBase
 {
-
 	public function __set($nm, $val)
 	{
 		if ($nm == '') {
@@ -63,5 +61,4 @@ final class HashMap extends HashMapBase
 			return $this->$nm = call_user_func($this->getCallback(), $nm);
 		}
 	}
-
 }

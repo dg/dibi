@@ -131,5 +131,4 @@ class MySqlReflector implements Dibi\Reflector
 		}
 		return array_values($foreignKeys);
 	}
-
 }

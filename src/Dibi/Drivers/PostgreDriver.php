@@ -740,5 +740,4 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 		return $fKeys;
 	}
-
 }

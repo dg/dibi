@@ -577,5 +577,4 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	{
 		return $this->resultSet;
 	}
-
 }

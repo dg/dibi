@@ -499,5 +499,4 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 		$this->autoFree = FALSE;
 		return is_resource($this->resultSet) ? $this->resultSet : NULL;
 	}
-
 }

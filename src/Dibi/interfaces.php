@@ -148,7 +148,6 @@ interface Driver
 	 * @return void
 	 */
 	function applyLimit(&$sql, $limit, $offset);
-
 }
 
 
@@ -205,7 +204,6 @@ interface ResultDriver
 	 * @return string
 	 */
 	function unescapeBinary($value);
-
 }
 
 
@@ -241,5 +239,4 @@ interface Reflector
 	 * @return array
 	 */
 	function getForeignKeys($table);
-
 }

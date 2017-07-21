@@ -536,5 +536,4 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	{
 		throw new Dibi\NotImplementedException;
 	}
-
 }

@@ -319,7 +319,6 @@ class Result implements IDataSource
 			if ($x === NULL) { // build leaf
 				$x = $row;
 			}
-
 		} while ($row = $this->fetch());
 
 		unset($x);
@@ -392,7 +391,6 @@ class Result implements IDataSource
 					$x = $row;
 				}
 			}
-
 		} while ($row = $this->fetch());
 
 		unset($x);
@@ -616,5 +614,4 @@ class Result implements IDataSource
 	{
 		echo Helpers::dump($this);
 	}
-
 }
