@@ -357,7 +357,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
-	 * @return boolean  true on success, false if unable to seek to specified record
+	 * @return bool     true on success, false if unable to seek to specified record
 	 */
 	public function seek($row)
 	{

@@ -277,7 +277,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function escapeIdentifier($value)
 	{
-		return '"' . str_replace('"', '""', $value). '"';
+		return '"' . str_replace('"', '""', $value) . '"';
 	}
 
 
@@ -713,9 +713,9 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function getTriggers($table = null)
 	{
-		$q = "SELECT TRIM(RDB\$TRIGGER_NAME)
-			FROM RDB\$TRIGGERS
-			WHERE RDB\$SYSTEM_FLAG = 0";
+		$q = 'SELECT TRIM(RDB$TRIGGER_NAME)
+			FROM RDB$TRIGGERS
+			WHERE RDB$SYSTEM_FLAG = 0';
 		$q .= $table === null ? ';' : " AND RDB\$RELATION_NAME = UPPER('$table')";
 
 		$res = $this->query($q);
@@ -786,9 +786,9 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function getProcedures()
 	{
-		$res = $this->query("
-			SELECT TRIM(RDB\$PROCEDURE_NAME)
-			FROM RDB\$PROCEDURES;"
+		$res = $this->query('
+			SELECT TRIM(RDB$PROCEDURE_NAME)
+			FROM RDB$PROCEDURES;'
 		);
 		$procedures = [];
 		while ($row = $res->fetch(false)) {
@@ -804,10 +804,10 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function getGenerators()
 	{
-		$res = $this->query("
-			SELECT TRIM(RDB\$GENERATOR_NAME)
-			FROM RDB\$GENERATORS
-			WHERE RDB\$SYSTEM_FLAG = 0;"
+		$res = $this->query('
+			SELECT TRIM(RDB$GENERATOR_NAME)
+			FROM RDB$GENERATORS
+			WHERE RDB$SYSTEM_FLAG = 0;'
 		);
 		$generators = [];
 		while ($row = $res->fetch(false)) {
@@ -823,10 +823,10 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function getFunctions()
 	{
-		$res = $this->query("
-			SELECT TRIM(RDB\$FUNCTION_NAME)
-			FROM RDB\$FUNCTIONS
-			WHERE RDB\$SYSTEM_FLAG = 0;"
+		$res = $this->query('
+			SELECT TRIM(RDB$FUNCTION_NAME)
+			FROM RDB$FUNCTIONS
+			WHERE RDB$SYSTEM_FLAG = 0;'
 		);
 		$functions = [];
 		while ($row = $res->fetch(false)) {

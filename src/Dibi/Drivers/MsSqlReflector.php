@@ -69,12 +69,12 @@ class MsSqlReflector implements Dibi\Reflector
 		if (!is_array($row) || count($row) < 1) {
 			if ($fallback) {
 				$row = $this->driver->query("SELECT COUNT(*) FROM {$this->driver->escapeIdentifier($table)}")->fetch(false);
-				$count = intval($row[0]);
+				$count = (int) ($row[0]);
 			} else {
 				$count = false;
 			}
 		} else {
-			$count = intval($row[0]);
+			$count = (int) ($row[0]);
 		}
 
 		return $count;

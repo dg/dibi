@@ -7,23 +7,29 @@ require __DIR__ . '/bootstrap.php';
 
 class MockDriver extends Dibi\Drivers\SqlsrvDriver
 {
-	function __construct()
-	{}
+	public function __construct()
+	{
+	}
 
-	function connect(array &$config)
-	{}
 
-	function query($sql)
+	public function connect(array &$config)
+	{
+	}
+
+
+	public function query($sql)
 	{
 		return $this;
 	}
 
-	function getResultColumns()
+
+	public function getResultColumns()
 	{
 		return [];
 	}
 
-	function fetch($assoc)
+
+	public function fetch($assoc)
 	{
 		return false;
 	}

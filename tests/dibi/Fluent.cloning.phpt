@@ -1,7 +1,7 @@
 <?php
 
-use Tester\Assert;
 use Dibi\Fluent;
+use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
 

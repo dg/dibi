@@ -38,7 +38,7 @@ class Fluent implements IDataSource
 	/** @var array */
 	public static $masks = [
 		'SELECT' => ['SELECT', 'DISTINCT', 'FROM', 'WHERE', 'GROUP BY',
-			'HAVING', 'ORDER BY', 'LIMIT', 'OFFSET'],
+			'HAVING', 'ORDER BY', 'LIMIT', 'OFFSET', ],
 		'UPDATE' => ['UPDATE', 'SET', 'WHERE', 'ORDER BY', 'LIMIT'],
 		'INSERT' => ['INSERT', 'INTO', 'VALUES', 'SELECT'],
 		'DELETE' => ['DELETE', 'FROM', 'USING', 'WHERE', 'ORDER BY', 'LIMIT'],

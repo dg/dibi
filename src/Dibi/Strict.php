@@ -129,7 +129,7 @@ trait Strict
 			}
 		}
 
-		$list = & self::$extMethods[strtolower($name)];
+		$list = &self::$extMethods[strtolower($name)];
 		if ($callback === null) { // getter
 			$cache = &$list[''][$class];
 			if (isset($cache)) {

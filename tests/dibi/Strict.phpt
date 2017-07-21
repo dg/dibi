@@ -11,26 +11,36 @@ class TestClass
 
 	public $public;
 
-	protected $protected;
-
 	public static $publicStatic;
 
+	protected $protected;
+
+
 	public function publicMethod()
-	{}
+	{
+	}
+
 
 	public static function publicMethodStatic()
-	{}
+	{
+	}
+
 
 	protected function protectedMethod()
-	{}
+	{
+	}
+
 
 	protected static function protectedMethodS()
-	{}
+	{
+	}
+
 
 	public function getBar()
 	{
 		return 123;
 	}
+
 
 	public function isFoo()
 	{

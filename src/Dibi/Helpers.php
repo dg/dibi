@@ -39,7 +39,7 @@ class Helpers
 				echo $hasColors ? "\033[1;37m#row: $i\033[0m\n" : "#row: $i\n";
 				foreach ($row as $col => $val) {
 					$spaces = $maxLen - mb_strlen($col) + 2;
-					echo "$col" . str_repeat(' ', $spaces) .  "$val\n";
+					echo "$col" . str_repeat(' ', $spaces) . "$val\n";
 				}
 				echo "\n";
 			}
@@ -51,14 +51,14 @@ class Helpers
 				if ($i === 0) {
 					echo "\n<table class=\"dump\">\n<thead>\n\t<tr>\n\t\t<th>#row</th>\n";
 					foreach ($row as $col => $foo) {
-						echo "\t\t<th>" . htmlSpecialChars((string) $col) . "</th>\n";
+						echo "\t\t<th>" . htmlspecialchars((string) $col) . "</th>\n";
 					}
 					echo "\t</tr>\n</thead>\n<tbody>\n";
 				}
 
 				echo "\t<tr>\n\t\t<th>", $i, "</th>\n";
 				foreach ($row as $col) {
-					echo "\t\t<td>", htmlSpecialChars((string) $col), "</td>\n";
+					echo "\t\t<td>", htmlspecialchars((string) $col), "</td>\n";
 				}
 				echo "\t</tr>\n";
 			}
@@ -107,7 +107,7 @@ class Helpers
 				echo trim($sql) . "\n\n";
 
 			} else {
-				$sql = htmlSpecialChars($sql);
+				$sql = htmlspecialchars($sql);
 				$sql = preg_replace_callback($highlighter, function ($m) {
 					if (!empty($m[1])) { // comment
 						return '<em style="color:gray">' . $m[1] . '</em>';

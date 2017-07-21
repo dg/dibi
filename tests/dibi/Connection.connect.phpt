@@ -4,8 +4,8 @@
  * @dataProvider ../databases.ini
  */
 
-use Tester\Assert;
 use Dibi\Connection;
+use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
 

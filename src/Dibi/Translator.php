@@ -340,14 +340,12 @@ final class Translator
 
 				case 'in': // deprecated
 					trigger_error('Modifier %in is deprecated, use %iN.', E_USER_DEPRECATED);
-					// intentionally break omitted
-
+					// break omitted
 				case 'iN': // signed int or null
 					if ($value == '') {
 						$value = null;
 					}
-					// intentionally break omitted
-
+					// break omitted
 				case 'i':  // signed int
 				case 'u':  // unsigned int, ignored
 					if ($value === null) {
@@ -360,7 +358,7 @@ final class Translator
 					} else {
 						return (string) (int) $value;
 					}
-
+					// break omitted
 				case 'f':  // float
 					if ($value === null) {
 						return 'NULL';
@@ -369,7 +367,7 @@ final class Translator
 					} else {
 						return rtrim(rtrim(number_format($value + 0, 10, '.', ''), '0'), '.');
 					}
-
+					// break omitted
 				case 'd':  // date
 				case 't':  // datetime
 				case 'dt': // datetime
@@ -378,7 +376,7 @@ final class Translator
 					} else {
 						return $modifier === 'd' ? $this->driver->escapeDate($value) : $this->driver->escapeDateTime($value);
 					}
-
+					// break omitted
 				case 'by':
 				case 'n':  // composed identifier name
 					return $this->identifiers->$value;

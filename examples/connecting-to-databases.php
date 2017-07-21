@@ -74,7 +74,7 @@ try {
 		'driver' => 'odbc',
 		'username' => 'root',
 		'password' => '***',
-		'dsn' => 'Driver={Microsoft Access Driver (*.mdb)};Dbq='.__DIR__.'/data/sample.mdb',
+		'dsn' => 'Driver={Microsoft Access Driver (*.mdb)};Dbq=' . __DIR__ . '/data/sample.mdb',
 	]);
 	echo 'OK';
 } catch (Dibi\Exception $e) {

@@ -1,17 +1,19 @@
 <?php
 
-use Tester\Assert;
 use Dibi\Type;
+use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
 
 
 class MockResult extends Dibi\Result
 {
-	function __construct()
-	{}
+	public function __construct()
+	{
+	}
 
-	function test($row)
+
+	public function test($row)
 	{
 		$normalize = new ReflectionMethod('Dibi\Result', 'normalize');
 		$normalize->setAccessible(true);
