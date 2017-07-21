@@ -49,7 +49,7 @@ dibi::query('SELECT * FROM users WHERE id = ?', $id);
 
 $arr = [
     'name' => 'John',
-    'is_admin'  => TRUE,
+    'is_admin'  => true,
 ];
 dibi::query('INSERT INTO users', $arr);
 // INSERT INTO users (`name`, `is_admin`) VALUES ('John', 1)

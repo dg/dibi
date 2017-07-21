@@ -88,7 +88,7 @@ trait Strict
 	 */
 	public function __isset($name)
 	{
-		return FALSE;
+		return false;
 	}
 
 
@@ -108,29 +108,29 @@ trait Strict
 	 * @param  callable
 	 * @return mixed
 	 */
-	public static function extensionMethod($name, $callback = NULL)
+	public static function extensionMethod($name, $callback = null)
 	{
-		if (strpos($name, '::') === FALSE) {
+		if (strpos($name, '::') === false) {
 			$class = get_called_class();
 		} else {
 			list($class, $name) = explode('::', $name);
 			$class = (new ReflectionClass($class))->getName();
 		}
 
-		if (self::$extMethods === NULL) { // for backwards compatibility
+		if (self::$extMethods === null) { // for backwards compatibility
 			$list = get_defined_functions();
 			foreach ($list['user'] as $fce) {
 				$pair = explode('_prototype_', $fce);
 				if (count($pair) === 2) {
 					trigger_error("Extension method defined as $fce() is deprecated, use $class::extensionMethod('$name', ...).", E_USER_DEPRECATED);
 					self::$extMethods[$pair[1]][(new ReflectionClass($pair[0]))->getName()] = $fce;
-					self::$extMethods[$pair[1]][''] = NULL;
+					self::$extMethods[$pair[1]][''] = null;
 				}
 			}
 		}
 
 		$list = & self::$extMethods[strtolower($name)];
-		if ($callback === NULL) { // getter
+		if ($callback === null) { // getter
 			$cache = &$list[''][$class];
 			if (isset($cache)) {
 				return $cache;
@@ -141,11 +141,11 @@ trait Strict
 					return $cache = $list[$cl];
 				}
 			}
-			return $cache = FALSE;
+			return $cache = false;
 
 		} else { // setter
 			$list[$class] = $callback;
-			$list[''] = NULL;
+			$list[''] = null;
 		}
 	}
 }

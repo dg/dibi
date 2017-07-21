@@ -25,7 +25,7 @@ class MockDriver extends Dibi\Drivers\SqlsrvDriver
 
 	function fetch($assoc)
 	{
-		return FALSE;
+		return false;
 	}
 }
 

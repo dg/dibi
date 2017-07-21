@@ -19,7 +19,7 @@ $id = 10;
 $record = [
 	'title' => 'Super product',
 	'price' => 318,
-	'active' => TRUE,
+	'active' => true,
 ];
 
 // SELECT ...

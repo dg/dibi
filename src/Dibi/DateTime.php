@@ -18,12 +18,12 @@ class DateTime extends \DateTime
 	/**
 	 * @param  string|int
 	 */
-	public function __construct($time = 'now', \DateTimeZone $timezone = NULL)
+	public function __construct($time = 'now', \DateTimeZone $timezone = null)
 	{
 		if (is_numeric($time)) {
 			parent::__construct('@' . $time);
 			$this->setTimeZone($timezone ? $timezone : new \DateTimeZone(date_default_timezone_get()));
-		} elseif ($timezone === NULL) {
+		} elseif ($timezone === null) {
 			parent::__construct($time);
 		} else {
 			parent::__construct($time, $timezone);

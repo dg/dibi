@@ -26,17 +26,17 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
 	use Dibi\Strict;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $connection;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $resultSet;
 
 	/** @var bool */
-	private $autoFree = TRUE;
+	private $autoFree = true;
 
-	/** @var int|FALSE  Affected rows */
-	private $affectedRows = FALSE;
+	/** @var int|false  Affected rows */
+	private $affectedRows = false;
 
 
 	/**
@@ -57,7 +57,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function connect(array &$config)
 	{
-		$error = NULL;
+		$error = null;
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
 
@@ -128,16 +128,16 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return Dibi\ResultDriver|NULL
+	 * @return Dibi\ResultDriver|null
 	 * @throws Dibi\DriverException
 	 */
 	public function query($sql)
 	{
-		$this->affectedRows = FALSE;
+		$this->affectedRows = false;
 		$res = @pg_query($this->connection, $sql); // intentionally @
 
-		if ($res === FALSE) {
-			throw self::createException(pg_last_error($this->connection), NULL, $sql);
+		if ($res === false) {
+			throw self::createException(pg_last_error($this->connection), null, $sql);
 
 		} elseif (is_resource($res)) {
 			$this->affectedRows = pg_affected_rows($res);
@@ -145,21 +145,21 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				return $this->createResultDriver($res);
 			}
 		}
-		return NULL;
+		return null;
 	}
 
 
 	/**
 	 * @return Dibi\DriverException
 	 */
-	public static function createException($message, $code = NULL, $sql = NULL)
+	public static function createException($message, $code = null, $sql = null)
 	{
-		if ($code === NULL && preg_match('#^ERROR:\s+(\S+):\s*#', $message, $m)) {
+		if ($code === null && preg_match('#^ERROR:\s+(\S+):\s*#', $message, $m)) {
 			$code = $m[1];
 			$message = substr($message, strlen($m[0]));
 		}
 
-		if ($code === '0A000' && strpos($message, 'truncate') !== FALSE) {
+		if ($code === '0A000' && strpos($message, 'truncate') !== false) {
 			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
 
 		} elseif ($code === '23502') {
@@ -179,7 +179,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|false  number of rows or false on error
 	 */
 	public function getAffectedRows()
 	{
@@ -189,11 +189,11 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|false  int on success or false on failure
 	 */
 	public function getInsertId($sequence)
 	{
-		if ($sequence === NULL) {
+		if ($sequence === null) {
 			// PostgreSQL 8.1 is needed
 			$res = $this->query('SELECT LASTVAL()');
 		} else {
@@ -201,11 +201,11 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		}
 
 		if (!$res) {
-			return FALSE;
+			return false;
 		}
 
-		$row = $res->fetch(FALSE);
-		return is_array($row) ? $row[0] : FALSE;
+		$row = $res->fetch(false);
+		return is_array($row) ? $row[0] : false;
 	}
 
 
@@ -215,7 +215,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function begin($savepoint = NULL)
+	public function begin($savepoint = null)
 	{
 		$this->query($savepoint ? "SAVEPOINT $savepoint" : 'START TRANSACTION');
 	}
@@ -227,7 +227,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function commit($savepoint = NULL)
+	public function commit($savepoint = null)
 	{
 		$this->query($savepoint ? "RELEASE SAVEPOINT $savepoint" : 'COMMIT');
 	}
@@ -239,7 +239,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback($savepoint = NULL)
+	public function rollback($savepoint = null)
 	{
 		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT $savepoint" : 'ROLLBACK');
 	}
@@ -251,17 +251,17 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function inTransaction()
 	{
-		return !in_array(pg_transaction_status($this->connection), [PGSQL_TRANSACTION_UNKNOWN, PGSQL_TRANSACTION_IDLE], TRUE);
+		return !in_array(pg_transaction_status($this->connection), [PGSQL_TRANSACTION_UNKNOWN, PGSQL_TRANSACTION_IDLE], true);
 	}
 
 
 	/**
 	 * Returns the connection resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResource()
 	{
-		return is_resource($this->connection) ? $this->connection : NULL;
+		return is_resource($this->connection) ? $this->connection : null;
 	}
 
 
@@ -402,8 +402,8 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string
-	 * @param  int|NULL
-	 * @param  int|NULL
+	 * @param  int|null
+	 * @param  int|null
 	 * @return void
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
@@ -411,7 +411,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 		}
-		if ($limit !== NULL) {
+		if ($limit !== null) {
 			$sql .= ' LIMIT ' . (int) $limit;
 		}
 		if ($offset) {
@@ -445,19 +445,19 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
 	public function fetch($assoc)
 	{
-		return pg_fetch_array($this->resultSet, NULL, $assoc ? PGSQL_ASSOC : PGSQL_NUM);
+		return pg_fetch_array($this->resultSet, null, $assoc ? PGSQL_ASSOC : PGSQL_NUM);
 	}
 
 
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int   the 0-based cursor pos to seek to
-	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
+	 * @return bool  true on success, false if unable to seek to specified record
 	 */
 	public function seek($row)
 	{
@@ -472,7 +472,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	public function free()
 	{
 		pg_free_result($this->resultSet);
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
@@ -499,12 +499,12 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResultResource()
 	{
-		$this->autoFree = FALSE;
-		return is_resource($this->resultSet) ? $this->resultSet : NULL;
+		$this->autoFree = false;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 
 
@@ -601,13 +601,13 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		}
 
 		$columns = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$size = (int) max($row['character_maximum_length'], $row['numeric_precision']);
 			$columns[] = [
 				'name' => $row['column_name'],
 				'table' => $table,
 				'nativetype' => strtoupper($row['udt_name']),
-				'size' => $size > 0 ? $size : NULL,
+				'size' => $size > 0 ? $size : null,
 				'nullable' => $row['is_nullable'] === 'YES' || $row['is_nullable'] === 't',
 				'default' => $row['column_default'],
 				'autoincrement' => (int) $row['ordinal_position'] === $primary && substr($row['column_default'], 0, 7) === 'nextval',
@@ -641,7 +641,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		");
 
 		$columns = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$columns[$row['ordinal_position']] = $row['column_name'];
 		}
 
@@ -654,7 +654,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		");
 
 		$indexes = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$indexes[$row['relname']]['name'] = $row['relname'];
 			$indexes[$row['relname']]['unique'] = $row['indisunique'] === 't';
 			$indexes[$row['relname']]['primary'] = $row['indisprimary'] === 't';
@@ -715,7 +715,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		");
 
 		$fKeys = $references = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			if (!isset($fKeys[$row['name']])) {
 				$fKeys[$row['name']] = [
 					'name' => $row['name'],

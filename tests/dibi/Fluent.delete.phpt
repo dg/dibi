@@ -30,7 +30,7 @@ Assert::same(
 	(string) $fluent
 );
 
-$fluent->setFlag('IGNORE', FALSE);
+$fluent->setFlag('IGNORE', false);
 
 Assert::same(
 	reformat('DELETE FROM [anotherTable] USING [thirdTable]'),

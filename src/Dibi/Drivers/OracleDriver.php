@@ -19,7 +19,7 @@ use Dibi;
  *   - password (or pass)
  *   - charset => character encoding to set
  *   - schema => alters session schema
- *   - nativeDate => use native date format (defaults to FALSE)
+ *   - nativeDate => use native date format (defaults to false)
  *   - resource (resource) => existing connection resource
  *   - persistent => Creates persistent connections with oci_pconnect instead of oci_new_connect
  *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
@@ -28,23 +28,23 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
 	use Dibi\Strict;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $connection;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $resultSet;
 
 	/** @var bool */
-	private $autoFree = TRUE;
+	private $autoFree = true;
 
 	/** @var bool */
-	private $autocommit = TRUE;
+	private $autocommit = true;
 
 	/** @var string  Date and datetime format */
 	private $fmtDate, $fmtDateTime;
 
-	/** @var int|FALSE Number of affected rows */
-	private $affectedRows = FALSE;
+	/** @var int|false Number of affected rows */
+	private $affectedRows = false;
 
 
 	/**
@@ -107,12 +107,12 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return Dibi\ResultDriver|NULL
+	 * @return Dibi\ResultDriver|null
 	 * @throws Dibi\DriverException
 	 */
 	public function query($sql)
 	{
-		$this->affectedRows = FALSE;
+		$this->affectedRows = false;
 		$res = oci_parse($this->connection, $sql);
 		if ($res) {
 			@oci_execute($res, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
@@ -128,7 +128,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			$err = oci_error($this->connection);
 			throw new Dibi\DriverException($err['message'], $err['code'], $sql);
 		}
-		return NULL;
+		return null;
 	}
 
 
@@ -137,13 +137,13 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public static function createException($message, $code, $sql)
 	{
-		if (in_array($code, [1, 2299, 38911], TRUE)) {
+		if (in_array($code, [1, 2299, 38911], true)) {
 			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
 
-		} elseif (in_array($code, [1400], TRUE)) {
+		} elseif (in_array($code, [1400], true)) {
 			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
 
-		} elseif (in_array($code, [2266, 2291, 2292], TRUE)) {
+		} elseif (in_array($code, [2266, 2291, 2292], true)) {
 			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
 
 		} else {
@@ -154,7 +154,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|false  number of rows or false on error
 	 */
 	public function getAffectedRows()
 	{
@@ -164,12 +164,12 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|false  int on success or false on failure
 	 */
 	public function getInsertId($sequence)
 	{
-		$row = $this->query("SELECT $sequence.CURRVAL AS ID FROM DUAL")->fetch(TRUE);
-		return isset($row['ID']) ? (int) $row['ID'] : FALSE;
+		$row = $this->query("SELECT $sequence.CURRVAL AS ID FROM DUAL")->fetch(true);
+		return isset($row['ID']) ? (int) $row['ID'] : false;
 	}
 
 
@@ -178,9 +178,9 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * @param  string  optional savepoint name
 	 * @return void
 	 */
-	public function begin($savepoint = NULL)
+	public function begin($savepoint = null)
 	{
-		$this->autocommit = FALSE;
+		$this->autocommit = false;
 	}
 
 
@@ -190,13 +190,13 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function commit($savepoint = NULL)
+	public function commit($savepoint = null)
 	{
 		if (!oci_commit($this->connection)) {
 			$err = oci_error($this->connection);
 			throw new Dibi\DriverException($err['message'], $err['code']);
 		}
-		$this->autocommit = TRUE;
+		$this->autocommit = true;
 	}
 
 
@@ -206,23 +206,23 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback($savepoint = NULL)
+	public function rollback($savepoint = null)
 	{
 		if (!oci_rollback($this->connection)) {
 			$err = oci_error($this->connection);
 			throw new Dibi\DriverException($err['message'], $err['code']);
 		}
-		$this->autocommit = TRUE;
+		$this->autocommit = true;
 	}
 
 
 	/**
 	 * Returns the connection resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResource()
 	{
-		return is_resource($this->connection) ? $this->connection : NULL;
+		return is_resource($this->connection) ? $this->connection : null;
 	}
 
 
@@ -360,8 +360,8 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string
-	 * @param  int|NULL
-	 * @param  int|NULL
+	 * @param  int|null
+	 * @param  int|null
 	 * @return void
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
@@ -372,10 +372,10 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		} elseif ($offset) {
 			// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
 			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
-				. ($limit !== NULL ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
+				. ($limit !== null ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
 				. ') WHERE "__rnum" > '. (int) $offset;
 
-		} elseif ($limit !== NULL) {
+		} elseif ($limit !== null) {
 			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
 		}
 	}
@@ -406,7 +406,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
 	public function fetch($assoc)
@@ -418,7 +418,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int   the 0-based cursor pos to seek to
-	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
+	 * @return bool  true on success, false if unable to seek to specified record
 	 */
 	public function seek($row)
 	{
@@ -433,7 +433,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	public function free()
 	{
 		oci_free_statement($this->resultSet);
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
@@ -449,7 +449,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			$type = oci_field_type($this->resultSet, $i);
 			$columns[] = [
 				'name' => oci_field_name($this->resultSet, $i),
-				'table' => NULL,
+				'table' => null,
 				'fullname' => oci_field_name($this->resultSet, $i),
 				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
 			];
@@ -460,12 +460,12 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResultResource()
 	{
-		$this->autoFree = FALSE;
-		return is_resource($this->resultSet) ? $this->resultSet : NULL;
+		$this->autoFree = false;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 
 
@@ -480,7 +480,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	{
 		$res = $this->query('SELECT * FROM cat');
 		$tables = [];
-		while ($row = $res->fetch(FALSE)) {
+		while ($row = $res->fetch(false)) {
 			if ($row[1] === 'TABLE' || $row[1] === 'VIEW') {
 				$tables[] = [
 					'name' => $row[0],
@@ -501,12 +501,12 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	{
 		$res = $this->query('SELECT * FROM "ALL_TAB_COLUMNS" WHERE "TABLE_NAME" = ' . $this->escapeText($table));
 		$columns = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$columns[] = [
 				'table' => $row['TABLE_NAME'],
 				'name' => $row['COLUMN_NAME'],
 				'nativetype' => $row['DATA_TYPE'],
-				'size' => isset($row['DATA_LENGTH']) ? $row['DATA_LENGTH'] : NULL,
+				'size' => isset($row['DATA_LENGTH']) ? $row['DATA_LENGTH'] : null,
 				'nullable' => $row['NULLABLE'] === 'Y',
 				'default' => $row['DATA_DEFAULT'],
 				'vendor' => $row,

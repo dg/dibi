@@ -22,7 +22,7 @@ class Helpers
 	 * @param  bool  return output instead of printing it?
 	 * @return string
 	 */
-	public static function dump($sql = NULL, $return = FALSE)
+	public static function dump($sql = null, $return = false)
 	{
 		ob_start();
 		if ($sql instanceof Result && PHP_SAPI === 'cli') {
@@ -68,7 +68,7 @@ class Helpers
 				: "</tbody>\n</table>\n";
 
 		} else {
-			if ($sql === NULL) {
+			if ($sql === null) {
 				$sql = \dibi::$sql;
 			}
 
@@ -136,12 +136,12 @@ class Helpers
 
 	/**
 	 * Finds the best suggestion.
-	 * @return string|NULL
+	 * @return string|null
 	 * @internal
 	 */
 	public static function getSuggestion(array $items, $value)
 	{
-		$best = NULL;
+		$best = null;
 		$min = (strlen($value) / 4 + 1) * 10 + .1;
 		foreach (array_unique($items, SORT_REGULAR) as $item) {
 			$item = is_object($item) ? $item->getName() : $item;
@@ -176,7 +176,7 @@ class Helpers
 	/**
 	 * Heuristic type detection.
 	 * @param  string
-	 * @return string|NULL
+	 * @return string|null
 	 * @internal
 	 */
 	public static function detectType($type)
@@ -198,7 +198,7 @@ class Helpers
 				return $val;
 			}
 		}
-		return NULL;
+		return null;
 	}
 
 
@@ -207,7 +207,7 @@ class Helpers
 	 */
 	public static function getTypeCache()
 	{
-		if (self::$types === NULL) {
+		if (self::$types === null) {
 			self::$types = new HashMap([__CLASS__, 'detectType']);
 		}
 		return self::$types;
@@ -239,7 +239,7 @@ class Helpers
 	 * Import SQL dump from file.
 	 * @return int  count of sql commands
 	 */
-	public static function loadFromFile(Connection $connection, $file, callable $onProgress = NULL)
+	public static function loadFromFile(Connection $connection, $file, callable $onProgress = null)
 	{
 		@set_time_limit(0); // intentionally @
 
@@ -253,7 +253,7 @@ class Helpers
 		$delimiter = ';';
 		$sql = '';
 		$driver = $connection->getDriver();
-		while (($s = fgets($handle)) !== FALSE) {
+		while (($s = fgets($handle)) !== false) {
 			$size += strlen($s);
 			if (strtoupper(substr($s, 0, 10)) === 'DELIMITER ') {
 				$delimiter = trim(substr($s, 10));
@@ -264,7 +264,7 @@ class Helpers
 				$sql = '';
 				$count++;
 				if ($onProgress) {
-					call_user_func($onProgress, $count, isset($stat['size']) ? $size * 100 / $stat['size'] : NULL);
+					call_user_func($onProgress, $count, isset($stat['size']) ? $size * 100 / $stat['size'] : null);
 				}
 
 			} else {
@@ -276,7 +276,7 @@ class Helpers
 			$driver->query($sql);
 			$count++;
 			if ($onProgress) {
-				call_user_func($onProgress, $count, isset($stat['size']) ? 100 : NULL);
+				call_user_func($onProgress, $count, isset($stat['size']) ? 100 : null);
 			}
 		}
 		fclose($handle);

@@ -160,7 +160,7 @@ class Table
 	 */
 	protected function initColumns()
 	{
-		if ($this->columns === NULL) {
+		if ($this->columns === null) {
 			$this->columns = [];
 			foreach ($this->reflector->getColumns($this->name) as $info) {
 				$this->columns[strtolower($info['name'])] = new Column($this->reflector, $info);
@@ -174,7 +174,7 @@ class Table
 	 */
 	protected function initIndexes()
 	{
-		if ($this->indexes === NULL) {
+		if ($this->indexes === null) {
 			$this->initColumns();
 			$this->indexes = [];
 			foreach ($this->reflector->getIndexes($this->name) as $info) {

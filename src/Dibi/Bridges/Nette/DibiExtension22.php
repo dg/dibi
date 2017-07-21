@@ -20,7 +20,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 	private $debugMode;
 
 
-	public function __construct($debugMode = NULL)
+	public function __construct($debugMode = null)
 	{
 		$this->debugMode = $debugMode;
 	}
@@ -31,7 +31,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 		$container = $this->getContainerBuilder();
 		$config = $this->getConfig();
 
-		if ($this->debugMode === NULL) {
+		if ($this->debugMode === null) {
 			$this->debugMode = $container->parameters['debugMode'];
 		}
 
@@ -51,7 +51,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 
 		$connection = $container->addDefinition($this->prefix('connection'))
 			->setClass('Dibi\Connection', [$config])
-			->setAutowired(isset($config['autowired']) ? $config['autowired'] : TRUE);
+			->setAutowired(isset($config['autowired']) ? $config['autowired'] : true);
 
 		if (class_exists('Tracy\Debugger')) {
 			$connection->addSetup(
@@ -62,8 +62,8 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 		if ($useProfiler) {
 			$panel = $container->addDefinition($this->prefix('panel'))
 				->setClass('Dibi\Bridges\Tracy\Panel', [
-					isset($config['explain']) ? $config['explain'] : TRUE,
-					isset($config['filter']) && $config['filter'] === FALSE ? Dibi\Event::ALL : Dibi\Event::QUERY,
+					isset($config['explain']) ? $config['explain'] : true,
+					isset($config['filter']) && $config['filter'] === false ? Dibi\Event::ALL : Dibi\Event::QUERY,
 				]);
 			$connection->addSetup([$panel, 'register'], [$connection]);
 		}

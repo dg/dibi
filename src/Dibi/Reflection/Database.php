@@ -104,7 +104,7 @@ class Database
 	 */
 	protected function init()
 	{
-		if ($this->tables === NULL) {
+		if ($this->tables === null) {
 			$this->tables = [];
 			foreach ($this->reflector->getTables() as $info) {
 				$this->tables[strtolower($info['name'])] = new Table($this->reflector, $info);

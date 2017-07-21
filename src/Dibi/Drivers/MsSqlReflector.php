@@ -39,7 +39,7 @@ class MsSqlReflector implements Dibi\Reflector
 			FROM INFORMATION_SCHEMA.TABLES
 		');
 		$tables = [];
-		while ($row = $res->fetch(FALSE)) {
+		while ($row = $res->fetch(false)) {
 			$tables[] = [
 				'name' => $row[0],
 				'view' => isset($row[1]) && $row[1] === 'VIEW',
@@ -54,24 +54,24 @@ class MsSqlReflector implements Dibi\Reflector
 	 * @param  string
 	 * @return int
 	 */
-	public function getTableCount($table, $fallback = TRUE)
+	public function getTableCount($table, $fallback = true)
 	{
 		if (empty($table)) {
-			return FALSE;
+			return false;
 		}
 		$result = $this->driver->query("
 			SELECT MAX(rowcnt)
 			FROM sys.sysindexes
 			WHERE id=OBJECT_ID({$this->driver->escapeIdentifier($table)})
 		");
-		$row = $result->fetch(FALSE);
+		$row = $result->fetch(false);
 
 		if (!is_array($row) || count($row) < 1) {
 			if ($fallback) {
-				$row = $this->driver->query("SELECT COUNT(*) FROM {$this->driver->escapeIdentifier($table)}")->fetch(FALSE);
+				$row = $this->driver->query("SELECT COUNT(*) FROM {$this->driver->escapeIdentifier($table)}")->fetch(false);
 				$count = intval($row[0]);
 			} else {
-				$count = FALSE;
+				$count = false;
 			}
 		} else {
 			$count = intval($row[0]);
@@ -95,8 +95,8 @@ class MsSqlReflector implements Dibi\Reflector
 			ORDER BY TABLE_NAME, ORDINAL_POSITION
 		");
 		$columns = [];
-		while ($row = $res->fetch(TRUE)) {
-			$size = FALSE;
+		while ($row = $res->fetch(true)) {
+			$size = false;
 			$type = strtoupper($row['DATA_TYPE']);
 
 			$size_cols = [
@@ -119,10 +119,10 @@ class MsSqlReflector implements Dibi\Reflector
 				'table' => $table,
 				'nativetype' => $type,
 				'size' => $size,
-				'unsigned' => NULL,
+				'unsigned' => null,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
-				'autoincrement' => FALSE,
+				'autoincrement' => false,
 				'vendor' => $row,
 			];
 		}
@@ -155,7 +155,7 @@ class MsSqlReflector implements Dibi\Reflector
 		");
 
 		$indexes = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$index_name = $row['index_name'];
 
 			if (!isset($indexes[$index_name])) {
@@ -195,7 +195,7 @@ class MsSqlReflector implements Dibi\Reflector
 		");
 
 		$keys = [];
-		while ($row = $res->fetch(TRUE)) {
+		while ($row = $res->fetch(true)) {
 			$key_name = $row['foreign_key'];
 
 			if (!isset($keys[$key_name])) {
@@ -203,8 +203,8 @@ class MsSqlReflector implements Dibi\Reflector
 				$keys[$key_name]['local'] = [$row['column_name']]; // local columns
 				$keys[$key_name]['table'] = $row['reference_table_name']; // referenced table
 				$keys[$key_name]['foreign'] = [$row['reference_column_name']]; // referenced columns
-				$keys[$key_name]['onDelete'] = FALSE;
-				$keys[$key_name]['onUpdate'] = FALSE;
+				$keys[$key_name]['onDelete'] = false;
+				$keys[$key_name]['onUpdate'] = false;
 			} else {
 				$keys[$key_name]['local'][] = $row['column_name']; // local columns
 				$keys[$key_name]['foreign'][] = $row['reference_column_name']; // referenced columns

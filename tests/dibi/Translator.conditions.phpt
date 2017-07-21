@@ -33,7 +33,7 @@ FROM  [customers] /* ... */'),
 
 	$conn->translate('
 SELECT *
-FROM %if', TRUE, '[customers] %else [products]'
+FROM %if', true, '[customers] %else [products]'
 ));
 
 
@@ -51,8 +51,8 @@ WHERE [id] > 0
 SELECT *
 FROM [people]
 WHERE [id] > 0
-	%if', FALSE, 'AND [foo]=%i', 1, '
-	%else %if', TRUE, 'AND [bar]=%i', 1, '
+	%if', false, 'AND [foo]=%i', 1, '
+	%else %if', true, 'AND [bar]=%i', 1, '
 '));
 
 
@@ -70,8 +70,8 @@ WHERE
 SELECT *
 FROM [customers]
 WHERE
-	%if', TRUE, '[name] LIKE %s', 'xxx', '
-		%if', FALSE, 'AND [admin]=1 %end
+	%if', true, '[name] LIKE %s', 'xxx', '
+		%if', false, 'AND [admin]=1 %end
 	%else 1 LIMIT 10 %end'
 ));
 
@@ -81,7 +81,7 @@ Assert::same(
 	'SELECT * FROM foo /* (limit 3) (offset 5) */',
 	$conn->translate(
 	'SELECT * FROM foo',
-	'%if', FALSE,
+	'%if', false,
 		'%lmt', 3,
 		'%ofs', 5,
 	'%end'

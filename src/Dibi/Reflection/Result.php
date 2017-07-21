@@ -50,7 +50,7 @@ class Result
 	 * @param  bool
 	 * @return string[]
 	 */
-	public function getColumnNames($fullNames = FALSE)
+	public function getColumnNames($fullNames = false)
 	{
 		$this->initColumns();
 		$res = [];
@@ -94,9 +94,9 @@ class Result
 	 */
 	protected function initColumns()
 	{
-		if ($this->columns === NULL) {
+		if ($this->columns === null) {
 			$this->columns = [];
-			$reflector = $this->driver instanceof Dibi\Reflector ? $this->driver : NULL;
+			$reflector = $this->driver instanceof Dibi\Reflector ? $this->driver : null;
 			foreach ($this->driver->getResultColumns() as $info) {
 				$this->columns[] = $this->names[strtolower($info['name'])] = new Column($reflector, $info);
 			}

@@ -36,14 +36,14 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	const ERROR_DUPLICATE_ENTRY = 1062;
 	const ERROR_DATA_TRUNCATED = 1265;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $connection;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $resultSet;
 
 	/** @var bool */
-	private $autoFree = TRUE;
+	private $autoFree = true;
 
 	/** @var bool  Is buffered (seekable and countable)? */
 	private $buffered;
@@ -88,7 +88,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 					if (!isset($config['socket'])) {
 						$config['socket'] = ini_get('mysql.default_socket');
 					}
-					$config['host'] = NULL;
+					$config['host'] = null;
 				}
 			}
 
@@ -99,7 +99,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 			}
 
 			if (empty($config['persistent'])) {
-				$this->connection = @mysql_connect($host, $config['username'], $config['password'], TRUE, $config['flags']); // intentionally @
+				$this->connection = @mysql_connect($host, $config['username'], $config['password'], true, $config['flags']); // intentionally @
 			} else {
 				$this->connection = @mysql_pconnect($host, $config['username'], $config['password'], $config['flags']); // intentionally @
 			}
@@ -146,7 +146,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return Dibi\ResultDriver|NULL
+	 * @return Dibi\ResultDriver|null
 	 * @throws Dibi\DriverException
 	 */
 	public function query($sql)
@@ -187,7 +187,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|false  number of rows or false on error
 	 */
 	public function getAffectedRows()
 	{
@@ -197,7 +197,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|false  int on success or false on failure
 	 */
 	public function getInsertId($sequence)
 	{
@@ -211,7 +211,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function begin($savepoint = NULL)
+	public function begin($savepoint = null)
 	{
 		$this->query($savepoint ? "SAVEPOINT $savepoint" : 'START TRANSACTION');
 	}
@@ -223,7 +223,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function commit($savepoint = NULL)
+	public function commit($savepoint = null)
 	{
 		$this->query($savepoint ? "RELEASE SAVEPOINT $savepoint" : 'COMMIT');
 	}
@@ -235,7 +235,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback($savepoint = NULL)
+	public function rollback($savepoint = null)
 	{
 		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT $savepoint" : 'ROLLBACK');
 	}
@@ -243,11 +243,11 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResource()
 	{
-		return is_resource($this->connection) ? $this->connection : NULL;
+		return is_resource($this->connection) ? $this->connection : null;
 	}
 
 
@@ -386,8 +386,8 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string
-	 * @param  int|NULL
-	 * @param  int|NULL
+	 * @param  int|null
+	 * @param  int|null
 	 * @return void
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
@@ -395,9 +395,9 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
-		} elseif ($limit !== NULL || $offset) {
+		} elseif ($limit !== null || $offset) {
 			// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-			$sql .= ' LIMIT ' . ($limit === NULL ? '18446744073709551615' : (int) $limit)
+			$sql .= ' LIMIT ' . ($limit === null ? '18446744073709551615' : (int) $limit)
 				. ($offset ? ' OFFSET ' . (int) $offset : '');
 		}
 	}
@@ -431,7 +431,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
 	public function fetch($assoc)
@@ -443,7 +443,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int   the 0-based cursor pos to seek to
-	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
+	 * @return bool  true on success, false if unable to seek to specified record
 	 * @throws Dibi\Exception
 	 */
 	public function seek($row)
@@ -463,7 +463,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	public function free()
 	{
 		mysql_free_result($this->resultSet);
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
@@ -482,7 +482,7 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 				'table' => $row['table'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
 				'nativetype' => strtoupper($row['type']),
-				'type' => $row['type'] === 'time' ? Dibi\Type::TIME_INTERVAL : NULL,
+				'type' => $row['type'] === 'time' ? Dibi\Type::TIME_INTERVAL : null,
 				'vendor' => $row,
 			];
 		}
@@ -492,11 +492,11 @@ class MySqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResultResource()
 	{
-		$this->autoFree = FALSE;
-		return is_resource($this->resultSet) ? $this->resultSet : NULL;
+		$this->autoFree = false;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 }

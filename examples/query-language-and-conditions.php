@@ -14,13 +14,13 @@ dibi::connect([
 
 
 // some variables
-$cond1 = TRUE;
-$cond2 = FALSE;
+$cond1 = true;
+$cond2 = false;
 $foo = -1;
 $bar = 2;
 
 // conditional variable
-$name = $cond1 ? 'K%' : NULL;
+$name = $cond1 ? 'K%' : null;
 
 // if & end
 dibi::test('

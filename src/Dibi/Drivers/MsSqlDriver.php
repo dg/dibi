@@ -26,14 +26,14 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $connection;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $resultSet;
 
 	/** @var bool */
-	private $autoFree = TRUE;
+	private $autoFree = true;
 
 
 	/**
@@ -57,7 +57,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
 		} elseif (empty($config['persistent'])) {
-			$this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], TRUE); // intentionally @
+			$this->connection = @mssql_connect($config['host'], $config['username'], $config['password'], true); // intentionally @
 		} else {
 			$this->connection = @mssql_pconnect($config['host'], $config['username'], $config['password']); // intentionally @
 		}
@@ -85,26 +85,26 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return Dibi\ResultDriver|NULL
+	 * @return Dibi\ResultDriver|null
 	 * @throws Dibi\DriverException
 	 */
 	public function query($sql)
 	{
 		$res = @mssql_query($sql, $this->connection); // intentionally @
 
-		if ($res === FALSE) {
+		if ($res === false) {
 			throw new Dibi\DriverException(mssql_get_last_message(), 0, $sql);
 
 		} elseif (is_resource($res)) {
 			return $this->createResultDriver($res);
 		}
-		return NULL;
+		return null;
 	}
 
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|false  number of rows or false on error
 	 */
 	public function getAffectedRows()
 	{
@@ -114,7 +114,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|false  int on success or false on failure
 	 */
 	public function getInsertId($sequence)
 	{
@@ -123,7 +123,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 			$row = mssql_fetch_row($res);
 			return $row[0];
 		}
-		return FALSE;
+		return false;
 	}
 
 
@@ -133,7 +133,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function begin($savepoint = NULL)
+	public function begin($savepoint = null)
 	{
 		$this->query('BEGIN TRANSACTION');
 	}
@@ -145,7 +145,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function commit($savepoint = NULL)
+	public function commit($savepoint = null)
 	{
 		$this->query('COMMIT');
 	}
@@ -157,7 +157,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback($savepoint = NULL)
+	public function rollback($savepoint = null)
 	{
 		$this->query('ROLLBACK');
 	}
@@ -165,11 +165,11 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResource()
 	{
-		return is_resource($this->connection) ? $this->connection : NULL;
+		return is_resource($this->connection) ? $this->connection : null;
 	}
 
 
@@ -302,8 +302,8 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string
-	 * @param  int|NULL
-	 * @param  int|NULL
+	 * @param  int|null
+	 * @param  int|null
 	 * @return void
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
@@ -314,7 +314,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 		} elseif ($limit < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
-		} elseif ($limit !== NULL) {
+		} elseif ($limit !== null) {
 			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
 		}
 	}
@@ -345,7 +345,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
 	public function fetch($assoc)
@@ -357,7 +357,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int      the 0-based cursor pos to seek to
-	 * @return boolean  TRUE on success, FALSE if unable to seek to specified record
+	 * @return boolean  true on success, false if unable to seek to specified record
 	 */
 	public function seek($row)
 	{
@@ -372,7 +372,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 	public function free()
 	{
 		mssql_free_result($this->resultSet);
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
@@ -399,11 +399,11 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResultResource()
 	{
-		$this->autoFree = FALSE;
-		return is_resource($this->resultSet) ? $this->resultSet : NULL;
+		$this->autoFree = false;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 }

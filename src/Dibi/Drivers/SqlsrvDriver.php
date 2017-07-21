@@ -29,17 +29,17 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $connection;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $resultSet;
 
 	/** @var bool */
-	private $autoFree = TRUE;
+	private $autoFree = true;
 
-	/** @var int|FALSE  Affected rows */
-	private $affectedRows = FALSE;
+	/** @var int|false  Affected rows */
+	private $affectedRows = false;
 
 	/** @var string */
 	private $version = '';
@@ -106,15 +106,15 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return Dibi\ResultDriver|NULL
+	 * @return Dibi\ResultDriver|null
 	 * @throws Dibi\DriverException
 	 */
 	public function query($sql)
 	{
-		$this->affectedRows = FALSE;
+		$this->affectedRows = false;
 		$res = sqlsrv_query($this->connection, $sql);
 
-		if ($res === FALSE) {
+		if ($res === false) {
 			$info = sqlsrv_errors();
 			throw new Dibi\DriverException($info[0]['message'], $info[0]['code'], $sql);
 
@@ -122,13 +122,13 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			$this->affectedRows = sqlsrv_rows_affected($res);
 			return $this->createResultDriver($res);
 		}
-		return NULL;
+		return null;
 	}
 
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|false  number of rows or false on error
 	 */
 	public function getAffectedRows()
 	{
@@ -138,7 +138,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|false  int on success or false on failure
 	 */
 	public function getInsertId($sequence)
 	{
@@ -147,7 +147,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			$row = sqlsrv_fetch_array($res, SQLSRV_FETCH_NUMERIC);
 			return $row[0];
 		}
-		return FALSE;
+		return false;
 	}
 
 
@@ -157,7 +157,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function begin($savepoint = NULL)
+	public function begin($savepoint = null)
 	{
 		sqlsrv_begin_transaction($this->connection);
 	}
@@ -169,7 +169,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function commit($savepoint = NULL)
+	public function commit($savepoint = null)
 	{
 		sqlsrv_commit($this->connection);
 	}
@@ -181,7 +181,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback($savepoint = NULL)
+	public function rollback($savepoint = null)
 	{
 		sqlsrv_rollback($this->connection);
 	}
@@ -189,11 +189,11 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResource()
 	{
-		return is_resource($this->connection) ? $this->connection : NULL;
+		return is_resource($this->connection) ? $this->connection : null;
 	}
 
 
@@ -326,8 +326,8 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string
-	 * @param  int|NULL
-	 * @param  int|NULL
+	 * @param  int|null
+	 * @param  int|null
 	 * @return void
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
@@ -339,11 +339,11 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 			if ($offset) {
 				throw new Dibi\NotSupportedException('Offset is not supported by this database.');
 
-			} elseif ($limit !== NULL) {
+			} elseif ($limit !== null) {
 				$sql = sprintf('SELECT TOP (%d) * FROM (%s) t', $limit, $sql);
 			}
 
-		} elseif ($limit !== NULL) {
+		} elseif ($limit !== null) {
 			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
 			$sql = sprintf('%s OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', rtrim($sql), $offset, $limit);
 		} elseif ($offset) {
@@ -378,7 +378,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
 	public function fetch($assoc)
@@ -390,7 +390,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int   the 0-based cursor pos to seek to
-	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
+	 * @return bool  true on success, false if unable to seek to specified record
 	 */
 	public function seek($row)
 	{
@@ -405,7 +405,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 	public function free()
 	{
 		sqlsrv_free_stmt($this->resultSet);
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
@@ -429,11 +429,11 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResultResource()
 	{
-		$this->autoFree = FALSE;
-		return is_resource($this->resultSet) ? $this->resultSet : NULL;
+		$this->autoFree = false;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 }

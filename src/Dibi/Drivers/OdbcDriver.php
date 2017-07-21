@@ -25,17 +25,17 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
 	use Dibi\Strict;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $connection;
 
-	/** @var resource|NULL */
+	/** @var resource|null */
 	private $resultSet;
 
 	/** @var bool */
-	private $autoFree = TRUE;
+	private $autoFree = true;
 
-	/** @var int|FALSE  Affected rows */
-	private $affectedRows = FALSE;
+	/** @var int|false  Affected rows */
+	private $affectedRows = false;
 
 	/** @var int  Cursor */
 	private $row = 0;
@@ -95,28 +95,28 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Executes the SQL query.
 	 * @param  string      SQL statement.
-	 * @return Dibi\ResultDriver|NULL
+	 * @return Dibi\ResultDriver|null
 	 * @throws Dibi\DriverException
 	 */
 	public function query($sql)
 	{
-		$this->affectedRows = FALSE;
+		$this->affectedRows = false;
 		$res = @odbc_exec($this->connection, $sql); // intentionally @
 
-		if ($res === FALSE) {
+		if ($res === false) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
 
 		} elseif (is_resource($res)) {
 			$this->affectedRows = odbc_num_rows($res);
 			return $this->createResultDriver($res);
 		}
-		return NULL;
+		return null;
 	}
 
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
-	 * @return int|FALSE  number of rows or FALSE on error
+	 * @return int|false  number of rows or false on error
 	 */
 	public function getAffectedRows()
 	{
@@ -126,7 +126,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
-	 * @return int|FALSE  int on success or FALSE on failure
+	 * @return int|false  int on success or false on failure
 	 */
 	public function getInsertId($sequence)
 	{
@@ -140,9 +140,9 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function begin($savepoint = NULL)
+	public function begin($savepoint = null)
 	{
-		if (!odbc_autocommit($this->connection, FALSE)) {
+		if (!odbc_autocommit($this->connection, false)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 	}
@@ -154,12 +154,12 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function commit($savepoint = NULL)
+	public function commit($savepoint = null)
 	{
 		if (!odbc_commit($this->connection)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
-		odbc_autocommit($this->connection, TRUE);
+		odbc_autocommit($this->connection, true);
 	}
 
 
@@ -169,12 +169,12 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * @return void
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback($savepoint = NULL)
+	public function rollback($savepoint = null)
 	{
 		if (!odbc_rollback($this->connection)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
-		odbc_autocommit($this->connection, TRUE);
+		odbc_autocommit($this->connection, true);
 	}
 
 
@@ -190,11 +190,11 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns the connection resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResource()
 	{
-		return is_resource($this->connection) ? $this->connection : NULL;
+		return is_resource($this->connection) ? $this->connection : null;
 	}
 
 
@@ -326,8 +326,8 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string
-	 * @param  int|NULL
-	 * @param  int|NULL
+	 * @param  int|null
+	 * @param  int|null
 	 * @return void
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
@@ -338,7 +338,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		} elseif ($limit < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
-		} elseif ($limit !== NULL) {
+		} elseif ($limit !== null) {
 			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
 		}
 	}
@@ -370,7 +370,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     TRUE for associative array, FALSE for numeric
+	 * @param  bool     true for associative array, false for numeric
 	 * @return array    array on success, nonarray if no next record
 	 */
 	public function fetch($assoc)
@@ -380,7 +380,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		} else {
 			$set = $this->resultSet;
 			if (!odbc_fetch_row($set, ++$this->row)) {
-				return FALSE;
+				return false;
 			}
 			$count = odbc_num_fields($set);
 			$cols = [];
@@ -395,12 +395,12 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Moves cursor position without fetching row.
 	 * @param  int   the 0-based cursor pos to seek to
-	 * @return bool  TRUE on success, FALSE if unable to seek to specified record
+	 * @return bool  true on success, false if unable to seek to specified record
 	 */
 	public function seek($row)
 	{
 		$this->row = $row;
-		return TRUE;
+		return true;
 	}
 
 
@@ -411,7 +411,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	public function free()
 	{
 		odbc_free_result($this->resultSet);
-		$this->resultSet = NULL;
+		$this->resultSet = null;
 	}
 
 
@@ -426,7 +426,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		for ($i = 1; $i <= $count; $i++) {
 			$columns[] = [
 				'name' => odbc_field_name($this->resultSet, $i),
-				'table' => NULL,
+				'table' => null,
 				'fullname' => odbc_field_name($this->resultSet, $i),
 				'nativetype' => odbc_field_type($this->resultSet, $i),
 			];
@@ -437,12 +437,12 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|NULL
+	 * @return resource|null
 	 */
 	public function getResultResource()
 	{
-		$this->autoFree = FALSE;
-		return is_resource($this->resultSet) ? $this->resultSet : NULL;
+		$this->autoFree = false;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 
 
