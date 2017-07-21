@@ -245,6 +245,7 @@ FROM %SQL', $this->sql, '
 			);
 		} catch (\Throwable $e) {
 			trigger_error($e->getMessage(), E_USER_ERROR);
+			return '';
 		}
 	}
 
