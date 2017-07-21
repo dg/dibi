@@ -285,4 +285,23 @@ class Helpers
 	{
 		return $val === false ? null : $val;
 	}
+
+
+	/**
+	 * @internal
+	 * @return string|int
+	 */
+	public static function intVal($value): int
+	{
+		if (is_int($value)) {
+			return $value;
+		} elseif (is_string($value) && preg_match('#-?\d++\z#A', $value)) {
+			if (is_float($value * 1)) {
+				throw new Exception("Number $value is greater than integer.");
+			}
+			return (int) $value;
+		} else {
+			throw new Exception("Expected number, '$value' given.");
+		}
+	}
 }

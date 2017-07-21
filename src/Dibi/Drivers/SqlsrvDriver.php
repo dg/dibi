@@ -139,7 +139,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 		$res = sqlsrv_query($this->connection, 'SELECT SCOPE_IDENTITY()');
 		if (is_resource($res)) {
 			$row = sqlsrv_fetch_array($res, SQLSRV_FETCH_NUMERIC);
-			return (int) $row[0];
+			return Dibi\Helpers::intVal($row[0]);
 		}
 		return null;
 	}

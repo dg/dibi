@@ -159,7 +159,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	public function getInsertId(?string $sequence): ?int
 	{
 		$row = $this->query("SELECT $sequence.CURRVAL AS ID FROM DUAL")->fetch(true);
-		return isset($row['ID']) ? (int) $row['ID'] : null;
+		return isset($row['ID']) ? Dibi\Helpers::intVal($row['ID']) : null;
 	}
 
 
