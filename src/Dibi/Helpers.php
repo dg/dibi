@@ -282,4 +282,21 @@ class Helpers
 		fclose($handle);
 		return $count;
 	}
+
+
+	/**
+	 * @internal
+	 * @return string|int
+	 */
+	public static function intVal($value)
+	{
+		if (is_int($value)) {
+			return $value;
+		} elseif (is_string($value) && preg_match('#-?\d++\z#A', $value)) {
+			// support for long numbers - keep them unchanged
+			return is_float($number = $value * 1) ? $value : $number;
+		} else {
+			throw new Exception("Expected number, '$value' given.");
+		}
+	}
 }

@@ -170,7 +170,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	public function getInsertId($sequence)
 	{
 		$row = $this->query("SELECT $sequence.CURRVAL AS ID FROM DUAL")->fetch(true);
-		return isset($row['ID']) ? (int) $row['ID'] : false;
+		return isset($row['ID']) ? Dibi\Helpers::intVal($row['ID']) : false;
 	}
 
 
@@ -374,10 +374,10 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
 			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
 				. ($limit !== null ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
-				. ') WHERE "__rnum" > ' . (int) $offset;
+				. ') WHERE "__rnum" > ' . $offset;
 
 		} elseif ($limit !== null) {
-			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
+			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . Dibi\Helpers::intVal($limit);
 		}
 	}
 

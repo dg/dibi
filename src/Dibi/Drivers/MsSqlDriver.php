@@ -315,7 +315,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
 		} elseif ($limit !== null) {
-			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
+			$sql = 'SELECT TOP ' . Dibi\Helpers::intVal($limit) . ' * FROM (' . $sql . ') t';
 		}
 	}
 

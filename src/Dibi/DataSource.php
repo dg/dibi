@@ -283,9 +283,9 @@ FROM %SQL', $this->sql, '
 	{
 		if ($this->count === null) {
 			$this->count = $this->conds || $this->offset || $this->limit
-				? (int) $this->connection->nativeQuery(
+				? Helpers::intVal($this->connection->nativeQuery(
 					'SELECT COUNT(*) FROM (' . $this->__toString() . ') t'
-				)->fetchSingle()
+				)->fetchSingle())
 				: $this->getTotalCount();
 		}
 		return $this->count;
@@ -299,9 +299,9 @@ FROM %SQL', $this->sql, '
 	public function getTotalCount()
 	{
 		if ($this->totalCount === null) {
-			$this->totalCount = (int) $this->connection->nativeQuery(
+			$this->totalCount = Helpers::intVal($this->connection->nativeQuery(
 				'SELECT COUNT(*) FROM ' . $this->sql
-			)->fetchSingle();
+			)->fetchSingle());
 		}
 		return $this->totalCount;
 	}

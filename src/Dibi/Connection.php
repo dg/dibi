@@ -365,7 +365,7 @@ class Connection
 		if ($id < 1) {
 			throw new Exception('Cannot retrieve last generated ID.');
 		}
-		return (int) $id;
+		return Helpers::intVal($id);
 	}
 
 

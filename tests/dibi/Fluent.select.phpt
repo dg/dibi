@@ -142,10 +142,9 @@ if ($config['system'] === 'mysql') {
 		->limit(' 1; DROP TABLE users')
 		->offset(' 1; DROP TABLE users');
 
-	Assert::same(
-		reformat('  SELECT * LIMIT 1 OFFSET 1'),
-		(string) $fluent
-	);
+	Assert::error(function () use ($fluent) {
+		(string) $fluent;
+	}, E_USER_ERROR, "Expected number, ' 1; DROP TABLE users' given.");
 }
 
 

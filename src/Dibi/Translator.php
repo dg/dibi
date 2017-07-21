@@ -538,7 +538,7 @@ final class Translator
 				} elseif ($this->comment) {
 					return "(limit $arg)";
 				} else {
-					$this->limit = (int) $arg;
+					$this->limit = Helpers::intVal($arg);
 				}
 				return '';
 
@@ -548,7 +548,7 @@ final class Translator
 				} elseif ($this->comment) {
 					return "(offset $arg)";
 				} else {
-					$this->offset = (int) $arg;
+					$this->offset = Helpers::intVal($arg);
 				}
 				return '';
 

@@ -111,7 +111,9 @@ class Result implements IDataSource
 	 */
 	final public function seek($row)
 	{
-		return ($row !== 0 || $this->fetched) ? (bool) $this->getResultDriver()->seek($row) : true;
+		return ($row != 0 || $this->fetched) // intentionally ==
+			? (bool) $this->getResultDriver()->seek($row)
+			: true;
 	}
 
 
@@ -227,8 +229,8 @@ class Result implements IDataSource
 	 */
 	final public function fetchAll($offset = null, $limit = null)
 	{
-		$limit = $limit === null ? -1 : (int) $limit;
-		$this->seek((int) $offset);
+		$limit = $limit === null ? -1 : Helpers::intVal($limit);
+		$this->seek($offset);
 		$row = $this->fetch();
 		if (!$row) {
 			return [];  // empty result set

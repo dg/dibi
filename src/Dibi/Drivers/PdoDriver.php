@@ -429,24 +429,24 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 			case 'mysql':
 				if ($limit !== null || $offset) {
 					// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-					$sql .= ' LIMIT ' . ($limit === null ? '18446744073709551615' : (int) $limit)
-						. ($offset ? ' OFFSET ' . (int) $offset : '');
+					$sql .= ' LIMIT ' . ($limit === null ? '18446744073709551615' : Dibi\Helpers::intVal($limit))
+						. ($offset ? ' OFFSET ' . Dibi\Helpers::intVal($offset) : '');
 				}
 				break;
 
 			case 'pgsql':
 				if ($limit !== null) {
-					$sql .= ' LIMIT ' . (int) $limit;
+					$sql .= ' LIMIT ' . Dibi\Helpers::intVal($limit);
 				}
 				if ($offset) {
-					$sql .= ' OFFSET ' . (int) $offset;
+					$sql .= ' OFFSET ' . Dibi\Helpers::intVal($offset);
 				}
 				break;
 
 			case 'sqlite':
 				if ($limit !== null || $offset) {
-					$sql .= ' LIMIT ' . ($limit === null ? '-1' : (int) $limit)
-						. ($offset ? ' OFFSET ' . (int) $offset : '');
+					$sql .= ' LIMIT ' . ($limit === null ? '-1' : Dibi\Helpers::intVal($limit))
+						. ($offset ? ' OFFSET ' . Dibi\Helpers::intVal($offset) : '');
 				}
 				break;
 
@@ -455,10 +455,10 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 					// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
 					$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
 						. ($limit !== null ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
-						. ') WHERE "__rnum" > ' . (int) $offset;
+						. ') WHERE "__rnum" > ' . $offset;
 
 				} elseif ($limit !== null) {
-					$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
+					$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . Dibi\Helpers::intVal($limit);
 				}
 				break;
 
@@ -480,7 +480,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 					throw new Dibi\NotSupportedException('Offset is not supported by this database.');
 
 				} elseif ($limit !== null) {
-					$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
+					$sql = 'SELECT TOP ' . Dibi\Helpers::intVal($limit) . ' * FROM (' . $sql . ') t';
 					break;
 				}
 				// break omitted

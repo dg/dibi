@@ -412,10 +412,10 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 		}
 		if ($limit !== null) {
-			$sql .= ' LIMIT ' . (int) $limit;
+			$sql .= ' LIMIT ' . Dibi\Helpers::intVal($limit);
 		}
 		if ($offset) {
-			$sql .= ' OFFSET ' . (int) $offset;
+			$sql .= ' OFFSET ' . Dibi\Helpers::intVal($offset);
 		}
 	}
 
