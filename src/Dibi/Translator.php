@@ -345,8 +345,12 @@ final class Translator
 				case 'u':  // unsigned int, ignored
 					if ($value === null) {
 						return 'NULL';
-					} elseif (is_string($value) && preg_match('#[+-]?\d++(?:e\d+)?\z#A', $value)) {
-						return $value; // support for long numbers - keep them unchanged
+					} elseif (is_string($value)) {
+						if (preg_match('#[+-]?\d++(?:e\d+)?\z#A', $value)) {
+							return $value; // support for long numbers - keep them unchanged
+						} else {
+							throw new Exception("Expected number, '$value' given.");
+						}
 					} else {
 						return (string) (int) $value;
 					}
@@ -354,8 +358,12 @@ final class Translator
 				case 'f':  // float
 					if ($value === null) {
 						return 'NULL';
-					} elseif (is_string($value) && is_numeric($value) && substr($value, 1, 1) !== 'x') {
-						return $value; // support for extreme numbers - keep them unchanged
+					} elseif (is_string($value)) {
+						if (is_numeric($value) && substr($value, 1, 1) !== 'x') {
+							return $value; // support for long numbers - keep them unchanged
+						} else {
+							throw new Exception("Expected number, '$value' given.");
+						}
 					} else {
 						return rtrim(rtrim(number_format($value + 0, 10, '.', ''), '0'), '.');
 					}

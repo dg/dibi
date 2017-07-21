@@ -501,11 +501,11 @@ Assert::same('INSERT INTO test **Multi-insert array "num%i" is different**', $e-
 $array6 = [
 	'id' => [1, 2, 3, 4],
 	'text' => ['ahoj', 'jak', 'se', ['SUM(%i)', '5']],
-	'num%i' => ['1', '', 10.3, 1],
+	'num%i' => ['1', '-1', 10.3, 1],
 ];
 
 Assert::same(
-	reformat('INSERT INTO test ([id], [text], [num]) VALUES (1, \'ahoj\', 1), (2, \'jak\', 0), (3, \'se\', 10), (4, SUM(5), 1)'),
+	reformat('INSERT INTO test ([id], [text], [num]) VALUES (1, \'ahoj\', 1), (2, \'jak\', -1), (3, \'se\', 10), (4, SUM(5), 1)'),
 	$conn->translate('INSERT INTO test %m', $array6)
 );
 
@@ -525,10 +525,13 @@ Assert::same(
 	$conn->translate('INSERT INTO [test.*]')
 );
 
-Assert::same(
-	reformat('INSERT INTO 0'),
-	@$conn->translate('INSERT INTO %f', 'ahoj') // triggers warning in PHP 7.1
-);
+Assert::exception(function () use ($conn) {
+	$conn->translate('INSERT INTO %i', 'ahoj');
+}, Dibi\Exception::class, "Expected number, 'ahoj' given.");
+
+Assert::exception(function () use ($conn) {
+	$conn->translate('INSERT INTO %f', 'ahoj');
+}, Dibi\Exception::class, "Expected number, 'ahoj' given.");
 
 
 Assert::same(
