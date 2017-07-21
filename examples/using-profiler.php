@@ -1,5 +1,7 @@
-<?php ob_start() // needed by FirePHP ?>
-
+<?php
+declare(strict_types=1);
+ob_start(); // needed by FirePHP
+?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
 <h1>Using Profiler | dibi</h1>

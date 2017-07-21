@@ -1,3 +1,6 @@
+<?php
+declare(strict_types=1);
+?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
 <h1>Dumping SQL and Result Set | dibi</h1>
