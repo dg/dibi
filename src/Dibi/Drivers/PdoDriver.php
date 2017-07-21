@@ -348,7 +348,15 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
-		return $value->format($this->driverName === 'odbc' ? '#m/d/Y H:i:s.u#' : "'Y-m-d H:i:s.u'");
+		switch ($this->driverName) {
+			case 'odbc':
+				return $value->format('#m/d/Y H:i:s.u#');
+			case 'mssql':
+			case 'sqlsrv':
+				return 'CONVERT(DATETIME2(7), ' . $value->format("'Y-m-d H:i:s.u'") . ')';
+			default:
+				return $value->format("'Y-m-d H:i:s.u'");
+		}
 	}
 
 
