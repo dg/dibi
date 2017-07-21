@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 <?php
 
-require __DIR__ . '/../src/loader.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 date_default_timezone_set('Europe/Prague');
 

@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 <?php
 
-require __DIR__ . '/../src/loader.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 
 // connects to SQlite using dibi class
