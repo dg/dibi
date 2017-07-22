@@ -52,6 +52,15 @@ Assert::equal([
 ], iterator_to_array($res));
 
 
+// fetch row by row as array
+$res = $conn->query('SELECT * FROM [products] ORDER BY product_id')->setRowClass(null);
+Assert::equal([
+	['product_id' => num(1), 'title' => 'Chair'],
+	['product_id' => num(2), 'title' => 'Table'],
+	['product_id' => num(3), 'title' => 'Computer'],
+], iterator_to_array($res));
+
+
 // fetch complete result set like association array
 $res = $conn->query('SELECT * FROM [products] ORDER BY product_id');
 Assert::equal([

@@ -162,8 +162,9 @@ class Result implements IDataSource
 	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
+	 * @return ?Row|array
 	 */
-	final public function fetch(): ?Row
+	final public function fetch()
 	{
 		$row = $this->getResultDriver()->fetch(true);
 		if ($row === null) {
