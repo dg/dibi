@@ -41,6 +41,7 @@ function substFallBack($expr)
 	}
 }
 
+
 // define callback
 dibi::getSubstitutes()->setCallback('substFallBack');
 
