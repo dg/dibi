@@ -40,9 +40,6 @@ if ($config['driver'] === 'mysql' && PHP_VERSION_ID >= 70000) {
 }
 
 
-$conn = new Dibi\Connection($config);
-
-
 function test(Closure $function)
 {
 	$function();
