@@ -37,9 +37,6 @@ if ($config['system'] === 'odbc') {
 }
 
 
-$conn = new Dibi\Connection($config);
-
-
 function test(Closure $function)
 {
 	$function();
