@@ -1,0 +1,7 @@
+includes:
+	- ../temp/coding-standard/coding-standard-php71.neon
+
+parameters:
+	skip:
+		PhpCsFixer\Fixer\Operator\TernaryToNullCoalescingFixer:
+			- src/Dibi/HashMap.php  # issue #260
