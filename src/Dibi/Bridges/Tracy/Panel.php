@@ -73,6 +73,8 @@ class Panel implements Tracy\IBarPanel
 				'panel' => Helpers::dump($e->getSql(), true),
 			];
 		}
+
+		return null;
 	}
 
 
