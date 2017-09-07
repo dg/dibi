@@ -226,11 +226,11 @@ class dibi
 
 
 	/**
-	 * Gets the number of affected rows. Alias for getAffectedRows().
-	 * @throws Dibi\Exception
+	 * @deprecated
 	 */
 	public static function affectedRows(): int
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use getAffectedRows()', E_USER_DEPRECATED);
 		return self::getConnection()->getAffectedRows();
 	}
 
@@ -247,11 +247,11 @@ class dibi
 
 
 	/**
-	 * Retrieves the ID generated for an AUTO_INCREMENT column. Alias for getInsertId().
-	 * @throws Dibi\Exception
+	 * @deprecated
 	 */
 	public static function insertId(string $sequence = null): int
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use getInsertId()', E_USER_DEPRECATED);
 		return self::getConnection()->getInsertId($sequence);
 	}
 
