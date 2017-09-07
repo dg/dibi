@@ -29,6 +29,11 @@ Assert::equal([
 ], $res->fetchAll());
 
 
+// affected rows
+$res = $conn->update('products', ['title%SQL' => 'title'])->execute();
+Assert::same(3, $res);
+
+
 // more complex association array
 if (!in_array($config['system'], ['odbc', 'sqlsrv'], true)) {
 	$res = $conn->select(['products.title' => 'title', 'customers.name' => 'name'])->select('orders.amount')->as('amount')
