@@ -99,13 +99,8 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 
 			$this->connection = mysqli_init();
 			if (isset($config['options'])) {
-				if (is_scalar($config['options'])) {
-					$config['flags'] = $config['options']; // back compatibility
-					trigger_error(__CLASS__ . ": configuration item 'options' must be array; for constants MYSQLI_CLIENT_* use 'flags'.", E_USER_NOTICE);
-				} else {
-					foreach ((array) $config['options'] as $key => $value) {
-						mysqli_options($this->connection, $key, $value);
-					}
+				foreach ($config['options'] as $key => $value) {
+					mysqli_options($this->connection, $key, $value);
 				}
 			}
 			@mysqli_real_connect($this->connection, (empty($config['persistent']) ? '' : 'p:') . $config['host'], $config['username'], $config['password'], $config['database'] ?? '', $config['port'] ?? 0, $config['socket'], $config['flags'] ?? 0); // intentionally @
