@@ -342,12 +342,11 @@ class Connection
 
 
 	/**
-	 * Gets the number of affected rows. Alias for getAffectedRows().
-	 * @return int  number of rows
-	 * @throws Exception
+	 * @deprecated
 	 */
 	public function affectedRows()
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use getAffectedRows()', E_USER_DEPRECATED);
 		return $this->getAffectedRows();
 	}
 
@@ -370,13 +369,11 @@ class Connection
 
 
 	/**
-	 * Retrieves the ID generated for an AUTO_INCREMENT column. Alias for getInsertId().
-	 * @param  string     optional sequence name
-	 * @return int
-	 * @throws Exception
+	 * @deprecated
 	 */
 	public function insertId($sequence = null)
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use getInsertId()', E_USER_DEPRECATED);
 		return $this->getInsertId($sequence);
 	}
 
