@@ -108,7 +108,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 		} elseif (is_resource($res)) {
 			$this->affectedRows = odbc_num_rows($res);
-			return $this->createResultDriver($res);
+			return odbc_num_fields($res) ? $this->createResultDriver($res) : null;
 		}
 		return null;
 	}

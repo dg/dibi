@@ -120,7 +120,7 @@ class SqlsrvDriver implements Dibi\Driver, Dibi\ResultDriver
 
 		} elseif (is_resource($res)) {
 			$this->affectedRows = sqlsrv_rows_affected($res);
-			return $this->createResultDriver($res);
+			return sqlsrv_num_fields($res) ? $this->createResultDriver($res) : null;
 		}
 		return null;
 	}

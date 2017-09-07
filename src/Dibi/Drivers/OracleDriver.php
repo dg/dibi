@@ -123,7 +123,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 			} elseif (is_resource($res)) {
 				$this->affectedRows = oci_num_rows($res);
-				return $this->createResultDriver($res);
+				return oci_num_fields($res) ? $this->createResultDriver($res) : null;
 			}
 		} else {
 			$err = oci_error($this->connection);
