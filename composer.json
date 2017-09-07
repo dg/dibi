@@ -15,7 +15,7 @@
 	},
 	"require-dev": {
 		"tracy/tracy": "~2.2",
-		"nette/tester": "~1.7"
+		"nette/tester": "~2.0"
 	},
 	"replace": {
 		"dg/dibi": "*"
