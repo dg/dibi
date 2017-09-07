@@ -50,3 +50,8 @@ if (!in_array($config['system'], ['odbc', 'sqlsrv'], true)) {
 		],
 	], $res->fetchAssoc('name,title'));
 }
+
+
+// affected rows
+$res = $conn->update('products', ['title' => 'new'])->execute();
+Assert::same(3, $res);
