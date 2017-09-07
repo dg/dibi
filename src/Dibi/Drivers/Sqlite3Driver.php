@@ -115,7 +115,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 		if ($code = $this->connection->lastErrorCode()) {
 			throw self::createException($this->connection->lastErrorMsg(), $code, $sql);
 
-		} elseif ($res instanceof \SQLite3Result) {
+		} elseif ($res instanceof \SQLite3Result && $res->numColumns()) {
 			return $this->createResultDriver($res);
 		}
 		return null;
