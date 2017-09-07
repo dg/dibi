@@ -415,7 +415,7 @@ class Fluent implements IDataSource
 
 
 	/**
-	 * @return Result
+	 * @return Result|int
 	 */
 	private function query($args)
 	{
