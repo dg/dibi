@@ -478,7 +478,7 @@ Assert::same(
 		'title' => ['SHA1(%s)', 'Test product'],
 	], [
 		'product_id' => 1,
-		'title' => ['SHA1(%s)', 'Test product'],
+		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
 	])
 );
 
@@ -487,6 +487,22 @@ Assert::same(
 	$conn->translate('UPDATE [products]', [
 		'product_id' => 1,
 		'title' => ['SHA1(%s)', 'Test product'],
+	])
+);
+
+Assert::same(
+	reformat('UPDATE [products] [product_id]=1, [title]=SHA1(\'Test product\')'),
+	$conn->translate('UPDATE [products]', [
+		'product_id' => 1,
+		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
+	])
+);
+
+Assert::same(
+	reformat('SELECT * FROM [products] WHERE [product_id]=1, [title]=SHA1(\'Test product\')'),
+	$conn->translate('SELECT * FROM [products] WHERE', [
+		'product_id' => 1,
+		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
 	])
 );
 

@@ -450,6 +450,9 @@ final class Translator
 		} elseif ($value instanceof Literal) {
 			return (string) $value;
 
+		} elseif ($value instanceof Expression) {
+			return $this->connection->translate(...$value->getValues());
+
 		} else {
 			$type = is_object($value) ? get_class($value) : gettype($value);
 			return $this->errors[] = "**Unexpected $type**";
