@@ -16,9 +16,10 @@ $conn = new Dibi\Connection($config + ['formatDateTime' => "'Y-m-d H:i:s.u'", 'f
 Assert::same(
 	reformat("REPLACE INTO [products] ([title], [price]) VALUES ('Drticka', 318)"),
 	$conn->translate('REPLACE INTO [products]', [
-	'title' => 'Drticka',
-	'price' => 318,
-]));
+		'title' => 'Drticka',
+		'price' => 318,
+	])
+);
 
 
 // multiple INSERT command
@@ -49,9 +50,10 @@ Assert::same(
 Assert::same(
 	reformat("UPDATE [colors] SET [color]='blue', [order]=12 WHERE [id]=123"),
 	$conn->translate('UPDATE [colors] SET', [
-	'color' => 'blue',
-	'order' => 12,
-], 'WHERE [id]=%i', 123));
+		'color' => 'blue',
+		'order' => 12,
+	], 'WHERE [id]=%i', 123)
+);
 
 
 // IN array
@@ -182,19 +184,20 @@ Assert::same(
 		"INSERT INTO test ([a2], [a4], [b1], [b2], [b3], [b4], [b5], [b6], [b7], [b8], [b9], [c1]) VALUES ('1212-09-26 00:00:00.000000', '1969-12-31 22:13:20.000000', '1212-09-26', '1212-09-26 00:00:00.000000', '1969-12-31', '1969-12-31 22:13:20.000000', '1212-09-26 00:00:00.000000', '1212-09-26', '1212-09-26 00:00:00.000000', NULL, NULL, '1212-09-26 16:51:34.012400')",
 	]),
 	$conn->translate('INSERT INTO test', [
-	'a2' => new DateTime('1212-09-26'),
-	'a4' => new DateTime(-10000),
-	'b1%d' => '1212-09-26',
-	'b2%t' => '1212-09-26',
-	'b3%d' => -10000,
-	'b4%t' => -10000,
-	'b5' => new DateTime('1212-09-26'),
-	'b6%d' => new DateTime('1212-09-26'),
-	'b7%t' => new DateTime('1212-09-26'),
-	'b8%d' => null,
-	'b9%t' => null,
-	'c1%t' => new DateTime('1212-09-26 16:51:34.0124'),
-]));
+		'a2' => new DateTime('1212-09-26'),
+		'a4' => new DateTime(-10000),
+		'b1%d' => '1212-09-26',
+		'b2%t' => '1212-09-26',
+		'b3%d' => -10000,
+		'b4%t' => -10000,
+		'b5' => new DateTime('1212-09-26'),
+		'b6%d' => new DateTime('1212-09-26'),
+		'b7%t' => new DateTime('1212-09-26'),
+		'b8%d' => null,
+		'b9%t' => null,
+		'c1%t' => new DateTime('1212-09-26 16:51:34.0124'),
+	])
+);
 
 Assert::exception(function () use ($conn) {
 	$conn->translate('SELECT %s', new DateTime('1212-09-26'));
@@ -440,7 +443,7 @@ Assert::same(
 
 
 $where = [
-		'tablename.column' => 1,
+	'tablename.column' => 1,
 ];
 Assert::same(
 	reformat('SELECT * FROM [tablename] WHERE ([tablename].[column] = 1)'),
@@ -467,20 +470,20 @@ Assert::same(
 Assert::same(
 	reformat('INSERT INTO [products] ([product_id], [title]) VALUES (1, SHA1(\'Test product\')) , (1, SHA1(\'Test product\'))'),
 	$conn->translate('INSERT INTO [products]', [
-	'product_id' => 1,
-	'title' => ['SHA1(%s)', 'Test product'],
-], [
-	'product_id' => 1,
-	'title' => ['SHA1(%s)', 'Test product'],
-])
+		'product_id' => 1,
+		'title' => ['SHA1(%s)', 'Test product'],
+	], [
+		'product_id' => 1,
+		'title' => ['SHA1(%s)', 'Test product'],
+	])
 );
 
 Assert::same(
 	reformat('UPDATE [products] [product_id]=1, [title]=SHA1(\'Test product\')'),
 	$conn->translate('UPDATE [products]', [
-	'product_id' => 1,
-	'title' => ['SHA1(%s)', 'Test product'],
-])
+		'product_id' => 1,
+		'title' => ['SHA1(%s)', 'Test product'],
+	])
 );
 
 
@@ -558,11 +561,11 @@ Assert::same(
 	reformat("UPDATE [colors] SET [color]='blue', [price]=-12.4, [spec]=-9E-005, [spec2]=1000, [spec3]=10000, [spec4]=10000 WHERE [price]=123.5"),
 
 	$conn->translate('UPDATE [colors] SET', [
-	'color' => 'blue',
-	'price' => -12.4,
-	'spec%f' => '-9E-005',
-	'spec2%f' => 1000.00,
-	'spec3%i' => 10000,
-	'spec4' => 10000,
-], 'WHERE [price]=%f', 123.5)
+		'color' => 'blue',
+		'price' => -12.4,
+		'spec%f' => '-9E-005',
+		'spec2%f' => 1000.00,
+		'spec3%i' => 10000,
+		'spec4' => 10000,
+	], 'WHERE [price]=%f', 123.5)
 );
