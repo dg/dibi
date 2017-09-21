@@ -236,7 +236,7 @@ final class Translator
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$vx[] = $this->identifiers->{$pair[0]} . '='
-							. $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : null));
+							. $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex!' : null));
 					}
 					return implode(', ', $vx);
 
@@ -245,7 +245,7 @@ final class Translator
 				case 'l': // (val, val, ...)
 					foreach ($value as $k => $v) {
 						$pair = explode('%', (string) $k, 2); // split into identifier & modifier
-						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : null));
+						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex!' : null));
 					}
 					return '(' . (($vx || $modifier === 'l') ? implode(', ', $vx) : 'NULL') . ')';
 
@@ -254,7 +254,7 @@ final class Translator
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$kx[] = $this->identifiers->{$pair[0]};
-						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex' : null));
+						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex!' : null));
 					}
 					return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
@@ -275,7 +275,7 @@ final class Translator
 						$pair = explode('%', $k, 2); // split into identifier & modifier
 						$kx[] = $this->identifiers->{$pair[0]};
 						foreach ($v as $k2 => $v2) {
-							$vx[$k2][] = $this->formatValue($v2, $pair[1] ?? (is_array($v2) ? 'ex' : null));
+							$vx[$k2][] = $this->formatValue($v2, $pair[1] ?? (is_array($v2) ? 'ex!' : null));
 						}
 					}
 					foreach ($vx as $k => $v) {
@@ -296,6 +296,9 @@ final class Translator
 					}
 					return implode(', ', $vx);
 
+				case 'ex!':
+					trigger_error('Use Dibi\Expression instead of array: ' . implode(', ', array_filter($value, 'is_scalar')), E_USER_WARNING);
+					// break omitted
 				case 'ex':
 				case 'sql':
 					return $this->connection->translate(...$value);

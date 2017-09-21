@@ -475,7 +475,7 @@ Assert::same(
 	reformat('INSERT INTO [products] ([product_id], [title]) VALUES (1, SHA1(\'Test product\')) , (1, SHA1(\'Test product\'))'),
 	$conn->translate('INSERT INTO [products]', [
 		'product_id' => 1,
-		'title' => ['SHA1(%s)', 'Test product'],
+		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
 	], [
 		'product_id' => 1,
 		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
@@ -486,7 +486,7 @@ Assert::same(
 	reformat('UPDATE [products] [product_id]=1, [title]=SHA1(\'Test product\')'),
 	$conn->translate('UPDATE [products]', [
 		'product_id' => 1,
-		'title' => ['SHA1(%s)', 'Test product'],
+		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
 	])
 );
 
@@ -510,7 +510,7 @@ Assert::same(
 $e = Assert::exception(function () use ($conn) {
 	$array6 = [
 		'id' => [1, 2, 3, 4],
-		'text' => ['ahoj', 'jak', 'se', ['SUM(%i)', '5']],
+		'text' => ['ahoj', 'jak', 'se', new Dibi\Expression('SUM(%i)', '5')],
 		'num%i' => ['1', ''],
 	];
 	$conn->translate('INSERT INTO test %m', $array6);
@@ -519,7 +519,7 @@ Assert::same('INSERT INTO test **Multi-insert array "num%i" is different**', $e-
 
 $array6 = [
 	'id' => [1, 2, 3, 4],
-	'text' => ['ahoj', 'jak', 'se', ['SUM(%i)', '5']],
+	'text' => ['ahoj', 'jak', 'se', new Dibi\Expression('SUM(%i)', '5')],
 	'num%i' => ['1', '-1', 10.3, 1],
 ];
 
