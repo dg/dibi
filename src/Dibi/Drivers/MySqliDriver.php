@@ -36,7 +36,9 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	use Dibi\Strict;
 
 	public const ERROR_ACCESS_DENIED = 1045;
+
 	public const ERROR_DUPLICATE_ENTRY = 1062;
+
 	public const ERROR_DATA_TRUNCATED = 1265;
 
 	/** @var \mysqli|null */

@@ -40,10 +40,12 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/** @var string  Date and datetime format */
 	private $fmtDate;
+
 	private $fmtDateTime;
 
 	/** @var string  character encoding */
 	private $dbcharset;
+
 	private $charset;
 
 
