@@ -8,7 +8,6 @@
 namespace Dibi\Drivers;
 
 use Dibi;
-use Dibi\Connection;
 use Dibi\Helpers;
 
 

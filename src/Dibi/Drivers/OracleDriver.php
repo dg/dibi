@@ -42,6 +42,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/** @var string  Date and datetime format */
 	private $fmtDate;
+
 	private $fmtDateTime;
 
 	/** @var int|false Number of affected rows */
