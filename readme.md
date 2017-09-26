@@ -7,23 +7,28 @@
 [![Latest Stable Version](https://poser.pugx.org/dibi/dibi/v/stable)](https://github.com/dg/dibi/releases)
 [![License](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://github.com/dg/dibi/blob/master/license.md)
 
+
+Introduction
+------------
+
 Database access functions in PHP are not standardised. This library
 hides the differences between them, and above all, it gives you a very handy interface.
 
-Installation
-============
 
-The best way how to install Dibi is to [download a latest package](https://github.com/dg/dibi/releases) or use a Composer:
+Installation
+------------
+
+The recommended way to install Dibi is via Composer (alternatively you can [download package](https://github.com/dg/dibi/releases)):
 
 ```bash
 composer require dibi/dibi
 ```
 
-The Dibi 3 requires PHP version 5.4.4 or newer (is compatible with PHP 7.0 and 7.1), version 4 requires PHP 7.1.
+The Dibi 3.x requires PHP version 5.4.4 and supports PHP up to 7.2, version 4 requires PHP 7.1.
 
 
-Examples
---------
+Usage
+-----
 
 Refer to the `examples` directory for examples. Dibi documentation is
 available on the [homepage](https://dibiphp.com).
