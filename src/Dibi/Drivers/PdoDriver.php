@@ -321,6 +321,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 			case 'odbc':
 				return $value->format('#m/d/Y H:i:s.u#');
 			case 'mssql':
+			case 'dblib':
 			case 'sqlsrv':
 				return 'CONVERT(DATETIME2(7), ' . $value->format("'Y-m-d H:i:s.u'") . ')';
 			default:
