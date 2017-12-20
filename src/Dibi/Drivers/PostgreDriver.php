@@ -199,17 +199,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		}
 
 		$row = $res->fetch(false);
-
-		// The return value could be a string. If so, change it to an int.
-		if (is_array($row)) {
-			if (is_string($row[0])) {
-				return intval($row[0]);
-			}
-
-			return $row[0];
-		}
-
-		return null;
+		return is_array($row) ? (int) $row[0] : null;
 	}
 
 
