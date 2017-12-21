@@ -199,7 +199,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		}
 
 		$row = $res->fetch(false);
-		return is_array($row) ? $row[0] : null;
+		return is_array($row) ? (int) $row[0] : null;
 	}
 
 
