@@ -96,7 +96,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		pg_set_error_verbosity($this->connection, PGSQL_ERRORS_VERBOSE);
 
 		if (isset($config['charset']) && pg_set_client_encoding($this->connection, $config['charset'])) {
-			throw self::createException(pg_last_error($this->connection));
+			throw static::createException(pg_last_error($this->connection));
 		}
 
 		if (isset($config['schema'])) {
@@ -137,7 +137,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		$res = @pg_query($this->connection, $sql); // intentionally @
 
 		if ($res === false) {
-			throw self::createException(pg_last_error($this->connection), null, $sql);
+			throw static::createException(pg_last_error($this->connection), null, $sql);
 
 		} elseif (is_resource($res)) {
 			$this->affectedRows = pg_affected_rows($res);
