@@ -113,7 +113,7 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			@oci_execute($res, $this->autocommit ? OCI_COMMIT_ON_SUCCESS : OCI_DEFAULT);
 			$err = oci_error($res);
 			if ($err) {
-				throw self::createException($err['message'], $err['code'], $sql);
+				throw static::createException($err['message'], $err['code'], $sql);
 
 			} elseif (is_resource($res)) {
 				$this->affectedRows = Dibi\Helpers::false2Null(oci_num_rows($res));
