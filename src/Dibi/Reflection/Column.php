@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Dibi\Reflection;
 
 use Dibi;
-use Dibi\Type;
 
 
 /**

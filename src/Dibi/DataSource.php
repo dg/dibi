@@ -224,7 +224,7 @@ class DataSource implements IDataSource
 	/**
 	 * Returns this data source wrapped in DataSource object.
 	 */
-	public function toDataSource(): DataSource
+	public function toDataSource(): self
 	{
 		return new self($this->__toString(), $this->connection);
 	}

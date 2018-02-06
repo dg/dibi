@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Dibi\Drivers;
 
 use Dibi;
-use Dibi\Connection;
 use Dibi\Helpers;
 
 
