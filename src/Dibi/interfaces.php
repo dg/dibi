@@ -195,3 +195,181 @@ interface Reflector
 	 */
 	function getForeignKeys(string $table): array;
 }
+
+
+/**
+ * dibi connection.
+ * @property-read int $affectedRows
+ * @property-read int $insertId
+ */
+interface IConnection
+{
+
+	/**
+	 * Connects to a database.
+	 */
+	function connect(): void;
+
+	/**
+	 * Disconnects from a database.
+	 */
+	function disconnect(): void;
+
+	/**
+	 * Returns true when connection was established.
+	 */
+	function isConnected(): bool;
+
+	/**
+	 * Returns configuration variable. If no $key is passed, returns the entire array.
+	 * @see self::__construct
+	 * @return mixed
+	 */
+	function getConfig(string $key = null, $default = null);
+
+	/**
+	 * Returns the driver and connects to a database in lazy mode.
+	 */
+	function getDriver(): Driver;
+
+	/**
+	 * Generates (translates) and executes SQL query.
+	 * @param  mixed      one or more arguments
+	 * @return Result|int   result set or number of affected rows
+	 * @throws Exception
+	 */
+	function query(...$args);
+
+	/**
+	 * Generates SQL query.
+	 * @param  mixed      one or more arguments
+	 * @throws Exception
+	 */
+	function translate(...$args): string;
+
+	/**
+	 * Generates and prints SQL query.
+	 * @param  mixed  one or more arguments
+	 */
+	function test(...$args): bool;
+
+	/**
+	 * Generates (translates) and returns SQL query as DataSource.
+	 * @param  mixed      one or more arguments
+	 * @throws Exception
+	 */
+	function dataSource(...$args): DataSource;
+
+	/**
+	 * Executes the SQL query.
+	 * @return Result|int   result set or number of affected rows
+	 * @throws Exception
+	 */
+	function nativeQuery(string $sql);
+
+	/**
+	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.
+	 * @throws Exception
+	 */
+	function getAffectedRows(): int;
+
+	/**
+	 * @deprecated
+	 */
+	function affectedRows(): int;
+
+	/**
+	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
+	 * @throws Exception
+	 */
+	function getInsertId(string $sequence = null): int;
+
+	/**
+	 * @deprecated
+	 */
+	function insertId(string $sequence = null): int;
+
+	/**
+	 * Begins a transaction (if supported).
+	 */
+	function begin(string $savepoint = null): void;
+
+	/**
+	 * Commits statements in a transaction.
+	 */
+	function commit(string $savepoint = null): void;
+
+	/**
+	 * Rollback changes in a transaction.
+	 */
+	function rollback(string $savepoint = null): void;
+
+	/**
+	 * Result set factory.
+	 */
+	function createResultSet(ResultDriver $resultDriver): Result;
+
+	/********************* fluent SQL builders ****************d*g**/
+	function command(): Fluent;
+
+	function select(...$args): Fluent;
+
+	function update(string $table, array $args): Fluent;
+
+	function insert(string $table, array $args): Fluent;
+
+	function delete(string $table): Fluent;
+
+	/**
+	 * Returns substitution hashmap.
+	 */
+	function getSubstitutes(): HashMap;
+
+	/**
+	 * Provides substitution.
+	 */
+	function substitute(string $value): string;
+
+	/**
+	 * Executes SQL query and fetch result - shortcut for query() & fetch().
+	 * @param  mixed    one or more arguments
+	 * @return Row|NULL
+	 * @throws Exception
+	 */
+	function fetch(...$args);
+
+	/**
+	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
+	 * @param  mixed    one or more arguments
+	 * @return Row[]
+	 * @throws Exception
+	 */
+	function fetchAll(...$args): array;
+
+	/**
+	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
+	 * @param  mixed    one or more arguments
+	 * @return mixed
+	 * @throws Exception
+	 */
+	function fetchSingle(...$args);
+
+	/**
+	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
+	 * @param  mixed    one or more arguments
+	 * @throws Exception
+	 */
+	function fetchPairs(...$args): array;
+
+	/**
+	 * Import SQL dump from file.
+	 * @param  callable $onProgressfunction (int $count, ?float $percent): void
+	 * @return int  count of sql commands
+	 */
+	function loadFile(string $file, callable $onProgress = null): int;
+
+	/**
+	 * Gets a information about the current database.
+	 */
+	function getDatabaseInfo(): Reflection\Database;
+}

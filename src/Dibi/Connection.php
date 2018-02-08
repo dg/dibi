@@ -18,7 +18,7 @@ use Traversable;
  * @property-read int $affectedRows
  * @property-read int $insertId
  */
-class Connection
+class Connection implements IConnection
 {
 	use Strict;
 
