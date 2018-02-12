@@ -26,7 +26,7 @@ class Exception extends \Exception
 	 */
 	public function __construct($message = '', $code = 0, $sql = null, \Exception $previous = null)
 	{
-		parent::__construct($message, $code, $previous);
+		parent::__construct($message, 0, $previous);
 		$this->code = $code;
 		$this->sql = $sql;
 	}
