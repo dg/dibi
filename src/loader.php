@@ -14,7 +14,6 @@ if (PHP_VERSION_ID < 70100) {
 
 spl_autoload_register(function ($class) {
 	$old2new = [
-		'Dibi' => 'dibi.php',
 		'DibiColumnInfo' => 'Dibi\Reflection\Column',
 		'DibiConnection' => 'Dibi\Connection',
 		'DibiDatabaseInfo' => 'Dibi\Reflection\Database',
