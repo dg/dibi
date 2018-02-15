@@ -155,9 +155,8 @@ class DataSource implements IDataSource
 
 	/**
 	 * Generates, executes SQL query and fetches the single row.
-	 * @return Row|NULL
 	 */
-	public function fetch()
+	public function fetch(): ?Row
 	{
 		return $this->getResult()->fetch();
 	}

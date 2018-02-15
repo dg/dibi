@@ -24,7 +24,7 @@ class DateTime extends \DateTime
 	{
 		if (is_numeric($time)) {
 			parent::__construct('@' . $time);
-			$this->setTimeZone($timezone ? $timezone : new \DateTimeZone(date_default_timezone_get()));
+			$this->setTimezone($timezone ? $timezone : new \DateTimeZone(date_default_timezone_get()));
 		} elseif ($timezone === null) {
 			parent::__construct($time);
 		} else {
@@ -44,7 +44,7 @@ class DateTime extends \DateTime
 	{
 		$zone = $this->getTimezone();
 		$this->__construct('@' . $timestamp);
-		return $this->setTimeZone($zone);
+		return $this->setTimezone($zone);
 	}
 
 

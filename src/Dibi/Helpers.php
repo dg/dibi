@@ -289,7 +289,6 @@ class Helpers
 
 	/**
 	 * @internal
-	 * @return string|int
 	 */
 	public static function intVal($value): int
 	{

@@ -482,10 +482,9 @@ class Connection
 	/**
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
 	 * @param  mixed    one or more arguments
-	 * @return Row|NULL
 	 * @throws Exception
 	 */
-	public function fetch(...$args)
+	public function fetch(...$args): ?Row
 	{
 		return $this->query($args)->fetch();
 	}

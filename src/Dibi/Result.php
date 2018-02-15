@@ -32,13 +32,13 @@ class Result implements IDataSource
 {
 	use Strict;
 
-	/** @var array  ResultDriver */
+	/** @var ResultDriver|null */
 	private $driver;
 
 	/** @var array  Translate table */
 	private $types = [];
 
-	/** @var Reflection\Result */
+	/** @var Reflection\Result|null */
 	private $meta;
 
 	/** @var bool  Already fetched? Used for allowance for first seek(0) */
@@ -162,7 +162,7 @@ class Result implements IDataSource
 	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
-	 * @return ?Row|array
+	 * @return Row|array|null
 	 */
 	final public function fetch()
 	{
