@@ -64,7 +64,6 @@ spl_autoload_register(function ($class) {
 		'Dibi\Translator' => 'Translator.php',
 		'Dibi\Type' => 'Type.php',
 	], $old2new = [
-		'Dibi' => 'dibi.php',
 		'DibiColumnInfo' => 'Dibi\Reflection\Column',
 		'DibiConnection' => 'Dibi\Connection',
 		'DibiDatabaseInfo' => 'Dibi\Reflection\Database',
