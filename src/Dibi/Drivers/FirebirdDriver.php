@@ -313,7 +313,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if (!$value instanceof \DateTime && !$value instanceof \DateTimeInterface) {
 			$value = new Dibi\DateTime($value);
 		}
-		return $value->format("'Y-m-d H:i:s.u'");
+		return "'" . substr($value->format('Y-m-d H:i:s.u'), 0, -2) . "'";
 	}
 
 
