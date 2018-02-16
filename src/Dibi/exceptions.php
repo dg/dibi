@@ -22,9 +22,9 @@ class Exception extends \Exception
 	/**
 	 * Construct a dibi exception.
 	 */
-	public function __construct(string $message = '', $code = 0, string $sql = null)
+	public function __construct(string $message = '', $code = 0, string $sql = null, \Throwable $previous = null)
 	{
-		parent::__construct($message);
+		parent::__construct($message, 0, $previous);
 		$this->code = $code;
 		$this->sql = $sql;
 	}
