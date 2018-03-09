@@ -36,34 +36,34 @@ available on the [homepage](https://dibiphp.com).
 Connect to database:
 
 ```php
-// connect to database (static way)
-dibi::connect([
-    'driver'   => 'mysql',
+$dibi = new Dibi\Connection([
+    'driver'   => 'mysqli',
     'host'     => 'localhost',
     'username' => 'root',
     'password' => '***',
 ]);
 
-// or object way; in all other examples use $connection-> instead of dibi::
-$connection = new DibiConnection($options);
+
+// or static way; in all other examples use dibi:: instead of $dibi->
+dibi::connect($options);
 ```
 
 SELECT, INSERT, UPDATE
 
 ```php
-dibi::query('SELECT * FROM users WHERE id = ?', $id);
+$dibi->query('SELECT * FROM users WHERE id = ?', $id);
 
 $arr = [
     'name' => 'John',
     'is_admin'  => true,
 ];
-dibi::query('INSERT INTO users', $arr);
+$dibi->query('INSERT INTO users', $arr);
 // INSERT INTO users (`name`, `is_admin`) VALUES ('John', 1)
 
-dibi::query('UPDATE users SET', $arr, 'WHERE `id`=?', $x);
+$dibi->query('UPDATE users SET', $arr, 'WHERE `id`=?', $x);
 // UPDATE users SET `name`='John', `is_admin`=1 WHERE `id` = 123
 
-dibi::query('UPDATE users SET', [
+$dibi->query('UPDATE users SET', [
 	'title' => array('SHA1(?)', 'tajneheslo'),
 ]);
 // UPDATE users SET 'title' = SHA1('tajneheslo')
@@ -72,7 +72,7 @@ dibi::query('UPDATE users SET', [
 Getting results
 
 ```php
-$result = dibi::query('SELECT * FROM users');
+$result = $dibi->query('SELECT * FROM users');
 
 $value = $result->fetchSingle(); // single value
 $all = $result->fetchAll(); // all rows
@@ -88,7 +88,7 @@ foreach ($result as $n => $row) {
 Modifiers for arrays:
 
 ```php
-dibi::query('SELECT * FROM users WHERE %and', [
+$dibi->query('SELECT * FROM users WHERE %and', [
 	array('number > ?', 10),
 	array('number < ?', 100),
 ]);
@@ -111,7 +111,7 @@ dibi::query('SELECT * FROM users WHERE %and', [
 Modifiers for LIKE
 
 ```php
-dibi::query("SELECT * FROM table WHERE name LIKE %like~", $query);
+$dibi->query("SELECT * FROM table WHERE name LIKE %like~", $query);
 ```
 
 <table>
@@ -123,7 +123,7 @@ dibi::query("SELECT * FROM table WHERE name LIKE %like~", $query);
 DateTime:
 
 ```php
-dibi::query('UPDATE users SET', [
+$dibi->query('UPDATE users SET', [
     'time' => new DateTime,
 ]);
 // UPDATE users SET ('2008-01-01 01:08:10')
