@@ -524,7 +524,7 @@ class Connection
 	}
 
 
-	public static function literal($value): Literal
+	public static function literal(string $value): Literal
 	{
 		return new Literal($value);
 	}
@@ -572,7 +572,7 @@ class Connection
 	}
 
 
-	protected function onEvent($arg)
+	protected function onEvent($arg): void
 	{
 		foreach ($this->onEvent ?: [] as $handler) {
 			$handler($arg);

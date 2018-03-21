@@ -29,7 +29,7 @@ class ForeignKey
 	private $references;
 
 
-	public function __construct($name, array $references)
+	public function __construct(string $name, array $references)
 	{
 		$this->name = $name;
 		$this->references = $references;

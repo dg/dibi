@@ -15,7 +15,7 @@ namespace Dibi;
  */
 class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 {
-	public function __construct($arr)
+	public function __construct(array $arr)
 	{
 		foreach ($arr as $k => $v) {
 			$this->$k = $v;
@@ -23,7 +23,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 
-	public function toArray()
+	public function toArray(): array
 	{
 		return (array) $this;
 	}

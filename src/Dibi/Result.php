@@ -303,7 +303,7 @@ class Result implements IDataSource
 	/**
 	 * @deprecated
 	 */
-	private function oldFetchAssoc($assoc)
+	private function oldFetchAssoc(string $assoc)
 	{
 		$this->seek(0);
 		$row = $this->fetch();
@@ -514,7 +514,7 @@ class Result implements IDataSource
 	/**
 	 * Returns column type.
 	 */
-	final public function getType($column): string
+	final public function getType(string $column): string
 	{
 		return $this->types[$column] ?? null;
 	}
@@ -533,7 +533,7 @@ class Result implements IDataSource
 	/**
 	 * Returns data format.
 	 */
-	final public function getFormat($type): ?string
+	final public function getFormat(string $type): ?string
 	{
 		return $this->formats[$type] ?? null;
 	}

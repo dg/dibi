@@ -33,14 +33,14 @@ class DateTime extends \DateTime
 	}
 
 
-	public function modifyClone(string $modify = '')
+	public function modifyClone(string $modify = ''): self
 	{
 		$dolly = clone $this;
 		return $modify ? $dolly->modify($modify) : $dolly;
 	}
 
 
-	public function setTimestamp($timestamp)
+	public function setTimestamp($timestamp): self
 	{
 		$zone = $this->getTimezone();
 		$this->__construct('@' . $timestamp);
@@ -55,7 +55,7 @@ class DateTime extends \DateTime
 	}
 
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->format('Y-m-d H:i:s.u');
 	}

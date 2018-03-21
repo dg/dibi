@@ -42,7 +42,7 @@ class Panel implements Tracy\IBarPanel
 	}
 
 
-	public function register(Dibi\Connection $connection)
+	public function register(Dibi\Connection $connection): void
 	{
 		Tracy\Debugger::getBar()->addPanel($this);
 		Tracy\Debugger::getBlueScreen()->addPanel([__CLASS__, 'renderException']);
@@ -65,7 +65,7 @@ class Panel implements Tracy\IBarPanel
 	/**
 	 * Returns blue-screen custom tab.
 	 */
-	public static function renderException($e): ?array
+	public static function renderException(?\Throwable $e): ?array
 	{
 		if ($e instanceof Dibi\Exception && $e->getSql()) {
 			return [

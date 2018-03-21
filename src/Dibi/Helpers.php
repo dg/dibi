@@ -155,7 +155,7 @@ class Helpers
 
 
 	/** @internal */
-	public static function escape(Driver $driver, $value, $type)
+	public static function escape(Driver $driver, $value, string $type): string
 	{
 		static $types = [
 			Type::TEXT => 'text',
@@ -233,7 +233,7 @@ class Helpers
 	 * Import SQL dump from file.
 	 * @return int  count of sql commands
 	 */
-	public static function loadFromFile(Connection $connection, $file, callable $onProgress = null): int
+	public static function loadFromFile(Connection $connection, string $file, callable $onProgress = null): int
 	{
 		@set_time_limit(0); // intentionally @
 

@@ -286,7 +286,7 @@ class Fluent implements IDataSource
 	 * @return Result|int  result set or number of affected rows
 	 * @throws Exception
 	 */
-	public function execute($return = null)
+	public function execute(string $return = null)
 	{
 		$res = $this->query($this->_export());
 		switch ($return) {

@@ -80,7 +80,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 				}
 			}
 
-			set_error_handler(function ($severity, $message) use (&$error) {
+			set_error_handler(function ($severity, string $message) use (&$error) {
 				$error = $message;
 			});
 			if (empty($config['persistent'])) {

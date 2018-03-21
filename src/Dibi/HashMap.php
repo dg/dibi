@@ -25,13 +25,13 @@ abstract class HashMapBase
 	}
 
 
-	public function setCallback(callable $callback)
+	public function setCallback(callable $callback): void
 	{
 		$this->callback = $callback;
 	}
 
 
-	public function getCallback()
+	public function getCallback(): callable
 	{
 		return $this->callback;
 	}
