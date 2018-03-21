@@ -127,7 +127,6 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Executes the SQL query.
-	 * @param  string      SQL statement.
 	 * @throws Dibi\DriverException
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
@@ -263,7 +262,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Result set driver factory.
-	 * @param  resource
+	 * @param  resource  $resource
 	 */
 	public function createResultDriver($resource): Dibi\ResultDriver
 	{
@@ -311,7 +310,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 
 	/**
-	 * @param  \DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int  $value
 	 */
 	public function escapeDate($value): string
 	{
@@ -323,7 +322,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 
 	/**
-	 * @param  \DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int  $value
 	 */
 	public function escapeDateTime($value): string
 	{
@@ -395,7 +394,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     true for associative array, false for numeric
+	 * @param  bool  $assoc  true for associative array, false for numeric
 	 */
 	public function fetch(bool $assoc): ?array
 	{

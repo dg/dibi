@@ -127,7 +127,7 @@ class dibi
 
 	/**
 	 * Generates and executes SQL query - Monostate for Dibi\Connection::query().
-	 * @param  mixed      one or more arguments
+	 * @param  mixed  $args
 	 * @return Dibi\Result|int   result set or number of affected rows
 	 * @throws Dibi\Exception
 	 */
@@ -149,7 +149,7 @@ class dibi
 
 	/**
 	 * Generates and prints SQL query - Monostate for Dibi\Connection::test().
-	 * @param  mixed  one or more arguments
+	 * @param  mixed  $args
 	 */
 	public static function test(...$args): bool
 	{
@@ -159,7 +159,7 @@ class dibi
 
 	/**
 	 * Generates and returns SQL query as DataSource - Monostate for Dibi\Connection::test().
-	 * @param  mixed      one or more arguments
+	 * @param  mixed  $args
 	 */
 	public static function dataSource(...$args): Dibi\DataSource
 	{
@@ -169,7 +169,7 @@ class dibi
 
 	/**
 	 * Executes SQL query and fetch result - Monostate for Dibi\Connection::query() & fetch().
-	 * @param  mixed    one or more arguments
+	 * @param  mixed  $args
 	 * @throws Dibi\Exception
 	 */
 	public static function fetch(...$args): ?Dibi\Row
@@ -180,7 +180,7 @@ class dibi
 
 	/**
 	 * Executes SQL query and fetch results - Monostate for Dibi\Connection::query() & fetchAll().
-	 * @param  mixed    one or more arguments
+	 * @param  mixed  $args
 	 * @return Dibi\Row[]
 	 * @throws Dibi\Exception
 	 */
@@ -192,7 +192,7 @@ class dibi
 
 	/**
 	 * Executes SQL query and fetch first column - Monostate for Dibi\Connection::query() & fetchSingle().
-	 * @param  mixed    one or more arguments
+	 * @param  mixed  $args
 	 * @return mixed
 	 * @throws Dibi\Exception
 	 */
@@ -204,7 +204,7 @@ class dibi
 
 	/**
 	 * Executes SQL query and fetch pairs - Monostate for Dibi\Connection::query() & fetchPairs().
-	 * @param  mixed    one or more arguments
+	 * @param  mixed  $args
 	 * @throws Dibi\Exception
 	 */
 	public static function fetchPairs(...$args): array
@@ -354,8 +354,8 @@ class dibi
 
 	/**
 	 * Prints out a syntax highlighted version of the SQL command or Result.
-	 * @param  string|Result
-	 * @param  bool  return output instead of printing it?
+	 * @param  string|Result  $sql
+	 * @param  bool  $return  return output instead of printing it?
 	 */
 	public static function dump($sql = null, bool $return = false): ?string
 	{

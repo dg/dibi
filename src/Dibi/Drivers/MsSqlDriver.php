@@ -174,7 +174,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Result set driver factory.
-	 * @param  resource
+	 * @param  resource  $resource
 	 */
 	public function createResultDriver($resource): Dibi\ResultDriver
 	{
@@ -216,7 +216,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 
 	/**
-	 * @param  \DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int  $value
 	 */
 	public function escapeDate($value): string
 	{
@@ -228,7 +228,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 
 	/**
-	 * @param  \DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int  $value
 	 */
 	public function escapeDateTime($value): string
 	{
@@ -298,7 +298,7 @@ class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool     true for associative array, false for numeric
+	 * @param  bool  $assoc   true for associative array, false for numeric
 	 */
 	public function fetch(bool $assoc): ?array
 	{

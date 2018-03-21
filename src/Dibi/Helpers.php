@@ -20,7 +20,7 @@ class Helpers
 
 	/**
 	 * Prints out a syntax highlighted version of the SQL command or Result.
-	 * @param  string|Result
+	 * @param  string|Result  $sql
 	 */
 	public static function dump($sql = null, bool $return = false): ?string
 	{

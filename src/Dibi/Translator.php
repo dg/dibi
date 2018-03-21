@@ -167,7 +167,7 @@ final class Translator
 
 	/**
 	 * Apply modifier to single value.
-	 * @param  mixed
+	 * @param  mixed  $value
 	 */
 	public function formatValue($value, ?string $modifier): string
 	{

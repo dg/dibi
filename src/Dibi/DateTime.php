@@ -18,7 +18,7 @@ class DateTime extends \DateTime
 	use Strict;
 
 	/**
-	 * @param  string|int
+	 * @param  string|int  $time
 	 */
 	public function __construct($time = 'now', \DateTimeZone $timezone = null)
 	{

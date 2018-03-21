@@ -95,12 +95,12 @@ interface Driver
 	function escapeBool(bool $value): string;
 
 	/**
-	 * @param  \DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int  $value
 	 */
 	function escapeDate($value): string;
 
 	/**
-	 * @param  \DateTimeInterface|string|int
+	 * @param  \DateTimeInterface|string|int  $value
 	 */
 	function escapeDateTime($value): string;
 
@@ -136,14 +136,13 @@ interface ResultDriver
 
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool          true for associative array, false for numeric
+	 * @param  bool  $type  true for associative array, false for numeric
 	 * @internal
 	 */
 	function fetch(bool $type): ?array;
 
 	/**
 	 * Frees the resources allocated for this result set.
-	 * @param  resource  result set resource
 	 */
 	function free(): void;
 

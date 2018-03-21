@@ -49,7 +49,7 @@ class DataSource implements IDataSource
 
 
 	/**
-	 * @param  string  SQL command or table or view name, as data source
+	 * @param  string  $sql  command or table or view name, as data source
 	 */
 	public function __construct(string $sql, Connection $connection)
 	{
@@ -64,8 +64,8 @@ class DataSource implements IDataSource
 
 	/**
 	 * Selects columns to query.
-	 * @param  string|array  column name or array of column names
-	 * @param  string        column alias
+	 * @param  string|array  $col  column name or array of column names
+	 * @param  string  $as        column alias
 	 */
 	public function select($col, string $as = null): self
 	{
@@ -97,7 +97,7 @@ class DataSource implements IDataSource
 
 	/**
 	 * Selects columns to order by.
-	 * @param  string|array  column name or array of column names
+	 * @param  string|array  $row  column name or array of column names
 	 */
 	public function orderBy($row, string $direction = 'ASC'): self
 	{

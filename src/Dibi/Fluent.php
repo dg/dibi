@@ -268,7 +268,7 @@ class Fluent implements IDataSource
 
 	/**
 	 * Adds Result setup.
-	 * @param  mixed   args
+	 * @param  mixed   $method
 	 */
 	public function setupResult(string $method): self
 	{
@@ -282,7 +282,7 @@ class Fluent implements IDataSource
 
 	/**
 	 * Generates and executes SQL query.
-	 * @param  mixed what to return?
+	 * @param  mixed  $return  what to return?
 	 * @return Result|int  result set or number of affected rows
 	 * @throws Exception
 	 */
@@ -338,7 +338,7 @@ class Fluent implements IDataSource
 
 	/**
 	 * Fetches all records from table and returns associative tree.
-	 * @param  string  associative descriptor
+	 * @param  string  $assoc  associative descriptor
 	 */
 	public function fetchAssoc(string $assoc): array
 	{
@@ -348,7 +348,6 @@ class Fluent implements IDataSource
 
 	/**
 	 * Fetches all records from table like $key => $value pairs.
-	 * @param  string  associative key
 	 */
 	public function fetchPairs(string $key = null, string $value = null): array
 	{
@@ -367,7 +366,6 @@ class Fluent implements IDataSource
 
 	/**
 	 * Generates and prints SQL query or it's part.
-	 * @param  string clause name
 	 */
 	public function test(string $clause = null): bool
 	{
@@ -422,7 +420,6 @@ class Fluent implements IDataSource
 
 	/**
 	 * Generates parameters for Translator.
-	 * @param  string clause name
 	 */
 	protected function _export(string $clause = null, array $args = []): array
 	{

@@ -50,8 +50,7 @@ class Connection
 	 *       - run (bool) => enable profiler?
 	 *       - file => file to log
 	 *   - substitutes (array) => map of driver specific substitutes (under development)
-	 * @param  mixed   connection parameters
-	 * @param  string  connection name
+	 * @param  mixed   $config  connection parameters
 	 * @throws Exception
 	 */
 	public function __construct($config, string $name = null)
@@ -199,7 +198,7 @@ class Connection
 
 	/**
 	 * Generates (translates) and executes SQL query.
-	 * @param  mixed      one or more arguments
+	 * @param  mixed  $args
 	 * @return Result|int   result set or number of affected rows
 	 * @throws Exception
 	 */
@@ -211,7 +210,7 @@ class Connection
 
 	/**
 	 * Generates SQL query.
-	 * @param  mixed      one or more arguments
+	 * @param  mixed  $args
 	 * @throws Exception
 	 */
 	final public function translate(...$args): string
@@ -222,7 +221,7 @@ class Connection
 
 	/**
 	 * Generates and prints SQL query.
-	 * @param  mixed  one or more arguments
+	 * @param  mixed  $args
 	 */
 	final public function test(...$args): bool
 	{
@@ -243,7 +242,7 @@ class Connection
 
 	/**
 	 * Generates (translates) and returns SQL query as DataSource.
-	 * @param  mixed      one or more arguments
+	 * @param  mixed  $args
 	 * @throws Exception
 	 */
 	final public function dataSource(...$args): DataSource
@@ -481,7 +480,7 @@ class Connection
 
 	/**
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
-	 * @param  mixed    one or more arguments
+	 * @param  mixed  $args
 	 * @throws Exception
 	 */
 	public function fetch(...$args): ?Row
@@ -492,7 +491,7 @@ class Connection
 
 	/**
 	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
-	 * @param  mixed    one or more arguments
+	 * @param  mixed  $args
 	 * @return Row[]
 	 * @throws Exception
 	 */
@@ -504,7 +503,7 @@ class Connection
 
 	/**
 	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
-	 * @param  mixed    one or more arguments
+	 * @param  mixed  $args
 	 * @return mixed
 	 * @throws Exception
 	 */
@@ -516,7 +515,7 @@ class Connection
 
 	/**
 	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
-	 * @param  mixed    one or more arguments
+	 * @param  mixed  $args
 	 * @throws Exception
 	 */
 	public function fetchPairs(...$args): array
@@ -536,7 +535,7 @@ class Connection
 
 	/**
 	 * Import SQL dump from file.
-	 * @param  callable $onProgress function (int $count, ?float $percent): void
+	 * @param  callable  $onProgress  function (int $count, ?float $percent): void
 	 * @return int  count of sql commands
 	 */
 	public function loadFile(string $file, callable $onProgress = null): int
