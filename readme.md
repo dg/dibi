@@ -24,7 +24,7 @@ The recommended way to install Dibi is via Composer (alternatively you can [down
 composer require dibi/dibi
 ```
 
-The Dibi 3.x requires PHP version 5.4.4 and supports PHP up to 7.2, version 4 requires PHP 7.1.
+The Dibi 4.0 requires PHP version 7.1 and supports PHP up to 7.2. Older Dibi 3.x requires PHP 5.4 and supports PHP up to 7.2.
 
 
 Usage
