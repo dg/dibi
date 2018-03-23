@@ -45,4 +45,4 @@ test_script:
 
 on_failure:
     # Print *.actual content
-    - type tests\dibi\output\*.actual
+    - for /r %%x in (*.actual) do ( type "%%x" )
