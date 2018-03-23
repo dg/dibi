@@ -4,7 +4,9 @@
 
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+if (@!include __DIR__ . '/../vendor/autoload.php') {
+	die('Install packages using `composer install`');
+}
 
 
 // connects to SQlite using dibi class
