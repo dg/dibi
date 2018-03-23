@@ -8,7 +8,9 @@ ob_start(); // needed by FirePHP
 
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+if (@!include __DIR__ . '/../vendor/autoload.php') {
+	die('Install packages using `composer install`');
+}
 
 
 dibi::connect([
