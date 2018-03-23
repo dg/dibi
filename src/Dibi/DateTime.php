@@ -32,8 +32,10 @@ class DateTime extends \DateTimeImmutable
 	}
 
 
+	/** @deprecated  use modify() */
 	public function modifyClone(string $modify = ''): self
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use modify()', E_USER_DEPRECATED);
 		$dolly = clone $this;
 		return $modify ? $dolly->modify($modify) : $dolly;
 	}
