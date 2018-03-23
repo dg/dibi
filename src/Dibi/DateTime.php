@@ -40,21 +40,6 @@ class DateTime extends \DateTime
 	}
 
 
-	public function setTimestamp($timestamp): self
-	{
-		$zone = $this->getTimezone();
-		$this->__construct('@' . $timestamp);
-		return $this->setTimezone($zone);
-	}
-
-
-	public function getTimestamp()
-	{
-		$ts = $this->format('U');
-		return is_float($tmp = $ts * 1) ? $ts : $tmp;
-	}
-
-
 	public function __toString(): string
 	{
 		return $this->format('Y-m-d H:i:s.u');
