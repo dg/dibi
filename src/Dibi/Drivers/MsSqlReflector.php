@@ -116,7 +116,6 @@ class MsSqlReflector implements Dibi\Reflector
 				'table' => $table,
 				'nativetype' => $type,
 				'size' => $size,
-				'unsigned' => null,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
 				'autoincrement' => false,

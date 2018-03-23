@@ -21,7 +21,6 @@ use Dibi;
  * @property-read string $type
  * @property-read mixed $nativeType
  * @property-read int|null $size
- * @property-read bool|null $unsigned
  * @property-read bool|null $nullable
  * @property-read bool|null $autoIncrement
  * @property-read mixed $default
@@ -92,12 +91,6 @@ class Column
 	public function getSize(): ?int
 	{
 		return isset($this->info['size']) ? (int) $this->info['size'] : null;
-	}
-
-
-	public function isUnsigned(): ?bool
-	{
-		return isset($this->info['unsigned']) ? (bool) $this->info['unsigned'] : null;
 	}
 
 

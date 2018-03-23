@@ -86,7 +86,6 @@ class SqlsrvReflector implements Dibi\Reflector
 				'table' => $table,
 				'nativetype' => strtoupper($row['DATA_TYPE']),
 				'size' => $row['CHARACTER_MAXIMUM_LENGTH'],
-				'unsigned' => true,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
 				'autoincrement' => $autoIncrements[$row['COLUMN_NAME']],
