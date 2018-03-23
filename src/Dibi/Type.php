@@ -18,6 +18,7 @@ class Type
 	public const
 		TEXT = 's', // as 'string'
 		BINARY = 'bin',
+		JSON = 'json',
 		BOOL = 'b',
 		INTEGER = 'i',
 		FLOAT = 'f',

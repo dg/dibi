@@ -189,6 +189,7 @@ class Helpers
 			'TIME' => Type::DATETIME, // DATETIME, TIMESTAMP
 			'DATE' => Type::DATE,
 			'BOOL' => Type::BOOL,
+			'JSON' => Type::JSON,
 		];
 
 		foreach ($patterns as $s => $val) {
