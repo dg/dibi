@@ -101,22 +101,13 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
-		// must detect if SQL returns result set or num of affected rows
-		$cmd = strtoupper(substr(ltrim($sql), 0, 6));
-		static $list = ['UPDATE' => 1, 'DELETE' => 1, 'INSERT' => 1, 'REPLAC' => 1];
-		$this->affectedRows = null;
-
-		if (isset($list[$cmd])) {
-			$this->affectedRows = Helpers::false2Null($this->connection->exec($sql));
-			if ($this->affectedRows !== null) {
-				return null;
-			}
-		} else {
-			$res = $this->connection->query($sql);
-			if ($res) {
-				return $this->createResultDriver($res);
-			}
+		$res = $this->connection->query($sql);
+		if ($res) {
+			$this->affectedRows = $res->rowCount();
+			return $res->columnCount() ? $this->createResultDriver($res) : null;
 		}
+
+		$this->affectedRows = null;
 
 		[$sqlState, $code, $message] = $this->connection->errorInfo();
 		$message = "SQLSTATE[$sqlState]: $message";
