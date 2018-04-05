@@ -530,6 +530,12 @@ class Connection
 	}
 
 
+	public static function expression(...$args): Expression
+	{
+		return new Expression(...$args);
+	}
+
+
 	/********************* misc ****************d*g**/
 
 
