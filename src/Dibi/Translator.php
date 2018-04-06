@@ -315,7 +315,11 @@ final class Translator
 		if ($modifier) {
 			if ($value !== null && !is_scalar($value)) {  // array is already processed
 				if ($value instanceof Literal && ($modifier === 'sql' || $modifier === 'SQL')) {
-					$modifier = 'SQL';
+					return (string) $value;
+
+				} elseif ($value instanceof Expression && $modifier === 'ex') {
+					return call_user_func_array([$this->connection, 'translate'], $value->getValues());
+
 				} elseif (($value instanceof \DateTime || $value instanceof \DateTimeInterface) && ($modifier === 'd' || $modifier === 't' || $modifier === 'dt')) {
 					// continue
 				} else {

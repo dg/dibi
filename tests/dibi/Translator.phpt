@@ -505,6 +505,18 @@ Assert::same(
 );
 
 
+Assert::same(
+	reformat('SELECT * FROM [table] WHERE (([left] = 1) OR ([top] = 2)) AND (number < 100)'),
+	$conn->translate('SELECT * FROM `table` WHERE %and', [
+		new Dibi\Expression('%or', [
+			'left' => 1,
+			'top' => 2,
+		]),
+		new Dibi\Expression('number < %i', 100),
+	])
+);
+
+
 $e = Assert::exception(function () use ($conn) {
 	$array6 = [
 		'id' => [1, 2, 3, 4],
