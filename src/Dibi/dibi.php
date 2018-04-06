@@ -64,9 +64,6 @@ class dibi
 	/** @var int  Number or queries */
 	public static $numOfQueries = 0;
 
-	/** @var string  Default dibi driver */
-	public static $defaultDriver = 'mysqli';
-
 	/** @var Dibi\Connection[]  Connection registry storage for Dibi\Connection objects */
 	private static $registry = [];
 

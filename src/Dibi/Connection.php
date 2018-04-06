@@ -76,7 +76,7 @@ class Connection
 		Helpers::alias($config, 'result|formatDateTime', 'resultDateTime');
 
 		if (!isset($config['driver'])) {
-			$config['driver'] = \dibi::$defaultDriver;
+			$config['driver'] = 'mysqli';
 		}
 
 		if ($config['driver'] instanceof Driver) {
