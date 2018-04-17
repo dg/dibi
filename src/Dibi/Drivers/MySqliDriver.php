@@ -417,7 +417,9 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function __destruct()
 	{
-		$this->autoFree && $this->getResultResource() && @$this->free();
+		if ($this->autoFree && $this->getResultResource()) {
+			@$this->free();
+		}
 	}
 
 

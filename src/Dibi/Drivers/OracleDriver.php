@@ -392,7 +392,9 @@ class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 */
 	public function __destruct()
 	{
-		$this->autoFree && $this->getResultResource() && $this->free();
+		if ($this->autoFree && $this->getResultResource()) {
+			$this->free();
+		}
 	}
 
 

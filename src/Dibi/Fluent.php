@@ -9,7 +9,7 @@ namespace Dibi;
 
 
 /**
- * dibi SQL builder via fluent interfaces. EXPERIMENTAL!
+ * dibi SQL builder via fluent interfaces.
  *
  * @method Fluent select(...$field)
  * @method Fluent distinct()

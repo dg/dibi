@@ -131,8 +131,9 @@ class Connection
 	 */
 	public function __destruct()
 	{
-		// disconnects and rolls back transaction - do not rely on auto-disconnect and rollback!
-		$this->connected && $this->driver->getResource() && $this->disconnect();
+		if ($this->connected && $this->driver->getResource()) {
+			$this->disconnect();
+		}
 	}
 
 
@@ -146,10 +147,14 @@ class Connection
 		try {
 			$this->driver->connect($this->config);
 			$this->connected = true;
-			$event && $this->onEvent($event->done());
+			if ($event) {
+				$this->onEvent($event->done());
+			}
 
 		} catch (Exception $e) {
-			$event && $this->onEvent($event->done($e));
+			if ($event) {
+				$this->onEvent($event->done($e));
+			}
 			throw $e;
 		}
 	}
@@ -211,7 +216,9 @@ class Connection
 	 */
 	final public function getDriver()
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		return $this->driver;
 	}
 
@@ -285,7 +292,9 @@ class Connection
 	 */
 	protected function translateArgs($args)
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		if (!$this->translator) {
 			$this->translator = new Translator($this);
 		}
@@ -302,7 +311,9 @@ class Connection
 	 */
 	final public function nativeQuery($sql)
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 
 		\dibi::$sql = $sql;
 		$event = $this->onEvent ? new Event($this, Event::QUERY, $sql) : null;
@@ -310,7 +321,9 @@ class Connection
 			$res = $this->driver->query($sql);
 
 		} catch (Exception $e) {
-			$event && $this->onEvent($event->done($e));
+			if ($event) {
+				$this->onEvent($event->done($e));
+			}
 			throw $e;
 		}
 
@@ -320,7 +333,9 @@ class Connection
 			$res = $this->driver->getAffectedRows();
 		}
 
-		$event && $this->onEvent($event->done($res));
+		if ($event) {
+			$this->onEvent($event->done($res));
+		}
 		return $res;
 	}
 
@@ -332,7 +347,9 @@ class Connection
 	 */
 	public function getAffectedRows()
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		$rows = $this->driver->getAffectedRows();
 		if (!is_int($rows) || $rows < 0) {
 			throw new Exception('Cannot retrieve number of affected rows.');
@@ -359,7 +376,9 @@ class Connection
 	 */
 	public function getInsertId($sequence = null)
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		$id = $this->driver->getInsertId($sequence);
 		if ($id < 1) {
 			throw new Exception('Cannot retrieve last generated ID.');
@@ -385,14 +404,20 @@ class Connection
 	 */
 	public function begin($savepoint = null)
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		$event = $this->onEvent ? new Event($this, Event::BEGIN, $savepoint) : null;
 		try {
 			$this->driver->begin($savepoint);
-			$event && $this->onEvent($event->done());
+			if ($event) {
+				$this->onEvent($event->done());
+			}
 
 		} catch (Exception $e) {
-			$event && $this->onEvent($event->done($e));
+			if ($event) {
+				$this->onEvent($event->done($e));
+			}
 			throw $e;
 		}
 	}
@@ -405,14 +430,20 @@ class Connection
 	 */
 	public function commit($savepoint = null)
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		$event = $this->onEvent ? new Event($this, Event::COMMIT, $savepoint) : null;
 		try {
 			$this->driver->commit($savepoint);
-			$event && $this->onEvent($event->done());
+			if ($event) {
+				$this->onEvent($event->done());
+			}
 
 		} catch (Exception $e) {
-			$event && $this->onEvent($event->done($e));
+			if ($event) {
+				$this->onEvent($event->done($e));
+			}
 			throw $e;
 		}
 	}
@@ -425,14 +456,20 @@ class Connection
 	 */
 	public function rollback($savepoint = null)
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		$event = $this->onEvent ? new Event($this, Event::ROLLBACK, $savepoint) : null;
 		try {
 			$this->driver->rollback($savepoint);
-			$event && $this->onEvent($event->done());
+			if ($event) {
+				$this->onEvent($event->done());
+			}
 
 		} catch (Exception $e) {
-			$event && $this->onEvent($event->done($e));
+			if ($event) {
+				$this->onEvent($event->done($e));
+			}
 			throw $e;
 		}
 	}
@@ -625,7 +662,9 @@ class Connection
 	 */
 	public function getDatabaseInfo()
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		return new Reflection\Database($this->driver->getReflector(), isset($this->config['database']) ? $this->config['database'] : null);
 	}
 
