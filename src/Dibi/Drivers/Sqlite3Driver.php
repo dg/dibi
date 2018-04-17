@@ -20,8 +20,6 @@ use SQLite3;
  *   - database (or file) => the filename of the SQLite3 database
  *   - formatDate => how to format date in SQL (@see date)
  *   - formatDateTime => how to format datetime in SQL (@see date)
- *   - dbcharset => database character encoding (will be converted to 'charset')
- *   - charset => character encoding to set (default is UTF-8)
  *   - resource (SQLite3) => existing connection resource
  *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
@@ -43,11 +41,6 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	private $fmtDateTime;
 
-	/** @var string  character encoding */
-	private $dbcharset;
-
-	private $charset;
-
 
 	/**
 	 * @throws Dibi\NotSupportedException
@@ -66,6 +59,10 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function connect(array &$config): void
 	{
+		if (isset($config['dbcharset']) || isset($config['charset'])) {
+			throw new Dibi\NotSupportedException('Options dbcharset and charset are not longer supported.');
+		}
+
 		Dibi\Helpers::alias($config, 'database', 'file');
 		$this->fmtDate = $config['formatDate'] ?? 'U';
 		$this->fmtDateTime = $config['formatDateTime'] ?? 'U';
@@ -78,12 +75,6 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 			} catch (\Exception $e) {
 				throw new Dibi\DriverException($e->getMessage(), $e->getCode());
 			}
-		}
-
-		$this->dbcharset = empty($config['dbcharset']) ? 'UTF-8' : $config['dbcharset'];
-		$this->charset = empty($config['charset']) ? 'UTF-8' : $config['charset'];
-		if (strcasecmp($this->dbcharset, $this->charset) === 0) {
-			$this->dbcharset = $this->charset = null;
 		}
 
 		// enable foreign keys support (defaultly disabled; if disabled then foreign key constraints are not enforced)
@@ -109,10 +100,6 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
-		if ($this->dbcharset !== null) {
-			$sql = iconv($this->charset, $this->dbcharset . '//IGNORE', $sql);
-		}
-
 		$res = @$this->connection->query($sql); // intentionally @
 		if ($code = $this->connection->lastErrorCode()) {
 			throw static::createException($this->connection->lastErrorMsg(), $code, $sql);
@@ -350,13 +337,9 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 		if (!$row) {
 			return null;
 		}
-		$charset = $this->charset === null ? null : $this->charset . '//TRANSLIT';
-		if ($row && ($assoc || $charset)) {
+		if ($row && $assoc) {
 			$tmp = [];
 			foreach ($row as $k => $v) {
-				if ($charset !== null && is_string($v)) {
-					$v = iconv($this->dbcharset, $charset, $v);
-				}
 				$tmp[str_replace(['[', ']'], '', $k)] = $v;
 			}
 			return $tmp;
