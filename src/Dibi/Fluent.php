@@ -302,8 +302,9 @@ class Fluent implements IDataSource
 
 	/**
 	 * Generates, executes SQL query and fetches the single row.
+	 * @return Row|array|null
 	 */
-	public function fetch(): ?Row
+	public function fetch()
 	{
 		if ($this->command === 'SELECT' && !$this->clauses['LIMIT']) {
 			return $this->query($this->_export(null, ['%lmt', 1]))->fetch();
