@@ -56,9 +56,11 @@ class Connection implements IConnection
 	public function __construct($config, string $name = null)
 	{
 		if (is_string($config)) {
+			trigger_error(__METHOD__ . '() Configuration should be array.', E_USER_DEPRECATED);
 			parse_str($config, $config);
 
 		} elseif ($config instanceof Traversable) {
+			trigger_error(__METHOD__ . '() Configuration should be array.', E_USER_DEPRECATED);
 			$tmp = [];
 			foreach ($config as $key => $val) {
 				$tmp[$key] = $val instanceof Traversable ? iterator_to_array($val) : $val;
@@ -66,7 +68,7 @@ class Connection implements IConnection
 			$config = $tmp;
 
 		} elseif (!is_array($config)) {
-			throw new \InvalidArgumentException('Configuration must be array, string or object.');
+			throw new \InvalidArgumentException('Configuration must be array.');
 		}
 
 		Helpers::alias($config, 'username', 'user');
