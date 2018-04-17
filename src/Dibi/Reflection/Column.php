@@ -21,8 +21,8 @@ use Dibi;
  * @property-read string $type
  * @property-read mixed $nativeType
  * @property-read int|null $size
- * @property-read bool|null $nullable
- * @property-read bool|null $autoIncrement
+ * @property-read bool $nullable
+ * @property-read bool $autoIncrement
  * @property-read mixed $default
  */
 class Column
@@ -94,15 +94,15 @@ class Column
 	}
 
 
-	public function isNullable(): ?bool
+	public function isNullable(): bool
 	{
-		return isset($this->info['nullable']) ? (bool) $this->info['nullable'] : null;
+		return !empty($this->info['nullable']);
 	}
 
 
-	public function isAutoIncrement(): ?bool
+	public function isAutoIncrement(): bool
 	{
-		return isset($this->info['autoincrement']) ? (bool) $this->info['autoincrement'] : null;
+		return !empty($this->info['autoincrement']);
 	}
 
 

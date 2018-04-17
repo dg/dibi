@@ -45,14 +45,14 @@ Assert::null($columns[0]->getVendorInfo('xxx'));
 if (!in_array($config['system'], ['sqlite', 'sqlsrv'], true)) {
 	Assert::same('i', $columns[0]->getType());
 }
-Assert::null($columns[0]->isNullable());
+Assert::false($columns[0]->isNullable());
 
 Assert::same('xXx', $columns[3]->getName());
 Assert::null($columns[3]->getTableName());
 if (!in_array($config['system'], ['sqlite', 'sqlsrv'], true)) {
 	Assert::same('i', $columns[0]->getType());
 }
-Assert::null($columns[3]->isNullable());
+Assert::false($columns[3]->isNullable());
 
 Assert::same('xXx', $info->getColumn('xxx')->getName());
 Assert::same('xXx', $info->getColumn('xXx')->getName());
