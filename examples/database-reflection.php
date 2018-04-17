@@ -12,14 +12,14 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 }
 
 
-dibi::connect([
+$dibi = new Dibi\Connection([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ]);
 
 
 // retrieve database reflection
-$database = dibi::getDatabaseInfo();
+$database = $dibi->getDatabaseInfo();
 
 echo "<h2>Database '{$database->getName()}'</h2>\n";
 echo "<ul>\n";

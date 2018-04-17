@@ -12,12 +12,12 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 }
 
 
-dibi::connect([
+$dibi = new Dibi\Connection([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ]);
 
 
-$count = dibi::loadFile('compress.zlib://data/sample.dump.sql.gz');
+$count = $dibi->loadFile('compress.zlib://data/sample.dump.sql.gz');
 
 echo 'Number of SQL commands:', $count;

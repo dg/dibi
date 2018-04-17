@@ -18,14 +18,14 @@ date_default_timezone_set('Europe/Prague');
 
 <?php
 
-dibi::connect([
+$dibi = new Dibi\Connection([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ]);
 
 
 // using manual hints
-$res = dibi::query('SELECT * FROM [customers]');
+$res = $dibi->query('SELECT * FROM [customers]');
 
 $res->setType('customer_id', Type::INTEGER)
 	->setType('added', Type::DATETIME)
@@ -41,7 +41,7 @@ Tracy\Dumper::dump($res->fetch());
 
 
 // using auto-detection (works well with MySQL or other strictly typed databases)
-$res = dibi::query('SELECT * FROM [customers]');
+$res = $dibi->query('SELECT * FROM [customers]');
 
 Tracy\Dumper::dump($res->fetch());
 // outputs:

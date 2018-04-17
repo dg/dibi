@@ -13,7 +13,7 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 }
 
 
-dibi::connect([
+$dibi = new Dibi\Connection([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 	'profiler' => [
@@ -24,7 +24,7 @@ dibi::connect([
 
 // execute some queries...
 for ($i = 0; $i < 20; $i++) {
-	$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] < ?', $i);
+	$res = $dibi->query('SELECT * FROM [customers] WHERE [customer_id] < ?', $i);
 }
 
 // display output

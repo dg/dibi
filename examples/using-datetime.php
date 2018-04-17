@@ -15,7 +15,7 @@ date_default_timezone_set('Europe/Prague');
 
 
 // CHANGE TO REAL PARAMETERS!
-dibi::connect([
+$dibi = new Dibi\Connection([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 	'formatDate' => "'Y-m-d'",
@@ -24,7 +24,7 @@ dibi::connect([
 
 
 // generate and dump SQL
-dibi::test('
+$dibi->test('
 	INSERT INTO [mytable]', [
 		'id' => 123,
 		'date' => new DateTime('12.3.2007'),
