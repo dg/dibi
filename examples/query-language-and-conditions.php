@@ -9,7 +9,7 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 }
 
 
-dibi::connect([
+$dibi = new Dibi\Connection([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ]);
@@ -25,7 +25,7 @@ $bar = 2;
 $name = $cond1 ? 'K%' : null;
 
 // if & end
-dibi::test('
+$dibi->test('
 	SELECT *
 	FROM customers
 	%if', isset($name), 'WHERE name LIKE ?', $name, '%end'
@@ -34,7 +34,7 @@ dibi::test('
 
 
 // if & else & (optional) end
-dibi::test('
+$dibi->test('
 	SELECT *
 	FROM people
 	WHERE id > 0
@@ -45,7 +45,7 @@ dibi::test('
 
 
 // nested condition
-dibi::test('
+$dibi->test('
 	SELECT *
 	FROM customers
 	WHERE
@@ -57,7 +57,7 @@ dibi::test('
 
 
 // IF()
-dibi::test('UPDATE products SET', [
-	'price' => ['IF(price_fixed, price, ?)', 123],
+$dibi->test('UPDATE products SET', [
+	'price' => $dibi->expression('IF(price_fixed, price, ?)', 123),
 ]);
 // -> SELECT * FROM customers WHERE LIMIT 10

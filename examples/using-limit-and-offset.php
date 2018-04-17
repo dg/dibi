@@ -9,22 +9,22 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 }
 
 
-dibi::connect([
+$dibi = new Dibi\Connection([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ]);
 
 
 // no limit
-dibi::test('SELECT * FROM [products]');
+$dibi->test('SELECT * FROM [products]');
 // -> SELECT * FROM [products]
 
 
 // with limit = 2
-dibi::test('SELECT * FROM [products] %lmt', 2);
+$dibi->test('SELECT * FROM [products] %lmt', 2);
 // -> SELECT * FROM [products] LIMIT 2
 
 
 // with limit = 2, offset = 1
-dibi::test('SELECT * FROM [products] %lmt %ofs', 2, 1);
+$dibi->test('SELECT * FROM [products] %lmt %ofs', 2, 1);
 // -> SELECT * FROM [products] LIMIT 2 OFFSET 1

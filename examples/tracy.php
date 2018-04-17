@@ -9,7 +9,7 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 Tracy\Debugger::enable();
 
 
-$connection = dibi::connect([
+$dibi = new Dibi\Connection([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 	'profiler' => [
@@ -20,14 +20,14 @@ $connection = dibi::connect([
 
 // add panel to debug bar
 $panel = new Dibi\Bridges\Tracy\Panel;
-$panel->register($connection);
+$panel->register($dibi);
 
 
 // query will be logged
-dibi::query('SELECT 123');
+$dibi->query('SELECT 123');
 
 // result set will be dumped
-Tracy\Debugger::barDump(dibi::fetchAll('SELECT * FROM customers WHERE customer_id < ?', 38), '[customers]');
+Tracy\Debugger::barDump($dibi->fetchAll('SELECT * FROM customers WHERE customer_id < ?', 38), '[customers]');
 
 
 ?>

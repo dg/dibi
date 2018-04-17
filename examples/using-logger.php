@@ -11,7 +11,7 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 date_default_timezone_set('Europe/Prague');
 
 
-dibi::connect([
+$dibi = new Dibi\Connection([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 	// enable query logging to this file
@@ -23,11 +23,11 @@ dibi::connect([
 
 
 try {
-	$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] = ?', 1);
+	$res = $dibi->query('SELECT * FROM [customers] WHERE [customer_id] = ?', 1);
 
-	$res = dibi::query('SELECT * FROM [customers] WHERE [customer_id] < ?', 5);
+	$res = $dibi->query('SELECT * FROM [customers] WHERE [customer_id] < ?', 5);
 
-	$res = dibi::query('SELECT FROM [customers] WHERE [customer_id] < ?', 38);
+	$res = $dibi->query('SELECT FROM [customers] WHERE [customer_id] < ?', 38);
 } catch (Dibi\Exception $e) {
 	echo '<p>', get_class($e), ': ', $e->getMessage(), '</p>';
 }

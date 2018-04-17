@@ -9,13 +9,13 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 }
 
 
-dibi::connect([
+$dibi = new Dibi\Connection([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ]);
 
 
-$res = dibi::query('
+$res = $dibi->query('
 	SELECT * FROM products
 	INNER JOIN orders USING (product_id)
 	INNER JOIN customers USING (customer_id)

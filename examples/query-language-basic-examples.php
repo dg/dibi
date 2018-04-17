@@ -11,7 +11,7 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 date_default_timezone_set('Europe/Prague');
 
 
-dibi::connect([
+$dibi = new Dibi\Connection([
 	'driver' => 'sqlite3',
 	'database' => 'data/sample.s3db',
 ]);
@@ -21,7 +21,7 @@ dibi::connect([
 $ipMask = '192.168.%';
 $timestamp = mktime(0, 0, 0, 10, 13, 1997);
 
-dibi::test('
+$dibi->test('
 	SELECT COUNT(*) as [count]
 	FROM [comments]
 	WHERE [ip] LIKE ?', $ipMask, '
@@ -31,7 +31,7 @@ dibi::test('
 
 
 // dibi detects INSERT or REPLACE command
-dibi::test('
+$dibi->test('
 	REPLACE INTO products', [
 		'title' => 'Super product',
 		'price' => 318,
@@ -47,12 +47,12 @@ $array = [
 	'brand' => null,
 	'created' => new DateTime,
 ];
-dibi::test('INSERT INTO products', $array, $array, $array);
+$dibi->test('INSERT INTO products', $array, $array, $array);
 // -> INSERT INTO products ([title], [price], [brand], [created]) VALUES ('Super Product', ...) , (...) , (...)
 
 
 // dibi detects UPDATE command
-dibi::test('
+$dibi->test('
 	UPDATE colors SET', [
 		'color' => 'blue',
 		'order' => 12,
@@ -63,7 +63,7 @@ dibi::test('
 
 // modifier applied to array
 $array = [1, 2, 3];
-dibi::test('
+$dibi->test('
 	SELECT *
 	FROM people
 	WHERE id IN (?)', $array
@@ -76,7 +76,7 @@ $order = [
 	'field1' => 'asc',
 	'field2' => 'desc',
 ];
-dibi::test('
+$dibi->test('
 	SELECT *
 	FROM people
 	ORDER BY %by', $order, '
@@ -85,5 +85,5 @@ dibi::test('
 
 
 // indentifiers and strings syntax mix
-dibi::test('UPDATE [table] SET `item` = "5 1/4"" diskette"');
+$dibi->test('UPDATE [table] SET `item` = "5 1/4"" diskette"');
 // -> UPDATE [table] SET [item] = '5 1/4" diskette'
