@@ -401,15 +401,12 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	{
 		$row = $this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM);
 		$charset = $this->charset === null ? null : $this->charset . '//TRANSLIT';
-		if ($row && ($assoc || $charset)) {
-			$tmp = [];
+		if ($row && $charset) {
 			foreach ($row as $k => $v) {
-				if ($charset !== null && is_string($v)) {
-					$v = iconv($this->dbcharset, $charset, $v);
+				if (is_string($v)) {
+					$row[$k] = iconv($this->dbcharset, $charset, $v);
 				}
-				$tmp[str_replace(['[', ']'], '', $k)] = $v;
 			}
-			return $tmp;
 		}
 		return $row;
 	}
