@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Dibi\Drivers;
 
 use Dibi;
+use Dibi\Helpers;
 use SQLite3;
 
 
@@ -63,7 +64,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 			throw new Dibi\NotSupportedException('Options dbcharset and charset are not longer supported.');
 		}
 
-		Dibi\Helpers::alias($config, 'database', 'file');
+		Helpers::alias($config, 'database', 'file');
 		$this->fmtDate = $config['formatDate'] ?? 'U';
 		$this->fmtDateTime = $config['formatDateTime'] ?? 'U';
 
@@ -333,18 +334,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		$row = $this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM);
-		if (!$row) {
-			return null;
-		}
-		if ($row && $assoc) {
-			$tmp = [];
-			foreach ($row as $k => $v) {
-				$tmp[str_replace(['[', ']'], '', $k)] = $v;
-			}
-			return $tmp;
-		}
-		return $row;
+		return Helpers::false2Null($this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM));
 	}
 
 
