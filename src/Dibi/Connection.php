@@ -46,7 +46,7 @@ class Connection implements IConnection
 	 *   - lazy (bool) => if true, connection will be established only when required
 	 *   - result (array) => result set options
 	 *       - formatDateTime => date-time format (if empty, DateTime objects will be returned)
-	 *   - profiler (array or bool)
+	 *   - profiler (array)
 	 *       - run (bool) => enable profiler?
 	 *       - file => file to log
 	 *   - substitutes (array) => map of driver specific substitutes (under development)
@@ -97,20 +97,9 @@ class Connection implements IConnection
 		$this->config = $config;
 
 		// profiler
-		$profilerCfg = &$config['profiler'];
-		if (is_scalar($profilerCfg)) {
-			$profilerCfg = ['run' => (bool) $profilerCfg];
-		}
-		if (!empty($profilerCfg['run'])) {
-			$filter = $profilerCfg['filter'] ?? Event::QUERY;
-
-			if (isset($profilerCfg['file'])) {
-				$this->onEvent[] = [new Loggers\FileLogger($profilerCfg['file'], $filter), 'logEvent'];
-			}
-
-			if (Loggers\FirePhpLogger::isAvailable()) {
-				$this->onEvent[] = [new Loggers\FirePhpLogger($filter), 'logEvent'];
-			}
+		if (isset($config['profiler']['file']) && (!isset($config['profiler']['run']) || $config['profiler']['run'])) {
+			$filter = $config['profiler']['filter'] ?? Event::QUERY;
+			$this->onEvent[] = [new Loggers\FileLogger($config['profiler']['file'], $filter), 'logEvent'];
 		}
 
 		$this->substitutes = new HashMap(function ($expr) { return ":$expr:"; });

@@ -19,8 +19,7 @@ $dibi = new Dibi\Connection([
 	'database' => 'data/sample.s3db',
 	// enable query logging to this file
 	'profiler' => [
-		'run' => true,
-		'file' => 'data/log.sql',
+		'file' => 'log/log.sql',
 	],
 ]);
 
@@ -37,6 +36,6 @@ try {
 
 
 // outputs a log file
-echo '<h2>File data/log.sql:</h2>';
+echo '<h2>File log/log.sql:</h2>';
 
-echo '<pre>', file_get_contents('data/log.sql'), '</pre>';
+echo '<pre>', file_get_contents('log/log.sql'), '</pre>';
