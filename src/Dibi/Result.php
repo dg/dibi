@@ -166,13 +166,10 @@ class Result implements IDataSource
 	 */
 	final public function fetch()
 	{
-		$row = $this->getResultDriver()->fetch(true);
+		$row = $this->fetchArray();
 		if ($row === null) {
 			return null;
-		}
-		$this->fetched = true;
-		$this->normalize($row);
-		if ($this->rowFactory) {
+		} elseif ($this->rowFactory) {
 			return ($this->rowFactory)($row);
 		} elseif ($this->rowClass) {
 			return new $this->rowClass($row);
@@ -187,13 +184,21 @@ class Result implements IDataSource
 	 */
 	final public function fetchSingle()
 	{
+		if ($row = $this->fetchArray()) {
+			return reset($row);
+		}
+	}
+
+
+	private function fetchArray(): ?array
+	{
 		$row = $this->getResultDriver()->fetch(true);
 		if ($row === null) {
 			return null;
 		}
 		$this->fetched = true;
 		$this->normalize($row);
-		return reset($row);
+		return $row;
 	}
 
 
@@ -239,7 +244,7 @@ class Result implements IDataSource
 		}
 
 		$this->seek(0);
-		$row = $this->fetch();
+		$row = $this->fetchArray();
 		if (!$row) {
 			return [];  // empty result set
 		}
@@ -250,7 +255,7 @@ class Result implements IDataSource
 		// check columns
 		foreach ($assoc as $as) {
 			// offsetExists ignores null in PHP 5.2.1, isset() surprisingly null accepts
-			if ($as !== '[]' && $as !== '=' && $as !== '->' && $as !== '|' && !property_exists($row, $as)) {
+			if ($as !== '[]' && $as !== '=' && $as !== '->' && $as !== '|' && !array_key_exists($as, $row)) {
 				throw new \InvalidArgumentException("Unknown column '$as' in associative descriptor.");
 			}
 		}
@@ -265,6 +270,7 @@ class Result implements IDataSource
 
 		// make associative tree
 		do {
+			$row = new Row($row);
 			$x = &$data;
 
 			// iterative deepening
@@ -293,7 +299,7 @@ class Result implements IDataSource
 			if ($x === null) { // build leaf
 				$x = $row;
 			}
-		} while ($row = $this->fetch());
+		} while ($row = $this->fetchArray());
 
 		unset($x);
 		return $data;
@@ -306,7 +312,7 @@ class Result implements IDataSource
 	private function oldFetchAssoc(string $assoc)
 	{
 		$this->seek(0);
-		$row = $this->fetch();
+		$row = $this->fetchArray();
 		if (!$row) {
 			return [];  // empty result set
 		}
@@ -329,6 +335,7 @@ class Result implements IDataSource
 		}
 
 		do {
+			$row = new Row($row);
 			$x = &$data;
 
 			foreach ($assoc as $i => $as) {
@@ -365,7 +372,7 @@ class Result implements IDataSource
 					$x = $row;
 				}
 			}
-		} while ($row = $this->fetch());
+		} while ($row = $this->fetchArray());
 
 		unset($x);
 		return $data;
@@ -379,7 +386,7 @@ class Result implements IDataSource
 	final public function fetchPairs(string $key = null, string $value = null): array
 	{
 		$this->seek(0);
-		$row = $this->fetch();
+		$row = $this->fetchArray();
 		if (!$row) {
 			return [];  // empty result set
 		}
@@ -392,37 +399,37 @@ class Result implements IDataSource
 			}
 
 			// autodetect
-			$tmp = array_keys($row->toArray());
-			$key = $tmp[0];
+			$keys = array_keys($row);
+			$key = $keys[0];
 			if (count($row) < 2) { // indexed-array
 				do {
 					$data[] = $row[$key];
-				} while ($row = $this->fetch());
+				} while ($row = $this->fetchArray());
 				return $data;
 			}
 
-			$value = $tmp[1];
+			$value = $keys[1];
 
 		} else {
-			if (!property_exists($row, $value)) {
+			if (!array_key_exists($value, $row)) {
 				throw new \InvalidArgumentException("Unknown value column '$value'.");
 			}
 
 			if ($key === null) { // indexed-array
 				do {
 					$data[] = $row[$value];
-				} while ($row = $this->fetch());
+				} while ($row = $this->fetchArray());
 				return $data;
 			}
 
-			if (!property_exists($row, $key)) {
+			if (!array_key_exists($key, $row)) {
 				throw new \InvalidArgumentException("Unknown key column '$key'.");
 			}
 		}
 
 		do {
 			$data[(string) $row[$key]] = $row[$value];
-		} while ($row = $this->fetch());
+		} while ($row = $this->fetchArray());
 
 		return $data;
 	}
