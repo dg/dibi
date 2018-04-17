@@ -25,7 +25,7 @@ class Panel implements Tracy\IBarPanel
 	/** @var int maximum SQL length */
 	public static $maxLength = 1000;
 
-	/** @var bool  explain queries? */
+	/** @var bool|string  explain queries? */
 	public $explain;
 
 	/** @var int */
@@ -35,7 +35,7 @@ class Panel implements Tracy\IBarPanel
 	private $events = [];
 
 
-	public function __construct(bool $explain = true, int $filter = null)
+	public function __construct($explain = true, int $filter = null)
 	{
 		$this->filter = $filter ?: Event::QUERY;
 		$this->explain = $explain;

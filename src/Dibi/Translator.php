@@ -41,10 +41,10 @@ final class Translator
 	/** @var int */
 	private $ifLevelStart = 0;
 
-	/** @var int */
+	/** @var int|null */
 	private $limit;
 
-	/** @var int */
+	/** @var int|null */
 	private $offset;
 
 	/** @var HashMap */
@@ -337,7 +337,7 @@ final class Translator
 					return $value === null ? 'NULL' : $this->driver->escapeBinary($value);
 
 				case 'b':  // boolean
-					return $value === null ? 'NULL' : $this->driver->escapeBool($value);
+					return $value === null ? 'NULL' : $this->driver->escapeBool((bool) $value);
 
 				case 'sN': // string or null
 				case 'sn':

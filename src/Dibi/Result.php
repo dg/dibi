@@ -44,10 +44,10 @@ class Result implements IDataSource
 	/** @var bool  Already fetched? Used for allowance for first seek(0) */
 	private $fetched = false;
 
-	/** @var ?string  returned object class */
+	/** @var string|null  returned object class */
 	private $rowClass = Row::class;
 
-	/** @var callable  returned object factory*/
+	/** @var callable|null  returned object factory */
 	private $rowFactory;
 
 	/** @var array  format */
@@ -96,7 +96,7 @@ class Result implements IDataSource
 	 */
 	final public function seek(int $row): bool
 	{
-		return ($row !== 0 || $this->fetched) ? (bool) $this->getResultDriver()->seek($row) : true;
+		return ($row !== 0 || $this->fetched) ? $this->getResultDriver()->seek($row) : true;
 	}
 
 
@@ -204,7 +204,7 @@ class Result implements IDataSource
 
 	/**
 	 * Fetches all records from table.
-	 * @return Row[]
+	 * @return Row[]|array[]
 	 */
 	final public function fetchAll(int $offset = null, int $limit = null): array
 	{

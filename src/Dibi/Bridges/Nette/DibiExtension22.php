@@ -23,7 +23,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 	private $debugMode;
 
 
-	public function __construct(bool $debugMode = null)
+	public function __construct(bool $debugMode = false)
 	{
 		$this->debugMode = $debugMode;
 	}

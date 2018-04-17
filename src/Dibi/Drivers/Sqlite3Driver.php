@@ -202,7 +202,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Returns the connection resource.
 	 */
-	public function getResource(): SQLite3
+	public function getResource(): ?SQLite3
 	{
 		return $this->connection;
 	}

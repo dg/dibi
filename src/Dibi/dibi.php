@@ -52,13 +52,13 @@ class dibi
 		ASC = 'ASC',
 		DESC = 'DESC';
 
-	/** @var string  Last SQL command @see dibi::query() */
+	/** @var string|null  Last SQL command @see dibi::query() */
 	public static $sql;
 
-	/** @var int  Elapsed time for last query */
+	/** @var float|null  Elapsed time for last query */
 	public static $elapsedTime;
 
-	/** @var int  Elapsed time for all queries */
+	/** @var float  Elapsed time for all queries */
 	public static $totalTime;
 
 	/** @var int  Number or queries */
@@ -170,7 +170,7 @@ class dibi
 
 	/**
 	 * Prints out a syntax highlighted version of the SQL command or Result.
-	 * @param  string|Result  $sql
+	 * @param  string|Dibi\Result  $sql
 	 * @param  bool  $return  return output instead of printing it?
 	 */
 	public static function dump($sql = null, bool $return = false): ?string

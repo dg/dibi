@@ -31,7 +31,7 @@ class FirePhpLogger
 	/** @var int */
 	public $filter;
 
-	/** @var int  Elapsed time for all queries */
+	/** @var float  Elapsed time for all queries */
 	public $totalTime = 0;
 
 	/** @var int  Number of all queries */

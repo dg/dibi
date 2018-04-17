@@ -31,7 +31,7 @@ class Connection implements IConnection
 	/** @var Driver */
 	private $driver;
 
-	/** @var Translator */
+	/** @var Translator|null */
 	private $translator;
 
 	/** @var bool  Is connected? */
@@ -50,7 +50,7 @@ class Connection implements IConnection
 	 *       - run (bool) => enable profiler?
 	 *       - file => file to log
 	 *   - substitutes (array) => map of driver specific substitutes (under development)
-	 * @param  mixed   $config  connection parameters
+	 * @param  array   $config  connection parameters
 	 * @throws Exception
 	 */
 	public function __construct($config, string $name = null)
@@ -198,7 +198,7 @@ class Connection implements IConnection
 
 	/**
 	 * Generates (translates) and executes SQL query.
-	 * @param  mixed  $args
+	 * @param  mixed  ...$args
 	 * @return Result|int   result set or number of affected rows
 	 * @throws Exception
 	 */
@@ -210,7 +210,7 @@ class Connection implements IConnection
 
 	/**
 	 * Generates SQL query.
-	 * @param  mixed  $args
+	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
 	final public function translate(...$args): string
@@ -221,7 +221,7 @@ class Connection implements IConnection
 
 	/**
 	 * Generates and prints SQL query.
-	 * @param  mixed  $args
+	 * @param  mixed  ...$args
 	 */
 	final public function test(...$args): bool
 	{
@@ -242,7 +242,7 @@ class Connection implements IConnection
 
 	/**
 	 * Generates (translates) and returns SQL query as DataSource.
-	 * @param  mixed  $args
+	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
 	final public function dataSource(...$args): DataSource
@@ -267,7 +267,7 @@ class Connection implements IConnection
 
 	/**
 	 * Executes the SQL query.
-	 * @return Result|int   result set or number of affected rows
+	 * @return Result|int|null   result set or number of affected rows
 	 * @throws Exception
 	 */
 	final public function nativeQuery(string $sql)
@@ -425,21 +425,16 @@ class Connection implements IConnection
 	}
 
 
-	public function update(string $table, array $args): Fluent
+	public function update(string $table, iterable $args): Fluent
 	{
-		if (!(is_array($args) || $args instanceof Traversable)) {
-			throw new \InvalidArgumentException('Arguments must be array or Traversable.');
-		}
 		return $this->command()->update('%n', $table)->set($args);
 	}
 
 
-	public function insert(string $table, array $args): Fluent
+	public function insert(string $table, iterable $args): Fluent
 	{
 		if ($args instanceof Traversable) {
 			$args = iterator_to_array($args);
-		} elseif (!is_array($args)) {
-			throw new \InvalidArgumentException('Arguments must be array or Traversable.');
 		}
 		return $this->command()->insert()
 			->into('%n', $table, '(%n)', array_keys($args))->values('%l', $args);
@@ -480,7 +475,7 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
-	 * @param  mixed  $args
+	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
 	public function fetch(...$args): ?Row
@@ -491,8 +486,8 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
-	 * @param  mixed  $args
-	 * @return Row[]
+	 * @param  mixed  ...$args
+	 * @return Row[]|array[]
 	 * @throws Exception
 	 */
 	public function fetchAll(...$args): array
@@ -503,7 +498,7 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
-	 * @param  mixed  $args
+	 * @param  mixed  ...$args
 	 * @return mixed
 	 * @throws Exception
 	 */
@@ -515,7 +510,7 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
-	 * @param  mixed  $args
+	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
 	public function fetchPairs(...$args): array

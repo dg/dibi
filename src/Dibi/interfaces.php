@@ -223,7 +223,6 @@ interface IConnection
 
 	/**
 	 * Generates (translates) and executes SQL query.
-	 * @param  mixed  $args
 	 * @return Result|int   result set or number of affected rows
 	 * @throws Exception
 	 */

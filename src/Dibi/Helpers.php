@@ -14,7 +14,7 @@ class Helpers
 {
 	use Strict;
 
-	/** @var array */
+	/** @var HashMap */
 	private static $types;
 
 

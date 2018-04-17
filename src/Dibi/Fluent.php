@@ -15,7 +15,7 @@ namespace Dibi;
  *
  * @method Fluent select(...$field)
  * @method Fluent distinct()
- * @method Fluent from($table)
+ * @method Fluent from($table, ...$args)
  * @method Fluent where(...$cond)
  * @method Fluent groupBy(...$field)
  * @method Fluent having(...$cond)
@@ -97,7 +97,7 @@ class Fluent implements IDataSource
 	/** @var array */
 	private $flags = [];
 
-	/** @var array */
+	/** @var array|null */
 	private $cursor;
 
 	/** @var HashMap  normalized clauses */
@@ -268,7 +268,6 @@ class Fluent implements IDataSource
 
 	/**
 	 * Adds Result setup.
-	 * @param  mixed   $method
 	 */
 	public function setupResult(string $method): self
 	{
@@ -282,7 +281,6 @@ class Fluent implements IDataSource
 
 	/**
 	 * Generates and executes SQL query.
-	 * @param  mixed  $return  what to return?
 	 * @return Result|int  result set or number of affected rows
 	 * @throws Exception
 	 */

@@ -93,7 +93,7 @@ class ProcedureException extends Exception
 	/**
 	 * Construct the exception.
 	 */
-	public function __construct(string $message = null, int $code = 0, string $severity = null, string $sql = null)
+	public function __construct(string $message = '', int $code = 0, string $severity = '', string $sql = null)
 	{
 		parent::__construct($message, $code, $sql);
 		$this->severity = $severity;

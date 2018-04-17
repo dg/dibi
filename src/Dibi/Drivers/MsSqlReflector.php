@@ -53,7 +53,7 @@ class MsSqlReflector implements Dibi\Reflector
 	/**
 	 * Returns count of rows in a table
 	 */
-	public function getTableCount(string $table, bool $fallback = true): int
+	public function getTableCount(string $table, bool $fallback = true): ?int
 	{
 		if (empty($table)) {
 			return null;

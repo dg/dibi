@@ -243,7 +243,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Returns the connection resource.
 	 */
-	public function getResource(): \mysqli
+	public function getResource(): ?\mysqli
 	{
 		return @$this->connection->thread_id ? $this->connection : null;
 	}
