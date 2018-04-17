@@ -29,7 +29,7 @@ class Connection
 	/** @var Driver */
 	private $driver;
 
-	/** @var Translator */
+	/** @var Translator|null */
 	private $translator;
 
 	/** @var bool  Is connected? */
@@ -559,7 +559,7 @@ class Connection
 	/**
 	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
 	 * @param  array|mixed    one or more arguments
-	 * @return Row[]
+	 * @return Row[]|array[]
 	 * @throws Exception
 	 */
 	public function fetchAll($args)

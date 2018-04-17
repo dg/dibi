@@ -13,7 +13,7 @@ namespace Dibi;
  *
  * @method Fluent select(...$field)
  * @method Fluent distinct()
- * @method Fluent from($table)
+ * @method Fluent from($table, ...$args)
  * @method Fluent where(...$cond)
  * @method Fluent groupBy(...$field)
  * @method Fluent having(...$cond)
@@ -95,7 +95,7 @@ class Fluent implements IDataSource
 	/** @var array */
 	private $flags = [];
 
-	/** @var array */
+	/** @var array|null */
 	private $cursor;
 
 	/** @var HashMap  normalized clauses */

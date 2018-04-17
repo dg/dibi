@@ -214,7 +214,7 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return SQLite3
+	 * @return SQLite3|null
 	 */
 	public function getResource()
 	{

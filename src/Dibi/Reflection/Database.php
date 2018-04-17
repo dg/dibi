@@ -24,7 +24,7 @@ class Database
 	/** @var Dibi\Reflector */
 	private $reflector;
 
-	/** @var string */
+	/** @var string|null */
 	private $name;
 
 	/** @var array */
@@ -39,7 +39,7 @@ class Database
 
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
 	public function getName()
 	{

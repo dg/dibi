@@ -39,10 +39,10 @@ final class Translator
 	/** @var int */
 	private $ifLevelStart = 0;
 
-	/** @var int */
+	/** @var int|null */
 	private $limit;
 
-	/** @var int */
+	/** @var int|null */
 	private $offset;
 
 	/** @var HashMap */

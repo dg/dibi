@@ -104,7 +104,7 @@ class ProcedureException extends Exception
 	 * @param  int     Some code
 	 * @param  string SQL command
 	 */
-	public function __construct($message = null, $code = 0, $severity = null, $sql = null)
+	public function __construct($message = '', $code = 0, $severity = '', $sql = null)
 	{
 		parent::__construct($message, (int) $code, $sql);
 		$this->severity = $severity;

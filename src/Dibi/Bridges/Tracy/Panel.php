@@ -23,7 +23,7 @@ class Panel implements Tracy\IBarPanel
 	/** @var int maximum SQL length */
 	public static $maxLength = 1000;
 
-	/** @var bool  explain queries? */
+	/** @var bool|string  explain queries? */
 	public $explain;
 
 	/** @var int */

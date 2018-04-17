@@ -256,7 +256,7 @@ class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return \mysqli
+	 * @return \mysqli|null
 	 */
 	public function getResource()
 	{

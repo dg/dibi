@@ -27,7 +27,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var PDO  Connection resource */
+	/** @var PDO|null  Connection resource */
 	private $connection;
 
 	/** @var \PDOStatement|null  Resultset resource */
@@ -200,7 +200,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 	/**
 	 * Returns the connection resource.
-	 * @return PDO
+	 * @return PDO|null
 	 */
 	public function getResource()
 	{

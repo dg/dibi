@@ -43,7 +43,7 @@ class Event
 	/** @var float */
 	public $time;
 
-	/** @var int */
+	/** @var int|null */
 	public $count;
 
 	/** @var array */
@@ -74,7 +74,7 @@ class Event
 			}
 		}
 
-		\dibi::$elapsedTime = false;
+		\dibi::$elapsedTime = null;
 		\dibi::$numOfQueries++;
 		\dibi::$sql = $sql;
 	}

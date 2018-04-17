@@ -21,13 +21,13 @@ class DataSource implements IDataSource
 	/** @var string */
 	private $sql;
 
-	/** @var Result */
+	/** @var Result|null */
 	private $result;
 
-	/** @var int */
+	/** @var int|null */
 	private $count;
 
-	/** @var int */
+	/** @var int|null */
 	private $totalCount;
 
 	/** @var array */
