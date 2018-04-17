@@ -324,7 +324,9 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function __destruct()
 	{
-		$this->autoFree && $this->resultSet && @$this->free();
+		if ($this->autoFree && $this->getResultResource()) {
+			@$this->free();
+		}
 	}
 
 

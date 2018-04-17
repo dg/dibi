@@ -131,8 +131,9 @@ class Connection implements IConnection
 	 */
 	public function __destruct()
 	{
-		// disconnects and rolls back transaction - do not rely on auto-disconnect and rollback!
-		$this->connected && $this->driver->getResource() && $this->disconnect();
+		if ($this->connected && $this->driver->getResource()) {
+			$this->disconnect();
+		}
 	}
 
 
@@ -145,10 +146,14 @@ class Connection implements IConnection
 		try {
 			$this->driver->connect($this->config);
 			$this->connected = true;
-			$event && $this->onEvent($event->done());
+			if ($event) {
+				$this->onEvent($event->done());
+			}
 
 		} catch (Exception $e) {
-			$event && $this->onEvent($event->done($e));
+			if ($event) {
+				$this->onEvent($event->done($e));
+			}
 			throw $e;
 		}
 	}
@@ -191,7 +196,9 @@ class Connection implements IConnection
 	 */
 	final public function getDriver(): Driver
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		return $this->driver;
 	}
 
@@ -256,7 +263,9 @@ class Connection implements IConnection
 	 */
 	protected function translateArgs(array $args): string
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		if (!$this->translator) {
 			$this->translator = new Translator($this);
 		}
@@ -272,7 +281,9 @@ class Connection implements IConnection
 	 */
 	final public function nativeQuery(string $sql)
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 
 		\dibi::$sql = $sql;
 		$event = $this->onEvent ? new Event($this, Event::QUERY, $sql) : null;
@@ -280,7 +291,9 @@ class Connection implements IConnection
 			$res = $this->driver->query($sql);
 
 		} catch (Exception $e) {
-			$event && $this->onEvent($event->done($e));
+			if ($event) {
+				$this->onEvent($event->done($e));
+			}
 			throw $e;
 		}
 
@@ -290,7 +303,9 @@ class Connection implements IConnection
 			$res = $this->driver->getAffectedRows();
 		}
 
-		$event && $this->onEvent($event->done($res));
+		if ($event) {
+			$this->onEvent($event->done($res));
+		}
 		return $res;
 	}
 
@@ -301,7 +316,9 @@ class Connection implements IConnection
 	 */
 	public function getAffectedRows(): int
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		$rows = $this->driver->getAffectedRows();
 		if ($rows === null || $rows < 0) {
 			throw new Exception('Cannot retrieve number of affected rows.');
@@ -326,7 +343,9 @@ class Connection implements IConnection
 	 */
 	public function getInsertId(string $sequence = null): int
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		$id = $this->driver->getInsertId($sequence);
 		if ($id < 1) {
 			throw new Exception('Cannot retrieve last generated ID.');
@@ -350,14 +369,20 @@ class Connection implements IConnection
 	 */
 	public function begin(string $savepoint = null): void
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		$event = $this->onEvent ? new Event($this, Event::BEGIN, $savepoint) : null;
 		try {
 			$this->driver->begin($savepoint);
-			$event && $this->onEvent($event->done());
+			if ($event) {
+				$this->onEvent($event->done());
+			}
 
 		} catch (Exception $e) {
-			$event && $this->onEvent($event->done($e));
+			if ($event) {
+				$this->onEvent($event->done($e));
+			}
 			throw $e;
 		}
 	}
@@ -368,14 +393,20 @@ class Connection implements IConnection
 	 */
 	public function commit(string $savepoint = null): void
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		$event = $this->onEvent ? new Event($this, Event::COMMIT, $savepoint) : null;
 		try {
 			$this->driver->commit($savepoint);
-			$event && $this->onEvent($event->done());
+			if ($event) {
+				$this->onEvent($event->done());
+			}
 
 		} catch (Exception $e) {
-			$event && $this->onEvent($event->done($e));
+			if ($event) {
+				$this->onEvent($event->done($e));
+			}
 			throw $e;
 		}
 	}
@@ -386,14 +417,20 @@ class Connection implements IConnection
 	 */
 	public function rollback(string $savepoint = null): void
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		$event = $this->onEvent ? new Event($this, Event::ROLLBACK, $savepoint) : null;
 		try {
 			$this->driver->rollback($savepoint);
-			$event && $this->onEvent($event->done());
+			if ($event) {
+				$this->onEvent($event->done());
+			}
 
 		} catch (Exception $e) {
-			$event && $this->onEvent($event->done($e));
+			if ($event) {
+				$this->onEvent($event->done($e));
+			}
 			throw $e;
 		}
 	}
@@ -550,7 +587,9 @@ class Connection implements IConnection
 	 */
 	public function getDatabaseInfo(): Reflection\Database
 	{
-		$this->connected || $this->connect();
+		if (!$this->connected) {
+			$this->connect();
+		}
 		return new Reflection\Database($this->driver->getReflector(), $this->config['database'] ?? null);
 	}
 

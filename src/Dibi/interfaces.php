@@ -25,7 +25,6 @@ interface IDataSource extends \Countable, \IteratorAggregate
  */
 interface Driver
 {
-
 	/**
 	 * Connects to a database.
 	 * @throws Exception
@@ -121,7 +120,6 @@ interface Driver
  */
 interface ResultDriver
 {
-
 	/**
 	 * Returns the number of rows in a result set.
 	 */
@@ -170,7 +168,6 @@ interface ResultDriver
  */
 interface Reflector
 {
-
 	/**
 	 * Returns list of tables.
 	 * @return array of {name [, (bool) view ]}

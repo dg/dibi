@@ -68,8 +68,7 @@ class Event
 			$this->type = $types[strtoupper($matches[1])];
 		}
 
-		$rc = new \ReflectionClass('dibi');
-		$dibiDir = dirname($rc->getFileName()) . DIRECTORY_SEPARATOR;
+		$dibiDir = dirname((new \ReflectionClass('dibi'))->getFileName()) . DIRECTORY_SEPARATOR;
 		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $row) {
 			if (isset($row['file']) && is_file($row['file']) && strpos($row['file'], $dibiDir) !== 0) {
 				$this->source = [$row['file'], (int) $row['line']];
