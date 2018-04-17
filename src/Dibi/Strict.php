@@ -29,7 +29,9 @@ trait Strict
 	 */
 	public function __call($name, $args)
 	{
-		if ($cb = self::extensionMethod(get_class($this) . '::' . $name)) { // back compatiblity
+		$class = get_class($this);
+		if ($cb = self::extensionMethod($class . '::' . $name)) { // back compatiblity
+			trigger_error("Extension methods such as $class::$name() are deprecated", E_USER_DEPRECATED);
 			array_unshift($args, $this);
 			return $cb(...$args);
 		}
@@ -104,6 +106,7 @@ trait Strict
 
 	/**
 	 * @return mixed
+	 * @deprecated
 	 */
 	public static function extensionMethod(string $name, callable $callback = null)
 	{
@@ -129,6 +132,7 @@ trait Strict
 			return $cache = false;
 
 		} else { // setter
+			trigger_error("Extension methods such as $class::$name() are deprecated", E_USER_DEPRECATED);
 			$list[$class] = $callback;
 			$list[''] = null;
 		}

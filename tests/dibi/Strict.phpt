@@ -148,12 +148,3 @@ Assert::exception(function () {
 }, LogicException::class, 'Attempt to unset undeclared property TestClass::$undeclared.');
 
 Assert::false(isset($obj->undeclared));
-
-
-// extension method
-TestClass::extensionMethod('join', $func = function (TestClass $that, $separator) {
-	return $that->foo . $separator . $that->bar;
-});
-
-$obj = new TestClass;
-Assert::same('456*123', $obj->join('*'));
