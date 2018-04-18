@@ -447,4 +447,16 @@ class dibi
 	{
 		return Dibi\Helpers::dump($sql, $return);
 	}
+
+
+	/**
+	 * Strips microseconds part.
+	 * @param  \DateTime|\DateTimeInterface
+	 * @return \DateTime|\DateTimeInterface
+	 */
+	public static function stripMicroseconds($dt)
+	{
+		$class = get_class($dt);
+		return new $class($dt->format('Y-m-d H:i:s'), $dt->getTimezone());
+	}
 }
