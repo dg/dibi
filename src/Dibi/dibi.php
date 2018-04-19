@@ -44,7 +44,7 @@ class dibi
 
 	/** version */
 	public const
-		VERSION = '4.0-dev';
+		VERSION = '4.0.0';
 
 	/** sorting order */
 	public const
