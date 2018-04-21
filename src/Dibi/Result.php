@@ -501,7 +501,7 @@ class Result implements IDataSource
 				$row[$key]->invert = (int) (bool) $m[1];
 
 			} elseif ($type === Type::BINARY) {
-				$row[$key] = $this->getResultDriver()->unescapeBinary($value);
+				$row[$key] = is_string($value) ? $this->getResultDriver()->unescapeBinary($value) : $value;
 
 			} elseif ($type === Type::JSON) {
 				$row[$key] = json_decode($value);
