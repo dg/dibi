@@ -504,7 +504,7 @@ class Result implements IDataSource
 				$row[$key] = is_string($value) ? $this->getResultDriver()->unescapeBinary($value) : $value;
 
 			} elseif ($type === Type::JSON) {
-				$row[$key] = json_decode($value);
+				$row[$key] = json_decode($value, true);
 			}
 		}
 	}
