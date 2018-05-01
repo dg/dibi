@@ -46,7 +46,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 
-	public function __get($key)
+	public function __get(string $key)
 	{
 		$hint = Helpers::getSuggestion(array_keys((array) $this), $key);
 		trigger_error("Attempt to read missing column '$key'" . ($hint ? ", did you mean '$hint'?" : '.'), E_USER_NOTICE);

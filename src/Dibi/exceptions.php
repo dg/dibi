@@ -21,6 +21,7 @@ class Exception extends \Exception
 
 	/**
 	 * Construct a dibi exception.
+	 * @param  int|string  $code
 	 */
 	public function __construct(string $message = '', $code = 0, string $sql = null, \Throwable $previous = null)
 	{
@@ -105,7 +106,7 @@ class ProcedureException extends Exception
 	 */
 	public function getSeverity(): string
 	{
-		$this->severity;
+		return $this->severity;
 	}
 }
 

@@ -33,7 +33,7 @@ class ResultIterator implements \Iterator, \Countable
 	private $row;
 
 	/** @var int */
-	private $pointer;
+	private $pointer = 0;
 
 
 	public function __construct(Result $result)
