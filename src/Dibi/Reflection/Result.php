@@ -25,10 +25,10 @@ class Result
 	/** @var Dibi\ResultDriver */
 	private $driver;
 
-	/** @var array */
+	/** @var Column[]|null */
 	private $columns;
 
-	/** @var array */
+	/** @var string[]|null */
 	private $names;
 
 

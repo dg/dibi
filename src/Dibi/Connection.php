@@ -23,7 +23,7 @@ class Connection implements IConnection
 	use Strict;
 
 	/** @var array of function (Event $event); Occurs after query is executed */
-	public $onEvent;
+	public $onEvent = [];
 
 	/** @var array  Current connection configuration */
 	private $config;
@@ -104,7 +104,7 @@ class Connection implements IConnection
 			$this->onEvent[] = [new Loggers\FileLogger($config['profiler']['file'], $filter), 'logEvent'];
 		}
 
-		$this->substitutes = new HashMap(function ($expr) { return ":$expr:"; });
+		$this->substitutes = new HashMap(function (string $expr) { return ":$expr:"; });
 		if (!empty($config['substitutes'])) {
 			foreach ($config['substitutes'] as $key => $value) {
 				$this->substitutes->$key = $value;
@@ -141,7 +141,7 @@ class Connection implements IConnection
 				$this->onEvent($event->done());
 			}
 
-		} catch (Exception $e) {
+		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
@@ -197,7 +197,7 @@ class Connection implements IConnection
 	/**
 	 * Generates (translates) and executes SQL query.
 	 * @param  mixed  ...$args
-	 * @return Result|int   result set or number of affected rows
+	 * @return Result|int|null   result set or number of affected rows
 	 * @throws Exception
 	 */
 	final public function query(...$args)
@@ -281,7 +281,7 @@ class Connection implements IConnection
 		try {
 			$res = $this->driver->query($sql);
 
-		} catch (Exception $e) {
+		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
@@ -494,7 +494,7 @@ class Connection implements IConnection
 	{
 		return strpos($value, ':') === false
 			? $value
-			: preg_replace_callback('#:([^:\s]*):#', function ($m) { return $this->substitutes->{$m[1]}; }, $value);
+			: preg_replace_callback('#:([^:\s]*):#', function (array $m) { return $this->substitutes->{$m[1]}; }, $value);
 	}
 
 
@@ -605,7 +605,7 @@ class Connection implements IConnection
 
 	protected function onEvent($arg): void
 	{
-		foreach ($this->onEvent ?: [] as $handler) {
+		foreach ($this->onEvent as $handler) {
 			$handler($arg);
 		}
 	}

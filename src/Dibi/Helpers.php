@@ -89,7 +89,7 @@ class Helpers
 			$highlighter = "#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is";
 			if (PHP_SAPI === 'cli') {
 				if (substr((string) getenv('TERM'), 0, 5) === 'xterm') {
-					$sql = preg_replace_callback($highlighter, function ($m) {
+					$sql = preg_replace_callback($highlighter, function (array $m) {
 						if (!empty($m[1])) { // comment
 							return "\033[1;30m" . $m[1] . "\033[0m";
 
@@ -108,7 +108,7 @@ class Helpers
 
 			} else {
 				$sql = htmlspecialchars($sql);
-				$sql = preg_replace_callback($highlighter, function ($m) {
+				$sql = preg_replace_callback($highlighter, function (array $m) {
 					if (!empty($m[1])) { // comment
 						return '<em style="color:gray">' . $m[1] . '</em>';
 
@@ -139,7 +139,7 @@ class Helpers
 	 * Finds the best suggestion.
 	 * @internal
 	 */
-	public static function getSuggestion(array $items, $value): ?string
+	public static function getSuggestion(array $items, string $value): ?string
 	{
 		$best = null;
 		$min = (strlen($value) / 4 + 1) * 10 + .1;
@@ -204,7 +204,7 @@ class Helpers
 	/**
 	 * @internal
 	 */
-	public static function getTypeCache()
+	public static function getTypeCache(): HashMap
 	{
 		if (self::$types === null) {
 			self::$types = new HashMap([__CLASS__, 'detectType']);

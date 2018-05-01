@@ -13,8 +13,8 @@ declare(strict_types=1);
  * store connections info.
  *
  * @method void disconnect()
- * @method Dibi\Result|int query(...$args)
- * @method Dibi\Result|int nativeQuery(...$args)
+ * @method Dibi\Result|int|null query(...$args)
+ * @method Dibi\Result|int|null nativeQuery(...$args)
  * @method bool test(...$args)
  * @method Dibi\DataSource dataSource(...$args)
  * @method Dibi\Row|null fetch(...$args)
@@ -85,6 +85,7 @@ class dibi
 
 	/**
 	 * Creates a new Connection object and connects it to specified database.
+	 * @param  array   $config  connection parameters
 	 * @throws Dibi\Exception
 	 */
 	public static function connect($config = [], string $name = '0'): Dibi\Connection
@@ -139,7 +140,7 @@ class dibi
 	/**
 	 * Monostate for Dibi\Connection.
 	 */
-	public static function __callStatic($name, $args)
+	public static function __callStatic(string $name, array $args)
 	{
 		return self::getConnection()->$name(...$args);
 	}

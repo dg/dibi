@@ -220,7 +220,7 @@ interface IConnection
 
 	/**
 	 * Generates (translates) and executes SQL query.
-	 * @return Result|int   result set or number of affected rows
+	 * @return Result|int|null   result set or number of affected rows
 	 * @throws Exception
 	 */
 	function query(...$args);
