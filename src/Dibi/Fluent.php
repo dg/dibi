@@ -86,7 +86,7 @@ class Fluent implements IDataSource
 	/** @var array */
 	private $setups = [];
 
-	/** @var string */
+	/** @var string|null */
 	private $command;
 
 	/** @var array */

@@ -31,7 +31,7 @@ class ResultIterator implements \Iterator, \Countable
 	private $row;
 
 	/** @var int */
-	private $pointer;
+	private $pointer = 0;
 
 
 	/**

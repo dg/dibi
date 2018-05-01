@@ -20,7 +20,7 @@ class Exception extends \Exception
 	/**
 	 * Construct a dibi exception.
 	 * @param  string  Message describing the exception
-	 * @param  mixed
+	 * @param  string|int
 	 * @param  string  SQL command
 	 * @param  \Exception
 	 */
@@ -117,7 +117,7 @@ class ProcedureException extends Exception
 	 */
 	public function getSeverity()
 	{
-		$this->severity;
+		return $this->severity;
 	}
 }
 

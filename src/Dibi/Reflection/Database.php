@@ -27,7 +27,7 @@ class Database
 	/** @var string|null */
 	private $name;
 
-	/** @var array */
+	/** @var Table[]|null */
 	private $tables;
 
 

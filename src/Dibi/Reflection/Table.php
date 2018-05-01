@@ -34,16 +34,16 @@ class Table
 	/** @var bool */
 	private $view;
 
-	/** @var array */
+	/** @var Column[]|null */
 	private $columns;
 
-	/** @var array */
+	/** @var ForeignKey[]|null */
 	private $foreignKeys;
 
-	/** @var array */
+	/** @var Index[]|null */
 	private $indexes;
 
-	/** @var Index */
+	/** @var Index|null */
 	private $primaryKey;
 
 

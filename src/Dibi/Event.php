@@ -46,7 +46,7 @@ class Event
 	/** @var int|null */
 	public $count;
 
-	/** @var array */
+	/** @var array|null */
 	public $source;
 
 
@@ -80,6 +80,9 @@ class Event
 	}
 
 
+	/**
+	 * @param  Result|DriverException|null
+	 */
 	public function done($result = null)
 	{
 		$this->result = $result;
