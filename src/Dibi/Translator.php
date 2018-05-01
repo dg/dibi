@@ -70,6 +70,7 @@ final class Translator
 			$args = array_values($args[0]);
 		}
 		$this->args = $args;
+		$this->errors = [];
 
 		$commandIns = null;
 		$lastArr = null;

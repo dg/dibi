@@ -16,6 +16,7 @@ namespace Dibi;
  */
 abstract class HashMapBase
 {
+	/** @var callable */
 	private $callback;
 
 
@@ -45,18 +46,18 @@ abstract class HashMapBase
  */
 final class HashMap extends HashMapBase
 {
-	public function __set($nm, $val)
+	public function __set(string $nm, $val)
 	{
-		if ($nm == '') {
+		if ($nm === '') {
 			$nm = "\xFF";
 		}
 		$this->$nm = $val;
 	}
 
 
-	public function __get($nm)
+	public function __get(string $nm)
 	{
-		if ($nm == '') {
+		if ($nm === '') {
 			$nm = "\xFF";
 			return isset($this->$nm) ? $this->$nm : $this->$nm = $this->getCallback()('');
 		} else {

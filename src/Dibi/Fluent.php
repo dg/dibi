@@ -88,7 +88,7 @@ class Fluent implements IDataSource
 	/** @var array */
 	private $setups = [];
 
-	/** @var string */
+	/** @var string|null */
 	private $command;
 
 	/** @var array */
@@ -251,7 +251,7 @@ class Fluent implements IDataSource
 	/**
 	 * Returns SQL command.
 	 */
-	final public function getCommand(): string
+	final public function getCommand(): ?string
 	{
 		return $this->command;
 	}
@@ -281,7 +281,7 @@ class Fluent implements IDataSource
 
 	/**
 	 * Generates and executes SQL query.
-	 * @return Result|int  result set or number of affected rows
+	 * @return Result|int|null  result set or number of affected rows
 	 * @throws Exception
 	 */
 	public function execute(string $return = null)
