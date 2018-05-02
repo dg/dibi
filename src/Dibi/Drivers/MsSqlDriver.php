@@ -22,7 +22,6 @@ use Dibi;
  *   - database => the database name to select
  *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
 class MsSqlDriver implements Dibi\Driver, Dibi\ResultDriver
 {

@@ -21,7 +21,6 @@ use Dibi;
  *   - password (or pass)
  *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
 class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {

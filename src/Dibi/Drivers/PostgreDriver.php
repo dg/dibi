@@ -23,7 +23,6 @@ use Dibi\Helpers;
  *   - charset => character encoding to set (default is utf8)
  *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
 class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
