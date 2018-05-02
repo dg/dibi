@@ -29,7 +29,6 @@ use Dibi;
  *   - unbuffered (bool) => sends query without fetching and buffering the result rows automatically?
  *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - resource (mysqli) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
 class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 {

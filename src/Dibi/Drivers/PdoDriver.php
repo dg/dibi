@@ -24,7 +24,6 @@ use PDO;
  *   - options (array) => driver specific options {@see PDO::__construct}
  *   - resource (PDO) => existing connection
  *   - version
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
 class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 {

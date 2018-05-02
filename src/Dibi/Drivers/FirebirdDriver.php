@@ -23,7 +23,6 @@ use Dibi\Helpers;
  *   - charset => character encoding to set
  *   - buffers (int) => buffers is the number of database buffers to allocate for the server-side cache. If 0 or omitted, server chooses its own default.
  *   - resource (resource) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
 class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
