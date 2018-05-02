@@ -34,9 +34,6 @@ class Connection implements IConnection
 	/** @var Translator|null */
 	private $translator;
 
-	/** @var bool  Is connected? */
-	private $connected = false;
-
 	/** @var HashMap Substitutes for identifiers */
 	private $substitutes;
 
@@ -104,7 +101,7 @@ class Connection implements IConnection
 	 */
 	public function __destruct()
 	{
-		if ($this->connected && $this->driver->getResource()) {
+		if ($this->driver && $this->driver->getResource()) {
 			$this->disconnect();
 		}
 	}
@@ -128,7 +125,6 @@ class Connection implements IConnection
 		$event = $this->onEvent ? new Event($this, Event::CONNECT) : null;
 		try {
 			$this->driver = new $class($this->config);
-			$this->connected = true;
 			if ($event) {
 				$this->onEvent($event->done());
 			}
@@ -147,9 +143,9 @@ class Connection implements IConnection
 	 */
 	final public function disconnect(): void
 	{
-		if ($this->connected) {
+		if ($this->driver) {
 			$this->driver->disconnect();
-			$this->connected = false;
+			$this->driver = null;
 		}
 	}
 
@@ -159,7 +155,7 @@ class Connection implements IConnection
 	 */
 	final public function isConnected(): bool
 	{
-		return $this->connected;
+		return (bool) $this->driver;
 	}
 
 
@@ -181,7 +177,7 @@ class Connection implements IConnection
 	 */
 	final public function getDriver(): Driver
 	{
-		if (!$this->connected) {
+		if (!$this->driver) {
 			$this->connect();
 		}
 		return $this->driver;
@@ -248,7 +244,7 @@ class Connection implements IConnection
 	 */
 	protected function translateArgs(array $args): string
 	{
-		if (!$this->connected) {
+		if (!$this->driver) {
 			$this->connect();
 		}
 		if (!$this->translator) {
@@ -266,7 +262,7 @@ class Connection implements IConnection
 	 */
 	final public function nativeQuery(string $sql)
 	{
-		if (!$this->connected) {
+		if (!$this->driver) {
 			$this->connect();
 		}
 
@@ -301,7 +297,7 @@ class Connection implements IConnection
 	 */
 	public function getAffectedRows(): int
 	{
-		if (!$this->connected) {
+		if (!$this->driver) {
 			$this->connect();
 		}
 		$rows = $this->driver->getAffectedRows();
@@ -328,7 +324,7 @@ class Connection implements IConnection
 	 */
 	public function getInsertId(string $sequence = null): int
 	{
-		if (!$this->connected) {
+		if (!$this->driver) {
 			$this->connect();
 		}
 		$id = $this->driver->getInsertId($sequence);
@@ -354,7 +350,7 @@ class Connection implements IConnection
 	 */
 	public function begin(string $savepoint = null): void
 	{
-		if (!$this->connected) {
+		if (!$this->driver) {
 			$this->connect();
 		}
 		$event = $this->onEvent ? new Event($this, Event::BEGIN, $savepoint) : null;
@@ -378,7 +374,7 @@ class Connection implements IConnection
 	 */
 	public function commit(string $savepoint = null): void
 	{
-		if (!$this->connected) {
+		if (!$this->driver) {
 			$this->connect();
 		}
 		$event = $this->onEvent ? new Event($this, Event::COMMIT, $savepoint) : null;
@@ -402,7 +398,7 @@ class Connection implements IConnection
 	 */
 	public function rollback(string $savepoint = null): void
 	{
-		if (!$this->connected) {
+		if (!$this->driver) {
 			$this->connect();
 		}
 		$event = $this->onEvent ? new Event($this, Event::ROLLBACK, $savepoint) : null;
@@ -572,7 +568,7 @@ class Connection implements IConnection
 	 */
 	public function getDatabaseInfo(): Reflection\Database
 	{
-		if (!$this->connected) {
+		if (!$this->driver) {
 			$this->connect();
 		}
 		return new Reflection\Database($this->driver->getReflector(), $this->config['database'] ?? null);
