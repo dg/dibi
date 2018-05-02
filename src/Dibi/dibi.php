@@ -13,8 +13,8 @@ declare(strict_types=1);
  * store connections info.
  *
  * @method void disconnect()
- * @method Dibi\Result|int|null query(...$args)
- * @method Dibi\Result|int|null nativeQuery(...$args)
+ * @method Dibi\Result query(...$args)
+ * @method Dibi\Result nativeQuery(...$args)
  * @method bool test(...$args)
  * @method Dibi\DataSource dataSource(...$args)
  * @method Dibi\Row|null fetch(...$args)

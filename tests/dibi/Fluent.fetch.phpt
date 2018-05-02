@@ -54,4 +54,6 @@ if (!in_array($config['system'], ['odbc', 'sqlsrv'], true)) {
 
 // affected rows
 $res = $conn->update('products', ['title' => 'new'])->execute();
-Assert::same(3, $res);
+Assert::same(3, $res->getRowCount());
+Assert::same(0, $res->getColumnCount());
+Assert::same(3, $conn->getAffectedRows());

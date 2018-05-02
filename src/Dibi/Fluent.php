@@ -380,10 +380,7 @@ class Fluent implements IDataSource
 	}
 
 
-	/**
-	 * @return Result|int
-	 */
-	private function query($args)
+	private function query($args): Result
 	{
 		$res = $this->connection->query($args);
 		foreach ($this->setups as $setup) {

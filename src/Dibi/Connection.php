@@ -187,10 +187,9 @@ class Connection implements IConnection
 	/**
 	 * Generates (translates) and executes SQL query.
 	 * @param  mixed  ...$args
-	 * @return Result|int|null   result set or number of affected rows
 	 * @throws Exception
 	 */
-	final public function query(...$args)
+	final public function query(...$args): Result
 	{
 		return $this->nativeQuery($this->translateArgs($args));
 	}
@@ -257,10 +256,9 @@ class Connection implements IConnection
 
 	/**
 	 * Executes the SQL query.
-	 * @return Result|int|null   result set or number of affected rows
 	 * @throws Exception
 	 */
-	final public function nativeQuery(string $sql)
+	final public function nativeQuery(string $sql): Result
 	{
 		if (!$this->driver) {
 			$this->connect();
@@ -278,12 +276,7 @@ class Connection implements IConnection
 			throw $e;
 		}
 
-		if ($res) {
-			$res = $this->createResultSet($res);
-		} else {
-			$res = $this->driver->getAffectedRows();
-		}
-
+		$res = $this->createResultSet($res ?: new Drivers\NoDataResult(max(0, $this->driver->getAffectedRows())));
 		if ($event) {
 			$this->onEvent($event->done($res));
 		}
