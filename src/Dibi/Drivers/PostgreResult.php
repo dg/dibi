@@ -20,7 +20,7 @@ class PostgreResult implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $resultSet;
 
 	/** @var bool */
@@ -81,7 +81,6 @@ class PostgreResult implements Dibi\ResultDriver
 	public function free(): void
 	{
 		pg_free_result($this->resultSet);
-		$this->resultSet = null;
 	}
 
 

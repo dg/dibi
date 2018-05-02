@@ -19,7 +19,7 @@ class OracleResult implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $resultSet;
 
 	/** @var bool */
@@ -80,7 +80,6 @@ class OracleResult implements Dibi\ResultDriver
 	public function free(): void
 	{
 		oci_free_statement($this->resultSet);
-		$this->resultSet = null;
 	}
 
 
