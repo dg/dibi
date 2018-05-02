@@ -19,7 +19,7 @@ class SqlsrvResult implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $resultSet;
 
 	/** @var bool */
@@ -80,7 +80,6 @@ class SqlsrvResult implements Dibi\ResultDriver
 	public function free(): void
 	{
 		sqlsrv_free_stmt($this->resultSet);
-		$this->resultSet = null;
 	}
 
 

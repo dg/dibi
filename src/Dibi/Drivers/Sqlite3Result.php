@@ -20,7 +20,7 @@ class Sqlite3Result implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var \SQLite3Result|null */
+	/** @var \SQLite3Result */
 	private $resultSet;
 
 	/** @var bool */
@@ -80,7 +80,6 @@ class Sqlite3Result implements Dibi\ResultDriver
 	public function free(): void
 	{
 		$this->resultSet->finalize();
-		$this->resultSet = null;
 	}
 
 
@@ -107,7 +106,7 @@ class Sqlite3Result implements Dibi\ResultDriver
 	/**
 	 * Returns the result set resource.
 	 */
-	public function getResultResource(): ?\SQLite3Result
+	public function getResultResource(): \SQLite3Result
 	{
 		$this->autoFree = false;
 		return $this->resultSet;
