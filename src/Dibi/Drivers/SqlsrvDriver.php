@@ -29,7 +29,7 @@ class SqlsrvDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $connection;
 
 	/** @var int|null  Affected rows */
@@ -42,20 +42,12 @@ class SqlsrvDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct()
+	public function __construct(array &$config)
 	{
 		if (!extension_loaded('sqlsrv')) {
 			throw new Dibi\NotSupportedException("PHP extension 'sqlsrv' is not loaded.");
 		}
-	}
 
-
-	/**
-	 * Connects to a database.
-	 * @throws Dibi\Exception
-	 */
-	public function connect(array &$config): void
-	{
 		Helpers::alias($config, 'options|UID', 'username');
 		Helpers::alias($config, 'options|PWD', 'password');
 		Helpers::alias($config, 'options|Database', 'database');

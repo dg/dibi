@@ -30,7 +30,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\Reflector
 
 	public const ERROR_EXCEPTION_THROWN = -836;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $connection;
 
 	/** @var resource|null */
@@ -43,20 +43,12 @@ class FirebirdDriver implements Dibi\Driver, Dibi\Reflector
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct()
+	public function __construct(array &$config)
 	{
 		if (!extension_loaded('interbase')) {
 			throw new Dibi\NotSupportedException("PHP extension 'interbase' is not loaded.");
 		}
-	}
 
-
-	/**
-	 * Connects to a database.
-	 * @throws Dibi\Exception
-	 */
-	public function connect(array &$config): void
-	{
 		Helpers::alias($config, 'database', 'db');
 
 		if (isset($config['resource'])) {
