@@ -26,12 +26,6 @@ interface IDataSource extends \Countable, \IteratorAggregate
 interface Driver
 {
 	/**
-	 * Connects to a database.
-	 * @throws Exception
-	 */
-	function connect(array &$config): void;
-
-	/**
 	 * Disconnects from a database.
 	 * @throws Exception
 	 */

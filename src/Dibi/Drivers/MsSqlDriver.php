@@ -27,27 +27,19 @@ class MsSqlDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $connection;
 
 
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct()
+	public function __construct(array &$config)
 	{
 		if (!extension_loaded('mssql')) {
 			throw new Dibi\NotSupportedException("PHP extension 'mssql' is not loaded.");
 		}
-	}
 
-
-	/**
-	 * Connects to a database.
-	 * @throws Dibi\Exception
-	 */
-	public function connect(array &$config): void
-	{
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
 		} elseif (empty($config['persistent'])) {

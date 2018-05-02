@@ -29,7 +29,7 @@ class OracleDriver implements Dibi\Driver, Dibi\Reflector
 {
 	use Dibi\Strict;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $connection;
 
 	/** @var bool */
@@ -45,20 +45,12 @@ class OracleDriver implements Dibi\Driver, Dibi\Reflector
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct()
+	public function __construct(array &$config)
 	{
 		if (!extension_loaded('oci8')) {
 			throw new Dibi\NotSupportedException("PHP extension 'oci8' is not loaded.");
 		}
-	}
 
-
-	/**
-	 * Connects to a database.
-	 * @throws Dibi\Exception
-	 */
-	public function connect(array &$config): void
-	{
 		$foo = &$config['charset'];
 
 		if (isset($config['formatDate']) || isset($config['formatDateTime'])) {

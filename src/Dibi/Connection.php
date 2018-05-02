@@ -28,7 +28,7 @@ class Connection implements IConnection
 	/** @var array  Current connection configuration */
 	private $config;
 
-	/** @var Driver */
+	/** @var Driver|null */
 	private $driver;
 
 	/** @var Translator|null */
@@ -76,25 +76,7 @@ class Connection implements IConnection
 		Helpers::alias($config, 'host', 'hostname');
 		Helpers::alias($config, 'result|formatDate', 'resultDate');
 		Helpers::alias($config, 'result|formatDateTime', 'resultDateTime');
-
-		if (!isset($config['driver'])) {
-			$config['driver'] = 'mysqli';
-		}
-
-		if ($config['driver'] instanceof Driver) {
-			$this->driver = $config['driver'];
-			$config['driver'] = get_class($this->driver);
-		} elseif (is_subclass_of($config['driver'], Driver::class)) {
-			$this->driver = new $config['driver'];
-		} else {
-			$class = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($config['driver'])));
-			$class = "Dibi\\Drivers\\{$class}Driver";
-			if (!class_exists($class)) {
-				throw new Exception("Unable to create instance of dibi driver '$class'.");
-			}
-			$this->driver = new $class;
-		}
-
+		$config['driver'] = $config['driver'] ?? 'mysqli';
 		$config['name'] = $name;
 		$this->config = $config;
 
@@ -133,9 +115,19 @@ class Connection implements IConnection
 	 */
 	final public function connect(): void
 	{
+		if (is_subclass_of($this->config['driver'], Driver::class)) {
+			$class = $this->config['driver'];
+		} else {
+			$class = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($this->config['driver'])));
+			$class = "Dibi\\Drivers\\{$class}Driver";
+			if (!class_exists($class)) {
+				throw new Exception("Unable to create instance of dibi driver '$class'.");
+			}
+		}
+
 		$event = $this->onEvent ? new Event($this, Event::CONNECT) : null;
 		try {
-			$this->driver->connect($this->config);
+			$this->driver = new $class($this->config);
 			$this->connected = true;
 			if ($event) {
 				$this->onEvent($event->done());
@@ -155,8 +147,10 @@ class Connection implements IConnection
 	 */
 	final public function disconnect(): void
 	{
-		$this->driver->disconnect();
-		$this->connected = false;
+		if ($this->connected) {
+			$this->driver->disconnect();
+			$this->connected = false;
+		}
 	}
 
 

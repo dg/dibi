@@ -45,20 +45,12 @@ class PdoDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct()
+	public function __construct(array &$config)
 	{
 		if (!extension_loaded('pdo')) {
 			throw new Dibi\NotSupportedException("PHP extension 'pdo' is not loaded.");
 		}
-	}
 
-
-	/**
-	 * Connects to a database.
-	 * @throws Dibi\Exception
-	 */
-	public function connect(array &$config): void
-	{
 		$foo = &$config['dsn'];
 		$foo = &$config['options'];
 		Helpers::alias($config, 'resource', 'pdo');
