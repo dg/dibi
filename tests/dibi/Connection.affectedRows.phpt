@@ -20,18 +20,22 @@ $conn->query('INSERT INTO products', [
 Assert::same(1, $conn->getAffectedRows());
 
 
-$conn->query('UPDATE products SET title="xxx" WHERE product_id > 100');
+$res = $conn->query('UPDATE products SET title="xxx" WHERE product_id > 100');
 Assert::same(0, $conn->getAffectedRows());
+Assert::same(0, $res->getRowCount());
 
 
-$conn->query('UPDATE products SET title="xxx"');
+$res = $conn->query('UPDATE products SET title="xxx"');
 Assert::same(4, $conn->getAffectedRows());
+Assert::same(4, $res->getRowCount());
 
 
 $conn->query('DELETE FROM orders');
-$conn->query('DELETE FROM products WHERE product_id > 100');
+$res = $conn->query('DELETE FROM products WHERE product_id > 100');
 Assert::same(0, $conn->getAffectedRows());
+Assert::same(0, $res->getRowCount());
 
 
-$conn->query('DELETE FROM products WHERE product_id < 3');
+$res = $conn->query('DELETE FROM products WHERE product_id < 3');
 Assert::same(2, $conn->getAffectedRows());
+Assert::same(2, $res->getRowCount());
