@@ -25,15 +25,12 @@ use PDO;
  *   - resource (PDO) => existing connection
  *   - version
  */
-class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
+class PdoDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
 	/** @var PDO|null  Connection resource */
 	private $connection;
-
-	/** @var \PDOStatement|null  Resultset resource */
-	private $resultSet;
 
 	/** @var int|null  Affected rows */
 	private $affectedRows;
@@ -216,11 +213,9 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Result set driver factory.
 	 */
-	public function createResultDriver(\PDOStatement $resource): Dibi\ResultDriver
+	public function createResultDriver(\PDOStatement $resource): PdoResult
 	{
-		$res = clone $this;
-		$res->resultSet = $resource;
-		return $res;
+		return new PdoResult($resource, $this->driverName);
 	}
 
 
@@ -359,15 +354,6 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 
 
 	/**
-	 * Decodes data from result set.
-	 */
-	public function unescapeBinary(string $value): string
-	{
-		return $value;
-	}
-
-
-	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
@@ -440,85 +426,5 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 			default:
 				throw new Dibi\NotSupportedException('PDO or driver does not support applying limit or offset.');
 		}
-	}
-
-
-	/********************* result set ****************d*g**/
-
-
-	/**
-	 * Returns the number of rows in a result set.
-	 */
-	public function getRowCount(): int
-	{
-		return $this->resultSet->rowCount();
-	}
-
-
-	/**
-	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool  $assoc  true for associative array, false for numeric
-	 */
-	public function fetch(bool $assoc): ?array
-	{
-		return Helpers::false2Null($this->resultSet->fetch($assoc ? PDO::FETCH_ASSOC : PDO::FETCH_NUM));
-	}
-
-
-	/**
-	 * Moves cursor position without fetching row.
-	 */
-	public function seek(int $row): bool
-	{
-		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
-	}
-
-
-	/**
-	 * Frees the resources allocated for this result set.
-	 */
-	public function free(): void
-	{
-		$this->resultSet = null;
-	}
-
-
-	/**
-	 * Returns metadata for all columns in a result set.
-	 * @throws Dibi\Exception
-	 */
-	public function getResultColumns(): array
-	{
-		$count = $this->resultSet->columnCount();
-		$columns = [];
-		for ($i = 0; $i < $count; $i++) {
-			$row = @$this->resultSet->getColumnMeta($i); // intentionally @
-			if ($row === false) {
-				throw new Dibi\NotSupportedException('Driver does not support meta data.');
-			}
-			$row = $row + [
-				'table' => null,
-				'native_type' => 'VAR_STRING',
-			];
-
-			$columns[] = [
-				'name' => $row['name'],
-				'table' => $row['table'],
-				'nativetype' => $row['native_type'],
-				'type' => $row['native_type'] === 'TIME' && $this->driverName === 'mysql' ? Dibi\Type::TIME_INTERVAL : null,
-				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
-				'vendor' => $row,
-			];
-		}
-		return $columns;
-	}
-
-
-	/**
-	 * Returns the result set resource.
-	 */
-	public function getResultResource(): ?\PDOStatement
-	{
-		return $this->resultSet;
 	}
 }
