@@ -22,7 +22,6 @@ use SQLite3;
  *   - formatDate => how to format date in SQL (@see date)
  *   - formatDateTime => how to format datetime in SQL (@see date)
  *   - resource (SQLite3) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
 class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 {

@@ -24,7 +24,6 @@ use Dibi;
  *   - nativeDate => use native date format (defaults to true)
  *   - resource (resource) => existing connection resource
  *   - persistent => Creates persistent connections with oci_pconnect instead of oci_new_connect
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
 class OracleDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
