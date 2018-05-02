@@ -19,7 +19,7 @@ class MySqliResult implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var \mysqli_result|null */
+	/** @var \mysqli_result */
 	private $resultSet;
 
 	/** @var bool */
@@ -88,7 +88,6 @@ class MySqliResult implements Dibi\ResultDriver
 	public function free(): void
 	{
 		mysqli_free_result($this->resultSet);
-		$this->resultSet = null;
 	}
 
 
@@ -129,7 +128,7 @@ class MySqliResult implements Dibi\ResultDriver
 	/**
 	 * Returns the result set resource.
 	 */
-	public function getResultResource(): ?\mysqli_result
+	public function getResultResource(): \mysqli_result
 	{
 		$this->autoFree = false;
 		return $this->resultSet;

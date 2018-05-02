@@ -20,7 +20,7 @@ class FirebirdResult implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $resultSet;
 
 	/** @var bool */
@@ -94,7 +94,6 @@ class FirebirdResult implements Dibi\ResultDriver
 	public function free(): void
 	{
 		ibase_free_result($this->resultSet);
-		$this->resultSet = null;
 	}
 
 
