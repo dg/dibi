@@ -24,18 +24,12 @@ use Dibi\Helpers;
  *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
  */
-class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
+class PostgreDriver implements Dibi\Driver, Dibi\Reflector
 {
 	use Dibi\Strict;
 
 	/** @var resource|null */
 	private $connection;
-
-	/** @var resource|null */
-	private $resultSet;
-
-	/** @var bool */
-	private $autoFree = true;
 
 	/** @var int|null  Affected rows */
 	private $affectedRows;
@@ -263,11 +257,9 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * Result set driver factory.
 	 * @param  resource  $resource
 	 */
-	public function createResultDriver($resource): Dibi\ResultDriver
+	public function createResultDriver($resource): PostgreResult
 	{
-		$res = clone $this;
-		$res->resultSet = $resource;
-		return $res;
+		return new PostgreResult($resource);
 	}
 
 
@@ -345,15 +337,6 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 
 	/**
-	 * Decodes data from result set.
-	 */
-	public function unescapeBinary(string $value): string
-	{
-		return pg_unescape_bytea($value);
-	}
-
-
-	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
@@ -367,89 +350,6 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		if ($offset) {
 			$sql .= ' OFFSET ' . $offset;
 		}
-	}
-
-
-	/********************* result set ****************d*g**/
-
-
-	/**
-	 * Automatically frees the resources allocated for this result set.
-	 */
-	public function __destruct()
-	{
-		if ($this->autoFree && $this->getResultResource()) {
-			$this->free();
-		}
-	}
-
-
-	/**
-	 * Returns the number of rows in a result set.
-	 */
-	public function getRowCount(): int
-	{
-		return pg_num_rows($this->resultSet);
-	}
-
-
-	/**
-	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool  $assoc  true for associative array, false for numeric
-	 */
-	public function fetch(bool $assoc): ?array
-	{
-		return Helpers::false2Null(pg_fetch_array($this->resultSet, null, $assoc ? PGSQL_ASSOC : PGSQL_NUM));
-	}
-
-
-	/**
-	 * Moves cursor position without fetching row.
-	 */
-	public function seek(int $row): bool
-	{
-		return pg_result_seek($this->resultSet, $row);
-	}
-
-
-	/**
-	 * Frees the resources allocated for this result set.
-	 */
-	public function free(): void
-	{
-		pg_free_result($this->resultSet);
-		$this->resultSet = null;
-	}
-
-
-	/**
-	 * Returns metadata for all columns in a result set.
-	 */
-	public function getResultColumns(): array
-	{
-		$count = pg_num_fields($this->resultSet);
-		$columns = [];
-		for ($i = 0; $i < $count; $i++) {
-			$row = [
-				'name' => pg_field_name($this->resultSet, $i),
-				'table' => pg_field_table($this->resultSet, $i),
-				'nativetype' => pg_field_type($this->resultSet, $i),
-			];
-			$row['fullname'] = $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'];
-			$columns[] = $row;
-		}
-		return $columns;
-	}
-
-
-	/**
-	 * Returns the result set resource.
-	 * @return resource|null
-	 */
-	public function getResultResource()
-	{
-		$this->autoFree = false;
-		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 
 
@@ -490,7 +390,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		}
 
 		$res = $this->query($query);
-		$tables = pg_fetch_all($res->resultSet);
+		$tables = pg_fetch_all($res->getResultResource());
 		return $tables ? $tables : [];
 	}
 
@@ -507,7 +407,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 			LEFT JOIN pg_index on pg_class.oid = pg_index.indrelid AND pg_index.indisprimary
 			WHERE pg_class.oid = $_table::regclass
 		");
-		$primary = (int) pg_fetch_object($res->resultSet)->indkey;
+		$primary = (int) pg_fetch_object($res->getResultResource())->indkey;
 
 		$res = $this->query("
 			SELECT *

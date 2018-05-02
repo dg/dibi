@@ -20,7 +20,15 @@ class MockDriver extends Dibi\Drivers\SqlsrvDriver
 
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
-		return $this;
+		return new MockResult;
+	}
+}
+
+
+class MockResult extends Dibi\Drivers\SqlsrvResult
+{
+	public function __construct()
+	{
 	}
 
 
@@ -35,6 +43,7 @@ class MockDriver extends Dibi\Drivers\SqlsrvDriver
 		return null;
 	}
 }
+
 
 $config['driver'] = new MockDriver;
 $conn = new Dibi\Connection($config);

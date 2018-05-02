@@ -24,7 +24,7 @@ use Dibi\Helpers;
  *   - buffers (int) => buffers is the number of database buffers to allocate for the server-side cache. If 0 or omitted, server chooses its own default.
  *   - resource (resource) => existing connection resource
  */
-class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
+class FirebirdDriver implements Dibi\Driver, Dibi\Reflector
 {
 	use Dibi\Strict;
 
@@ -32,12 +32,6 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 	/** @var resource|null */
 	private $connection;
-
-	/** @var resource|null */
-	private $resultSet;
-
-	/** @var bool */
-	private $autoFree = true;
 
 	/** @var resource|null */
 	private $transaction;
@@ -225,11 +219,9 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	 * Result set driver factory.
 	 * @param  resource  $resource
 	 */
-	public function createResultDriver($resource): Dibi\ResultDriver
+	public function createResultDriver($resource): FirebirdResult
 	{
-		$res = clone $this;
-		$res->resultSet = $resource;
-		return $res;
+		return new FirebirdResult($resource);
 	}
 
 
@@ -297,15 +289,6 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 
 	/**
-	 * Decodes data from result set.
-	 */
-	public function unescapeBinary(string $value): string
-	{
-		return $value;
-	}
-
-
-	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
@@ -317,103 +300,7 @@ class FirebirdDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	}
 
 
-	/********************* result set ********************/
-
-
-	/**
-	 * Automatically frees the resources allocated for this result set.
-	 */
-	public function __destruct()
-	{
-		if ($this->autoFree && $this->getResultResource()) {
-			$this->free();
-		}
-	}
-
-
-	/**
-	 * Returns the number of rows in a result set.
-	 */
-	public function getRowCount(): int
-	{
-		throw new Dibi\NotSupportedException('Firebird/Interbase do not support returning number of rows in result set.');
-	}
-
-
-	/**
-	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool  $assoc   true for associative array, false for numeric
-	 */
-	public function fetch(bool $assoc): ?array
-	{
-		$result = $assoc ? @ibase_fetch_assoc($this->resultSet, IBASE_TEXT) : @ibase_fetch_row($this->resultSet, IBASE_TEXT); // intentionally @
-
-		if (ibase_errcode()) {
-			if (ibase_errcode() == self::ERROR_EXCEPTION_THROWN) {
-				preg_match('/exception (\d+) (\w+) (.*)/is', ibase_errmsg(), $match);
-				throw new Dibi\ProcedureException($match[3], $match[1], $match[2]);
-
-			} else {
-				throw new Dibi\DriverException(ibase_errmsg(), ibase_errcode());
-			}
-		}
-
-		return Helpers::false2Null($result);
-	}
-
-
-	/**
-	 * Moves cursor position without fetching row.
-	 * @throws Dibi\Exception
-	 */
-	public function seek(int $row): bool
-	{
-		throw new Dibi\NotSupportedException('Firebird/Interbase do not support seek in result set.');
-	}
-
-
-	/**
-	 * Frees the resources allocated for this result set.
-	 */
-	public function free(): void
-	{
-		ibase_free_result($this->resultSet);
-		$this->resultSet = null;
-	}
-
-
-	/**
-	 * Returns the result set resource.
-	 * @return resource|null
-	 */
-	public function getResultResource()
-	{
-		$this->autoFree = false;
-		return is_resource($this->resultSet) ? $this->resultSet : null;
-	}
-
-
-	/**
-	 * Returns metadata for all columns in a result set.
-	 */
-	public function getResultColumns(): array
-	{
-		$count = ibase_num_fields($this->resultSet);
-		$columns = [];
-		for ($i = 0; $i < $count; $i++) {
-			$row = (array) ibase_field_info($this->resultSet, $i);
-			$columns[] = [
-				'name' => $row['name'],
-				'fullname' => $row['name'],
-				'table' => $row['relation'],
-				'nativetype' => $row['type'],
-			];
-		}
-		return $columns;
-	}
-
-
-	/********************* Dibi\Reflector ********************/
+	/********************* Dibi\Reflector ****************d*g**/
 
 
 	/**

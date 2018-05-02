@@ -23,18 +23,12 @@ use SQLite3;
  *   - formatDateTime => how to format datetime in SQL (@see date)
  *   - resource (SQLite3) => existing connection resource
  */
-class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
+class Sqlite3Driver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
 	/** @var SQLite3|null */
 	private $connection;
-
-	/** @var \SQLite3Result|null */
-	private $resultSet;
-
-	/** @var bool */
-	private $autoFree = true;
 
 	/** @var string  Date format */
 	private $fmtDate;
@@ -208,11 +202,9 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 	/**
 	 * Result set driver factory.
 	 */
-	public function createResultDriver(\SQLite3Result $resource): Dibi\ResultDriver
+	public function createResultDriver(\SQLite3Result $resource): Sqlite3Result
 	{
-		$res = clone $this;
-		$res->resultSet = $resource;
-		return $res;
+		return new Sqlite3Result($resource);
 	}
 
 
@@ -281,15 +273,6 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 
 
 	/**
-	 * Decodes data from result set.
-	 */
-	public function unescapeBinary(string $value): string
-	{
-		return $value;
-	}
-
-
-	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
@@ -301,90 +284,6 @@ class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 			$sql .= ' LIMIT ' . ($limit === null ? '-1' : $limit)
 				. ($offset ? ' OFFSET ' . $offset : '');
 		}
-	}
-
-
-	/********************* result set ****************d*g**/
-
-
-	/**
-	 * Automatically frees the resources allocated for this result set.
-	 */
-	public function __destruct()
-	{
-		if ($this->autoFree && $this->getResultResource()) {
-			@$this->free();
-		}
-	}
-
-
-	/**
-	 * Returns the number of rows in a result set.
-	 * @throws Dibi\NotSupportedException
-	 */
-	public function getRowCount(): int
-	{
-		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
-	}
-
-
-	/**
-	 * Fetches the row at current position and moves the internal cursor to the next position.
-	 * @param  bool  $assoc  true for associative array, false for numeric
-	 */
-	public function fetch(bool $assoc): ?array
-	{
-		return Helpers::false2Null($this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM));
-	}
-
-
-	/**
-	 * Moves cursor position without fetching row.
-	 * @throws Dibi\NotSupportedException
-	 */
-	public function seek(int $row): bool
-	{
-		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
-	}
-
-
-	/**
-	 * Frees the resources allocated for this result set.
-	 */
-	public function free(): void
-	{
-		$this->resultSet->finalize();
-		$this->resultSet = null;
-	}
-
-
-	/**
-	 * Returns metadata for all columns in a result set.
-	 */
-	public function getResultColumns(): array
-	{
-		$count = $this->resultSet->numColumns();
-		$columns = [];
-		static $types = [SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null'];
-		for ($i = 0; $i < $count; $i++) {
-			$columns[] = [
-				'name' => $this->resultSet->columnName($i),
-				'table' => null,
-				'fullname' => $this->resultSet->columnName($i),
-				'nativetype' => $types[$this->resultSet->columnType($i)],
-			];
-		}
-		return $columns;
-	}
-
-
-	/**
-	 * Returns the result set resource.
-	 */
-	public function getResultResource(): ?\SQLite3Result
-	{
-		$this->autoFree = false;
-		return $this->resultSet;
 	}
 
 
