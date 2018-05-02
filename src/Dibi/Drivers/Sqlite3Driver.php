@@ -27,7 +27,7 @@ class Sqlite3Driver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
-	/** @var SQLite3|null */
+	/** @var SQLite3 */
 	private $connection;
 
 	/** @var string  Date format */
@@ -40,20 +40,12 @@ class Sqlite3Driver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct()
+	public function __construct(array &$config)
 	{
 		if (!extension_loaded('sqlite3')) {
 			throw new Dibi\NotSupportedException("PHP extension 'sqlite3' is not loaded.");
 		}
-	}
 
-
-	/**
-	 * Connects to a database.
-	 * @throws Dibi\Exception
-	 */
-	public function connect(array &$config): void
-	{
 		if (isset($config['dbcharset']) || isset($config['charset'])) {
 			throw new Dibi\NotSupportedException('Options dbcharset and charset are not longer supported.');
 		}

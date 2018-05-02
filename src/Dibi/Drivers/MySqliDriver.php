@@ -40,7 +40,7 @@ class MySqliDriver implements Dibi\Driver
 
 	public const ERROR_DATA_TRUNCATED = 1265;
 
-	/** @var \mysqli|null */
+	/** @var \mysqli */
 	private $connection;
 
 	/** @var bool  Is buffered (seekable and countable)? */
@@ -50,20 +50,12 @@ class MySqliDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct()
+	public function __construct(array &$config)
 	{
 		if (!extension_loaded('mysqli')) {
 			throw new Dibi\NotSupportedException("PHP extension 'mysqli' is not loaded.");
 		}
-	}
 
-
-	/**
-	 * Connects to a database.
-	 * @throws Dibi\Exception
-	 */
-	public function connect(array &$config): void
-	{
 		mysqli_report(MYSQLI_REPORT_OFF);
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];

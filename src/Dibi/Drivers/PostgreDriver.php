@@ -28,7 +28,7 @@ class PostgreDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $connection;
 
 	/** @var int|null  Affected rows */
@@ -38,20 +38,12 @@ class PostgreDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct()
+	public function __construct(array &$config)
 	{
 		if (!extension_loaded('pgsql')) {
 			throw new Dibi\NotSupportedException("PHP extension 'pgsql' is not loaded.");
 		}
-	}
 
-
-	/**
-	 * Connects to a database.
-	 * @throws Dibi\Exception
-	 */
-	public function connect(array &$config): void
-	{
 		$error = null;
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
