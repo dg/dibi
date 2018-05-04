@@ -134,6 +134,16 @@ class Result implements IDataSource
 	}
 
 
+	/**
+	 * Returns the number of columns in a result set.
+	 * @return int
+	 */
+	final public function getColumnCount()
+	{
+		return count($this->types);
+	}
+
+
 	/********************* fetching rows ****************d*g**/
 
 
