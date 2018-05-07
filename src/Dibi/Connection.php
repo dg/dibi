@@ -200,7 +200,7 @@ class Connection implements IConnection
 	 */
 	final public function query(...$args): Result
 	{
-		return $this->nativeQuery($this->translateArgs($args));
+		return $this->nativeQuery($this->translate(...$args));
 	}
 
 
@@ -211,7 +211,10 @@ class Connection implements IConnection
 	 */
 	final public function translate(...$args): string
 	{
-		return $this->translateArgs($args);
+		if (!$this->driver) {
+			$this->connect();
+		}
+		return (clone $this->translator)->translate($args);
 	}
 
 
@@ -222,7 +225,7 @@ class Connection implements IConnection
 	final public function test(...$args): bool
 	{
 		try {
-			Helpers::dump($this->translateArgs($args));
+			Helpers::dump($this->translate(...$args));
 			return true;
 
 		} catch (Exception $e) {
@@ -243,19 +246,7 @@ class Connection implements IConnection
 	 */
 	final public function dataSource(...$args): DataSource
 	{
-		return new DataSource($this->translateArgs($args), $this);
-	}
-
-
-	/**
-	 * Generates SQL query.
-	 */
-	protected function translateArgs(array $args): string
-	{
-		if (!$this->driver) {
-			$this->connect();
-		}
-		return (clone $this->translator)->translate($args);
+		return new DataSource($this->translate(...$args), $this);
 	}
 
 
