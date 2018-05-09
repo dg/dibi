@@ -353,7 +353,7 @@ class Connection implements IConnection
 				$this->onEvent($event->done());
 			}
 
-		} catch (Exception $e) {
+		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
@@ -377,7 +377,7 @@ class Connection implements IConnection
 				$this->onEvent($event->done());
 			}
 
-		} catch (Exception $e) {
+		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
@@ -401,7 +401,7 @@ class Connection implements IConnection
 				$this->onEvent($event->done());
 			}
 
-		} catch (Exception $e) {
+		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
