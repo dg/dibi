@@ -14,7 +14,6 @@ use Dibi;
 
 /**
  * The dibi reflector for SQLite database.
- * @internal
  */
 class SqliteReflector implements Dibi\Reflector
 {

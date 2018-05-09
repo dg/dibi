@@ -25,7 +25,7 @@ use Dibi;
  *   - resource (resource) => existing connection resource
  *   - persistent => Creates persistent connections with oci_pconnect instead of oci_new_connect
  */
-class OracleDriver implements Dibi\Driver, Dibi\Reflector
+class OracleDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
@@ -208,7 +208,7 @@ class OracleDriver implements Dibi\Driver, Dibi\Reflector
 	 */
 	public function getReflector(): Dibi\Reflector
 	{
-		return $this;
+		return new OracleReflector($this);
 	}
 
 
@@ -309,67 +309,5 @@ class OracleDriver implements Dibi\Driver, Dibi\Reflector
 		} elseif ($limit !== null) {
 			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . $limit;
 		}
-	}
-
-
-	/********************* Dibi\Reflector ****************d*g**/
-
-
-	/**
-	 * Returns list of tables.
-	 */
-	public function getTables(): array
-	{
-		$res = $this->query('SELECT * FROM cat');
-		$tables = [];
-		while ($row = $res->fetch(false)) {
-			if ($row[1] === 'TABLE' || $row[1] === 'VIEW') {
-				$tables[] = [
-					'name' => $row[0],
-					'view' => $row[1] === 'VIEW',
-				];
-			}
-		}
-		return $tables;
-	}
-
-
-	/**
-	 * Returns metadata for all columns in a table.
-	 */
-	public function getColumns(string $table): array
-	{
-		$res = $this->query('SELECT * FROM "ALL_TAB_COLUMNS" WHERE "TABLE_NAME" = ' . $this->escapeText($table));
-		$columns = [];
-		while ($row = $res->fetch(true)) {
-			$columns[] = [
-				'table' => $row['TABLE_NAME'],
-				'name' => $row['COLUMN_NAME'],
-				'nativetype' => $row['DATA_TYPE'],
-				'size' => $row['DATA_LENGTH'] ?? null,
-				'nullable' => $row['NULLABLE'] === 'Y',
-				'default' => $row['DATA_DEFAULT'],
-				'vendor' => $row,
-			];
-		}
-		return $columns;
-	}
-
-
-	/**
-	 * Returns metadata for all indexes in a table.
-	 */
-	public function getIndexes(string $table): array
-	{
-		throw new Dibi\NotImplementedException;
-	}
-
-
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 */
-	public function getForeignKeys(string $table): array
-	{
-		throw new Dibi\NotImplementedException;
 	}
 }

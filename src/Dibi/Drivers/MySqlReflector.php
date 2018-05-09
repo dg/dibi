@@ -14,7 +14,6 @@ use Dibi;
 
 /**
  * The dibi reflector for MySQL databases.
- * @internal
  */
 class MySqlReflector implements Dibi\Reflector
 {

@@ -22,7 +22,7 @@ use Dibi;
  *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
  */
-class OdbcDriver implements Dibi\Driver, Dibi\Reflector
+class OdbcDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
@@ -182,7 +182,7 @@ class OdbcDriver implements Dibi\Driver, Dibi\Reflector
 	 */
 	public function getReflector(): Dibi\Reflector
 	{
-		return $this;
+		return new OdbcReflector($this);
 	}
 
 
@@ -274,70 +274,5 @@ class OdbcDriver implements Dibi\Driver, Dibi\Reflector
 		} elseif ($limit !== null) {
 			$sql = 'SELECT TOP ' . $limit . ' * FROM (' . $sql . ') t';
 		}
-	}
-
-
-	/********************* Dibi\Reflector ****************d*g**/
-
-
-	/**
-	 * Returns list of tables.
-	 */
-	public function getTables(): array
-	{
-		$res = odbc_tables($this->connection);
-		$tables = [];
-		while ($row = odbc_fetch_array($res)) {
-			if ($row['TABLE_TYPE'] === 'TABLE' || $row['TABLE_TYPE'] === 'VIEW') {
-				$tables[] = [
-					'name' => $row['TABLE_NAME'],
-					'view' => $row['TABLE_TYPE'] === 'VIEW',
-				];
-			}
-		}
-		odbc_free_result($res);
-		return $tables;
-	}
-
-
-	/**
-	 * Returns metadata for all columns in a table.
-	 */
-	public function getColumns(string $table): array
-	{
-		$res = odbc_columns($this->connection);
-		$columns = [];
-		while ($row = odbc_fetch_array($res)) {
-			if ($row['TABLE_NAME'] === $table) {
-				$columns[] = [
-					'name' => $row['COLUMN_NAME'],
-					'table' => $table,
-					'nativetype' => $row['TYPE_NAME'],
-					'size' => $row['COLUMN_SIZE'],
-					'nullable' => (bool) $row['NULLABLE'],
-					'default' => $row['COLUMN_DEF'],
-				];
-			}
-		}
-		odbc_free_result($res);
-		return $columns;
-	}
-
-
-	/**
-	 * Returns metadata for all indexes in a table.
-	 */
-	public function getIndexes(string $table): array
-	{
-		throw new Dibi\NotImplementedException;
-	}
-
-
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 */
-	public function getForeignKeys(string $table): array
-	{
-		throw new Dibi\NotImplementedException;
 	}
 }
