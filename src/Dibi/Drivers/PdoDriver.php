@@ -201,8 +201,19 @@ class PdoDriver implements Dibi\Driver
 			case 'mysql':
 				return new MySqlReflector($this);
 
+			case 'oci':
+				return new OracleReflector($this);
+
+			case 'pgsql':
+				return new PostgreReflector($this, $this->connection->getAttribute(PDO::ATTR_SERVER_VERSION));
+
 			case 'sqlite':
 				return new SqliteReflector($this);
+
+			case 'mssql':
+			case 'dblib':
+			case 'sqlsrv':
+				return new SqlsrvReflector($this);
 
 			default:
 				throw new Dibi\NotSupportedException;
