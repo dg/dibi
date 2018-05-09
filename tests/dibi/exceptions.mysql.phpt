@@ -16,6 +16,18 @@ $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 
 $e = Assert::exception(function () use ($conn) {
+	new Dibi\Connection([
+		'driver' => 'mysqli',
+		'host' => 'localhost',
+		'username' => 'unknown',
+		'password' => 'unknown',
+	]);
+}, Dibi\DriverException::class);
+
+Assert::null($e->getSql());
+
+
+$e = Assert::exception(function () use ($conn) {
 	$conn->query('SELECT');
 }, Dibi\DriverException::class, '%a% error in your SQL syntax;%a%', 1064);
 

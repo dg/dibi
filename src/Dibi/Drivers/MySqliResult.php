@@ -55,7 +55,7 @@ class MySqliResult implements Dibi\ResultDriver
 		if (!$this->buffered) {
 			throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
 		}
-		return mysqli_num_rows($this->resultSet);
+		return $this->resultSet->num_rows;
 	}
 
 
@@ -65,7 +65,9 @@ class MySqliResult implements Dibi\ResultDriver
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return mysqli_fetch_array($this->resultSet, $assoc ? MYSQLI_ASSOC : MYSQLI_NUM);
+		return $assoc
+			? $this->resultSet->fetch_assoc()
+			: $this->resultSet->fetch_row();
 	}
 
 
@@ -78,7 +80,7 @@ class MySqliResult implements Dibi\ResultDriver
 		if (!$this->buffered) {
 			throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
 		}
-		return mysqli_data_seek($this->resultSet, $row);
+		return $this->resultSet->data_seek($row);
 	}
 
 
@@ -87,7 +89,7 @@ class MySqliResult implements Dibi\ResultDriver
 	 */
 	public function free(): void
 	{
-		mysqli_free_result($this->resultSet);
+		$this->resultSet->free();
 	}
 
 
@@ -108,10 +110,10 @@ class MySqliResult implements Dibi\ResultDriver
 			$types[MYSQLI_TYPE_TINY] = $types[MYSQLI_TYPE_SHORT] = $types[MYSQLI_TYPE_LONG] = 'INT';
 		}
 
-		$count = mysqli_num_fields($this->resultSet);
+		$count = $this->resultSet->field_count;
 		$columns = [];
 		for ($i = 0; $i < $count; $i++) {
-			$row = (array) mysqli_fetch_field_direct($this->resultSet, $i);
+			$row = (array) $this->resultSet->fetch_field_direct($i);
 			$columns[] = [
 				'name' => $row['name'],
 				'table' => $row['orgtable'],

@@ -57,7 +57,7 @@ class MySqliDriver implements Dibi\Driver
 		}
 
 		mysqli_report(MYSQLI_REPORT_OFF);
-		if (isset($config['resource'])) {
+		if (isset($config['resource']) && $config['resource'] instanceof \mysqli) {
 			$this->connection = $config['resource'];
 
 		} else {
@@ -87,18 +87,26 @@ class MySqliDriver implements Dibi\Driver
 			$this->connection = mysqli_init();
 			if (isset($config['options'])) {
 				foreach ($config['options'] as $key => $value) {
-					mysqli_options($this->connection, $key, $value);
+					$this->connection->options($key, $value);
 				}
 			}
-			@mysqli_real_connect($this->connection, (empty($config['persistent']) ? '' : 'p:') . $config['host'], $config['username'], $config['password'], $config['database'] ?? '', $config['port'] ?? 0, $config['socket'], $config['flags'] ?? 0); // intentionally @
+			@$this->connection->real_connect( // intentionally @
+				(empty($config['persistent']) ? '' : 'p:') . $config['host'],
+				$config['username'],
+				$config['password'],
+				$config['database'] ?? '',
+				$config['port'] ?? 0,
+				$config['socket'],
+				$config['flags'] ?? 0
+			);
 
-			if ($errno = mysqli_connect_errno()) {
-				throw new Dibi\DriverException(mysqli_connect_error(), $errno);
+			if ($this->connection->connect_errno) {
+				throw new Dibi\DriverException($this->connection->connect_error, $this->connection->connect_errno);
 			}
 		}
 
 		if (isset($config['charset'])) {
-			if (!@mysqli_set_charset($this->connection, $config['charset'])) {
+			if (!@$this->connection->set_charset($config['charset'])) {
 				$this->query("SET NAMES '$config[charset]'");
 			}
 		}
@@ -120,7 +128,7 @@ class MySqliDriver implements Dibi\Driver
 	 */
 	public function disconnect(): void
 	{
-		@mysqli_close($this->connection); // @ - connection can be already disconnected
+		@$this->connection->close(); // @ - connection can be already disconnected
 	}
 
 
@@ -130,12 +138,12 @@ class MySqliDriver implements Dibi\Driver
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
-		$res = @mysqli_query($this->connection, $sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT); // intentionally @
+		$res = @$this->connection->query($sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT); // intentionally @
 
 		if ($code = mysqli_errno($this->connection)) {
 			throw static::createException(mysqli_error($this->connection), $code, $sql);
 
-		} elseif (is_object($res)) {
+		} elseif ($res instanceof \mysqli_result) {
 			return $this->createResultDriver($res);
 		}
 		return null;
@@ -165,7 +173,7 @@ class MySqliDriver implements Dibi\Driver
 	public function getInfo(): array
 	{
 		$res = [];
-		preg_match_all('#(.+?): +(\d+) *#', mysqli_info($this->connection), $matches, PREG_SET_ORDER);
+		preg_match_all('#(.+?): +(\d+) *#', $this->connection->info, $matches, PREG_SET_ORDER);
 		if (preg_last_error()) {
 			throw new Dibi\PcreException;
 		}
@@ -182,7 +190,7 @@ class MySqliDriver implements Dibi\Driver
 	 */
 	public function getAffectedRows(): ?int
 	{
-		return mysqli_affected_rows($this->connection) === -1 ? null : mysqli_affected_rows($this->connection);
+		return $this->connection->affected_rows === -1 ? null : $this->connection->affected_rows;
 	}
 
 
@@ -191,7 +199,7 @@ class MySqliDriver implements Dibi\Driver
 	 */
 	public function getInsertId(?string $sequence): ?int
 	{
-		return mysqli_insert_id($this->connection);
+		return $this->connection->insert_id;
 	}
 
 
@@ -260,13 +268,13 @@ class MySqliDriver implements Dibi\Driver
 	 */
 	public function escapeText(string $value): string
 	{
-		return "'" . mysqli_real_escape_string($this->connection, $value) . "'";
+		return "'" . $this->connection->escape_string($value) . "'";
 	}
 
 
 	public function escapeBinary(string $value): string
 	{
-		return "_binary'" . mysqli_real_escape_string($this->connection, $value) . "'";
+		return "_binary'" . $this->connection->escape_string($value) . "'";
 	}
 
 
