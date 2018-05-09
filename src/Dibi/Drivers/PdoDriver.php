@@ -224,9 +224,9 @@ class PdoDriver implements Dibi\Driver
 	/**
 	 * Result set driver factory.
 	 */
-	public function createResultDriver(\PDOStatement $resource): PdoResult
+	public function createResultDriver(\PDOStatement $result): PdoResult
 	{
-		return new PdoResult($resource, $this->driverName);
+		return new PdoResult($result, $this->driverName);
 	}
 
 

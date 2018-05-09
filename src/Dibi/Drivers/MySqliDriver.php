@@ -254,9 +254,9 @@ class MySqliDriver implements Dibi\Driver
 	/**
 	 * Result set driver factory.
 	 */
-	public function createResultDriver(\mysqli_result $resource): MySqliResult
+	public function createResultDriver(\mysqli_result $result): MySqliResult
 	{
-		return new MySqliResult($resource, $this->buffered);
+		return new MySqliResult($result, $this->buffered);
 	}
 
 

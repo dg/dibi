@@ -202,9 +202,9 @@ class Sqlite3Driver implements Dibi\Driver
 	/**
 	 * Result set driver factory.
 	 */
-	public function createResultDriver(\SQLite3Result $resource): Sqlite3Result
+	public function createResultDriver(\SQLite3Result $result): Sqlite3Result
 	{
-		return new Sqlite3Result($resource);
+		return new Sqlite3Result($result);
 	}
 
 
