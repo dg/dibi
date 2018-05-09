@@ -106,22 +106,6 @@ try {
 echo "</p>\n";
 
 
-// connects to MS SQL
-echo '<p>Connecting to MS SQL: ';
-try {
-	dibi::connect([
-		'driver' => 'mssql',
-		'host' => 'localhost',
-		'username' => 'root',
-		'password' => 'xxx',
-	]);
-	echo 'OK';
-} catch (Dibi\Exception $e) {
-	echo get_class($e), ': ', $e->getMessage(), "\n";
-}
-echo "</p>\n";
-
-
 // connects to SQLSRV
 echo '<p>Connecting to Microsoft SQL Server: ';
 try {
