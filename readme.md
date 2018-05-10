@@ -90,7 +90,7 @@ $all = $result->fetchAssoc('id');
 // associative pairs id => name
 $pairs = $result->fetchPairs('id', 'name');
 
-// the number of rows of the result, if known
+// the number of rows of the result, if known, or number of affected rows
 $count = $result->getRowCount();
 ```
 
@@ -99,24 +99,24 @@ Method fetchAssoc() can return a more complex associative array.
 You can easily add parameters to the query, note the question mark:
 
 ```php
-$database->query('SELECT * FROM users WHERE name = ? AND active = ?', $name, $active);
+$result = $database->query('SELECT * FROM users WHERE name = ? AND active = ?', $name, $active);
 
 // or
-$database->query('SELECT * FROM users WHERE name = ?', $name, 'AND active = ?', $active););
+$result = $database->query('SELECT * FROM users WHERE name = ?', $name, 'AND active = ?', $active););
 
 $ids = [10, 20, 30];
-$database->query('SELECT * FROM users WHERE id IN (?)', $ids);
+$result = $database->query('SELECT * FROM users WHERE id IN (?)', $ids);
 ```
 
 **WARNING, never concencate parameters to SQL, the vulnerability would arise [SQL injection](https://en.wikipedia.org/wiki/SQL_injection)**
 ```
-$database->query('SELECT * FROM users WHERE id = ' . $id); // BAD!!!
+$result = $database->query('SELECT * FROM users WHERE id = ' . $id); // BAD!!!
 ```
 
 Instead of a question mark, so-called modifiers can be used.
 
 ```php
-$database->query('SELECT * FROM users WHERE name = %s', $name);
+$result = $database->query('SELECT * FROM users WHERE name = %s', $name);
 ```
 
 In case of failure `query()` throws `Dibi\Exception`, or one of the descendants:
@@ -167,7 +167,7 @@ In addition to the `?` wild char, we can also use modifiers:
 Example:
 
 ```php
-$database->query('SELECT * FROM users WHERE name = %s', $name);
+$result = $database->query('SELECT * FROM users WHERE name = %s', $name);
 ```
 
 If $name is null, the NULL is inserted into the SQL statement.
@@ -176,7 +176,7 @@ If the variable is an array, the modifier is applied to all of its elements and 
 
 ```php
 $ids = [10, '20', 30];
-$database->query('SELECT * FROM users WHERE id IN (%i)', $ids);
+$result = $database->query('SELECT * FROM users WHERE id IN (%i)', $ids);
 // SELECT * FROM users WHERE id IN (10, 20, 30)
 ```
 
@@ -185,7 +185,7 @@ The modifier '%n' is used if the table or column name is a variable. (Beware, do
 ```php
 $table = 'blog.users';
 $column = 'name';
-$database->query('SELECT * FROM %n WHERE %n = ?', $table, $column, $value);
+$result = $database->query('SELECT * FROM %n WHERE %n = ?', $table, $column, $value);
 // SELECT * FROM `blog`.`users` WHERE `name` = 'Jim'
 ```
 
@@ -200,7 +200,7 @@ Three special modifiers are available for LIKE:
 Search for names beginning with a string:
 
 ```php
-$database->query('SELECT * FROM table WHERE name LIKE %like~', $query);
+$result = $database->query('SELECT * FROM table WHERE name LIKE %like~', $query);
 ```
 
 
@@ -247,7 +247,7 @@ $result = $database->query('SELECT * FROM users WHERE %and', [
 The modifier `%by` is used to sort, the keys show the columns, and the boolean value will determine whether to sort in ascending order:
 
 ```php
-$database->query('SELECT id FROM author ORDER BY %by', [
+$result = $database->query('SELECT id FROM author ORDER BY %by', [
 	'id' => true, // ascending
 	'name' => false, // descending
 ]);
@@ -287,18 +287,23 @@ $database->query('INSERT INTO users', [
 Deleting:
 
 ```php
+$database->query('DELETE FROM users WHERE id = ?', $id);
+
 // returns the number of deleted rows
-$affectedRows = $database->query('DELETE FROM users WHERE id = ?', $id);
+$affectedRows = $database->getAffectedRows();
 ```
 
 Update:
 
 ```php
-$affectedRows = $database->query('UPDATE users SET', [
+$database->query('UPDATE users SET', [
 	'name' => $name,
 	'year' => $year,
 ], 'WHERE id = ?', $id);
 // UPDATE users SET `name` = 'Jim', `year` = 1978 WHERE id = 123
+
+// returns the number of updated rows
+$affectedRows = $database->getAffectedRows();
 ```
 
 Insert an entry or update if it already exists:
@@ -351,7 +356,7 @@ dibi::$totalTime;
 The parameter may also be an object `DateTime`.
 
 ```php
-$database->query('SELECT * FROM users WHERE created < ?', new DateTime);
+$result = $database->query('SELECT * FROM users WHERE created < ?', new DateTime);
 
 $database->query('INSERT INTO users', [
 	'created' => new DateTime,
@@ -388,7 +393,7 @@ $database->query('UPDATE table SET', [
 In conditions (ie, for `%and` and `%or` modifiers), it is not necessary to specify the keys:
 
 ```php
-$database->query('SELECT * FROM `table` WHERE %and', [
+$result = $database->query('SELECT * FROM `table` WHERE %and', [
 	'number > 10',
 	'number < 100',
 ]);
@@ -398,7 +403,7 @@ $database->query('SELECT * FROM `table` WHERE %and', [
 Modifiers or wildcards can also be used in expressions:
 
 ```php
-$database->query('SELECT * FROM `table` WHERE %and', [
+$result = $database->query('SELECT * FROM `table` WHERE %and', [
 	['number > ?', 10],  // or $database::expression('number > ?', 10)
 	['number < ?', 100],
 	['%or', [
@@ -412,7 +417,7 @@ $database->query('SELECT * FROM `table` WHERE %and', [
 The `%ex` modifier inserts all items of the array into SQL:
 
 ```php
-$database->query('SELECT * FROM `table` WHERE %ex', [
+$result = $database->query('SELECT * FROM `table` WHERE %ex', [
 	$database::expression('left = ?', 1),
 	'AND',
 	'top IS NULL',
@@ -428,7 +433,7 @@ Conditional SQL commands are controlled by three modifiers `%if`, `%else`, and `
 ```php
 $user = ???
 
-$database->query('
+$result = $database->query('
 	SELECT *
 	FROM table
 	%if', isset($user), 'WHERE user=%s', $user, '%end
@@ -439,7 +444,7 @@ $database->query('
 The condition can be supplemented by the section `%else`:
 
 ```php
-$database->query('
+$result = $database->query('
 	SELECT *
 	FROM %if', $cond, 'one_table %else second_table
 ');
