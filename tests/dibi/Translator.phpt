@@ -14,7 +14,7 @@ require __DIR__ . '/bootstrap.php';
 $conn = new Dibi\Connection($config + ['formatDateTime' => "'Y-m-d H:i:s.u'", 'formatDate' => "'Y-m-d'"]);
 
 
-// dibi detects INSERT or REPLACE command & booleans
+// Dibi detects INSERT or REPLACE command & booleans
 Assert::same(
 	reformat("REPLACE INTO [products] ([title], [price]) VALUES ('Drticka', 318)"),
 	$conn->translate('REPLACE INTO [products]', [
@@ -48,7 +48,7 @@ Assert::same(
 );
 
 
-// dibi detects UPDATE command
+// Dibi detects UPDATE command
 Assert::same(
 	reformat("UPDATE [colors] SET [color]='blue', [order]=12 WHERE [id]=123"),
 	$conn->translate('UPDATE [colors] SET', [

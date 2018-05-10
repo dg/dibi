@@ -3,7 +3,7 @@ declare(strict_types=1);
 ?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Query Language Basic Examples | dibi</h1>
+<h1>Query Language Basic Examples | Dibi</h1>
 
 <?php
 

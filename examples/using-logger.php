@@ -3,7 +3,7 @@ declare(strict_types=1);
 ?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Using Logger | dibi</h1>
+<h1>Using Logger | Dibi</h1>
 
 <?php
 

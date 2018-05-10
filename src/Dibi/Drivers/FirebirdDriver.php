@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
@@ -14,7 +14,7 @@ use Dibi\Helpers;
 
 
 /**
- * The dibi driver for Firebird/InterBase database.
+ * The driver for Firebird/InterBase database.
  *
  * Driver options:
  *   - database => the path to database file (server:/path/database.fdb)

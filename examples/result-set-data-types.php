@@ -14,7 +14,7 @@ date_default_timezone_set('Europe/Prague');
 ?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Result Set Data Types | dibi</h1>
+<h1>Result Set Data Types | Dibi</h1>
 
 <?php
 

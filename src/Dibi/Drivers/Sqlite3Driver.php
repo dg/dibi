@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
@@ -15,7 +15,7 @@ use SQLite3;
 
 
 /**
- * The dibi driver for SQLite3 database.
+ * The driver for SQLite3 database.
  *
  * Driver options:
  *   - database (or file) => the filename of the SQLite3 database

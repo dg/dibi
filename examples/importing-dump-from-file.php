@@ -3,7 +3,7 @@ declare(strict_types=1);
 ?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Importing SQL Dump from File | dibi</h1>
+<h1>Importing SQL Dump from File | Dibi</h1>
 
 <?php
 

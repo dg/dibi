@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
@@ -13,7 +13,7 @@ use Dibi;
 
 
 /**
- * The dibi driver for Oracle database.
+ * The driver for Oracle database.
  *
  * Driver options:
  *   - database => the name of the local Oracle instance or the name of the entry in tnsnames.ora

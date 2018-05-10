@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
@@ -13,7 +13,7 @@ use Traversable;
 
 
 /**
- * dibi connection.
+ * Dibi connection.
  *
  * @property-read int $affectedRows
  * @property-read int $insertId
@@ -118,7 +118,7 @@ class Connection implements IConnection
 			$class = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($this->config['driver'])));
 			$class = "Dibi\\Drivers\\{$class}Driver";
 			if (!class_exists($class)) {
-				throw new Exception("Unable to create instance of dibi driver '$class'.");
+				throw new Exception("Unable to create instance of Dibi driver '$class'.");
 			}
 		}
 

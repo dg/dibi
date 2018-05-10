@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
@@ -11,20 +11,7 @@ namespace Dibi;
 
 
 /**
- * dibi result set.
- *
- * <code>
- * $result = dibi::query('SELECT * FROM [table]');
- *
- * $row   = $result->fetch();
- * $value = $result->fetchSingle();
- * $table = $result->fetchAll();
- * $pairs = $result->fetchPairs();
- * $assoc = $result->fetchAssoc('col1');
- * $assoc = $result->fetchAssoc('col1[]col2->col3');
- *
- * unset($result);
- * </code>
+ * Query result.
  *
  * @property-read int $rowCount
  */
