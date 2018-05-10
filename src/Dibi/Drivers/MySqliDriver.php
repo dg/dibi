@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
@@ -11,7 +11,7 @@ use Dibi;
 
 
 /**
- * The dibi driver for MySQL database via improved extension.
+ * The driver for MySQL database.
  *
  * Driver options:
  *   - host => the MySQL server host name
@@ -27,7 +27,6 @@ use Dibi;
  *   - unbuffered (bool) => sends query without fetching and buffering the result rows automatically?
  *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - resource (mysqli) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
 class MySqliDriver implements Dibi\Driver, Dibi\ResultDriver
 {

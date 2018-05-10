@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
@@ -11,7 +11,7 @@ use Dibi;
 
 
 /**
- * The dibi driver interacting with databases via ODBC connections.
+ * The driver interacting with databases via ODBC connections.
  *
  * Driver options:
  *   - dsn => driver specific DSN
@@ -19,7 +19,6 @@ use Dibi;
  *   - password (or pass)
  *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
 class OdbcDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {

@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Query Language & Conditions | dibi</h1>
+<h1>Query Language & Conditions | Dibi</h1>
 
 <?php
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
@@ -12,7 +12,7 @@ use SQLite3;
 
 
 /**
- * The dibi driver for SQLite3 database.
+ * The driver for SQLite3 database.
  *
  * Driver options:
  *   - database (or file) => the filename of the SQLite3 database
@@ -21,7 +21,6 @@ use SQLite3;
  *   - dbcharset => database character encoding (will be converted to 'charset')
  *   - charset => character encoding to set (default is UTF-8)
  *   - resource (SQLite3) => existing connection resource
- *   - lazy, profiler, result, substitutes, ... => see Dibi\Connection options
  */
 class Sqlite3Driver implements Dibi\Driver, Dibi\ResultDriver
 {

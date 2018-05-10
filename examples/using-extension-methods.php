@@ -9,7 +9,7 @@ Tracy\Debugger::enable();
 ?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Using Extension Methods | dibi</h1>
+<h1>Using Extension Methods | Dibi</h1>
 
 <?php
 

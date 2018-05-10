@@ -2,7 +2,7 @@
 
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Using Profiler | dibi</h1>
+<h1>Using Profiler | Dibi</h1>
 
 <?php
 

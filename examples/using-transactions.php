@@ -1,6 +1,6 @@
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Using Transactions | dibi</h1>
+<h1>Using Transactions | Dibi</h1>
 
 <?php
 

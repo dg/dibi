@@ -9,7 +9,7 @@ Tracy\Debugger::enable();
 ?>
 <!DOCTYPE html><link rel="stylesheet" href="data/style.css">
 
-<h1>Fetching Examples | dibi</h1>
+<h1>Fetching Examples | Dibi</h1>
 
 <?php
 

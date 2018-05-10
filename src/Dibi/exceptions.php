@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the "dibi" - smart database abstraction layer.
+ * This file is part of the Dibi, smart database abstraction layer (https://dibiphp.com)
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
@@ -9,7 +9,7 @@ namespace Dibi;
 
 
 /**
- * dibi common exception.
+ * Dibi common exception.
  */
 class Exception extends \Exception
 {
@@ -18,7 +18,6 @@ class Exception extends \Exception
 
 
 	/**
-	 * Construct a dibi exception.
 	 * @param  string  Message describing the exception
 	 * @param  string|int
 	 * @param  string  SQL command
