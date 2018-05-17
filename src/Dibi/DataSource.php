@@ -161,7 +161,7 @@ class DataSource implements IDataSource
 
 	/**
 	 * Like fetch(), but returns only first field.
-	 * @return mixed  value on success, null if no next record
+	 * @return mixed  value on success, false if no next record
 	 */
 	public function fetchSingle()
 	{

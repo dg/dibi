@@ -18,6 +18,9 @@ $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 // fetch a single value
 $res = $conn->query('SELECT [title] FROM [products] ORDER BY [product_id]');
 Assert::same('Chair', $res->fetchSingle());
+Assert::same('Table', $res->fetchSingle());
+Assert::same('Computer', $res->fetchSingle());
+Assert::false($res->fetchSingle());
 
 
 // fetch complete result set
