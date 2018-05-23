@@ -16,7 +16,7 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 echo '<p>Connecting to Sqlite: ';
 try {
 	dibi::connect([
-		'driver' => 'sqlite3',
+		'driver' => 'sqlite',
 		'database' => 'data/sample.s3db',
 	]);
 	echo 'OK';
@@ -30,7 +30,7 @@ echo "</p>\n";
 echo '<p>Connecting to Sqlite: ';
 try {
 	$connection = new Dibi\Connection([
-		'driver' => 'sqlite3',
+		'driver' => 'sqlite',
 		'database' => 'data/sample.s3db',
 	]);
 	echo 'OK';

@@ -19,7 +19,7 @@ date_default_timezone_set('Europe/Prague');
 <?php
 
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite3',
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 ]);
 

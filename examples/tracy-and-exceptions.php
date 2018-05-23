@@ -11,7 +11,7 @@ Tracy\Debugger::enable();
 
 
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite3',
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 ]);
 

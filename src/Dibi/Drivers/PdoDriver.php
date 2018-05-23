@@ -110,7 +110,7 @@ class PdoDriver implements Dibi\Driver
 				throw PostgreDriver::createException($message, $sqlState, $sql);
 
 			case 'sqlite':
-				throw Sqlite3Driver::createException($message, $code, $sql);
+				throw SqliteDriver::createException($message, $code, $sql);
 
 			default:
 				throw new Dibi\DriverException($message, $code, $sql);

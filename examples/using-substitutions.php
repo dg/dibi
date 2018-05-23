@@ -13,7 +13,7 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 
 
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite3',
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 ]);
 

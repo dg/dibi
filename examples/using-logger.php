@@ -15,7 +15,7 @@ date_default_timezone_set('Europe/Prague');
 
 
 $dibi = new Dibi\Connection([
-	'driver' => 'sqlite3',
+	'driver' => 'sqlite',
 	'database' => 'data/sample.s3db',
 	// enable query logging to this file
 	'profiler' => [
