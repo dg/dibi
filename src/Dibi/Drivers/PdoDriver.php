@@ -148,7 +148,7 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 	 */
 	public function getInsertId($sequence)
 	{
-		return $this->connection->lastInsertId();
+		return $this->connection->lastInsertId($sequence);
 	}
 
 
