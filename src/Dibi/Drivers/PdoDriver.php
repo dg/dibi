@@ -132,7 +132,7 @@ class PdoDriver implements Dibi\Driver
 	 */
 	public function getInsertId(?string $sequence): ?int
 	{
-		return Helpers::intVal($this->connection->lastInsertId());
+		return Helpers::intVal($this->connection->lastInsertId($sequence));
 	}
 
 
