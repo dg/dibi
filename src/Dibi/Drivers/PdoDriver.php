@@ -71,6 +71,10 @@ class PdoDriver implements Dibi\Driver
 
 		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
 		$this->serverVersion = (string) ($config['version'] ?? @$this->connection->getAttribute(PDO::ATTR_SERVER_VERSION)); // @ - may be not supported
+
+		if (!\in_array($this->connection->getAttribute(\PDO::ATTR_ERRMODE), [null, \PDO::ERRMODE_WARNING], true)) {
+			throw new Dibi\DriverException('PDO connection in other error mode then WARNING (default) is currently not supported. Consider upgrading to Dibi >=4.1.0.');
+		}
 	}
 
 
