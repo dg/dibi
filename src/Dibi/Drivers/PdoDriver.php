@@ -89,31 +89,44 @@ class PdoDriver implements Dibi\Driver
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
-		$res = $this->connection->query($sql);
-		if ($res) {
-			$this->affectedRows = $res->rowCount();
-			return $res->columnCount() ? $this->createResultDriver($res) : null;
+		try {
+			$res = $this->connection->query($sql);
+
+			if ($res) {
+				$this->affectedRows = $res->rowCount();
+				return $res->columnCount() ? $this->createResultDriver($res) : null;
+			}
+
+		} catch (\PDOException $pdoException) {
+			$this->affectedRows = null;
+			throw $this->createException($pdoException->errorInfo, $sql, $pdoException);
 		}
 
 		$this->affectedRows = null;
+		throw $this->createException($this->connection->errorInfo(), $sql, null);
 
-		[$sqlState, $code, $message] = $this->connection->errorInfo();
+	}
+
+
+	private function createException(array $errorInfo, string $sql, ?\Throwable $previous): Dibi\DriverException {
+		[$sqlState, $code, $message] = $errorInfo;
+
 		$message = "SQLSTATE[$sqlState]: $message";
 		switch ($this->driverName) {
 			case 'mysql':
-				throw MySqliDriver::createException($message, $code, $sql);
+				return MySqliDriver::createException($message, $code, $sql, $previous);
 
 			case 'oci':
-				throw OracleDriver::createException($message, $code, $sql);
+				return OracleDriver::createException($message, $code, $sql, $previous);
 
 			case 'pgsql':
-				throw PostgreDriver::createException($message, $sqlState, $sql);
+				return PostgreDriver::createException($message, $sqlState, $sql, $previous);
 
 			case 'sqlite':
-				throw SqliteDriver::createException($message, $code, $sql);
+				return SqliteDriver::createException($message, $code, $sql, $previous);
 
 			default:
-				throw new Dibi\DriverException($message, $code, $sql);
+				return new Dibi\DriverException($message, $code, $sql, $previous);
 		}
 	}
 

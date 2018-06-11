@@ -132,7 +132,7 @@ class PostgreDriver implements Dibi\Driver
 	}
 
 
-	public static function createException(string $message, $code = null, string $sql = null): Dibi\DriverException
+	public static function createException(string $message, $code = null, string $sql = null, \Throwable $previous = null): Dibi\DriverException
 	{
 		if ($code === null && preg_match('#^ERROR:\s+(\S+):\s*#', $message, $m)) {
 			$code = $m[1];
@@ -140,19 +140,19 @@ class PostgreDriver implements Dibi\Driver
 		}
 
 		if ($code === '0A000' && strpos($message, 'truncate') !== false) {
-			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
+			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql, $previous);
 
 		} elseif ($code === '23502') {
-			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
+			return new Dibi\NotNullConstraintViolationException($message, $code, $sql, $previous);
 
 		} elseif ($code === '23503') {
-			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
+			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql, $previous);
 
 		} elseif ($code === '23505') {
-			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
+			return new Dibi\UniqueConstraintViolationException($message, $code, $sql, $previous);
 
 		} else {
-			return new Dibi\DriverException($message, $code, $sql);
+			return new Dibi\DriverException($message, $code, $sql, $previous);
 		}
 	}
 
