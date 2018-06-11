@@ -108,7 +108,8 @@ class PdoDriver implements Dibi\Driver
 	}
 
 
-	private function createException(array $errorInfo, string $sql, ?\Throwable $previous): Dibi\DriverException {
+	private function createException(array $errorInfo, string $sql, ?\Throwable $previous): Dibi\DriverException
+	{
 		[$sqlState, $code, $message] = $errorInfo;
 
 		$message = "SQLSTATE[$sqlState]: $message";
