@@ -15,7 +15,7 @@ namespace Dibi;
  *
  * @method Fluent select(...$field)
  * @method Fluent distinct()
- * @method Fluent from($table, ...$args)
+ * @method Fluent from($table, ...$args = null)
  * @method Fluent where(...$cond)
  * @method Fluent groupBy(...$field)
  * @method Fluent having(...$cond)
