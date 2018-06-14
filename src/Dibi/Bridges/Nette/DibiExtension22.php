@@ -51,7 +51,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 		}
 
 		$connection = $container->addDefinition($this->prefix('connection'))
-			->setClass(Dibi\Connection::class, [$config])
+			->setFactory(Dibi\Connection::class, [$config])
 			->setAutowired($config['autowired'] ?? true);
 
 		if (class_exists(Tracy\Debugger::class)) {
@@ -62,7 +62,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 		}
 		if ($useProfiler) {
 			$panel = $container->addDefinition($this->prefix('panel'))
-				->setClass(Dibi\Bridges\Tracy\Panel::class, [
+				->setFactory(Dibi\Bridges\Tracy\Panel::class, [
 					$config['explain'] ?? true,
 					isset($config['filter']) && $config['filter'] === false ? Dibi\Event::ALL : Dibi\Event::QUERY,
 				]);
