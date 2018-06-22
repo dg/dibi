@@ -1,4 +1,4 @@
-[Dibi](https://dibiphp.com) - smart database layer for PHP  [![Buy me a coffee](https://files.nette.org/images/coffee1s.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9XXL5ZJHAYQUN)
+[Dibi](https://dibiphp.com) - smart database layer for PHP  [![Buy me a coffee](https://files.nette.org/images/coffee1s.png)](https://nette.org/make-donation?to=dibi)
 =========================================================
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/dibi/dibi.svg)](https://packagist.org/packages/dibi/dibi)
@@ -13,6 +13,8 @@ Introduction
 
 Database access functions in PHP are not standardised. This library
 hides the differences between them, and above all, it gives you a very handy interface.
+
+If you like Dibi, **[please make a donation now](https://nette.org/make-donation?to=dibi)**. Thank you!
 
 
 Installation
