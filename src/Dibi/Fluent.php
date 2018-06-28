@@ -29,7 +29,10 @@ namespace Dibi;
  * @method Fluent outerJoin(...$table)
  * @method Fluent as(...$field)
  * @method Fluent on(...$cond)
+ * @method Fluent and(...$cond)
  * @method Fluent using(...$cond)
+ * @method Fluent asc()
+ * @method Fluent desc()
  */
 class Fluent implements IDataSource
 {
