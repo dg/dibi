@@ -90,21 +90,19 @@ class PdoDriver implements Dibi\Driver
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
 		try {
-			$res = $this->connection->query($sql);
-
-			if ($res) {
+			if ($res = $this->connection->query($sql)) {
 				$this->affectedRows = $res->rowCount();
 				return $res->columnCount() ? $this->createResultDriver($res) : null;
 			}
 
 		} catch (\PDOException $pdoException) {
-			$this->affectedRows = null;
-			throw $this->createException($pdoException->errorInfo, $sql);
 		}
 
 		$this->affectedRows = null;
-		throw $this->createException($this->connection->errorInfo(), $sql);
-
+		throw $this->createException(
+			isset($pdoException) ? $pdoException->errorInfo : $this->connection->errorInfo(),
+			$sql
+		);
 	}
 
 
