@@ -90,7 +90,7 @@ class PdoDriver implements Dibi\Driver
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
 		try {
-			if ($res = @$this->connection->query($sql)) {
+			if ($res = @$this->connection->query($sql)) { // intentionally @ to catch warnings in warning PDO mode
 				$this->affectedRows = $res->rowCount();
 				return $res->columnCount() ? $this->createResultDriver($res) : null;
 			}
