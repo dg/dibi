@@ -112,19 +112,19 @@ class OracleDriver implements Dibi\Driver
 	}
 
 
-	public static function createException(string $message, $code, string $sql, \Throwable $previous = null): Dibi\DriverException
+	public static function createException(string $message, $code, string $sql): Dibi\DriverException
 	{
 		if (in_array($code, [1, 2299, 38911], true)) {
-			return new Dibi\UniqueConstraintViolationException($message, $code, $sql, $previous);
+			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
 
 		} elseif (in_array($code, [1400], true)) {
-			return new Dibi\NotNullConstraintViolationException($message, $code, $sql, $previous);
+			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
 
 		} elseif (in_array($code, [2266, 2291, 2292], true)) {
-			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql, $previous);
+			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
 
 		} else {
-			return new Dibi\DriverException($message, $code, $sql, $previous);
+			return new Dibi\DriverException($message, $code, $sql);
 		}
 	}
 

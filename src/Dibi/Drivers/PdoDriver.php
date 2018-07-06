@@ -99,35 +99,35 @@ class PdoDriver implements Dibi\Driver
 
 		} catch (\PDOException $pdoException) {
 			$this->affectedRows = null;
-			throw $this->createException($pdoException->errorInfo, $sql, $pdoException);
+			throw $this->createException($pdoException->errorInfo, $sql);
 		}
 
 		$this->affectedRows = null;
-		throw $this->createException($this->connection->errorInfo(), $sql, null);
+		throw $this->createException($this->connection->errorInfo(), $sql);
 
 	}
 
 
-	private function createException(array $errorInfo, string $sql, ?\Throwable $previous): Dibi\DriverException
+	private function createException(array $errorInfo, string $sql): Dibi\DriverException
 	{
 		[$sqlState, $code, $message] = $errorInfo;
 
 		$message = "SQLSTATE[$sqlState]: $message";
 		switch ($this->driverName) {
 			case 'mysql':
-				return MySqliDriver::createException($message, $code, $sql, $previous);
+				return MySqliDriver::createException($message, $code, $sql);
 
 			case 'oci':
-				return OracleDriver::createException($message, $code, $sql, $previous);
+				return OracleDriver::createException($message, $code, $sql);
 
 			case 'pgsql':
-				return PostgreDriver::createException($message, $sqlState, $sql, $previous);
+				return PostgreDriver::createException($message, $sqlState, $sql);
 
 			case 'sqlite':
-				return SqliteDriver::createException($message, $code, $sql, $previous);
+				return SqliteDriver::createException($message, $code, $sql);
 
 			default:
-				return new Dibi\DriverException($message, $code, $sql, $previous);
+				return new Dibi\DriverException($message, $code, $sql);
 		}
 	}
 
