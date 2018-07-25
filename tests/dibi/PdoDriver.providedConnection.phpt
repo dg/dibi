@@ -10,35 +10,62 @@ use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
 
+
+function buildPDOConnection(int $errorMode = NULL): PDO {
+	global $config;
+
+	// used to parse config, establish connection
+	$connection = new \Dibi\Connection($config);
+	$dibiDriver = $connection->getDriver();
+	\assert($dibiDriver instanceof \Dibi\Drivers\PdoDriver);
+
+	// hack: extract PDO connection from driver (no public interface for that)
+	$connectionProperty = (new ReflectionClass($dibiDriver))
+		->getProperty('connection');
+	$connectionProperty->setAccessible(TRUE);
+	$pdo = $connectionProperty->getValue($dibiDriver);
+	\assert($pdo instanceof PDO);
+
+	// check that error reporting is in PHPs default value
+	\assert($pdo->getAttribute(\PDO::ATTR_ERRMODE) === \PDO::ERRMODE_SILENT);
+
+	// override PDO error mode if provided
+	if ($errorMode !== NULL) {
+		$pdo->setAttribute(\PDO::ATTR_ERRMODE, $errorMode);
+	}
+	return $pdo;
+}
+
 /** @throws \Dibi\NotSupportedException */
-function buildPdoDriver(PDO $pdo): \Dibi\Drivers\PdoDriver {
+function buildPdoDriverWithProvidedConnection(PDO $pdo): \Dibi\Drivers\PdoDriver {
 	$driverConfig = ['resource' => $pdo];
 	return new \Dibi\Drivers\PdoDriver($driverConfig);
 }
 
+
 // PDO error mode: exception
-Assert::exception(function() use ($config) {
-	($pdoConnection = new PDO($config['dsn']))->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-	buildPdoDriver($pdoConnection);
+Assert::exception(function() {
+	$pdoConnection = buildPDOConnection(\PDO::ERRMODE_EXCEPTION);
+	buildPdoDriverWithProvidedConnection($pdoConnection);
 }, \Dibi\DriverException::class, 'PDO connection in exception or warning error mode is currently not supported. Consider upgrading to Dibi >=4.1.0.');
 
 
 // PDO error mode: warning
-Assert::exception(function() use ($config) {
-	($pdoConnection = new PDO($config['dsn']))->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
-	buildPdoDriver($pdoConnection);
+Assert::exception(function() {
+	$pdoConnection = buildPDOConnection(\PDO::ERRMODE_WARNING);
+	buildPdoDriverWithProvidedConnection($pdoConnection);
 }, \Dibi\DriverException::class, 'PDO connection in exception or warning error mode is currently not supported. Consider upgrading to Dibi >=4.1.0.');
 
 
 // PDO error mode: explicitly set silent
-test(function() use ($config) {
-	($pdoConnection = new PDO($config['dsn']))->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
-	Assert::type(\Dibi\Drivers\PdoDriver::class, buildPdoDriver($pdoConnection));
+test(function() {
+	$pdoConnection = buildPDOConnection(\PDO::ERRMODE_SILENT);
+	Assert::type(\Dibi\Drivers\PdoDriver::class, buildPdoDriverWithProvidedConnection($pdoConnection));
 });
 
 
 // PDO error mode: implicitly set silent
-test(function() use ($config) {
-	$pdoConnection = new PDO($config['dsn']);
-	Assert::type(\Dibi\Drivers\PdoDriver::class, buildPdoDriver($pdoConnection));
+test(function() {
+	$pdoConnection = buildPDOConnection(NULL);
+	Assert::type(\Dibi\Drivers\PdoDriver::class, buildPdoDriverWithProvidedConnection($pdoConnection));
 });
