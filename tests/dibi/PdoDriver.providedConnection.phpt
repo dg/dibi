@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @dataProvider ../databases.ini
+ * @dataProvider ../databases.ini != no match, pdo
  */
 
 declare(strict_types=1);
@@ -9,10 +9,6 @@ declare(strict_types=1);
 use Tester\Assert;
 
 require __DIR__ . '/bootstrap.php';
-
-if($config['driver'] !== 'pdo') {
-	\Tester\Environment::skip('Only relevant for PDO driver.');
-}
 
 /** @throws \Dibi\NotSupportedException */
 function buildPdoDriver(PDO $pdo): \Dibi\Drivers\PdoDriver {
