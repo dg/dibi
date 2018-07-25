@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @dataProvider ../databases.ini != no match, pdo
+ * @dataProvider ../databases.ini != nothing, pdo
  */
 
 declare(strict_types=1);
