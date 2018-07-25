@@ -29,7 +29,7 @@ Assert::exception(function() use ($config) {
 
 // PDO error mode: warning
 Assert::exception(function() use ($config) {
-	($pdoConnection = new PDO($config['dsn']))->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+	($pdoConnection = new PDO($config['dsn']))->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
 	buildPdoDriver($pdoConnection);
 }, \Dibi\DriverException::class, 'PDO connection in exception or warning error mode is currently not supported. Consider upgrading to Dibi >=4.1.0.');
 
