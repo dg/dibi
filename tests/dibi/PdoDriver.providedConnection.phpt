@@ -4,6 +4,12 @@
  * @dataProvider ../databases.ini != nothing, pdo
  */
 
+// Background:
+// When PDO connection is passed into Dibi it can be in (re)configured in various ways.
+// This affects how connection is then internally handled.
+// There should be no visible difference in Dibi behaviour regardless of PDO configuration (except unsupported configurations).
+
+
 declare(strict_types=1);
 
 use Tester\Assert;
