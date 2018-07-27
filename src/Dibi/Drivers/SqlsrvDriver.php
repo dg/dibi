@@ -271,7 +271,10 @@ class SqlsrvDriver implements Dibi\Driver
 
 		} elseif ($limit !== null) {
 			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
-			$sql = sprintf('%s OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', rtrim($sql), $offset, $limit);
+            if (strpos($sql, ' ORDER BY ')=== false){
+                $sql = sprintf('%s ORDER BY 1 ', rtrim($sql));
+            }
+            $sql = sprintf('%s OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', rtrim($sql), $offset, $limit);
 		} elseif ($offset) {
 			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
 			$sql = sprintf('%s OFFSET %d ROWS', rtrim($sql), $offset);
