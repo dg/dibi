@@ -47,6 +47,7 @@ class Connection implements IConnection
 	 *       - run (bool) => enable profiler?
 	 *       - file => file to log
 	 *   - substitutes (array) => map of driver specific substitutes (under development)
+	 *   - onConnect (array) => list of SQL queries to execute (by Connection::query()) after connection is established
 	 * @param  array   $config  connection parameters
 	 * @throws Exception
 	 */
@@ -90,6 +91,10 @@ class Connection implements IConnection
 			}
 		}
 
+		if (isset($config['onConnect']) && !is_array($config['onConnect'])) {
+			throw new \InvalidArgumentException("Configuration option 'onConnect' must be array.");
+		}
+
 		if (empty($config['lazy'])) {
 			$this->connect();
 		}
@@ -127,6 +132,11 @@ class Connection implements IConnection
 			$this->driver = new $class($this->config);
 			if ($event) {
 				$this->onEvent($event->done());
+			}
+			if (isset($this->config['onConnect'])) {
+				foreach ($this->config['onConnect'] as $sql) {
+					$this->query($sql);
+				}
 			}
 
 		} catch (DriverException $e) {

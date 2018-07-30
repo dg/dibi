@@ -50,3 +50,27 @@ test(function () use ($config) {
 	$conn->disconnect();
 	Assert::false($conn->isConnected());
 });
+
+
+test(function () use ($config) {
+	Assert::exception(function () use ($config) {
+		new Connection($config + ['onConnect' => '']);
+	}, InvalidArgumentException::class, "Configuration option 'onConnect' must be array.");
+
+	$e = Assert::exception(function () use ($config) {
+		new Connection($config + ['onConnect' => ['STOP']]);
+	}, Dibi\DriverException::class);
+	Assert::same('STOP', $e->getSql());
+
+	$e = Assert::exception(function () use ($config) {
+		new Connection($config + ['onConnect' => [['STOP %i', 123]]]);
+	}, Dibi\DriverException::class);
+	Assert::same('STOP 123', $e->getSql());
+
+	// lazy
+	$conn = new Connection($config + ['lazy' => true, 'onConnect' => ['STOP']]);
+	$e = Assert::exception(function () use ($conn) {
+		$conn->query('SELECT 1');
+	}, Dibi\DriverException::class);
+	Assert::same('STOP', $e->getSql());
+});
