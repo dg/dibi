@@ -236,8 +236,15 @@ final class Translator
 				case 'a': // key=val, key=val, ...
 					foreach ($value as $k => $v) {
 						$pair = explode('%', $k, 2); // split into identifier & modifier
+						//For Fix SQL Server UTF-8 characters
+						$utf8Prefix = '';
+						if ($this->driver instanceof \Dibi\Drivers\SqlsrvDriver) {
+							if (is_string($v) && mb_strlen($v, "UTF-8") != strlen($v)) {
+								$utf8Prefix = 'N';
+							}
+						}
 						$vx[] = $this->identifiers->{$pair[0]} . '='
-							. $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex!' : null));
+							. $utf8Prefix . $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex!' : null));
 					}
 					return implode(', ', $vx);
 
@@ -257,6 +264,14 @@ final class Translator
 						$kx[] = $this->identifiers->{$pair[0]};
 						$vx[] = $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex!' : null));
 					}
+					//For Fix SQL Server UTF-8 characters
+					if ($this->driver instanceof \Dibi\Drivers\SqlsrvDriver) {
+						array_walk($vx, function(&$item) {
+							if (is_string($item) && mb_strlen($item, "UTF-8") != strlen($item)) {
+								$item = 'N'.$item; 
+							}
+						});
+					} 
 					return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
 				case 'm': // (key, key, ...) VALUES (val, val, ...), (val, val, ...), ...
@@ -280,6 +295,15 @@ final class Translator
 						}
 					}
 					foreach ($vx as $k => $v) {
+						//For Fix SQL Server UTF-8 characters
+						if ($this->driver instanceof \Dibi\Drivers\SqlsrvDriver) {
+							array_walk($v, function(&$item) {
+								if (is_string($item) && mb_strlen($item, "UTF-8") != strlen($item)) {
+									$item = 'N'.$item; 
+								}
+							});
+						} 
+
 						$vx[$k] = '(' . implode(', ', $v) . ')';
 					}
 					return '(' . implode(', ', $kx) . ') VALUES ' . implode(', ', $vx);
