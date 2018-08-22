@@ -503,7 +503,7 @@ class Result implements IDataSource
 	 * Define column type.
 	 * @param  string  $type  use constant Type::*
 	 */
-	final public function setType(string $column, string $type): self
+	final public function setType(string $column, ?string $type): self
 	{
 		$this->types[$column] = $type;
 		return $this;
