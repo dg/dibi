@@ -501,9 +501,9 @@ class Result implements IDataSource
 
 	/**
 	 * Define column type.
-	 * @param  string  $type  use constant Type::*
+	 * @param  string|null  $type  use constant Type::*
 	 */
-	final public function setType(string $column, string $type): self
+	final public function setType(string $column, ?string $type): self
 	{
 		$this->types[$column] = $type;
 		return $this;
@@ -513,7 +513,7 @@ class Result implements IDataSource
 	/**
 	 * Returns column type.
 	 */
-	final public function getType(string $column): string
+	final public function getType(string $column): ?string
 	{
 		return $this->types[$column] ?? null;
 	}
