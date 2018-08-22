@@ -76,7 +76,7 @@ class Column
 	}
 
 
-	public function getType(): string
+	public function getType(): ?string
 	{
 		return Dibi\Helpers::getTypeCache()->{$this->info['nativetype']};
 	}
