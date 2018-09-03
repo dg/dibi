@@ -105,7 +105,16 @@ class Panel implements Tracy\IBarPanel
 		}
 
 		$totalTime = $s = null;
-		foreach ($this->events as $event) {
+		$occurrences = [];
+		
+		foreach ($this->events as $key => $event) {
+			$hashSql = md5(preg_replace('/[^[:alnum:]]/u', '', $event->sql));
+			$hashes[$key] = $hashSql;
+			$occurrences[$hashSql] = (isset($occurrences[$hashSql]) ? ++$occurrences[$hashSql] : 1);
+		}
+			
+		foreach ($this->events as $key => $event) {
+			$hashSql = $hashes[$key];
 			$totalTime += $event->time;
 			$connection = $event->connection;
 			$explain = null; // EXPLAIN is called here to work SELECT FOUND_ROWS()
@@ -126,7 +135,9 @@ class Panel implements Tracy\IBarPanel
 				$counter++;
 				$s .= "<br /><a href='#tracy-debug-DibiProfiler-row-$counter' class='tracy-toggle tracy-collapsed' rel='#tracy-debug-DibiProfiler-row-$counter'>explain</a>";
 			}
-
+			if ($occurrences[$hashSql] > 1) {
+				$s .= '<p style="color:red;font-weight:bold">Occurs:' . $occurrences[$hashSql] .'x</p>';
+			}
 			$s .= '</td><td class="tracy-DibiProfiler-sql">' . Helpers::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, true);
 			if ($explain) {
 				$s .= "<div id='tracy-debug-DibiProfiler-row-$counter' class='tracy-collapsed'>{$explain}</div>";
