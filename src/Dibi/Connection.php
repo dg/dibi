@@ -112,8 +112,13 @@ class Connection implements IConnection
 	 */
 	final public function connect(): void
 	{
-		if (is_subclass_of($this->config['driver'], Driver::class)) {
+		if ($this->config['driver'] instanceof Driver) {
+			$this->driver = $this->config['driver'];
+			return;
+
+		} elseif (is_subclass_of($this->config['driver'], Driver::class)) {
 			$class = $this->config['driver'];
+
 		} else {
 			$class = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($this->config['driver'])));
 			$class = "Dibi\\Drivers\\{$class}Driver";
