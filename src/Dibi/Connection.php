@@ -441,13 +441,12 @@ class Connection implements IConnection
 	}
 
 
-	public function update(string $table, iterable $args): Fluent
+	/**
+	 * @param string|string[] $table
+	 */
+	public function update($table, iterable $args): Fluent
 	{
-		if(strpos($table, ',') === false) {
-			return $this->command()->update('%n', $table)->set($args);
-		}
-		$tables = explode(',', $table);
-		return $this->command()->update('%n', $tables)->set($args);
+		return $this->command()->update('%n', $table)->set($args);
 	}
 
 
