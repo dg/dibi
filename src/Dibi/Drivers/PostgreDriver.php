@@ -547,7 +547,7 @@ class PostgreDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 
 		$res = $this->query($query);
 		$tables = pg_fetch_all($res->resultSet);
-		return $tables ? $tables : [];
+		return $tables ?: [];
 	}
 
 

@@ -22,7 +22,7 @@ class DateTime extends \DateTime
 	{
 		if (is_numeric($time)) {
 			parent::__construct('@' . $time);
-			$this->setTimeZone($timezone ? $timezone : new \DateTimeZone(date_default_timezone_get()));
+			$this->setTimeZone($timezone ?: new \DateTimeZone(date_default_timezone_get()));
 		} elseif ($timezone === null) {
 			parent::__construct($time);
 		} else {
