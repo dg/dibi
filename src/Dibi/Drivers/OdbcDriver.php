@@ -40,7 +40,7 @@ class OdbcDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct(array &$config)
+	public function __construct(array $config)
 	{
 		if (!extension_loaded('odbc')) {
 			throw new Dibi\NotSupportedException("PHP extension 'odbc' is not loaded.");

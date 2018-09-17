@@ -42,7 +42,7 @@ class SqlsrvDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct(array &$config)
+	public function __construct(array $config)
 	{
 		if (!extension_loaded('sqlsrv')) {
 			throw new Dibi\NotSupportedException("PHP extension 'sqlsrv' is not loaded.");

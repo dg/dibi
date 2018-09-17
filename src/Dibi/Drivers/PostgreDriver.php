@@ -38,7 +38,7 @@ class PostgreDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct(array &$config)
+	public function __construct(array $config)
 	{
 		if (!extension_loaded('pgsql')) {
 			throw new Dibi\NotSupportedException("PHP extension 'pgsql' is not loaded.");

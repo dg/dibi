@@ -45,7 +45,7 @@ class OracleDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct(array &$config)
+	public function __construct(array $config)
 	{
 		if (!extension_loaded('oci8')) {
 			throw new Dibi\NotSupportedException("PHP extension 'oci8' is not loaded.");

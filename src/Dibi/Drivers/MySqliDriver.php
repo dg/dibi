@@ -50,7 +50,7 @@ class MySqliDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct(array &$config)
+	public function __construct(array $config)
 	{
 		if (!extension_loaded('mysqli')) {
 			throw new Dibi\NotSupportedException("PHP extension 'mysqli' is not loaded.");

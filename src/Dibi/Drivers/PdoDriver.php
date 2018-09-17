@@ -45,7 +45,7 @@ class PdoDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct(array &$config)
+	public function __construct(array $config)
 	{
 		if (!extension_loaded('pdo')) {
 			throw new Dibi\NotSupportedException("PHP extension 'pdo' is not loaded.");

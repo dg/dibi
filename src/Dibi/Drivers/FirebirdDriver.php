@@ -43,7 +43,7 @@ class FirebirdDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct(array &$config)
+	public function __construct(array $config)
 	{
 		if (!extension_loaded('interbase')) {
 			throw new Dibi\NotSupportedException("PHP extension 'interbase' is not loaded.");

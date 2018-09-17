@@ -40,7 +40,7 @@ class SqliteDriver implements Dibi\Driver
 	/**
 	 * @throws Dibi\NotSupportedException
 	 */
-	public function __construct(array &$config)
+	public function __construct(array $config)
 	{
 		if (!extension_loaded('sqlite3')) {
 			throw new Dibi\NotSupportedException("PHP extension 'sqlite3' is not loaded.");
