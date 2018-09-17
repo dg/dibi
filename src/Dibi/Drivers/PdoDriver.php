@@ -78,6 +78,10 @@ class PdoDriver implements Dibi\Driver, Dibi\ResultDriver
 			}
 		}
 
+		if ($this->connection->getAttribute(PDO::ATTR_ERRMODE) !== PDO::ERRMODE_SILENT) {
+			throw new Dibi\DriverException('PDO connection in exception or warning error mode is not supported.');
+		}
+
 		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
 		$this->serverVersion = isset($config['version'])
 			? $config['version']
