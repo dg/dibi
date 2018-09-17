@@ -441,7 +441,10 @@ class Connection implements IConnection
 	}
 
 
-	public function update(string $table, iterable $args): Fluent
+	/**
+	 * @param  string|string[]  $table
+	 */
+	public function update($table, iterable $args): Fluent
 	{
 		return $this->command()->update('%n', $table)->set($args);
 	}
