@@ -28,7 +28,7 @@ declare(strict_types=1);
  * @method Dibi\Reflection\Database getDatabaseInfo()
  * @method Dibi\Fluent command()
  * @method Dibi\Fluent select(...$args)
- * @method Dibi\Fluent update(string $table, array $args)
+ * @method Dibi\Fluent update(string|string[] $table, array $args)
  * @method Dibi\Fluent insert(string $table, array $args)
  * @method Dibi\Fluent delete(string $table)
  * @method Dibi\HashMap getSubstitutes()
