@@ -443,7 +443,11 @@ class Connection implements IConnection
 
 	public function update(string $table, iterable $args): Fluent
 	{
-		return $this->command()->update('%n', $table)->set($args);
+		if(strpos($table, ',') === false) {
+			return $this->command()->update('%n', $table)->set($args);
+		}
+		$tables = explode(',', $table);
+		return $this->command()->update('%n', $tables)->set($args);
 	}
 
 
