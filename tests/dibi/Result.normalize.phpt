@@ -100,6 +100,11 @@ test(function () {
 	Assert::same(['col' => 1.0], $result->test(['col' => 1]));
 	Assert::same(['col' => 1.0], $result->test(['col' => 1.0]));
 
+	Assert::same(['col' => '1.1e+10'], $result->test(['col' => '1.1e+10']));
+	Assert::same(['col' => '1.1e-10'], $result->test(['col' => '1.1e-10']));
+	Assert::same(['col' => '1.1e+10'], $result->test(['col' => '001.1e+10']));
+	Assert::notSame(['col' => '1.1e+1'], $result->test(['col' => '1.1e+10']));
+
 	setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'deu_deu');
 	Assert::same(['col' => 0.0], $result->test(['col' => '']));
 	Assert::same(['col' => 0.0], $result->test(['col' => '0']));
