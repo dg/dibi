@@ -178,10 +178,9 @@ class PostgreReflector implements Dibi\Reflector
 			$indexes[$row['relname']]['primary'] = $row['indisprimary'] === 't' || $row['indisprimary'] === true;
 			$indexes[$row['relname']]['columns'] = [];
 			foreach (explode(' ', $row['indkey']) as $index) {
-				if (!isset($columns[$index])) {
-					continue;
+				if (isset($columns[$index])) {
+					$indexes[$row['relname']]['columns'][] = $columns[$index];
 				}
-				$indexes[$row['relname']]['columns'][] = $columns[$index];
 			}
 		}
 		return array_values($indexes);
