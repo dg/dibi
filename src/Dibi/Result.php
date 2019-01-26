@@ -523,6 +523,15 @@ class Result implements IDataSource
 
 
 	/**
+	 * Returns columns type.
+	 */
+	final public function getTypes(): array
+	{
+		return $this->types;
+	}
+
+
+	/**
 	 * Sets date format.
 	 */
 	final public function setFormat(string $type, ?string $format): self
