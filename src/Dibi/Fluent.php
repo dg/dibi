@@ -30,6 +30,7 @@ namespace Dibi;
  * @method Fluent as(...$field)
  * @method Fluent on(...$cond)
  * @method Fluent and(...$cond)
+ * @method Fluent or(...$cond)
  * @method Fluent using(...$cond)
  * @method Fluent asc()
  * @method Fluent desc()
