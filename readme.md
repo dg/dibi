@@ -161,6 +161,7 @@ In addition to the `?` wild char, we can also use modifiers:
 | %d | date (accepts DateTime, string or UNIX timestamp)
 | %dt | datetime (accepts DateTime, string or UNIX timestamp)
 | %n | identifier, ie the name of the table or column
+| %N | identifier, treats period as a common character, ie alias or a database name (`%n AS %N` or `DROP DATABASE %N`)
 | %SQL | SQL - directly inserts into SQL (the alternative is Dibi\Literal)
 | %ex | SQL expression or array of expressions
 | %lmt | special - adds LIMIT to the query
