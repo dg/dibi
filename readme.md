@@ -110,7 +110,7 @@ $ids = [10, 20, 30];
 $result = $database->query('SELECT * FROM users WHERE id IN (?)', $ids);
 ```
 
-**WARNING, never concencate parameters to SQL, the vulnerability would arise [SQL injection](https://en.wikipedia.org/wiki/SQL_injection)**
+**WARNING: Never concatenate parameters to SQL. It would create a [SQL injection](https://en.wikipedia.org/wiki/SQL_injection)** vulnerability.
 ```
 $result = $database->query('SELECT * FROM users WHERE id = ' . $id); // BAD!!!
 ```
@@ -147,7 +147,7 @@ $name = $database->fetchSingle('SELECT name FROM users WHERE id = ?', $id);
 
 ### Modifiers
 
-In addition to the `?` wild char, we can also use modifiers:
+In addition to the `?` wildcard char, we can also use modifiers:
 
 | modifier | description
 |----------|-----
