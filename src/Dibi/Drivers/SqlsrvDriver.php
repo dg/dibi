@@ -196,7 +196,7 @@ class SqlsrvDriver implements Dibi\Driver
 	 */
 	public function escapeText(string $value): string
 	{
-		return "'" . str_replace("'", "''", $value) . "'";
+		return "N'" . str_replace("'", "''", $value) . "'";
 	}
 
 
