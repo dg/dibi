@@ -467,7 +467,7 @@ Assert::same(
 Assert::same(
 	reformat([
 		'odbc' => 'SELECT TOP 10 * FROM (SELECT * FROM [test] WHERE [id] LIKE \'%d%t\' ) t',
-		'sqlsrv' => 'SELECT * FROM [test] WHERE [id] LIKE \'%d%t\' OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY',
+		'sqlsrv' => 'SELECT * FROM [test] WHERE [id] LIKE N\'%d%t\' OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY',
 		'SELECT * FROM [test] WHERE [id] LIKE \'%d%t\'  LIMIT 10',
 	]),
 	$conn->translate("SELECT * FROM [test] WHERE %n LIKE '%d%t' %lmt", 'id', 10)
