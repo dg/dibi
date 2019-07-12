@@ -331,25 +331,25 @@ WHERE (`test`.`a` LIKE '1995-03-01'
 	OR `str_null`=NULL
 	OR `str_not_null`='hello'
 LIMIT 10", 'sqlsrv' => "SELECT *
-FROM `db`.`table`
-WHERE (`test`.`a` LIKE '1995-03-01'
-	OR `b1` IN ( 1, 2, 3 )
-	OR `b2` IN (N'1', N'2', N'3' )
-	OR `b3` IN ( )
-	OR `b4` IN ( N'one', N'two', N'three' )
-	OR `b5` IN (`col1` AS `one`, `col2` AS `two`, `col3` AS `thr.ee` )
-	OR `b6` IN ('one', 'two', 'thr.ee')
-	OR `b7` IN (NULL)
-	OR `b8` IN (RAND() `col1` > `col2` )
-	OR `b9` IN (RAND(), [col1] > [col2] )
-	OR `b10` IN (  )
-	AND `c` = N'embedded \' string'
-	OR `d`=10
-	OR `e`=NULL
-	OR `true`= 1
-	OR `false`= 0
-	OR `str_null`=NULL
-	OR `str_not_null`=N'hello'
+FROM [db].[table]
+WHERE ([test].[a] LIKE '1995-03-01'
+	OR [b1] IN ( 1, 2, 3 )
+	OR [b2] IN (N'1', N'2', N'3' )
+	OR [b3] IN ( )
+	OR [b4] IN ( N'one', N'two', N'three' )
+	OR [b5] IN ([col1] AS [one], [col2] AS [two], [col3] AS [thr.ee] )
+	OR [b6] IN (N'one', N'two', N'thr.ee')
+	OR [b7] IN (NULL)
+	OR [b8] IN (RAND() [col1] > [col2] )
+	OR [b9] IN (RAND(), [col1] > [col2] )
+	OR [b10] IN (  )
+	AND [c] = N'embedded '' string'
+	OR [d]=10
+	OR [e]=NULL
+	OR [true]= 1
+	OR [false]= 0
+	OR [str_null]=NULL
+	OR [str_not_null]=N'hello'
 LIMIT 10",
 		'postgre' => 'SELECT *
 FROM "db"."table"
