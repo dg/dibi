@@ -66,7 +66,7 @@ FROM [customers]
 WHERE
 	 [name] LIKE N'xxx'
 		/* AND ...=1 */
-	/* 1 LIMIT 10 */","
+	/* 1 LIMIT 10 */", "
 SELECT *
 FROM [customers]
 WHERE
