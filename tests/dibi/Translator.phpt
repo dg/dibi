@@ -494,7 +494,7 @@ Assert::same(
 );
 
 Assert::same(
-	reformat('SELECT \'%i\''),
+	reformat(['sqlsrv' => 'SELECT N\'%i\'', 'SELECT \'%i\'']),
 	$conn->translate('SELECT "%i"')
 );
 
