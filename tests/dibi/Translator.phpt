@@ -500,7 +500,7 @@ Assert::same(
 
 
 Assert::same(
-	reformat('INSERT INTO [products] ([product_id], [title]) VALUES (1, SHA1(\'Test product\')) , (1, SHA1(\'Test product\'))'),
+	reformat(['sqlsrv' => 'INSERT INTO [products] ([product_id], [title]) VALUES (1, SHA1(N\'Test product\')) , (1, SHA1(N\'Test product\'))', 'INSERT INTO [products] ([product_id], [title]) VALUES (1, SHA1(\'Test product\')) , (1, SHA1(\'Test product\'))']),
 	$conn->translate('INSERT INTO [products]', [
 		'product_id' => 1,
 		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
@@ -511,7 +511,7 @@ Assert::same(
 );
 
 Assert::same(
-	reformat('UPDATE [products] [product_id]=1, [title]=SHA1(\'Test product\')'),
+	reformat(['sqlsrv' => 'UPDATE [products] [product_id]=1, [title]=SHA1(N\'Test product\')', 'UPDATE [products] [product_id]=1, [title]=SHA1(\'Test product\')']),
 	$conn->translate('UPDATE [products]', [
 		'product_id' => 1,
 		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
@@ -519,7 +519,7 @@ Assert::same(
 );
 
 Assert::same(
-	reformat('UPDATE [products] [product_id]=1, [title]=SHA1(\'Test product\')'),
+	reformat(['sqlsrv' => 'UPDATE [products] [product_id]=1, [title]=SHA1(N\'Test product\')', 'UPDATE [products] [product_id]=1, [title]=SHA1(\'Test product\')']),
 	$conn->translate('UPDATE [products]', [
 		'product_id' => 1,
 		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
@@ -527,7 +527,7 @@ Assert::same(
 );
 
 Assert::same(
-	reformat('SELECT * FROM [products] WHERE [product_id]=1, [title]=SHA1(\'Test product\')'),
+	reformat(['sqlsrv' => 'SELECT * FROM [products] WHERE [product_id]=1, [title]=SHA1(N\'Test product\')', 'SELECT * FROM [products] WHERE [product_id]=1, [title]=SHA1(\'Test product\')']),
 	$conn->translate('SELECT * FROM [products] WHERE', [
 		'product_id' => 1,
 		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
@@ -564,7 +564,7 @@ $array6 = [
 ];
 
 Assert::same(
-	reformat('INSERT INTO test ([id], [text], [num]) VALUES (1, \'ahoj\', 1), (2, \'jak\', -1), (3, \'se\', 10), (4, SUM(5), 1)'),
+	reformat(['sqlsrv' => 'INSERT INTO test ([id], [text], [num]) VALUES (1, N\'ahoj\', 1), (2, N\'jak\', -1), (3, N\'se\', 10), (4, SUM(5), 1)','INSERT INTO test ([id], [text], [num]) VALUES (1, \'ahoj\', 1), (2, \'jak\', -1), (3, \'se\', 10), (4, SUM(5), 1)']),
 	$conn->translate('INSERT INTO test %m', $array6)
 );
 
@@ -618,7 +618,7 @@ Assert::same(
 setlocale(LC_ALL, 'czech');
 
 Assert::same(
-	reformat("UPDATE [colors] SET [color]='blue', [price]=-12.4, [spec]=-9E-005, [spec2]=1000, [spec3]=10000, [spec4]=10000 WHERE [price]=123.5"),
+	reformat(['sqlsrv' => "UPDATE [colors] SET [color]=N'blue', [price]=-12.4, [spec]=-9E-005, [spec2]=1000, [spec3]=10000, [spec4]=10000 WHERE [price]=123.5","UPDATE [colors] SET [color]='blue', [price]=-12.4, [spec]=-9E-005, [spec2]=1000, [spec3]=10000, [spec4]=10000 WHERE [price]=123.5"]),
 
 	$conn->translate('UPDATE [colors] SET', [
 		'color' => 'blue',
