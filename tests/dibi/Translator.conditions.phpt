@@ -60,7 +60,7 @@ WHERE [id] > 0
 
 // nested condition
 Assert::match(
-	reformat([sqlsrv => "
+	reformat(['sqlsrv' => "
 SELECT *
 FROM [customers]
 WHERE
