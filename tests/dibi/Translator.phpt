@@ -16,7 +16,8 @@ $conn = new Dibi\Connection($config + ['formatDateTime' => "'Y-m-d H:i:s.u'", 'f
 
 // Dibi detects INSERT or REPLACE command & booleans
 Assert::same(
-	reformat("REPLACE INTO [products] ([title], [price]) VALUES ('Drticka', 318)"),
+	reformat(['sqlsrv' => "REPLACE INTO [products] ([title], [price]) VALUES (N'Drticka', 318)",
+		 "REPLACE INTO [products] ([title], [price]) VALUES ('Drticka', 318)"]),
 	$conn->translate('REPLACE INTO [products]', [
 		'title' => 'Drticka',
 		'price' => 318,
