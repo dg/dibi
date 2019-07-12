@@ -441,7 +441,7 @@ LIMIT 10')
 
 
 Assert::same(
-	reformat(['sqlsrv' => 'TEST  [cond] > 2 [cond2] = N\'3\' cond3 < RAND() 123'), 'TEST  [cond] > 2 [cond2] = \'3\' cond3 < RAND() 123'])
+	reformat(['sqlsrv' => 'TEST  [cond] > 2 [cond2] = N\'3\' cond3 < RAND() 123', 'TEST  [cond] > 2 [cond2] = \'3\' cond3 < RAND() 123'])
 	$conn->translate('TEST %ex', ['[cond] > 2', '[cond2] = "3"', 'cond3 < RAND()'], 123)
 );
 
