@@ -60,13 +60,22 @@ WHERE [id] > 0
 
 // nested condition
 Assert::match(
-	reformat("
+	reformat([
+		'sqlsrv' => "
+SELECT *
+FROM [customers]
+WHERE
+	 [name] LIKE N'xxx'
+		/* AND ...=1 */
+	/* 1 LIMIT 10 */",
+		"
 SELECT *
 FROM [customers]
 WHERE
 	 [name] LIKE 'xxx'
 		/* AND ...=1 */
-	/* 1 LIMIT 10 */"),
+	/* 1 LIMIT 10 */",
+	]),
 
 	$conn->translate('
 SELECT *
