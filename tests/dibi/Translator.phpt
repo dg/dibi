@@ -32,7 +32,7 @@ $array = [
 	'brand' => null,
 ];
 Assert::same(
-	reformat(['sqlsrv' => 'INSERT INTO [products] ([title], [price], [brand]) VALUES (N\'Super Product\', 12, NULL) , (N\'Super Product\', 12, NULL) , (N\'Super Product\', 12, NULL)', 'INSERT INTO [products] ([title], [price], [brand]) VALUES (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL)'),
+	reformat(['sqlsrv' => 'INSERT INTO [products] ([title], [price], [brand]) VALUES (N\'Super Product\', 12, NULL) , (N\'Super Product\', 12, NULL) , (N\'Super Product\', 12, NULL)', 'INSERT INTO [products] ([title], [price], [brand]) VALUES (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL)']),
 	$conn->translate('INSERT INTO [products]', $array, $array, $array)
 );
 
