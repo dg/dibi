@@ -265,7 +265,7 @@ LINES TERMINATED BY '\\\\n'
 CONCAT(last_name, N', ', first_name) AS full_name
 GROUP BY [user]
 HAVING MAX(salary) > %i 123
-INTO OUTFILE '/tmp/result''.txt'
+INTO OUTFILE N'/tmp/result''.txt'
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
 LINES TERMINATED BY '\\n'
 ",
