@@ -32,7 +32,7 @@ $array = [
 	'brand' => null,
 ];
 Assert::same(
-	reformat('INSERT INTO [products] ([title], [price], [brand]) VALUES (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL)'),
+	reformat(['sqlsrv' => 'INSERT INTO [products] ([title], [price], [brand]) VALUES (N\'Super Product\', 12, NULL) , (N\'Super Product\', 12, NULL) , (N\'Super Product\', 12, NULL)', 'INSERT INTO [products] ([title], [price], [brand]) VALUES (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL)'),
 	$conn->translate('INSERT INTO [products]', $array, $array, $array)
 );
 
@@ -44,14 +44,14 @@ $array = [
 	['pole' => 'hodnota3', 'bit' => 1],
 ];
 Assert::same(
-	reformat('INSERT INTO [products]  ([pole], [bit]) VALUES (\'hodnota1\', 1) , (\'hodnota2\', 1) , (\'hodnota3\', 1)'),
+	reformat(['sqlsrv' => 'INSERT INTO [products]  ([pole], [bit]) VALUES (N\'hodnota1\', 1) , (N\'hodnota2\', 1) , (N\'hodnota3\', 1)', 'INSERT INTO [products]  ([pole], [bit]) VALUES (\'hodnota1\', 1) , (\'hodnota2\', 1) , (\'hodnota3\', 1)']),
 	$conn->translate('INSERT INTO [products] %ex', $array)
 );
 
 
 // Dibi detects UPDATE command
 Assert::same(
-	reformat("UPDATE [colors] SET [color]='blue', [order]=12 WHERE [id]=123"),
+	reformat(['sqlsrv' => "UPDATE [colors] SET [color]=N'blue', [order]=12 WHERE [id]=123", "UPDATE [colors] SET [color]='blue', [order]=12 WHERE [id]=123"]),
 	$conn->translate('UPDATE [colors] SET', [
 		'color' => 'blue',
 		'order' => 12,
@@ -86,7 +86,7 @@ $e = Assert::exception(function () use ($conn) {
 Assert::same('SELECT **Invalid combination of type stdClass and modifier %s** , **Unknown or unexpected modifier %m**', $e->getSql());
 
 Assert::same(
-	reformat('SELECT * FROM [table] WHERE id=10 AND name=\'ahoj\''),
+	reformat(['sqlsrv' => 'SELECT * FROM [table] WHERE id=10 AND name=N\'ahoj\'', 'SELECT * FROM [table] WHERE id=10 AND name=\'ahoj\'']),
 	$conn->translate('SELECT * FROM [table] WHERE id=%i AND name=%s', 10, 'ahoj')
 );
 
@@ -115,7 +115,7 @@ $where['age'] = null;
 $where['email'] = 'ahoj';
 $where['id%l'] = [10, 20, 30];
 Assert::same(
-	reformat('SELECT * FROM [table] WHERE ([age] IS NULL) AND ([email] = \'ahoj\') AND ([id] IN (10, 20, 30))'),
+	reformat(['sqlsrv' => 'SELECT * FROM [table] WHERE ([age] IS NULL) AND ([email] = N\'ahoj\') AND ([id] IN (10, 20, 30))', 'SELECT * FROM [table] WHERE ([age] IS NULL) AND ([email] = \'ahoj\') AND ([id] IN (10, 20, 30))']),
 	$conn->translate('SELECT * FROM [table] WHERE %and', $where)
 );
 
