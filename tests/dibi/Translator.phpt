@@ -260,6 +260,15 @@ INTO OUTFILE '/tmp/result\'.txt'
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\\\"'
 LINES TERMINATED BY '\\\\n'
 ",
+		'sqlsrv' =>
+		"SELECT DISTINCT HIGH_PRIORITY SQL_BUFFER_RESULT
+CONCAT(last_name, N', ', first_name) AS full_name
+GROUP BY [user]
+HAVING MAX(salary) > %i 123
+INTO OUTFILE '/tmp/result''.txt'
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
+LINES TERMINATED BY '\\n'
+",
 		"SELECT DISTINCT HIGH_PRIORITY SQL_BUFFER_RESULT
 CONCAT(last_name, ', ', first_name) AS full_name
 GROUP BY [user]
@@ -267,7 +276,7 @@ HAVING MAX(salary) > %i 123
 INTO OUTFILE '/tmp/result''.txt'
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
 LINES TERMINATED BY '\\n'
-",
+"
 	]),
 	$conn->translate('%sql', 'SELECT DISTINCT HIGH_PRIORITY SQL_BUFFER_RESULT
 CONCAT(last_name, ", ", first_name) AS full_name
