@@ -134,7 +134,10 @@ $fluent = $conn->select('*')
 	->where(['x' => 'a', 'b', 'c']);
 
 Assert::same(
-	reformat('SELECT * FROM [me] AS [t] WHERE col > 10 AND ([x] = \'a\') AND (b) AND (c)'),
+	reformat([
+		'sqlsrv' => "SELECT * FROM [me] AS [t] WHERE col > 10 AND ([x] = N'a') AND (b) AND (c)",
+		"SELECT * FROM [me] AS [t] WHERE col > 10 AND ([x] = 'a') AND (b) AND (c)",
+	]),
 	(string) $fluent
 );
 

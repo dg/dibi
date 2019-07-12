@@ -100,7 +100,7 @@ class SqlsrvReflector implements Dibi\Reflector
 	 */
 	public function getIndexes(string $table): array
 	{
-		$keyUsagesRes = $this->driver->query(sprintf('EXEC [sys].[sp_helpindex] @objname = N%s', $this->driver->escapeText($table)));
+		$keyUsagesRes = $this->driver->query(sprintf('EXEC [sys].[sp_helpindex] @objname = %s', $this->driver->escapeText($table)));
 		$keyUsages = [];
 		while ($row = $keyUsagesRes->fetch(true)) {
 			$keyUsages[$row['index_name']] = explode(',', $row['index_keys']);
