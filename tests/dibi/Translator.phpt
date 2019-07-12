@@ -91,12 +91,12 @@ Assert::same(
 );
 
 Assert::same(
-	reformat('TEST ([cond] > 2) OR ([cond2] = \'3\') OR (cond3 < RAND())'),
+	reformat(['sqlsrv' => 'TEST ([cond] > 2) OR ([cond2] = N\'3\') OR (cond3 < RAND())', 'TEST ([cond] > 2) OR ([cond2] = \'3\') OR (cond3 < RAND())']),
 	$conn->translate('TEST %or', ['[cond] > 2', '[cond2] = "3"', 'cond3 < RAND()'])
 );
 
 Assert::same(
-	reformat('TEST ([cond] > 2) AND ([cond2] = \'3\') AND (cond3 < RAND())'),
+	reformat(['sqlsrv' => 'TEST ([cond] > 2) AND ([cond2] = N\'3\') AND (cond3 < RAND())', 'TEST ([cond] > 2) AND ([cond2] = \'3\') AND (cond3 < RAND())']),
 	$conn->translate('TEST %and', ['[cond] > 2', '[cond2] = "3"', 'cond3 < RAND()'])
 );
 
