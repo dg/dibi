@@ -16,8 +16,7 @@ $conn = new Dibi\Connection($config + ['formatDateTime' => "'Y-m-d H:i:s.u'", 'f
 
 // Dibi detects INSERT or REPLACE command & booleans
 Assert::same(
-	reformat(['sqlsrv' => "REPLACE INTO [products] ([title], [price]) VALUES (N'Drticka', 318)",
-		 "REPLACE INTO [products] ([title], [price]) VALUES ('Drticka', 318)"]),
+	reformat(['sqlsrv' => "REPLACE INTO [products] ([title], [price]) VALUES (N'Drticka', 318)","REPLACE INTO [products] ([title], [price]) VALUES ('Drticka', 318)"]),
 	$conn->translate('REPLACE INTO [products]', [
 		'title' => 'Drticka',
 		'price' => 318,
@@ -266,8 +265,8 @@ CONCAT(last_name, N', ', first_name) AS full_name
 GROUP BY [user]
 HAVING MAX(salary) > %i 123
 INTO OUTFILE N'/tmp/result''.txt'
-FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
-LINES TERMINATED BY '\\n'
+FIELDS TERMINATED BY N',' OPTIONALLY ENCLOSED BY N'\"'
+LINES TERMINATED BY N'\\n'
 ",
 		"SELECT DISTINCT HIGH_PRIORITY SQL_BUFFER_RESULT
 CONCAT(last_name, ', ', first_name) AS full_name
