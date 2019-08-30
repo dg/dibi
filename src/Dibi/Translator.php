@@ -381,10 +381,11 @@ final class Translator
 				case 'dt': // datetime
 					if ($value === null) {
 						return 'NULL';
-					} else {
-						return $modifier === 'd' ? $this->driver->escapeDate($value) : $this->driver->escapeDateTime($value);
+					} elseif (!$value instanceof \DateTimeInterface) {
+						$value = new DateTime($value);
 					}
-					// break omitted
+					return $modifier === 'd' ? $this->driver->escapeDate($value) : $this->driver->escapeDateTime($value);
+
 				case 'by':
 				case 'n':  // composed identifier name
 					return $this->identifiers->$value;
