@@ -304,7 +304,10 @@ class MySqliDriver implements Dibi\Driver
 
 	public function escapeDateInterval(\DateInterval $value): string
 	{
-		throw new Dibi\NotImplementedException;
+		if ($value->y || $value->m || $value->d) {
+			throw new Dibi\NotSupportedException('Only time interval is supported.');
+		}
+		return $value->format('%r%H:%I:%S.%f');
 	}
 
 
