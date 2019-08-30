@@ -91,6 +91,8 @@ interface Driver
 
 	function escapeDateTime(\DateTimeInterface $value): string;
 
+	function escapeDateInterval(\DateInterval $value): string;
+
 	/**
 	 * Encodes string for use in a LIKE statement.
 	 */

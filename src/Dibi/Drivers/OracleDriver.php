@@ -257,6 +257,12 @@ class OracleDriver implements Dibi\Driver
 	}
 
 
+	public function escapeDateInterval(\DateInterval $value): string
+	{
+		throw new Dibi\NotImplementedException;
+	}
+
+
 	/**
 	 * Encodes string for use in a LIKE statement.
 	 */

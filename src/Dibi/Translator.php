@@ -456,6 +456,9 @@ final class Translator
 		} elseif ($value instanceof \DateTimeInterface) {
 			return $this->driver->escapeDateTime($value);
 
+		} elseif ($value instanceof \DateInterval) {
+			return $this->driver->escapeDateInterval($value);
+
 		} elseif ($value instanceof Literal) {
 			return (string) $value;
 
