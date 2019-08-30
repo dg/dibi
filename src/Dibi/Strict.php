@@ -29,12 +29,6 @@ trait Strict
 	 */
 	public function __call(string $name, array $args)
 	{
-		$class = get_class($this);
-		if ($cb = self::extensionMethod($class . '::' . $name)) { // back compatiblity
-			trigger_error("Extension methods such as $class::$name() are deprecated", E_USER_DEPRECATED);
-			array_unshift($args, $this);
-			return $cb(...$args);
-		}
 		$class = method_exists($this, $name) ? 'parent' : get_class($this);
 		$items = (new ReflectionClass($this))->getMethods(ReflectionMethod::IS_PUBLIC);
 		$hint = ($t = Helpers::getSuggestion($items, $name)) ? ", did you mean $t()?" : '.';
@@ -101,40 +95,5 @@ trait Strict
 	{
 		$class = get_class($this);
 		throw new \LogicException("Attempt to unset undeclared property $class::$$name.");
-	}
-
-
-	/**
-	 * @return mixed
-	 * @deprecated
-	 */
-	public static function extensionMethod(string $name, callable $callback = null)
-	{
-		if (strpos($name, '::') === false) {
-			$class = get_called_class();
-		} else {
-			[$class, $name] = explode('::', $name);
-			$class = (new ReflectionClass($class))->getName();
-		}
-
-		$list = &self::$extMethods[strtolower($name)];
-		if ($callback === null) { // getter
-			$cache = &$list[''][$class];
-			if (isset($cache)) {
-				return $cache;
-			}
-
-			foreach ([$class] + class_parents($class) + class_implements($class) as $cl) {
-				if (isset($list[$cl])) {
-					return $cache = $list[$cl];
-				}
-			}
-			return $cache = false;
-
-		} else { // setter
-			trigger_error("Extension methods such as $class::$name() are deprecated", E_USER_DEPRECATED);
-			$list[$class] = $callback;
-			$list[''] = null;
-		}
 	}
 }

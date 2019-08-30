@@ -48,27 +48,10 @@ class Connection implements IConnection
 	 *       - file => file to log
 	 *   - substitutes (array) => map of driver specific substitutes (under development)
 	 *   - onConnect (array) => list of SQL queries to execute (by Connection::query()) after connection is established
-	 * @param  array   $config  connection parameters
 	 * @throws Exception
 	 */
-	public function __construct($config, string $name = null)
+	public function __construct(array $config, string $name = null)
 	{
-		if (is_string($config)) {
-			trigger_error(__METHOD__ . '() Configuration should be array.', E_USER_DEPRECATED);
-			parse_str($config, $config);
-
-		} elseif ($config instanceof Traversable) {
-			trigger_error(__METHOD__ . '() Configuration should be array.', E_USER_DEPRECATED);
-			$tmp = [];
-			foreach ($config as $key => $val) {
-				$tmp[$key] = $val instanceof Traversable ? iterator_to_array($val) : $val;
-			}
-			$config = $tmp;
-
-		} elseif (!is_array($config)) {
-			throw new \InvalidArgumentException('Configuration must be array.');
-		}
-
 		Helpers::alias($config, 'username', 'user');
 		Helpers::alias($config, 'password', 'pass');
 		Helpers::alias($config, 'host', 'hostname');
@@ -317,16 +300,6 @@ class Connection implements IConnection
 
 
 	/**
-	 * @deprecated
-	 */
-	public function affectedRows(): int
-	{
-		trigger_error(__METHOD__ . '() is deprecated, use getAffectedRows()', E_USER_DEPRECATED);
-		return $this->getAffectedRows();
-	}
-
-
-	/**
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @throws Exception
 	 */
@@ -340,16 +313,6 @@ class Connection implements IConnection
 			throw new Exception('Cannot retrieve last generated ID.');
 		}
 		return $id;
-	}
-
-
-	/**
-	 * @deprecated
-	 */
-	public function insertId(string $sequence = null): int
-	{
-		trigger_error(__METHOD__ . '() is deprecated, use getInsertId()', E_USER_DEPRECATED);
-		return $this->getInsertId($sequence);
 	}
 
 

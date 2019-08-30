@@ -145,26 +145,6 @@ class dibi
 	}
 
 
-	/**
-	 * @deprecated
-	 */
-	public static function affectedRows(): int
-	{
-		trigger_error(__METHOD__ . '() is deprecated, use getAffectedRows()', E_USER_DEPRECATED);
-		return self::getConnection()->getAffectedRows();
-	}
-
-
-	/**
-	 * @deprecated
-	 */
-	public static function insertId(string $sequence = null): int
-	{
-		trigger_error(__METHOD__ . '() is deprecated, use getInsertId()', E_USER_DEPRECATED);
-		return self::getConnection()->getInsertId($sequence);
-	}
-
-
 	/********************* misc tools ****************d*g**/
 
 

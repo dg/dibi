@@ -52,10 +52,6 @@ class OracleDriver implements Dibi\Driver
 		}
 
 		$foo = &$config['charset'];
-
-		if (isset($config['formatDate']) || isset($config['formatDateTime'])) {
-			trigger_error('OracleDriver: options formatDate and formatDateTime are deprecated.', E_USER_DEPRECATED);
-		}
 		$this->nativeDate = $config['nativeDate'] ?? true;
 
 		if (isset($config['resource'])) {
