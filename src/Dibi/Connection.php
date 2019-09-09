@@ -43,6 +43,11 @@ class Connection implements IConnection
 	 *   - lazy (bool) => if true, connection will be established only when required
 	 *   - result (array) => result set options
 	 *       - formatDateTime => date-time format (if empty, DateTime objects will be returned)
+	 *       - formatJson => json format (
+	 *           "string" for leaving value as is,
+	 *           "object" for decoding json as \stdClass,
+	 *           "array" for decoding json as an array - default
+	 *       )
 	 *   - profiler (array)
 	 *       - run (bool) => enable profiler?
 	 *       - file => file to log
@@ -59,6 +64,7 @@ class Connection implements IConnection
 		Helpers::alias($config, 'result|formatDateTime', 'resultDateTime');
 		$config['driver'] = $config['driver'] ?? 'mysqli';
 		$config['name'] = $name;
+		$config['result']['formatJson'] = $config['result']['formatJson'] ?? 'array';
 		$this->config = $config;
 
 		// profiler
@@ -395,7 +401,8 @@ class Connection implements IConnection
 	{
 		$res = new Result($resultDriver);
 		return $res->setFormat(Type::DATE, $this->config['result']['formatDate'])
-			->setFormat(Type::DATETIME, $this->config['result']['formatDateTime']);
+			->setFormat(Type::DATETIME, $this->config['result']['formatDateTime'])
+			->setFormat(Type::JSON, $this->config['result']['formatJson']);
 	}
 
 
