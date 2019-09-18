@@ -315,7 +315,7 @@ class Connection implements IConnection
 			$this->connect();
 		}
 		$id = $this->driver->getInsertId($sequence);
-		if ($id < 1) {
+		if ($id === null) {
 			throw new Exception('Cannot retrieve last generated ID.');
 		}
 		return $id;

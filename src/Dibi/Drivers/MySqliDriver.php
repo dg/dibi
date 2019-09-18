@@ -199,7 +199,7 @@ class MySqliDriver implements Dibi\Driver
 	 */
 	public function getInsertId(?string $sequence): ?int
 	{
-		return $this->connection->insert_id;
+		return $this->connection->insert_id ?: null;
 	}
 
 
