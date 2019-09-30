@@ -5,6 +5,10 @@ php:
     - 7.3
     - 7.4
 
+services:
+    - mysql
+    - postgresql
+
 before_install:
     # turn off XDebug
     - phpenv config-rm xdebug.ini || return 0
