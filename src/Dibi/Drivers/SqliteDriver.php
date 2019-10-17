@@ -267,7 +267,7 @@ class SqliteDriver implements Dibi\Driver
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
 		} elseif ($limit !== null || $offset) {
-			$sql .= ' LIMIT ' . ($limit === null ? '-1' : $limit)
+			$sql .= ' LIMIT ' . ($limit ?? '-1')
 				. ($offset ? ' OFFSET ' . $offset : '');
 		}
 	}
