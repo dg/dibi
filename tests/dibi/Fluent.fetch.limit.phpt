@@ -22,28 +22,28 @@ $fluent = $conn->select('*')
 	->orderBy('customer_id');
 
 Assert::same(
-	reformat('  SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
 	(string) $fluent
 );
 
 
 $fluent->fetch();
 Assert::same(
-	reformat('  SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
 	dibi::$sql
 );
 $fluent->fetchSingle();
 Assert::same(
-	reformat('  SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
 	dibi::$sql
 );
 $fluent->fetchAll(2, 3);
 Assert::same(
-	reformat('    SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 3 OFFSET 2'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 3 OFFSET 2'),
 	dibi::$sql
 );
 Assert::same(
-	reformat('  SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
 	(string) $fluent
 );
 
@@ -51,16 +51,16 @@ Assert::same(
 $fluent->limit(0);
 $fluent->fetch();
 Assert::same(
-	reformat('  SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 0 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 0 OFFSET 3'),
 	dibi::$sql
 );
 $fluent->fetchSingle();
 Assert::same(
-	reformat('  SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 0 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 0 OFFSET 3'),
 	dibi::$sql
 );
 Assert::same(
-	reformat('  SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 0 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 0 OFFSET 3'),
 	(string) $fluent
 );
 
@@ -68,16 +68,16 @@ Assert::same(
 $fluent->removeClause('limit');
 $fluent->fetch();
 Assert::same(
-	reformat('   SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
 	dibi::$sql
 );
 $fluent->fetchSingle();
 Assert::same(
-	reformat('   SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1 OFFSET 3'),
 	dibi::$sql
 );
 Assert::same(
-	reformat('  SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 18446744073709551615 OFFSET 3'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 18446744073709551615 OFFSET 3'),
 	(string) $fluent
 );
 
@@ -85,12 +85,12 @@ Assert::same(
 $fluent->removeClause('offset');
 $fluent->fetch();
 Assert::same(
-	reformat(' SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1'),
 	dibi::$sql
 );
 $fluent->fetchSingle();
 Assert::same(
-	reformat(' SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] LIMIT 1'),
 	dibi::$sql
 );
 Assert::same(

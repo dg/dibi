@@ -56,28 +56,28 @@ $fluent = $conn->select('*')
 	->orderBy('customer_id');
 
 Assert::same(
-	reformat('SELECT TOP (1) * FROM (  SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
 	(string) $fluent
 );
 
 
 $fluent->fetch();
 Assert::same(
-	'SELECT TOP (1) * FROM (  SELECT * FROM [customers] ORDER BY [customer_id]) t',
+	'SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t',
 	dibi::$sql
 );
 $fluent->fetchSingle();
 Assert::same(
-	reformat('SELECT TOP (1) * FROM (  SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
 	dibi::$sql
 );
 $fluent->fetchAll(0, 3);
 Assert::same(
-	reformat('SELECT TOP (3) * FROM (    SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT TOP (3) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
 	dibi::$sql
 );
 Assert::same(
-	reformat('SELECT TOP (1) * FROM (  SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
 	(string) $fluent
 );
 
@@ -85,16 +85,16 @@ Assert::same(
 $fluent->limit(0);
 $fluent->fetch();
 Assert::same(
-	reformat('SELECT TOP (0) * FROM (  SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT TOP (0) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
 	dibi::$sql
 );
 $fluent->fetchSingle();
 Assert::same(
-	reformat('SELECT TOP (0) * FROM (  SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT TOP (0) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
 	dibi::$sql
 );
 Assert::same(
-	reformat('SELECT TOP (0) * FROM (  SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT TOP (0) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
 	(string) $fluent
 );
 
@@ -103,12 +103,12 @@ $fluent->removeClause('limit');
 $fluent->removeClause('offset');
 $fluent->fetch();
 Assert::same(
-	reformat('SELECT TOP (1) * FROM ( SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
 	dibi::$sql
 );
 $fluent->fetchSingle();
 Assert::same(
-	reformat('SELECT TOP (1) * FROM ( SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
 	dibi::$sql
 );
 Assert::same(

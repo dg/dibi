@@ -151,7 +151,7 @@ final class Translator
 			$sql[] = '*/';
 		}
 
-		$sql = implode(' ', $sql);
+		$sql = trim(implode(' ', $sql), ' ');
 
 		if ($this->errors) {
 			throw new Exception('SQL translate error: ' . trim(reset($this->errors), '*'), 0, $sql);

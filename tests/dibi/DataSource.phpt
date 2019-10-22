@@ -77,7 +77,7 @@ SELECT [product_id]
 FROM (SELECT * FROM products) t
  WHERE (title like '%a%') AND (product_id = 1) AND (product_id = 1)
  ORDER BY [product_id] ASC
- ) t"), dibi::$sql);
+) t"), dibi::$sql);
 Assert::same(1, $ds->toDataSource()->count());
 
 
@@ -93,7 +93,7 @@ SELECT [product_id]
 FROM (SELECT * FROM products) t
  WHERE (title like '%a%') AND (product_id = 1) AND (product_id = 1)
  ORDER BY [product_id] ASC
- "),
+"),
 	dibi::$sql
 );
 
@@ -106,7 +106,7 @@ SELECT [product_id]
 FROM (SELECT * FROM products) t
  WHERE (title like '%a%') AND (product_id = 1) AND (product_id = 1)
  ORDER BY [product_id] ASC
- ) t"),
+) t"),
 	(string) $fluent
 );
 

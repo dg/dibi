@@ -168,9 +168,9 @@ Assert::same(
 // with limit = 2
 Assert::same(
 	reformat([
-		'odbc' => 'SELECT TOP 2 * FROM (SELECT * FROM [products] ) t',
+		'odbc' => 'SELECT TOP 2 * FROM (SELECT * FROM [products]) t',
 		'sqlsrv' => 'SELECT * FROM [products] OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY',
-		'SELECT * FROM [products]  LIMIT 2',
+		'SELECT * FROM [products] LIMIT 2',
 	]),
 	$conn->translate('SELECT * FROM [products] %lmt', 2)
 );
@@ -184,7 +184,7 @@ if ($config['system'] === 'odbc') {
 	Assert::same(
 		reformat([
 			'sqlsrv' => 'SELECT * FROM [products] OFFSET 1 ROWS FETCH NEXT 2 ROWS ONLY',
-			'SELECT * FROM [products]   LIMIT 2 OFFSET 1',
+			'SELECT * FROM [products] LIMIT 2 OFFSET 1',
 		]),
 		$conn->translate('SELECT * FROM [products] %lmt %ofs', 2, 1)
 	);
@@ -192,10 +192,10 @@ if ($config['system'] === 'odbc') {
 	// with offset = 50
 	Assert::same(
 		reformat([
-			'mysql' => 'SELECT * FROM `products`  LIMIT 18446744073709551615 OFFSET 50',
-			'postgre' => 'SELECT * FROM "products"  OFFSET 50',
+			'mysql' => 'SELECT * FROM `products` LIMIT 18446744073709551615 OFFSET 50',
+			'postgre' => 'SELECT * FROM "products" OFFSET 50',
 			'sqlsrv' => 'SELECT * FROM [products] OFFSET 50 ROWS',
-			'SELECT * FROM [products]  LIMIT -1 OFFSET 50',
+			'SELECT * FROM [products] LIMIT -1 OFFSET 50',
 		]),
 		$conn->translate('SELECT * FROM [products] %ofs', 50)
 	);
@@ -494,9 +494,9 @@ Assert::same(
 
 Assert::same(
 	reformat([
-		'odbc' => 'SELECT TOP 10 * FROM (SELECT * FROM [test] WHERE [id] LIKE \'%d%t\' ) t',
+		'odbc' => 'SELECT TOP 10 * FROM (SELECT * FROM [test] WHERE [id] LIKE \'%d%t\') t',
 		'sqlsrv' => 'SELECT * FROM [test] WHERE [id] LIKE N\'%d%t\' OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY',
-		'SELECT * FROM [test] WHERE [id] LIKE \'%d%t\'  LIMIT 10',
+		'SELECT * FROM [test] WHERE [id] LIKE \'%d%t\' LIMIT 10',
 	]),
 	$conn->translate("SELECT * FROM [test] WHERE %n LIKE '%d%t' %lmt", 'id', 10)
 );
@@ -512,7 +512,7 @@ Assert::same(
 
 
 Assert::same(
-	reformat('SELECT FROM ... '),
+	reformat('SELECT FROM ...'),
 	$conn->translate('SELECT FROM ... %lmt', null)
 );
 
