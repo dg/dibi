@@ -28,7 +28,7 @@ class Result
 	/** @var Column[]|null */
 	private $columns;
 
-	/** @var string[]|null */
+	/** @var Column[]|null */
 	private $names;
 
 
