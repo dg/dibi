@@ -61,7 +61,7 @@ class SqlsrvResult implements Dibi\ResultDriver
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC);
+		return Dibi\Helpers::false2Null(sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC));
 	}
 
 
