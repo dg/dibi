@@ -423,7 +423,7 @@ class Fluent implements IDataSource
 		if ($clause === null) {
 			$data = $this->clauses;
 			if ($this->command === 'SELECT' && ($data['LIMIT'] || $data['OFFSET'])) {
-				$args = array_merge(['%lmt %ofs', $data['LIMIT'][0], $data['OFFSET'][0]], $args);
+				$args = array_merge(['%lmt %ofs', $data['LIMIT'][0] ?? null, $data['OFFSET'][0] ?? null], $args);
 				unset($data['LIMIT'], $data['OFFSET']);
 			}
 
