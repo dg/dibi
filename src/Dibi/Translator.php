@@ -423,6 +423,9 @@ final class Translator
 				case '~like~': // LIKE %string%
 					return $this->driver->escapeLike($value, 0);
 
+				case 'like': // LIKE string
+					return $this->driver->escapeLike($value, null);
+
 				case 'and':
 				case 'or':
 				case 'a':

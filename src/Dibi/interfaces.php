@@ -96,7 +96,7 @@ interface Driver
 	/**
 	 * Encodes string for use in a LIKE statement.
 	 */
-	function escapeLike(string $value, int $pos): string;
+	function escapeLike(string $value, ?int $pos): string;
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.

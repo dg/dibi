@@ -71,3 +71,9 @@ Assert::truthy($conn->fetchSingle('SELECT ? LIKE %~like~', 'baa', 'aa'));
 Assert::truthy($conn->fetchSingle('SELECT ? LIKE %~like~', 'aab', 'aa'));
 Assert::falsey($conn->fetchSingle('SELECT ? LIKE %~like~', 'bba', '%a'));
 Assert::truthy($conn->fetchSingle('SELECT ? LIKE %~like~', 'b%a', '%a'));
+
+
+// matches
+Assert::truthy($conn->fetchSingle('SELECT ? LIKE %like', 'a', 'a'));
+Assert::falsey($conn->fetchSingle('SELECT ? LIKE %like', 'a', 'aa'));
+Assert::falsey($conn->fetchSingle('SELECT ? LIKE %like', 'a', 'b'));

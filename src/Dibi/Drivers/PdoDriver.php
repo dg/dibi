@@ -319,34 +319,34 @@ class PdoDriver implements Dibi\Driver
 	/**
 	 * Encodes string for use in a LIKE statement.
 	 */
-	public function escapeLike(string $value, int $pos): string
+	public function escapeLike(string $value, ?int $pos): string
 	{
 		switch ($this->driverName) {
 			case 'mysql':
 				$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos <= 0 && $pos !== null ? "'%" : "'") . $value . ($pos >= 0 && $pos !== null ? "%'" : "'");
 
 			case 'oci':
 				$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\\%_");
 				$value = str_replace("'", "''", $value);
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos <= 0 && $pos !== null ? "'%" : "'") . $value . ($pos >= 0 && $pos !== null ? "%'" : "'");
 
 			case 'pgsql':
 				$bs = substr($this->connection->quote('\\', PDO::PARAM_STR), 1, -1); // standard_conforming_strings = on/off
 				$value = substr($this->connection->quote($value, PDO::PARAM_STR), 1, -1);
 				$value = strtr($value, ['%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\']);
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos <= 0 && $pos !== null ? "'%" : "'") . $value . ($pos >= 0 && $pos !== null ? "%'" : "'");
 
 			case 'sqlite':
 				$value = addcslashes(substr($this->connection->quote($value, PDO::PARAM_STR), 1, -1), '%_\\');
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
+				return ($pos <= 0 && $pos !== null ? "'%" : "'") . $value . ($pos >= 0 && $pos !== null ? "%'" : "'") . " ESCAPE '\\'";
 
 			case 'odbc':
 			case 'mssql':
 			case 'dblib':
 			case 'sqlsrv':
 				$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos <= 0 && $pos !== null ? "'%" : "'") . $value . ($pos >= 0 && $pos !== null ? "%'" : "'");
 
 			default:
 				throw new Dibi\NotImplementedException;

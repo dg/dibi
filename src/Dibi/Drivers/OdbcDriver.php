@@ -247,10 +247,10 @@ class OdbcDriver implements Dibi\Driver
 	/**
 	 * Encodes string for use in a LIKE statement.
 	 */
-	public function escapeLike(string $value, int $pos): string
+	public function escapeLike(string $value, ?int $pos): string
 	{
 		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+		return ($pos <= 0 && $pos !== null ? "'%" : "'") . $value . ($pos >= 0 && $pos !== null ? "%'" : "'");
 	}
 
 
