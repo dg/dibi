@@ -317,7 +317,7 @@ class MySqliDriver implements Dibi\Driver
 	public function escapeLike(string $value, int $pos): string
 	{
 		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 	}
 
 

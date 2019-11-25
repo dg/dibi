@@ -415,12 +415,15 @@ final class Translator
 					return (string) $value;
 
 				case 'like~':  // LIKE string%
-					return $this->driver->escapeLike($value, 1);
+					return $this->driver->escapeLike($value, 2);
 
 				case '~like':  // LIKE %string
-					return $this->driver->escapeLike($value, -1);
+					return $this->driver->escapeLike($value, 1);
 
 				case '~like~': // LIKE %string%
+					return $this->driver->escapeLike($value, 3);
+
+				case 'like': // LIKE string
 					return $this->driver->escapeLike($value, 0);
 
 				case 'and':

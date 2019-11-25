@@ -270,7 +270,7 @@ class OracleDriver implements Dibi\Driver
 	{
 		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\\%_");
 		$value = str_replace("'", "''", $value);
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 	}
 
 

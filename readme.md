@@ -199,6 +199,7 @@ Three special modifiers are available for LIKE:
 | `%like~` | the expression starts with a string
 | `%~like` | the expression ends with a string
 | `%~like~` | the expression contains a string
+| `%like` | the expression matches a string
 
 Search for names beginning with a string:
 

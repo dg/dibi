@@ -318,7 +318,7 @@ class PostgreDriver implements Dibi\Driver
 		$bs = pg_escape_string($this->connection, '\\'); // standard_conforming_strings = on/off
 		$value = pg_escape_string($this->connection, $value);
 		$value = strtr($value, ['%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\']);
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 	}
 
 

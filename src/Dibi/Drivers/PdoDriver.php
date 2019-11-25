@@ -324,29 +324,29 @@ class PdoDriver implements Dibi\Driver
 		switch ($this->driverName) {
 			case 'mysql':
 				$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 
 			case 'oci':
 				$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\\%_");
 				$value = str_replace("'", "''", $value);
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 
 			case 'pgsql':
 				$bs = substr($this->connection->quote('\\', PDO::PARAM_STR), 1, -1); // standard_conforming_strings = on/off
 				$value = substr($this->connection->quote($value, PDO::PARAM_STR), 1, -1);
 				$value = strtr($value, ['%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\']);
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 
 			case 'sqlite':
 				$value = addcslashes(substr($this->connection->quote($value, PDO::PARAM_STR), 1, -1), '%_\\');
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
+				return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'") . " ESCAPE '\\'";
 
 			case 'odbc':
 			case 'mssql':
 			case 'dblib':
 			case 'sqlsrv':
 				$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
-				return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+				return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 
 			default:
 				throw new Dibi\NotImplementedException;

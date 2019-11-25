@@ -271,7 +271,7 @@ class FirebirdDriver implements Dibi\Driver
 	public function escapeLike(string $value, int $pos): string
 	{
 		$value = addcslashes($this->escapeText($value), '%_\\');
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
+		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'") . " ESCAPE '\\'";
 	}
 
 
