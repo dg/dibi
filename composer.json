@@ -15,13 +15,18 @@
 	},
 	"require-dev": {
 		"tracy/tracy": "~2.2",
-		"nette/tester": "~2.0"
+		"nette/tester": "~2.0",
+		"phpstan/phpstan": "^0.12"
 	},
 	"replace": {
 		"dg/dibi": "*"
 	},
 	"autoload": {
 		"classmap": ["src/"]
+	},
+	"scripts": {
+		"phpstan": "phpstan analyse --autoload-file vendor/autoload.php --level 5 src",
+		"tester": "tester tests -s"
 	},
 	"extra": {
 		"branch-alias": {
