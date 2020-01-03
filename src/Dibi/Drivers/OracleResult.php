@@ -61,7 +61,9 @@ class OracleResult implements Dibi\ResultDriver
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Dibi\Helpers::false2Null(oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS));
+	    $data = Dibi\Helpers::false2Null(oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS));
+        $data = empty($data) ? $data : array_change_key_case($data);
+		return $data;
 	}
 
 
@@ -93,9 +95,9 @@ class OracleResult implements Dibi\ResultDriver
 		for ($i = 1; $i <= $count; $i++) {
 			$type = oci_field_type($this->resultSet, $i);
 			$columns[] = [
-				'name' => oci_field_name($this->resultSet, $i),
+				'name' => mb_strtolower(oci_field_name($this->resultSet, $i)),
 				'table' => null,
-				'fullname' => oci_field_name($this->resultSet, $i),
+                'fullname' => mb_strtolower(oci_field_name($this->resultSet, $i)),
 				'type' => $type === 'LONG' ? Dibi\Type::TEXT : null,
 				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
 			];

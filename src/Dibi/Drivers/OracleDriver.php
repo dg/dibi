@@ -231,7 +231,7 @@ class OracleDriver implements Dibi\Driver
 	public function escapeIdentifier(string $value): string
 	{
 		// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
-		return '"' . str_replace('"', '""', $value) . '"';
+		return str_replace('"', '""', $value);
 	}
 
 
@@ -268,9 +268,9 @@ class OracleDriver implements Dibi\Driver
 	 */
 	public function escapeLike(string $value, int $pos): string
 	{
-		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\\%_");
+		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\\%");
 		$value = str_replace("'", "''", $value);
-		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
+		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
 
