@@ -1,5 +1,5 @@
 {
-	"name": "dibi/dibi",
+	"name": "evosoftcz/dibi",
 	"description": "Dibi is Database Abstraction Library for PHP",
 	"keywords": ["database", "dbal", "mysql", "postgresql", "sqlite", "mssql", "sqlsrv", "oracle", "access", "pdo", "odbc"],
 	"homepage": "https://dibiphp.com",
