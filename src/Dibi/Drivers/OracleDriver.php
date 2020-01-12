@@ -42,9 +42,7 @@ class OracleDriver implements Dibi\Driver
 	private $affectedRows;
 
 
-	/**
-	 * @throws Dibi\NotSupportedException
-	 */
+	/** @throws Dibi\NotSupportedException */
 	public function __construct(array $config)
 	{
 		if (!extension_loaded('oci8')) {

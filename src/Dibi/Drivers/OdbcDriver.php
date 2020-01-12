@@ -37,9 +37,7 @@ class OdbcDriver implements Dibi\Driver
 	private $microseconds = true;
 
 
-	/**
-	 * @throws Dibi\NotSupportedException
-	 */
+	/** @throws Dibi\NotSupportedException */
 	public function __construct(array $config)
 	{
 		if (!extension_loaded('odbc')) {

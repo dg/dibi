@@ -46,9 +46,7 @@ class Database
 	}
 
 
-	/**
-	 * @return Table[]
-	 */
+	/** @return Table[] */
 	public function getTables(): array
 	{
 		$this->init();
@@ -56,9 +54,7 @@ class Database
 	}
 
 
-	/**
-	 * @return string[]
-	 */
+	/** @return string[] */
 	public function getTableNames(): array
 	{
 		$this->init();

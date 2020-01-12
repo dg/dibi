@@ -296,9 +296,7 @@ class Result implements IDataSource
 	}
 
 
-	/**
-	 * @deprecated
-	 */
+	/** @deprecated */
 	private function oldFetchAssoc(string $assoc)
 	{
 		$this->seek(0);
@@ -569,9 +567,7 @@ class Result implements IDataSource
 	}
 
 
-	/**
-	 * @return Reflection\Column[]
-	 */
+	/** @return Reflection\Column[] */
 	final public function getColumns(): array
 	{
 		return $this->getInfo()->getColumns();

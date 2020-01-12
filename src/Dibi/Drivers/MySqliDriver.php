@@ -47,9 +47,7 @@ class MySqliDriver implements Dibi\Driver
 	private $buffered;
 
 
-	/**
-	 * @throws Dibi\NotSupportedException
-	 */
+	/** @throws Dibi\NotSupportedException */
 	public function __construct(array $config)
 	{
 		if (!extension_loaded('mysqli')) {
