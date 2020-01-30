@@ -25,11 +25,14 @@ class FileLogger
 	/** @var int */
 	public $filter;
 
+	/** @var bool */
+	private $errorsOnly;
 
-	public function __construct(string $file, int $filter = null)
+	public function __construct(string $file, int $filter = null, bool $errorsOnly)
 	{
 		$this->file = $file;
 		$this->filter = $filter ?: Dibi\Event::QUERY;
+		$this->errorsOnly = $errorsOnly ?? false;
 	}
 
 
@@ -42,35 +45,39 @@ class FileLogger
 			return;
 		}
 
-		$handle = fopen($this->file, 'a');
-		if (!$handle) {
-			return; // or throw exception?
+		if ($this->errorsOnly === true && ($event->result instanceof \Exception) === false) {
+			return;
 		}
-		flock($handle, LOCK_EX);
 
 		if ($event->result instanceof \Exception) {
 			$message = $event->result->getMessage();
 			if ($code = $event->result->getCode()) {
 				$message = "[$code] $message";
 			}
-			fwrite($handle,
-				"ERROR: $message"
-				. "\n-- SQL: " . $event->sql
-				. "\n-- driver: " . $event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name')
-				. ";\n-- " . date('Y-m-d H:i:s')
-				. "\n\n"
-			);
-		} else {
-			fwrite($handle,
-				'OK: ' . $event->sql
-				. ($event->count ? ";\n-- rows: " . $event->count : '')
-				. "\n-- takes: " . sprintf('%0.3f ms', $event->time * 1000)
-				. "\n-- source: " . implode(':', $event->source)
-				. "\n-- driver: " . $event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name')
-				. "\n-- " . date('Y-m-d H:i:s')
-				. "\n\n"
-			);
+			$message = "ERROR: $message"
+					.  "\n-- SQL: " . $event->sql;
+
+			$this->writeToFile($event, $message);
+			return;
+
 		}
-		fclose($handle);
+
+		$message = 'OK: ' . $event->sql
+				 . ($event->count ? ";\n-- rows: " . $event->count : '')
+				 . "\n-- takes: " . sprintf('%0.3f ms', $event->time * 1000)
+				 . "\n-- source: " . implode(':', $event->source);
+
+		$this->writeToFile($event, $message);
+	}
+
+	private function writeToFile(Dibi\Event $event, $message): void
+	{
+		if (is_writable(dirname($this->file)) === false) return;
+
+		$message .= "\n-- driver: " . $event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name')
+				 .  "\n-- " . date('Y-m-d H:i:s')
+				 .  "\n\n";
+
+		file_put_contents($this->file, $message, FILE_APPEND | LOCK_EX);
 	}
 }
