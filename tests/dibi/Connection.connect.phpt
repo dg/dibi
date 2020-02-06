@@ -53,6 +53,17 @@ test(function () use ($config) {
 
 
 test(function () use ($config) {
+	$conn = new Connection($config);
+	Assert::equal('hello', $conn->query('SELECT %s', 'hello')->fetchSingle());
+
+	$conn->disconnect();
+
+	$conn->connect();
+	Assert::equal('hello', $conn->query('SELECT %s', 'hello')->fetchSingle());
+});
+
+
+test(function () use ($config) {
 	Assert::exception(function () use ($config) {
 		new Connection($config + ['onConnect' => '']);
 	}, InvalidArgumentException::class, "Configuration option 'onConnect' must be array.");
