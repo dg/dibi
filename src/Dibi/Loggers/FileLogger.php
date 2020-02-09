@@ -25,11 +25,15 @@ class FileLogger
 	/** @var int */
 	public $filter;
 
+	/** @var bool */
+	private $errorsOnly;
 
-	public function __construct(string $file, int $filter = null)
+
+	public function __construct(string $file, int $filter = null, bool $errorsOnly = false)
 	{
 		$this->file = $file;
 		$this->filter = $filter ?: Dibi\Event::QUERY;
+		$this->errorsOnly = $errorsOnly;
 	}
 
 
@@ -38,7 +42,10 @@ class FileLogger
 	 */
 	public function logEvent(Dibi\Event $event): void
 	{
-		if (($event->type & $this->filter) === 0) {
+		if (
+			(($event->type & $this->filter) === 0)
+			|| ($this->errorsOnly === true && !$event->result instanceof \Exception)
+		) {
 			return;
 		}
 

@@ -51,6 +51,7 @@ class Connection implements IConnection
 	 *   - profiler (array)
 	 *       - run (bool) => enable profiler?
 	 *       - file => file to log
+	 * 		 - errorsOnly (bool) => log only errors
 	 *   - substitutes (array) => map of driver specific substitutes (under development)
 	 *   - onConnect (array) => list of SQL queries to execute (by Connection::query()) after connection is established
 	 * @throws Exception
@@ -70,7 +71,8 @@ class Connection implements IConnection
 		// profiler
 		if (isset($config['profiler']['file']) && (!isset($config['profiler']['run']) || $config['profiler']['run'])) {
 			$filter = $config['profiler']['filter'] ?? Event::QUERY;
-			$this->onEvent[] = [new Loggers\FileLogger($config['profiler']['file'], $filter), 'logEvent'];
+			$errorsOnly = $config['profiler']['errorsOnly'] ?? false;
+			$this->onEvent[] = [new Loggers\FileLogger($config['profiler']['file'], $filter, $errorsOnly), 'logEvent'];
 		}
 
 		$this->substitutes = new HashMap(function (string $expr) { return ":$expr:"; });
