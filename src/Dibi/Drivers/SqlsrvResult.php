@@ -61,7 +61,9 @@ class SqlsrvResult implements Dibi\ResultDriver
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Dibi\Helpers::false2Null(sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC));
+		$data = Dibi\Helpers::false2Null(sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC));
+        $data = empty($data) ? $data : array_change_key_case($data);
+        return $data;
 	}
 
 
@@ -91,8 +93,8 @@ class SqlsrvResult implements Dibi\ResultDriver
 		$columns = [];
 		foreach ((array) sqlsrv_field_metadata($this->resultSet) as $fieldMetadata) {
 			$columns[] = [
-				'name' => $fieldMetadata['Name'],
-				'fullname' => $fieldMetadata['Name'],
+				'name' => mb_strtolower($fieldMetadata['Name']),
+				'fullname' => mb_strtolower($fieldMetadata['Name']),
 				'nativetype' => $fieldMetadata['Type'],
 			];
 		}
