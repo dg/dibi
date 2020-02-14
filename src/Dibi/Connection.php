@@ -119,6 +119,7 @@ class Connection implements IConnection
 	{
 		if ($this->config['driver'] instanceof Driver) {
 			$this->driver = $this->config['driver'];
+			$this->translator = new Translator($this);
 			return;
 
 		} elseif (is_subclass_of($this->config['driver'], Driver::class)) {
@@ -135,6 +136,8 @@ class Connection implements IConnection
 		$event = $this->onEvent ? new Event($this, Event::CONNECT) : null;
 		try {
 			$this->driver = new $class($this->config);
+			$this->translator = new Translator($this);
+
 			if ($event) {
 				$this->onEvent($event->done());
 			}
@@ -160,7 +163,7 @@ class Connection implements IConnection
 	{
 		if ($this->driver) {
 			$this->driver->disconnect();
-			$this->driver = null;
+			$this->driver = $this->translator = null;
 		}
 	}
 
@@ -261,11 +264,7 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
-		if (!$this->translator) {
-			$this->translator = new Translator($this);
-		}
-		$translator = clone $this->translator;
-		return $translator->translate($args);
+		return (clone $this->translator)->translate($args);
 	}
 
 
