@@ -282,7 +282,7 @@ class Result implements IDataSource
 					}
 
 				} elseif ($as !== '|') { // associative-array node
-					$x = &$x[$row->$as];
+					$x = &$x[(string) $row->$as];
 				}
 			}
 
@@ -348,7 +348,7 @@ class Result implements IDataSource
 					}
 
 				} else { // associative-array node
-					$x = &$x[$row->$as];
+					$x = &$x[(string) $row->$as];
 				}
 			}
 
@@ -450,6 +450,7 @@ class Result implements IDataSource
 				continue;
 			}
 			$value = $row[$key];
+
 			if ($type === Type::TEXT) {
 				$row[$key] = (string) $value;
 
