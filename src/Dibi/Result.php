@@ -498,6 +498,9 @@ class Result implements IDataSource
 
 			} elseif ($type === Type::JSON) {
 				$row[$key] = json_decode($value, true);
+
+			} else {
+				$row[$key] = $value;
 			}
 		}
 	}
