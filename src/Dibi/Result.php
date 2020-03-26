@@ -500,6 +500,12 @@ class Result implements IDataSource
 				} else {
 					$row[$key] = json_decode($value, $this->formats[$type] === 'array');
 				}
+
+			} elseif ($type === null) {
+				$row[$key] = $value;
+
+			} else {
+				throw new \RuntimeException('Unexpected type ' . $type);
 			}
 		}
 	}
