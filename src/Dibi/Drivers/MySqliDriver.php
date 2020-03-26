@@ -93,7 +93,7 @@ class MySqliDriver implements Dibi\Driver
 			@$this->connection->real_connect( // intentionally @
 				(empty($config['persistent']) ? '' : 'p:') . $config['host'],
 				$config['username'],
-				$config['password'],
+				$config['password'] ?? '',
 				$config['database'] ?? '',
 				$config['port'] ?? 0,
 				$config['socket'],
