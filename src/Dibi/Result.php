@@ -529,6 +529,9 @@ class Result implements IDataSource
 
 			} elseif ($type === Type::BINARY) {
 				$row[$key] = $this->getResultDriver()->unescapeBinary($value);
+
+			} else {
+				$row[$key] = $value;
 			}
 		}
 	}
