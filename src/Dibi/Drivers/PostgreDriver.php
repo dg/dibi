@@ -35,9 +35,7 @@ class PostgreDriver implements Dibi\Driver
 	private $affectedRows;
 
 
-	/**
-	 * @throws Dibi\NotSupportedException
-	 */
+	/** @throws Dibi\NotSupportedException */
 	public function __construct(array $config)
 	{
 		if (!extension_loaded('pgsql')) {
@@ -71,7 +69,7 @@ class PostgreDriver implements Dibi\Driver
 			if (empty($config['persistent'])) {
 				$this->connection = pg_connect($string, PGSQL_CONNECT_FORCE_NEW);
 			} else {
-				$this->connection = pg_pconnect($string, PGSQL_CONNECT_FORCE_NEW);
+				$this->connection = pg_pconnect($string);
 			}
 			restore_error_handler();
 		}

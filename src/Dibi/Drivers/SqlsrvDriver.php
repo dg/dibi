@@ -39,9 +39,7 @@ class SqlsrvDriver implements Dibi\Driver
 	private $version = '';
 
 
-	/**
-	 * @throws Dibi\NotSupportedException
-	 */
+	/** @throws Dibi\NotSupportedException */
 	public function __construct(array $config)
 	{
 		if (!extension_loaded('sqlsrv')) {

@@ -282,7 +282,7 @@ class Result implements IDataSource
 					}
 
 				} elseif ($as !== '|') { // associative-array node
-					$x = &$x[$row->$as];
+					$x = &$x[(string) $row->$as];
 				}
 			}
 
@@ -296,9 +296,7 @@ class Result implements IDataSource
 	}
 
 
-	/**
-	 * @deprecated
-	 */
+	/** @deprecated */
 	private function oldFetchAssoc(string $assoc)
 	{
 		$this->seek(0);
@@ -350,7 +348,7 @@ class Result implements IDataSource
 					}
 
 				} else { // associative-array node
-					$x = &$x[$row->$as];
+					$x = &$x[(string) $row->$as];
 				}
 			}
 
@@ -452,6 +450,7 @@ class Result implements IDataSource
 				continue;
 			}
 			$value = $row[$key];
+
 			if ($type === Type::TEXT) {
 				$row[$key] = (string) $value;
 
@@ -501,6 +500,12 @@ class Result implements IDataSource
 				} else {
 					$row[$key] = json_decode($value, $this->formats[$type] === 'array');
 				}
+
+			} elseif ($type === null) {
+				$row[$key] = $value;
+
+			} else {
+				throw new \RuntimeException('Unexpected type ' . $type);
 			}
 		}
 	}
@@ -569,9 +574,7 @@ class Result implements IDataSource
 	}
 
 
-	/**
-	 * @return Reflection\Column[]
-	 */
+	/** @return Reflection\Column[] */
 	final public function getColumns(): array
 	{
 		return $this->getInfo()->getColumns();

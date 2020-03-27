@@ -75,6 +75,8 @@ In the event of a connection error, it throws `Dibi\Exception`.
 
 We query the database queries by the method `query()` which returns `Dibi\Result`. Rows are objects `Dibi\Row`.
 
+You can try all the examples [online at the playground](https://repl.it/@DavidGrudl/dibi-playground).
+
 ```php
 $result = $database->query('SELECT * FROM users');
 
@@ -183,7 +185,7 @@ $result = $database->query('SELECT * FROM users WHERE id IN (%i)', $ids);
 // SELECT * FROM users WHERE id IN (10, 20, 30)
 ```
 
-The modifier '%n' is used if the table or column name is a variable. (Beware, do not allow the user to manipulate the content of such a variable):
+The modifier `%n` is used if the table or column name is a variable. (Beware, do not allow the user to manipulate the content of such a variable):
 
 ```php
 $table = 'blog.users';

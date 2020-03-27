@@ -201,9 +201,7 @@ class Helpers
 	}
 
 
-	/**
-	 * @internal
-	 */
+	/** @internal */
 	public static function getTypeCache(): HashMap
 	{
 		if (self::$types === null) {
@@ -279,18 +277,14 @@ class Helpers
 	}
 
 
-	/**
-	 * @internal
-	 */
+	/** @internal */
 	public static function false2Null($val)
 	{
 		return $val === false ? null : $val;
 	}
 
 
-	/**
-	 * @internal
-	 */
+	/** @internal */
 	public static function intVal($value): int
 	{
 		if (is_int($value)) {

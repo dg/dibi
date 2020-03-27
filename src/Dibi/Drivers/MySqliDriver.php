@@ -47,9 +47,7 @@ class MySqliDriver implements Dibi\Driver
 	private $buffered;
 
 
-	/**
-	 * @throws Dibi\NotSupportedException
-	 */
+	/** @throws Dibi\NotSupportedException */
 	public function __construct(array $config)
 	{
 		if (!extension_loaded('mysqli')) {
@@ -93,7 +91,7 @@ class MySqliDriver implements Dibi\Driver
 			@$this->connection->real_connect( // intentionally @
 				(empty($config['persistent']) ? '' : 'p:') . $config['host'],
 				$config['username'],
-				$config['password'],
+				$config['password'] ?? '',
 				$config['database'] ?? '',
 				$config['port'] ?? 0,
 				$config['socket'],
