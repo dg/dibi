@@ -20,6 +20,7 @@ $dibi = new Dibi\Connection([
 	// enable query logging to this file
 	'profiler' => [
 		'file' => 'log/log.sql',
+		'errorsOnly' => false,
 	],
 ]);
 

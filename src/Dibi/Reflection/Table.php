@@ -69,9 +69,7 @@ class Table
 	}
 
 
-	/**
-	 * @return Column[]
-	 */
+	/** @return Column[] */
 	public function getColumns(): array
 	{
 		$this->initColumns();
@@ -79,9 +77,7 @@ class Table
 	}
 
 
-	/**
-	 * @return string[]
-	 */
+	/** @return string[] */
 	public function getColumnNames(): array
 	{
 		$this->initColumns();
@@ -113,9 +109,7 @@ class Table
 	}
 
 
-	/**
-	 * @return ForeignKey[]
-	 */
+	/** @return ForeignKey[] */
 	public function getForeignKeys(): array
 	{
 		$this->initForeignKeys();
@@ -123,9 +117,7 @@ class Table
 	}
 
 
-	/**
-	 * @return Index[]
-	 */
+	/** @return Index[] */
 	public function getIndexes(): array
 	{
 		$this->initIndexes();
