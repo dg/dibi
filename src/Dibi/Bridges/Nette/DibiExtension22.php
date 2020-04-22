@@ -68,5 +68,8 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 				]);
 			$connection->addSetup([$panel, 'register'], [$connection]);
 		}
+		if ($config['staticConnection'] ?? false) {
+			$connection->addSetup(new Nette\DI\Statement('\dibi::setConnection'));
+		}
 	}
 }
