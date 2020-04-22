@@ -153,8 +153,8 @@ final class Translator
 
 		$sql = trim(implode(' ', $sql), ' ');
 
-		if ($this->errors) {
-			throw new Exception('SQL translate error: ' . trim(reset($this->errors), '*'), 0, $sql);
+		if ($this->errors !== []) {
+			throw new Exception('SQL translate error: ' . trim((string) reset($this->errors), '*'), 0, $sql);
 		}
 
 		// apply limit

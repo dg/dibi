@@ -290,7 +290,7 @@ class Helpers
 		if (is_int($value)) {
 			return $value;
 		} elseif (is_string($value) && preg_match('#-?\d++\z#A', $value)) {
-			if (is_float($value * 1)) {
+			if ($value > PHP_INT_MAX) {
 				throw new Exception("Number $value is greater than integer.");
 			}
 			return (int) $value;

@@ -29,7 +29,7 @@ class OracleDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
-	/** @var resource */
+	/** @var resource|null */
 	private $connection;
 
 	/** @var bool */

@@ -19,7 +19,7 @@ class Result implements IDataSource
 {
 	use Strict;
 
-	/** @var ResultDriver */
+	/** @var ResultDriver|null */
 	private $driver;
 
 	/** @var array  Translate table */
@@ -251,7 +251,7 @@ class Result implements IDataSource
 			}
 		}
 
-		if ($as === '->') { // must not be last
+		if (($as ?? '') === '->') { // must not be last
 			array_pop($assoc);
 		}
 
@@ -292,6 +292,7 @@ class Result implements IDataSource
 		} while ($row = $this->fetch());
 
 		unset($x);
+		/** @var mixed[] $data */
 		return $data;
 	}
 

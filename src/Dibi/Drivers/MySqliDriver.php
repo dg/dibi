@@ -148,20 +148,26 @@ class MySqliDriver implements Dibi\Driver
 	}
 
 
+	/**
+	 * @param int|string $code
+	 */
 	public static function createException(string $message, $code, string $sql): Dibi\DriverException
 	{
-		if (in_array($code, [1216, 1217, 1451, 1452, 1701], true)) {
-			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
+		if (is_int($code) === true) {
+			if (in_array($code, [1216, 1217, 1451, 1452, 1701], true)) {
+				return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
 
-		} elseif (in_array($code, [1062, 1557, 1569, 1586], true)) {
-			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
+			}
+			if (in_array($code, [1062, 1557, 1569, 1586], true)) {
+				return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
 
-		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], true)) {
-			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
+			}
+			if (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], true)) {
+				return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
 
-		} else {
-			return new Dibi\DriverException($message, $code, $sql);
+			}
 		}
+		return new Dibi\DriverException($message, $code, $sql);
 	}
 
 

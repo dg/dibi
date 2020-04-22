@@ -20,7 +20,7 @@ class FirebirdResult implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource */
+	/** @var resource|null */
 	private $resultSet;
 
 	/** @var bool */

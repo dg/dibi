@@ -32,6 +32,12 @@ namespace Dibi;
  * @method Fluent and(...$cond)
  * @method Fluent or(...$cond)
  * @method Fluent using(...$cond)
+ * @method Fluent update(...$cond)
+ * @method Fluent insert(...$cond)
+ * @method Fluent delete(...$cond)
+ * @method Fluent into(...$cond)
+ * @method Fluent values(...$cond)
+ * @method Fluent set(...$args)
  * @method Fluent asc()
  * @method Fluent desc()
  */

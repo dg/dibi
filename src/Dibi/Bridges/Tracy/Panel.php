@@ -104,6 +104,7 @@ class Panel implements Tracy\IBarPanel
 			return null;
 		}
 
+		/** @var float|null $totalTime */
 		$totalTime = $s = null;
 		foreach ($this->events as $event) {
 			$totalTime += $event->time;
@@ -129,7 +130,7 @@ class Panel implements Tracy\IBarPanel
 
 			$s .= '</td><td class="tracy-DibiProfiler-sql">' . Helpers::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, true);
 			if ($explain) {
-				$s .= "<div id='tracy-debug-DibiProfiler-row-$counter' class='tracy-collapsed'>{$explain}</div>";
+				$s .= "<div id='tracy-debug-DibiProfiler-row-" . ($counter ?? 0) . "' class='tracy-collapsed'>{$explain}</div>";
 			}
 			if ($event->source) {
 				$s .= Tracy\Helpers::editorLink($event->source[0], $event->source[1]);//->class('tracy-DibiProfiler-source');
