@@ -104,7 +104,7 @@ class FirebirdResult implements Dibi\ResultDriver
 	public function getResultResource()
 	{
 		$this->autoFree = false;
-		return $this->resultSet;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 
 
