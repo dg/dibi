@@ -19,7 +19,7 @@ class Result implements IDataSource
 {
 	use Strict;
 
-	/** @var ResultDriver */
+	/** @var ResultDriver|null */
 	private $driver;
 
 	/** @var array  Translate table */
@@ -242,6 +242,9 @@ class Result implements IDataSource
 
 		$data = null;
 		$assoc = preg_split('#(\[\]|->|=|\|)#', $assoc, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+		if (!$assoc) {
+			throw new \InvalidArgumentException("Invalid descriptor '$assoc'.");
+		}
 
 		// check columns
 		foreach ($assoc as $as) {
@@ -292,6 +295,7 @@ class Result implements IDataSource
 		} while ($row = $this->fetch());
 
 		unset($x);
+		/** @var mixed[] $data */
 		return $data;
 	}
 
