@@ -148,9 +148,6 @@ class MySqliDriver implements Dibi\Driver
 	}
 
 
-	/**
-	 * @param int|string $code
-	 */
 	public static function createException(string $message, $code, string $sql): Dibi\DriverException
 	{
 		if (in_array($code, [1216, 1217, 1451, 1452, 1701], true)) {

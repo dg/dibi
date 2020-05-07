@@ -16,7 +16,6 @@
 	"require-dev": {
 		"tracy/tracy": "~2.2",
 		"nette/tester": "~2.0",
-		"nette/di": "^3.0",
 		"phpstan/phpstan": "^0.12"
 	},
 	"replace": {

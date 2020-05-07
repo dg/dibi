@@ -19,7 +19,7 @@ class Result implements IDataSource
 {
 	use Strict;
 
-	/** @var ResultDriver|null */
+	/** @var ResultDriver */
 	private $driver;
 
 	/** @var array  Translate table */
@@ -295,7 +295,6 @@ class Result implements IDataSource
 		} while ($row = $this->fetch());
 
 		unset($x);
-		/** @var mixed[] $data */
 		return $data;
 	}
 
