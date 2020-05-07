@@ -30,7 +30,7 @@ class FirebirdDriver implements Dibi\Driver
 
 	public const ERROR_EXCEPTION_THROWN = -836;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $connection;
 
 	/** @var resource|null */

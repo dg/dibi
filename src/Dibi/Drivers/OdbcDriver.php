@@ -27,7 +27,7 @@ class OdbcDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
-	/** @var resource|null */
+	/** @var resource */
 	private $connection;
 
 	/** @var int|null  Affected rows */
@@ -87,7 +87,6 @@ class OdbcDriver implements Dibi\Driver
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
 		$this->affectedRows = null;
-		/** @var resource|false $res */
 		$res = @odbc_exec($this->connection, $sql); // intentionally @
 
 		if ($res === false) {

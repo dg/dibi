@@ -19,7 +19,7 @@ class Result implements IDataSource
 {
 	use Strict;
 
-	/** @var ResultDriver|null */
+	/** @var ResultDriver */
 	private $driver;
 
 	/** @var array  Translate table */
