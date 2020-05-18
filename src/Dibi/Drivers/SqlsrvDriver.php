@@ -200,7 +200,7 @@ class SqlsrvDriver implements Dibi\Driver
 
 	public function escapeBinary(string $value): string
 	{
-		return "'" . str_replace("'", "''", $value) . "'";
+		return '0x' . bin2hex($value);
 	}
 
 
