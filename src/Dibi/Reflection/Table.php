@@ -163,6 +163,11 @@ class Table
 
 	protected function initForeignKeys(): void
 	{
-		throw new Dibi\NotImplementedException;
+		if ($this->foreignKeys === null) {
+			$this->foreignKeys = [];
+			foreach ($this->reflector->getForeignKeys($this->name) as $info) {
+				$this->foreignKeys[strtolower($info['name'])] = new ForeignKey(strtolower($info['name']), $info);
+			}
+		}
 	}
 }
