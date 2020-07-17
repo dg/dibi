@@ -50,8 +50,9 @@ class PostgreDriver implements Dibi\Driver
 			$config += [
 				'charset' => 'utf8',
 			];
-			if (!isset($config['connect_type']))
+			if (!isset($config['connect_type'])) {
 				$config['connect_type'] = PGSQL_CONNECT_FORCE_NEW;
+			}
 			if (isset($config['string'])) {
 				$string = $config['string'];
 			} else {
