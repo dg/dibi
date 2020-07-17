@@ -72,7 +72,7 @@ class PostgreDriver implements Dibi\Driver
 			if (empty($config['persistent'])) {
 				$this->connection = pg_connect($string, $config['connect_type']);
 			} else {
-				$this->connection = pg_pconnect($string, $config['connect_type']);
+				$this->connection = pg_pconnect($string);
 			}
 			restore_error_handler();
 		}
