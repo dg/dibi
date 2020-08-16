@@ -37,7 +37,7 @@ if ($config['system'] === 'odbc') {
 }
 
 
-function test(Closure $function)
+function test(string $title, Closure $function): void
 {
 	$function();
 }

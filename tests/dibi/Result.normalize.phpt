@@ -24,7 +24,7 @@ class MockResult extends Dibi\Result
 }
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::BOOL);
 
@@ -46,7 +46,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::TEXT);
 
@@ -62,7 +62,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::FLOAT);
 
@@ -139,7 +139,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::INTEGER);
 
@@ -165,7 +165,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::DATETIME);
 
@@ -183,7 +183,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::DATETIME);
 	$result->setFormat(Type::DATETIME, 'Y-m-d H:i:s');
@@ -202,7 +202,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::DATE);
 
@@ -218,7 +218,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::TIME);
 
