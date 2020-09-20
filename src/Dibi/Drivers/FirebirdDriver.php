@@ -91,6 +91,7 @@ class FirebirdDriver implements Dibi\Driver
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
 		$resource = $this->inTransaction ? $this->transaction : $this->connection;
+		/** @var resource|false $res */
 		$res = ibase_query($resource, $sql);
 
 		if ($res === false) {
@@ -136,7 +137,7 @@ class FirebirdDriver implements Dibi\Driver
 		if ($savepoint !== null) {
 			throw new Dibi\NotSupportedException('Savepoints are not supported in Firebird/Interbase.');
 		}
-		$this->transaction = ibase_trans($this->getResource());
+		$this->transaction = ibase_trans((int) $this->getResource());
 		$this->inTransaction = true;
 	}
 

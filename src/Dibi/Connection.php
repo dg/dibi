@@ -126,6 +126,7 @@ class Connection implements IConnection
 
 		$event = $this->onEvent ? new Event($this, Event::CONNECT) : null;
 		try {
+			/** @var string $class */
 			$this->driver = new $class($this->config);
 			$this->translator = new Translator($this);
 

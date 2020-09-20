@@ -254,7 +254,7 @@ class Result implements IDataSource
 			}
 		}
 
-		if ($as === '->') { // must not be last
+		if (($as ?? '') === '->') { // must not be last
 			array_pop($assoc);
 		}
 
