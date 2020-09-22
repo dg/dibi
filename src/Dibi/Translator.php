@@ -107,7 +107,7 @@ final class Translator
 						(\?)                           ## 12) placeholder
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
-					. preg_replace_callback('/(?=[(ARRAY)`[\'":%?])(?:(ARRAY\s*\[.+?\])|`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
+					. preg_replace_callback('/(?=[(ARRAY)`[\'":%?])(?:(ARRAY\s*\[.+?\])|`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/si',
 							[$this, 'cb'],
 							substr($arg, $toSkip)
 					);
@@ -402,7 +402,7 @@ final class Translator
 					if (strlen($value) !== $toSkip) {
 						$value = substr($value, 0, $toSkip)
 						. preg_replace_callback(
-							'/(?=[(ARRAY)`[\'":])(?:(ARRAY\s*\[.+?\])|`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/s',
+							'/(?=[(ARRAY)`[\'":])(?:(ARRAY\s*\[.+?\])|`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/si',
 							[$this, 'cb'],
 							substr($value, $toSkip)
 						);
