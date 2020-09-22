@@ -86,7 +86,7 @@ final class Translator
 			// simple string means SQL
 			if (is_string($arg)) {
 				// speed-up - is regexp required?
-				$toSkip = strcspn($arg, '`[\'":%?');
+				$toSkip = strcspn($arg, '(ARRAY)`[\'":%?');
 
 				if (strlen($arg) === $toSkip) { // needn't be translated
 					$sql[] = $arg;
@@ -94,19 +94,20 @@ final class Translator
 					$sql[] = substr($arg, 0, $toSkip)
 /*
 					. preg_replace_callback('/
-					(?=[`[\'":%?])                    ## speed-up
+					(?=[(ARRAY)`[\'":%?])            ## speed-up
 					(?:
-						`(.+?)`|                     ## 1) `identifier`
-						\[(.+?)\]|                   ## 2) [identifier]
-						(\')((?:\'\'|[^\'])*)\'|     ## 3,4) 'string'
-						(")((?:""|[^"])*)"|          ## 5,6) "string"
-						(\'|")|                      ## 7) lone quote
-						:(\S*?:)([a-zA-Z0-9._]?)|    ## 8,9) :substitution:
-						%([a-zA-Z~][a-zA-Z0-9~]{0,5})|## 10) modifier
-						(\?)                         ## 11) placeholder
+  					(ARRAY\s*\[.+?\])|             ## 1) ARRAY[elements]
+						`(.+?)`|                       ## 2) `identifier`
+						\[(.+?)\]|                     ## 3) [identifier]
+						(\')((?:\'\'|[^\'])*)\'|       ## 4,5) 'string'
+						(")((?:""|[^"])*)"|            ## 6,7) "string"
+						(\'|")|                        ## 8) lone quote
+						:(\S*?:)([a-zA-Z0-9._]?)|      ## 9,10) :substitution:
+						%([a-zA-Z~][a-zA-Z0-9~]{0,5})| ## 11) modifier
+						(\?)                           ## 12) placeholder
 					)/xs',
 */                  // note: this can change $this->args & $this->cursor & ...
-					. preg_replace_callback('/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
+					. preg_replace_callback('/(?=[(ARRAY)`[\'":%?])(?:(ARRAY\s*\[.+?\])|`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
 							[$this, 'cb'],
 							substr($arg, $toSkip)
 					);
@@ -397,11 +398,11 @@ final class Translator
 				case 'sql': // preserve as dibi-SQL  (TODO: leave only %ex)
 					$value = (string) $value;
 					// speed-up - is regexp required?
-					$toSkip = strcspn($value, '`[\'":');
+					$toSkip = strcspn($value, '(ARRAY)`[\'":');
 					if (strlen($value) !== $toSkip) {
 						$value = substr($value, 0, $toSkip)
 						. preg_replace_callback(
-							'/(?=[`[\'":])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/s',
+							'/(?=[(ARRAY)`[\'":])(?:(ARRAY\s*\[.+?\])|`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/s',
 							[$this, 'cb'],
 							substr($value, $toSkip)
 						);
@@ -480,20 +481,21 @@ final class Translator
 	 */
 	private function cb(array $matches): string
 	{
-		//    [1] => `ident`
-		//    [2] => [ident]
-		//    [3] => '
-		//    [4] => string
-		//    [5] => "
-		//    [6] => string
-		//    [7] => lone-quote
-		//    [8] => substitution
-		//    [9] => substitution flag
-		//    [10] => modifier (when called from self::translate())
-		//    [11] => placeholder (when called from self::translate())
+		//    [1] => ARRAY[elements]
+		//    [2] => `ident`
+		//    [3] => [ident]
+		//    [4] => '
+		//    [5] => string
+		//    [6] => "
+		//    [7] => string
+		//    [8] => lone-quote
+		//    [9] => substitution
+		//    [10] => substitution flag
+		//    [11] => modifier (when called from self::translate())
+		//    [12] => placeholder (when called from self::translate())
 
 
-		if (!empty($matches[11])) { // placeholder
+		if (!empty($matches[12])) { // placeholder
 			$cursor = &$this->cursor;
 
 			if ($cursor >= count($this->args)) {
@@ -504,8 +506,8 @@ final class Translator
 			return $this->formatValue($this->args[$cursor - 1], null);
 		}
 
-		if (!empty($matches[10])) { // modifier
-			$mod = $matches[10];
+		if (!empty($matches[11])) { // modifier
+			$mod = $matches[11];
 			$cursor = &$this->cursor;
 
 			if ($cursor >= count($this->args) && $mod !== 'else' && $mod !== 'end') {
@@ -578,26 +580,29 @@ final class Translator
 			return '...';
 		}
 
-		if ($matches[1]) { // SQL identifiers: `ident`
-			return $this->identifiers->{$matches[1]};
+		if ($matches[1]) { // ARRAY[elements]
+			return $matches[1]; // return unchanged
 
-		} elseif ($matches[2]) { // SQL identifiers: [ident]
+		} elseif ($matches[2]) { // SQL identifiers: `ident`
 			return $this->identifiers->{$matches[2]};
 
-		} elseif ($matches[3]) { // SQL strings: '...'
-			return $this->driver->escapeText(str_replace("''", "'", $matches[4]));
+		} elseif ($matches[3]) { // SQL identifiers: [ident]
+			return $this->identifiers->{$matches[3]};
 
-		} elseif ($matches[5]) { // SQL strings: "..."
-			return $this->driver->escapeText(str_replace('""', '"', $matches[6]));
+		} elseif ($matches[4]) { // SQL strings: '...'
+			return $this->driver->escapeText(str_replace("''", "'", $matches[5]));
 
-		} elseif ($matches[7]) { // string quote
+		} elseif ($matches[6]) { // SQL strings: "..."
+			return $this->driver->escapeText(str_replace('""', '"', $matches[7]));
+
+		} elseif ($matches[8]) { // string quote
 			return $this->errors[] = '**Alone quote**';
 		}
 
-		if ($matches[8]) { // SQL identifier substitution
-			$m = substr($matches[8], 0, -1);
+		if ($matches[9]) { // SQL identifier substitution
+			$m = substr($matches[9], 0, -1);
 			$m = $this->connection->getSubstitutes()->$m;
-			return $matches[9] == '' ? $this->formatValue($m, null) : $m . $matches[9]; // value or identifier
+			return $matches[10] == '' ? $this->formatValue($m, null) : $m . $matches[10]; // value or identifier
 		}
 
 		throw new \Exception('this should be never executed');
