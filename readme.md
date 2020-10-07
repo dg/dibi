@@ -48,11 +48,11 @@ The database connection is represented by the object `Dibi\Connection`:
 
 ```php
 $database = new Dibi\Connection([
-    'driver'   => 'mysqli',
-    'host'     => 'localhost',
-    'username' => 'root',
-    'password' => '***',
-    'database' => 'table',
+	'driver'   => 'mysqli',
+	'host'     => 'localhost',
+	'username' => 'root',
+	'password' => '***',
+	'database' => 'table',
 ]);
 
 $result = $database->query('SELECT * FROM users');
@@ -62,12 +62,12 @@ Alternatively, you can use the `dibi` static register, which maintains a connect
 
 ```php
 dibi::connect([
-    'driver'   => 'mysqli',
-    'host'     => 'localhost',
-    'username' => 'root',
-    'password' => '***',
-    'database' => 'test',
-    'charset'  => 'utf8',
+	'driver'   => 'mysqli',
+	'host'     => 'localhost',
+	'username' => 'root',
+	'password' => '***',
+	'database' => 'test',
+	'charset'  => 'utf8',
 ]);
 
 $result = dibi::query('SELECT * FROM users');
@@ -235,8 +235,8 @@ Example:
 
 ```php
 $arr = [
-    'a' => 'hello',
-    'b'  => true,
+	'a' => 'hello',
+	'b'  => true,
 ];
 
 $database->query('INSERT INTO table %v', $arr);
@@ -508,7 +508,7 @@ $all = $result->fetchAssoc('customer_id|order_id');
 // we will iterate like this:
 foreach ($all as $customerId => $orders) {
    foreach ($orders as $orderId => $order) {
-       ...
+	   ...
    }
 }
 ```
@@ -540,7 +540,7 @@ $all = $result->fetchAssoc('name[]order_id');
 // we get all the Arnolds in the results
 foreach ($all['Arnold Rimmer'] as $arnoldOrders) {
    foreach ($arnoldOrders as $orderId => $order) {
-       ...
+	   ...
    }
 }
 ```
@@ -554,8 +554,8 @@ foreach ($all as $customerId => $orders) {
    echo "Customer $customerId":
 
    foreach ($orders as $orderId => $order) {
-       echo "ID number: $order->number";
-       // customer name is in $order->name
+	   echo "ID number: $order->number";
+	   // customer name is in $order->name
    }
 }
 ```
@@ -577,7 +577,7 @@ foreach ($all as $customerId => $row) {
    echo "Customer $row->name":
 
    foreach ($row->order_id as $orderId => $order) {
-       echo "ID number: $order->number";
+	   echo "ID number: $order->number";
    }
 }
 ```
