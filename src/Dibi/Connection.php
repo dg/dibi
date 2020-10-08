@@ -45,12 +45,14 @@ class Connection implements IConnection
 	 * Connection options: (see driver-specific options too)
 	 *   - lazy (bool) => if true, connection will be established only when required
 	 *   - result (array) => result set options
-	 *       - formatDateTime => date-time format (if empty, DateTime objects will be returned)
-	 *       - formatJson => json format (
-	 *           "string" for leaving value as is,
-	 *           "object" for decoding json as \stdClass,
-	 *           "array" for decoding json as an array - default
-	 *       )
+	 *       - formatDateTime => date-time format
+	 *           empty for decoding as Dibi\DateTime (default)
+	 *           "..." formatted according to given format, see https://www.php.net/manual/en/datetime.format.php
+	 *           "native" for leaving value as is
+	 *       - formatJson => json format
+	 *           "array" for decoding json as an array (default)
+	 *           "object" for decoding json as \stdClass
+	 *           "native" for leaving value as is
 	 *   - profiler (array)
 	 *       - run (bool) => enable profiler?
 	 *       - file => file to log

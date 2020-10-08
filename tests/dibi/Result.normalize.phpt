@@ -26,6 +26,17 @@ class MockResult extends Dibi\Result
 
 test('', function () {
 	$result = new MockResult;
+	$result->setType('col', Type::TEXT);
+	$result->setFormat(Type::TEXT, 'native');
+
+	Assert::same(['col' => null], $result->test(['col' => null]));
+	Assert::same(['col' => true], $result->test(['col' => true]));
+	Assert::same(['col' => false], $result->test(['col' => false]));
+});
+
+
+test('', function () {
+	$result = new MockResult;
 	$result->setType('col', Type::BOOL);
 
 	Assert::same(['col' => null], $result->test(['col' => null]));

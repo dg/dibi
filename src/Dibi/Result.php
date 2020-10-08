@@ -454,8 +454,12 @@ class Result implements IDataSource
 				continue;
 			}
 			$value = $row[$key];
+			$format = $this->formats[$type] ?? null;
 
-			if ($type === Type::TEXT) {
+			if ($type === null || $format === 'native') {
+				$row[$key] = $value;
+
+			} elseif ($type === Type::TEXT) {
 				$row[$key] = (string) $value;
 
 			} elseif ($type === Type::INTEGER) {
@@ -485,9 +489,7 @@ class Result implements IDataSource
 			} elseif ($type === Type::DATETIME || $type === Type::DATE || $type === Type::TIME) {
 				if ($value && substr((string) $value, 0, 3) !== '000') { // '', null, false, '0000-00-00', ...
 					$value = new DateTime($value);
-					$row[$key] = empty($this->formats[$type])
-						? $value
-						: $value->format($this->formats[$type]);
+					$row[$key] = $format ? $value->format($format) : $value;
 				} else {
 					$row[$key] = null;
 				}
@@ -503,14 +505,11 @@ class Result implements IDataSource
 					: $value;
 
 			} elseif ($type === Type::JSON) {
-				if ($this->formats[$type] === 'string') {
+				if ($format === 'string') { // back compatibility with 'native'
 					$row[$key] = $value;
 				} else {
-					$row[$key] = json_decode($value, $this->formats[$type] === 'array');
+					$row[$key] = json_decode($value, $format === 'array');
 				}
-
-			} elseif ($type === null) {
-				$row[$key] = $value;
 
 			} else {
 				throw new \RuntimeException('Unexpected type ' . $type);
