@@ -23,6 +23,7 @@ use Dibi\Helpers;
  *   - charset => character encoding to set (default is utf8)
  *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
+ *   - connect_type (int) => see pg_connect()
  */
 class PostgreDriver implements Dibi\Driver
 {
@@ -62,14 +63,15 @@ class PostgreDriver implements Dibi\Driver
 					}
 				}
 			}
+			$connectType = $config['connect_type'] ?? PGSQL_CONNECT_FORCE_NEW;
 
 			set_error_handler(function (int $severity, string $message) use (&$error) {
 				$error = $message;
 			});
 			if (empty($config['persistent'])) {
-				$this->connection = pg_connect($string, PGSQL_CONNECT_FORCE_NEW);
+				$this->connection = pg_connect($string, $connectType);
 			} else {
-				$this->connection = pg_pconnect($string);
+				$this->connection = pg_pconnect($string, $connectType);
 			}
 			restore_error_handler();
 		}
