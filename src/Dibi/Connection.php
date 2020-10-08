@@ -45,6 +45,7 @@ class Connection implements IConnection
 	 * Connection options: (see driver-specific options too)
 	 *   - lazy (bool) => if true, connection will be established only when required
 	 *   - result (array) => result set options
+	 *       - normalize => normalizes result fields (default: true)
 	 *       - formatDateTime => date-time format
 	 *           empty for decoding as Dibi\DateTime (default)
 	 *           "..." formatted according to given format, see https://www.php.net/manual/en/datetime.format.php
@@ -401,7 +402,7 @@ class Connection implements IConnection
 	 */
 	public function createResultSet(ResultDriver $resultDriver): Result
 	{
-		return (new Result($resultDriver))
+		return (new Result($resultDriver, $this->config['result']['normalize'] ?? true))
 			->setFormats($this->formats);
 	}
 
