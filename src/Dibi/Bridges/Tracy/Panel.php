@@ -105,6 +105,15 @@ class Panel implements Tracy\IBarPanel
 		}
 
 		$totalTime = $s = null;
+
+		$singleConnection = reset($this->events)->connection;
+		foreach ($this->events as $event) {
+			if ($event->connection !== $singleConnection) {
+				$singleConnection = null;
+				break;
+			}
+		}
+
 		foreach ($this->events as $event) {
 			$totalTime += $event->time;
 			$connection = $event->connection;
@@ -135,7 +144,10 @@ class Panel implements Tracy\IBarPanel
 				$s .= Tracy\Helpers::editorLink($event->source[0], $event->source[1]);//->class('tracy-DibiProfiler-source');
 			}
 
-			$s .= "</td><td>{$event->count}</td></tr>";
+			$s .= "</td><td>{$event->count}</td>";
+			if (!$singleConnection) {
+				$s .= '<td>' . htmlspecialchars($this->getConnectionName($connection)) . '</td></tr>';
+			}
 		}
 
 		return '<style> #tracy-debug td.tracy-DibiProfiler-sql { background: white !important }
@@ -143,12 +155,20 @@ class Panel implements Tracy\IBarPanel
 			#tracy-debug tracy-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
 			<h1>Queries: ' . count($this->events)
 				. ($totalTime === null ? '' : ', time: ' . number_format($totalTime * 1000, 1, '.', ' ') . ' ms') . ', '
-				. htmlspecialchars($connection->getConfig('driver') . ($connection->getConfig('name') ? '/' . $connection->getConfig('name') : '')
-				. ($connection->getConfig('host') ? ' @ ' . $connection->getConfig('host') : '')) . '</h1>
+				. htmlspecialchars($this->getConnectionName($singleConnection)) . '</h1>
 			<div class="tracy-inner tracy-DibiProfiler">
 			<table>
-				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Rows</th></tr>' . $s . '
+				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Rows</th>' . (!$singleConnection ? '<th>Connection</th>' : '') . '</tr>
+				' . $s . '
 			</table>
 			</div>';
+	}
+
+
+	private function getConnectionName(Dibi\Connection $connection): string
+	{
+		return $connection->getConfig('driver')
+			. ($connection->getConfig('name') ? '/' . $connection->getConfig('name') : '')
+			. ($connection->getConfig('host') ? ' @ ' . $connection->getConfig('host') : '');
 	}
 }
