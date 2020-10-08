@@ -92,24 +92,25 @@ final class Translator
 					$sql[] = $arg;
 				} else {
 					$sql[] = substr($arg, 0, $toSkip)
-/*
-					. preg_replace_callback('/
-					(?=[`[\'":%?])                    ## speed-up
-					(?:
-						`(.+?)`|                     ## 1) `identifier`
-						\[(.+?)\]|                   ## 2) [identifier]
-						(\')((?:\'\'|[^\'])*)\'|     ## 3,4) 'string'
-						(")((?:""|[^"])*)"|          ## 5,6) "string"
-						(\'|")|                      ## 7) lone quote
-						:(\S*?:)([a-zA-Z0-9._]?)|    ## 8,9) :substitution:
-						%([a-zA-Z~][a-zA-Z0-9~]{0,5})|## 10) modifier
-						(\?)                         ## 11) placeholder
-					)/xs',
-*/                  // note: this can change $this->args & $this->cursor & ...
-					. preg_replace_callback('/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
+						// note: this can change $this->args & $this->cursor & ...
+						. preg_replace_callback(<<<'XX'
+							/
+							(?=[`['":%?])                       ## speed-up
+							(?:
+								`(.+?)`|                        ## 1) `identifier`
+								\[(.+?)\]|                      ## 2) [identifier]
+								(')((?:''|[^'])*)'|             ## 3,4) string
+								(")((?:""|[^"])*)"|             ## 5,6) "string"
+								('|")|                          ## 7) lone quote
+								:(\S*?:)([a-zA-Z0-9._]?)|       ## 8,9) :substitution:
+								%([a-zA-Z~][a-zA-Z0-9~]{0,5})|  ## 10) modifier
+								(\?)                            ## 11) placeholder
+							)/xs
+XX
+,
 							[$this, 'cb'],
 							substr($arg, $toSkip)
-					);
+						);
 					if (preg_last_error()) {
 						throw new PcreException;
 					}
@@ -400,11 +401,22 @@ final class Translator
 					$toSkip = strcspn($value, '`[\'":');
 					if (strlen($value) !== $toSkip) {
 						$value = substr($value, 0, $toSkip)
-						. preg_replace_callback(
-							'/(?=[`[\'":])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/s',
-							[$this, 'cb'],
-							substr($value, $toSkip)
-						);
+							. preg_replace_callback(<<<'XX'
+								/
+								(?=[`['":])
+								(?:
+									`(.+?)`|
+									\[(.+?)\]|
+									(')((?:''|[^'])*)'|
+									(")((?:""|[^"])*)"|
+									('|")|
+									:(\S*?:)([a-zA-Z0-9._]?)
+								)/sx
+XX
+,
+								[$this, 'cb'],
+								substr($value, $toSkip)
+							);
 						if (preg_last_error()) {
 							throw new PcreException;
 						}
