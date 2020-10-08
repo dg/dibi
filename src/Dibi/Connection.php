@@ -50,6 +50,10 @@ class Connection implements IConnection
 	 *           empty for decoding as Dibi\DateTime (default)
 	 *           "..." formatted according to given format, see https://www.php.net/manual/en/datetime.format.php
 	 *           "native" for leaving value as is
+	 *       - formatTimeInterval => time-interval format
+	 *           empty for decoding as DateInterval (default)
+	 *           "..." formatted according to given format, see https://www.php.net/manual/en/dateinterval.format.php
+	 *           "native" for leaving value as is
 	 *       - formatJson => json format
 	 *           "array" for decoding json as an array (default)
 	 *           "object" for decoding json as \stdClass
@@ -77,6 +81,7 @@ class Connection implements IConnection
 			Type::DATE => $this->config['result']['formatDate'],
 			Type::DATETIME => $this->config['result']['formatDateTime'],
 			Type::JSON => $this->config['result']['formatJson'] ?? 'array',
+			Type::TIME_INTERVAL => $this->config['result']['formatTimeInterval'] ?? null,
 		];
 
 		// profiler
