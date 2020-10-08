@@ -73,8 +73,9 @@ class FileLogger
 
 	private function writeToFile(Dibi\Event $event, string $message): void
 	{
+		$driver = $event->connection->getConfig('driver');
 		$message .=
-			"\n-- driver: " . $event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name')
+			"\n-- driver: " . (is_object($driver) ? get_class($driver) : $driver) . '/' . $event->connection->getConfig('name')
 			. "\n-- " . date('Y-m-d H:i:s')
 			. "\n\n";
 		file_put_contents($this->file, $message, FILE_APPEND | LOCK_EX);
