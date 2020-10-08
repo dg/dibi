@@ -28,6 +28,9 @@ class Connection implements IConnection
 	/** @var array  Current connection configuration */
 	private $config;
 
+	/** @var string[]  resultset formats */
+	private $formats;
+
 	/** @var Driver|null */
 	private $driver;
 
@@ -65,8 +68,13 @@ class Connection implements IConnection
 		Helpers::alias($config, 'result|formatDateTime', 'resultDateTime');
 		$config['driver'] = $config['driver'] ?? 'mysqli';
 		$config['name'] = $name;
-		$config['result']['formatJson'] = $config['result']['formatJson'] ?? 'array';
 		$this->config = $config;
+
+		$this->formats = [
+			Type::DATE => $this->config['result']['formatDate'],
+			Type::DATETIME => $this->config['result']['formatDateTime'],
+			Type::JSON => $this->config['result']['formatJson'] ?? 'array',
+		];
 
 		// profiler
 		if (isset($config['profiler']['file']) && (!isset($config['profiler']['run']) || $config['profiler']['run'])) {
@@ -391,10 +399,8 @@ class Connection implements IConnection
 	 */
 	public function createResultSet(ResultDriver $resultDriver): Result
 	{
-		$res = new Result($resultDriver);
-		return $res->setFormat(Type::DATE, $this->config['result']['formatDate'])
-			->setFormat(Type::DATETIME, $this->config['result']['formatDateTime'])
-			->setFormat(Type::JSON, $this->config['result']['formatJson']);
+		return (new Result($resultDriver))
+			->setFormats($this->formats);
 	}
 
 

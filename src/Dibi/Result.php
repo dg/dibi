@@ -549,11 +549,21 @@ class Result implements IDataSource
 
 
 	/**
-	 * Sets date format.
+	 * Sets type format.
 	 */
 	final public function setFormat(string $type, ?string $format): self
 	{
 		$this->formats[$type] = $format;
+		return $this;
+	}
+
+
+	/**
+	 * Sets type formats.
+	 */
+	final public function setFormats(array $formats): self
+	{
+		$this->formats = $formats;
 		return $this;
 	}
 
