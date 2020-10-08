@@ -41,10 +41,12 @@ class Result implements IDataSource
 	private $formats = [];
 
 
-	public function __construct(ResultDriver $driver)
+	public function __construct(ResultDriver $driver, bool $normalize = true)
 	{
 		$this->driver = $driver;
-		$this->detectTypes();
+		if ($normalize) {
+			$this->detectTypes();
+		}
 	}
 
 
