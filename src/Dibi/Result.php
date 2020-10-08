@@ -498,8 +498,9 @@ class Result implements IDataSource
 
 			} elseif ($type === Type::TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)\z#', $value, $m);
-				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
-				$row[$key]->invert = (int) (bool) $m[1];
+				$value = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
+				$value->invert = (int) (bool) $m[1];
+				$row[$key] = $format ? $value->format($format) : $value;
 
 			} elseif ($type === Type::BINARY) {
 				$row[$key] = is_string($value)
