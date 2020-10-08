@@ -131,6 +131,15 @@ class MySqliDriver implements Dibi\Driver
 
 
 	/**
+	 * Pings a server connection, or tries to reconnect if the connection has gone down.
+	 */
+	public function ping(): bool
+	{
+		return $this->connection->ping();
+	}
+
+
+	/**
 	 * Executes the SQL query.
 	 * @throws Dibi\DriverException
 	 */
