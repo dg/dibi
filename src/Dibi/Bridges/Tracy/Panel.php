@@ -131,7 +131,7 @@ class Panel implements Tracy\IBarPanel
 				[$connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime] = $backup;
 			}
 
-			$s .= '<tr><td>' . number_format($event->time * 1000, 3, '.', ' ');
+			$s .= '<tr><td data-order="' . $event->time . '">' . number_format($event->time * 1000, 3, '.', ' ');
 			if ($explain) {
 				static $counter;
 				$counter++;
@@ -159,7 +159,7 @@ class Panel implements Tracy\IBarPanel
 				. ($totalTime === null ? '' : ', time: ' . number_format($totalTime * 1000, 1, '.', ' ') . ' ms') . ', '
 				. htmlspecialchars($this->getConnectionName($singleConnection)) . '</h1>
 			<div class="tracy-inner tracy-DibiProfiler">
-			<table>
+			<table class="tracy-sortable">
 				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Rows</th>' . (!$singleConnection ? '<th>Connection</th>' : '') . '</tr>
 				' . $s . '
 			</table>
