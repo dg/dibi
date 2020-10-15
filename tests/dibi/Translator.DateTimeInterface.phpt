@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @phpversion 5.5
- */
-
 declare(strict_types=1);
 
 use Tester\Assert;

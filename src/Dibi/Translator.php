@@ -290,7 +290,7 @@ XX
 						if (is_array($v)) {
 							$vx[] = $this->formatValue($v, 'ex');
 						} elseif (is_string($k)) {
-							$v = (is_string($v) && strncasecmp($v, 'd', 1)) || $v > 0 ? 'ASC' : 'DESC';
+							$v = (is_string($v) ? strncasecmp($v, 'd', 1) : $v > 0) ? 'ASC' : 'DESC';
 							$vx[] = $this->identifiers->$k . ' ' . $v;
 						} else {
 							$vx[] = $this->identifiers->$v;
@@ -343,11 +343,13 @@ XX
 
 				case 'sN': // string or null
 				case 'sn':
-					return $value == '' ? 'NULL' : $this->driver->escapeText((string) $value); // notice two equal signs
+					return $value === '' || $value === 0 || $value === null
+						? 'NULL'
+						: $this->driver->escapeText((string) $value);
 
 				case 'iN': // signed int or null
-					if ($value == '') {
-						$value = null;
+					if ($value === '' || $value === 0 || $value === null) {
+						return 'NULL';
 					}
 					// break omitted
 				case 'i':  // signed int
