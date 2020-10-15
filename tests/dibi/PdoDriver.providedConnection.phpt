@@ -32,8 +32,3 @@ Assert::exception(function () {
 test('PDO error mode: explicitly set silent', function () {
 	buildPdoDriver(PDO::ERRMODE_SILENT);
 });
-
-
-test('PDO error mode: implicitly set silent', function () {
-	buildPdoDriver(null);
-});

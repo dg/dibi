@@ -56,19 +56,21 @@ class PdoDriver implements Dibi\Driver
 		if ($config['resource'] instanceof PDO) {
 			$this->connection = $config['resource'];
 			unset($config['resource'], $config['pdo']);
+
+			if ($this->connection->getAttribute(PDO::ATTR_ERRMODE) !== PDO::ERRMODE_SILENT) {
+				throw new Dibi\DriverException('PDO connection in exception or warning error mode is not supported.');
+			}
+
 		} else {
 			try {
 				$this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
+				$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
 			} catch (\PDOException $e) {
 				if ($e->getMessage() === 'could not find driver') {
 					throw new Dibi\NotSupportedException('PHP extension for PDO is not loaded.');
 				}
 				throw new Dibi\DriverException($e->getMessage(), $e->getCode());
 			}
-		}
-
-		if ($this->connection->getAttribute(PDO::ATTR_ERRMODE) !== PDO::ERRMODE_SILENT) {
-			throw new Dibi\DriverException('PDO connection in exception or warning error mode is not supported.');
 		}
 
 		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
