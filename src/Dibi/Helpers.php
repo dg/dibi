@@ -205,7 +205,7 @@ class Helpers
 	public static function getTypeCache(): HashMap
 	{
 		if (self::$types === null) {
-			self::$types = new HashMap([__CLASS__, 'detectType']);
+			self::$types = new HashMap([self::class, 'detectType']);
 		}
 		return self::$types;
 	}

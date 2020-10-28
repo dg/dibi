@@ -200,7 +200,9 @@ class MySqliDriver implements Dibi\Driver
 	 */
 	public function getAffectedRows(): ?int
 	{
-		return $this->connection->affected_rows === -1 ? null : $this->connection->affected_rows;
+		return $this->connection->affected_rows === -1
+			? null
+			: $this->connection->affected_rows;
 	}
 
 

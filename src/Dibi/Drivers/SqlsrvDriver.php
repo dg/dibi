@@ -98,7 +98,9 @@ class SqlsrvDriver implements Dibi\Driver
 
 		} elseif (is_resource($res)) {
 			$this->affectedRows = Helpers::false2Null(sqlsrv_rows_affected($res));
-			return sqlsrv_num_fields($res) ? $this->createResultDriver($res) : null;
+			return sqlsrv_num_fields($res)
+				? $this->createResultDriver($res)
+				: null;
 		}
 		return null;
 	}

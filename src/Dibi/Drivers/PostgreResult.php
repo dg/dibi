@@ -97,7 +97,9 @@ class PostgreResult implements Dibi\ResultDriver
 				'table' => pg_field_table($this->resultSet, $i),
 				'nativetype' => pg_field_type($this->resultSet, $i),
 			];
-			$row['fullname'] = $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'];
+			$row['fullname'] = $row['table']
+				? $row['table'] . '.' . $row['name']
+				: $row['name'];
 			$columns[] = $row;
 		}
 		return $columns;

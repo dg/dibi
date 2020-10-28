@@ -261,7 +261,7 @@ if ($config['system'] === 'postgre') {
 			'sqlite' => "SELECT * FROM products WHERE (title LIKE 'C%' ESCAPE '\\' AND title LIKE '%r' ESCAPE '\\') OR title LIKE '%a\n\\%\\_\\\\''\"%' ESCAPE '\\'",
 			'odbc' => "SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n[%][_]\\''\"%'",
 			'sqlsrv' => "SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n[%][_]\\''\"%'",
-			"SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\\n\\%\\_\\\\\\\\\'\"%'",
+			"SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\\n\\%\\_\\\\\\\\\\'\"%'",
 		]),
 		$conn->translate($args[0], $args[1], $args[2], $args[3])
 	);
@@ -279,7 +279,7 @@ Assert::match(
 CONCAT(last_name, ', ', first_name) AS full_name
 GROUP BY `user`
 HAVING MAX(salary) > %i 123
-INTO OUTFILE '/tmp/result\'.txt'
+INTO OUTFILE '/tmp/result\\'.txt'
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\\\"'
 LINES TERMINATED BY '\\\\n'
 ",
@@ -344,7 +344,7 @@ WHERE (`test`.`a` LIKE '1995-03-01'
 	OR `b8` IN (RAND() `col1` > `col2` )
 	OR `b9` IN (RAND(), [col1] > [col2] )
 	OR `b10` IN (  )
-	AND `c` = 'embedded \' string'
+	AND `c` = 'embedded \\' string'
 	OR `d`=10
 	OR `e`=NULL
 	OR `true`= 1
@@ -437,7 +437,6 @@ WHERE ([test].[a] LIKE '1995-03-01'
 	OR [str_not_null]='hello'
 LIMIT 10",
 	]),
-
 	$conn->translate('SELECT *
 FROM [db.table]
 WHERE ([test.a] LIKE %d', '1995-03-01', '
@@ -671,7 +670,6 @@ Assert::same(
 		'sqlsrv' => "UPDATE [colors] SET [color]=N'blue', [price]=-12.4, [spec]=-9E-005, [spec2]=1000, [spec3]=10000, [spec4]=10000 WHERE [price]=123.5",
 		"UPDATE [colors] SET [color]='blue', [price]=-12.4, [spec]=-9E-005, [spec2]=1000, [spec3]=10000, [spec4]=10000 WHERE [price]=123.5",
 	]),
-
 	$conn->translate('UPDATE [colors] SET', [
 		'color' => 'blue',
 		'price' => -12.4,

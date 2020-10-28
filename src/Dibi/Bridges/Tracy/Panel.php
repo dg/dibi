@@ -45,7 +45,7 @@ class Panel implements Tracy\IBarPanel
 	public function register(Dibi\Connection $connection): void
 	{
 		Tracy\Debugger::getBar()->addPanel($this);
-		Tracy\Debugger::getBlueScreen()->addPanel([__CLASS__, 'renderException']);
+		Tracy\Debugger::getBlueScreen()->addPanel([self::class, 'renderException']);
 		$connection->onEvent[] = [$this, 'logEvent'];
 	}
 
@@ -121,7 +121,9 @@ class Panel implements Tracy\IBarPanel
 			if ($this->explain && $event->type === Event::SELECT) {
 				$backup = [$connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime];
 				$connection->onEvent = null;
-				$cmd = is_string($this->explain) ? $this->explain : ($connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
+				$cmd = is_string($this->explain)
+					? $this->explain
+					: ($connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
 				try {
 					$explain = @Helpers::dump($connection->nativeQuery("$cmd $event->sql"), true);
 				} catch (Dibi\Exception $e) {
@@ -141,7 +143,7 @@ class Panel implements Tracy\IBarPanel
 				$s .= "<div id='tracy-debug-DibiProfiler-row-$counter' class='tracy-collapsed'>{$explain}</div>";
 			}
 			if ($event->source) {
-				$s .= Tracy\Helpers::editorLink($event->source[0], $event->source[1]);//->class('tracy-DibiProfiler-source');
+				$s .= Tracy\Helpers::editorLink($event->source[0], $event->source[1]); //->class('tracy-DibiProfiler-source');
 			}
 
 			$s .= "</td><td>{$event->count}</td>";

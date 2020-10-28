@@ -68,11 +68,9 @@ class PostgreDriver implements Dibi\Driver
 			set_error_handler(function (int $severity, string $message) use (&$error) {
 				$error = $message;
 			});
-			if (empty($config['persistent'])) {
-				$this->connection = pg_connect($string, $connectType);
-			} else {
-				$this->connection = pg_pconnect($string, $connectType);
-			}
+			$this->connection = empty($config['persistent'])
+				? pg_connect($string, $connectType)
+				: pg_pconnect($string, $connectType);
 			restore_error_handler();
 		}
 
@@ -171,12 +169,9 @@ class PostgreDriver implements Dibi\Driver
 	 */
 	public function getInsertId(?string $sequence): ?int
 	{
-		if ($sequence === null) {
-			// PostgreSQL 8.1 is needed
-			$res = $this->query('SELECT LASTVAL()');
-		} else {
-			$res = $this->query("SELECT CURRVAL('$sequence')");
-		}
+		$res = $sequence === null
+			? $this->query('SELECT LASTVAL()') // PostgreSQL 8.1 is needed
+			: $this->query("SELECT CURRVAL('$sequence')");
 
 		if (!$res) {
 			return null;

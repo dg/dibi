@@ -85,7 +85,7 @@ class PdoResult implements Dibi\ResultDriver
 			if ($row === false) {
 				throw new Dibi\NotSupportedException('Driver does not support meta data.');
 			}
-			$row = $row + [
+			$row += [
 				'table' => null,
 				'native_type' => 'VAR_STRING',
 			];

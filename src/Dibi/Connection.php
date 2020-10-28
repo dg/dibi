@@ -562,7 +562,7 @@ class Connection implements IConnection
 	 */
 	public function __wakeup()
 	{
-		throw new NotSupportedException('You cannot serialize or unserialize ' . get_class($this) . ' instances.');
+		throw new NotSupportedException('You cannot serialize or unserialize ' . static::class . ' instances.');
 	}
 
 
@@ -571,7 +571,7 @@ class Connection implements IConnection
 	 */
 	public function __sleep()
 	{
-		throw new NotSupportedException('You cannot serialize or unserialize ' . get_class($this) . ' instances.');
+		throw new NotSupportedException('You cannot serialize or unserialize ' . static::class . ' instances.');
 	}
 
 

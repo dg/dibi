@@ -93,7 +93,8 @@ final class Translator
 				} else {
 					$sql[] = substr($arg, 0, $toSkip)
 						// note: this can change $this->args & $this->cursor & ...
-						. preg_replace_callback(<<<'XX'
+						. preg_replace_callback(
+							<<<'XX'
 							/
 							(?=[`['":%?])                       ## speed-up
 							(?:
@@ -323,7 +324,13 @@ XX
 				} elseif ($value instanceof Expression && $modifier === 'ex') {
 					return $this->connection->translate(...$value->getValues());
 
-				} elseif ($value instanceof \DateTimeInterface && ($modifier === 'd' || $modifier === 't' || $modifier === 'dt')) {
+				} elseif (
+					$value instanceof \DateTimeInterface
+					&& ($modifier === 'd'
+						|| $modifier === 't'
+						|| $modifier === 'dt'
+					)
+				) {
 					// continue
 				} else {
 					$type = is_object($value) ? get_class($value) : gettype($value);
@@ -333,13 +340,19 @@ XX
 
 			switch ($modifier) {
 				case 's':  // string
-					return $value === null ? 'NULL' : $this->driver->escapeText((string) $value);
+					return $value === null
+						? 'NULL'
+						: $this->driver->escapeText((string) $value);
 
 				case 'bin':// binary
-					return $value === null ? 'NULL' : $this->driver->escapeBinary($value);
+					return $value === null
+						? 'NULL'
+						: $this->driver->escapeBinary($value);
 
 				case 'b':  // boolean
-					return $value === null ? 'NULL' : $this->driver->escapeBool((bool) $value);
+					return $value === null
+						? 'NULL'
+						: $this->driver->escapeBool((bool) $value);
 
 				case 'sN': // string or null
 				case 'sn':
@@ -387,7 +400,9 @@ XX
 					} elseif (!$value instanceof \DateTimeInterface) {
 						$value = new DateTime($value);
 					}
-					return $modifier === 'd' ? $this->driver->escapeDate($value) : $this->driver->escapeDateTime($value);
+					return $modifier === 'd'
+						? $this->driver->escapeDate($value)
+						: $this->driver->escapeDateTime($value);
 
 				case 'by':
 				case 'n':  // composed identifier name
@@ -403,7 +418,8 @@ XX
 					$toSkip = strcspn($value, '`[\'":');
 					if (strlen($value) !== $toSkip) {
 						$value = substr($value, 0, $toSkip)
-							. preg_replace_callback(<<<'XX'
+							. preg_replace_callback(
+								<<<'XX'
 								/
 								(?=[`['":])
 								(?:
@@ -611,7 +627,9 @@ XX
 		if ($matches[8]) { // SQL identifier substitution
 			$m = substr($matches[8], 0, -1);
 			$m = $this->connection->getSubstitutes()->$m;
-			return $matches[9] == '' ? $this->formatValue($m, null) : $m . $matches[9]; // value or identifier
+			return $matches[9] == ''
+				? $this->formatValue($m, null)
+				: $m . $matches[9]; // value or identifier
 		}
 
 		throw new \Exception('this should be never executed');

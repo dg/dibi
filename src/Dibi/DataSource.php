@@ -53,11 +53,9 @@ class DataSource implements IDataSource
 	 */
 	public function __construct(string $sql, Connection $connection)
 	{
-		if (strpbrk($sql, " \t\r\n") === false) {
-			$this->sql = $connection->getDriver()->escapeIdentifier($sql); // table name
-		} else {
-			$this->sql = '(' . $sql . ') t'; // SQL command
-		}
+		$this->sql = strpbrk($sql, " \t\r\n") === false
+			? $connection->getDriver()->escapeIdentifier($sql) // table name
+			: '(' . $sql . ') t'; // SQL command
 		$this->connection = $connection;
 	}
 
@@ -84,12 +82,9 @@ class DataSource implements IDataSource
 	 */
 	public function where($cond): self
 	{
-		if (is_array($cond)) {
-			// TODO: not consistent with select and orderBy
-			$this->conds[] = $cond;
-		} else {
-			$this->conds[] = func_get_args();
-		}
+		$this->conds[] = is_array($cond)
+			? $cond // TODO: not consistent with select and orderBy
+			: func_get_args();
 		$this->result = $this->count = null;
 		return $this;
 	}
@@ -232,12 +227,18 @@ class DataSource implements IDataSource
 	public function __toString(): string
 	{
 		try {
-			return $this->connection->translate('
-SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
-FROM %SQL', $this->sql, '
-%ex', $this->conds ? ['WHERE %and', $this->conds] : null, '
-%ex', $this->sorting ? ['ORDER BY %by', $this->sorting] : null, '
-%ofs %lmt', $this->offset, $this->limit
+			return $this->connection->translate(
+				"\nSELECT %n",
+				(empty($this->cols) ? '*' : $this->cols),
+				"\nFROM %SQL",
+				$this->sql,
+				"\n%ex",
+				$this->conds ? ['WHERE %and', $this->conds] : null,
+				"\n%ex",
+				$this->sorting ? ['ORDER BY %by', $this->sorting] : null,
+				"\n%ofs %lmt",
+				$this->offset,
+				$this->limit
 			);
 		} catch (\Throwable $e) {
 			trigger_error($e->getMessage(), E_USER_ERROR);

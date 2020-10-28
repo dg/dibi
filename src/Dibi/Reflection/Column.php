@@ -72,7 +72,9 @@ class Column
 
 	public function getTableName(): ?string
 	{
-		return isset($this->info['table']) && $this->info['table'] != null ? $this->info['table'] : null; // intentionally ==
+		return isset($this->info['table']) && $this->info['table'] != null // intentionally ==
+			? $this->info['table']
+			: null;
 	}
 
 

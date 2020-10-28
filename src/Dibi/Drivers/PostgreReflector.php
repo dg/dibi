@@ -251,7 +251,10 @@ class PostgreReflector implements Dibi\Reflector
 				$references[$row['name']] = array_combine($l, $f);
 			}
 
-			if (isset($references[$row['name']][$row['lnum']]) && $references[$row['name']][$row['lnum']] === $row['fnum']) {
+			if (
+				isset($references[$row['name']][$row['lnum']])
+				&& $references[$row['name']][$row['lnum']] === $row['fnum']
+			) {
 				$fKeys[$row['name']]['local'][] = $row['local'];
 				$fKeys[$row['name']]['foreign'][] = $row['foreign'];
 			}

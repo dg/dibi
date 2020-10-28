@@ -96,7 +96,9 @@ class OracleDriver implements Dibi\Driver
 
 			} elseif (is_resource($res)) {
 				$this->affectedRows = Dibi\Helpers::false2Null(oci_num_rows($res));
-				return oci_num_fields($res) ? $this->createResultDriver($res) : null;
+				return oci_num_fields($res)
+					? $this->createResultDriver($res)
+					: null;
 			}
 		} else {
 			$err = oci_error($this->connection);

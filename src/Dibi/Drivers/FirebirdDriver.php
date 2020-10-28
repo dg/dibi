@@ -62,11 +62,9 @@ class FirebirdDriver implements Dibi\Driver
 				'buffers' => 0,
 			];
 
-			if (empty($config['persistent'])) {
-				$this->connection = @ibase_connect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
-			} else {
-				$this->connection = @ibase_pconnect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
-			}
+			$this->connection = empty($config['persistent'])
+				? @ibase_connect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']) // intentionally @
+				: @ibase_pconnect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
 
 			if (!is_resource($this->connection)) {
 				throw new Dibi\DriverException(ibase_errmsg(), ibase_errcode());
@@ -90,7 +88,9 @@ class FirebirdDriver implements Dibi\Driver
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
-		$resource = $this->inTransaction ? $this->transaction : $this->connection;
+		$resource = $this->inTransaction
+			? $this->transaction
+			: $this->connection;
 		$res = ibase_query($resource, $sql);
 
 		if ($res === false) {

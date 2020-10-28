@@ -119,7 +119,7 @@ class Fluent implements IDataSource
 		$this->connection = $connection;
 
 		if (self::$normalizer === null) {
-			self::$normalizer = new HashMap([__CLASS__, '_formatClause']);
+			self::$normalizer = new HashMap([self::class, '_formatClause']);
 		}
 	}
 
@@ -311,11 +311,9 @@ class Fluent implements IDataSource
 	 */
 	public function fetch()
 	{
-		if ($this->command === 'SELECT' && !$this->clauses['LIMIT']) {
-			return $this->query($this->_export(null, ['%lmt', 1]))->fetch();
-		} else {
-			return $this->query($this->_export())->fetch();
-		}
+		return $this->command === 'SELECT' && !$this->clauses['LIMIT']
+			? $this->query($this->_export(null, ['%lmt', 1]))->fetch()
+			: $this->query($this->_export())->fetch();
 	}
 
 
@@ -325,11 +323,9 @@ class Fluent implements IDataSource
 	 */
 	public function fetchSingle()
 	{
-		if ($this->command === 'SELECT' && !$this->clauses['LIMIT']) {
-			return $this->query($this->_export(null, ['%lmt', 1]))->fetchSingle();
-		} else {
-			return $this->query($this->_export())->fetchSingle();
-		}
+		return $this->command === 'SELECT' && !$this->clauses['LIMIT']
+			? $this->query($this->_export(null, ['%lmt', 1]))->fetchSingle()
+			: $this->query($this->_export())->fetchSingle();
 	}
 
 

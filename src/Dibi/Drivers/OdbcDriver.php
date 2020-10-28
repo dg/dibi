@@ -54,11 +54,9 @@ class OdbcDriver implements Dibi\Driver
 				'dsn' => ini_get('odbc.default_db'),
 			];
 
-			if (empty($config['persistent'])) {
-				$this->connection = @odbc_connect($config['dsn'], $config['username'] ?? '', $config['password'] ?? ''); // intentionally @
-			} else {
-				$this->connection = @odbc_pconnect($config['dsn'], $config['username'] ?? '', $config['password'] ?? ''); // intentionally @
-			}
+			$this->connection = empty($config['persistent'])
+				? @odbc_connect($config['dsn'], $config['username'] ?? '', $config['password'] ?? '') // intentionally @
+				: @odbc_pconnect($config['dsn'], $config['username'] ?? '', $config['password'] ?? ''); // intentionally @
 		}
 
 		if (!is_resource($this->connection)) {
@@ -94,7 +92,9 @@ class OdbcDriver implements Dibi\Driver
 
 		} elseif (is_resource($res)) {
 			$this->affectedRows = Dibi\Helpers::false2Null(odbc_num_rows($res));
-			return odbc_num_fields($res) ? $this->createResultDriver($res) : null;
+			return odbc_num_fields($res)
+				? $this->createResultDriver($res)
+				: null;
 		}
 		return null;
 	}

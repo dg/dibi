@@ -83,7 +83,9 @@ class Result implements IDataSource
 	 */
 	final public function seek(int $row): bool
 	{
-		return ($row !== 0 || $this->fetched) ? $this->getResultDriver()->seek($row) : true;
+		return ($row !== 0 || $this->fetched)
+			? $this->getResultDriver()->seek($row)
+			: true;
 	}
 
 
@@ -199,7 +201,7 @@ class Result implements IDataSource
 	 */
 	final public function fetchAll(int $offset = null, int $limit = null): array
 	{
-		$limit = $limit === null ? -1 : $limit;
+		$limit = $limit ?? -1;
 		$this->seek($offset ?: 0);
 		$row = $this->fetch();
 		if (!$row) {
@@ -357,11 +359,9 @@ class Result implements IDataSource
 			}
 
 			if ($x === null) { // build leaf
-				if ($leaf === '=') {
-					$x = $row->toArray();
-				} else {
-					$x = $row;
-				}
+				$x = $leaf === '='
+					? $row->toArray()
+					: $row;
 			}
 		} while ($row = $this->fetch());
 
@@ -485,7 +485,9 @@ class Result implements IDataSource
 			} elseif ($type === Type::DATETIME || $type === Type::DATE || $type === Type::TIME) {
 				if ($value && substr((string) $value, 0, 3) !== '000') { // '', null, false, '0000-00-00', ...
 					$value = new DateTime($value);
-					$row[$key] = empty($this->formats[$type]) ? $value : $value->format($this->formats[$type]);
+					$row[$key] = empty($this->formats[$type])
+						? $value
+						: $value->format($this->formats[$type]);
 				} else {
 					$row[$key] = null;
 				}
@@ -496,7 +498,9 @@ class Result implements IDataSource
 				$row[$key]->invert = (int) (bool) $m[1];
 
 			} elseif ($type === Type::BINARY) {
-				$row[$key] = is_string($value) ? $this->getResultDriver()->unescapeBinary($value) : $value;
+				$row[$key] = is_string($value)
+					? $this->getResultDriver()->unescapeBinary($value)
+					: $value;
 
 			} elseif ($type === Type::JSON) {
 				if ($this->formats[$type] === 'string') {
