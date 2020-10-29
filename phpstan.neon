@@ -1,4 +1,9 @@
 parameters:
+	level: 5
+
+	paths:
+		- src
+
 	ignoreErrors:
 		# The namespace is referenced, not the class.
 		- '#Class dibi referenced with incorrect case: Dibi#'
