@@ -67,7 +67,7 @@ class FirebirdResult implements Dibi\ResultDriver
 			: @ibase_fetch_row($this->resultSet, IBASE_TEXT); // intentionally @
 
 		if (ibase_errcode()) {
-			if (ibase_errcode() == FirebirdDriver::ERROR_EXCEPTION_THROWN) {
+			if (ibase_errcode() === FirebirdDriver::ERROR_EXCEPTION_THROWN) {
 				preg_match('/exception (\d+) (\w+) (.*)/is', ibase_errmsg(), $match);
 				throw new Dibi\ProcedureException($match[3], $match[1], $match[2]);
 

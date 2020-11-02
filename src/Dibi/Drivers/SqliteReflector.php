@@ -64,7 +64,7 @@ class SqliteReflector implements Dibi\Reflector
 				'fullname' => "$table.$column",
 				'nativetype' => strtoupper($type[0]),
 				'size' => isset($type[1]) ? (int) $type[1] : null,
-				'nullable' => $row['notnull'] == '0',
+				'nullable' => $row['notnull'] === 0,
 				'default' => $row['dflt_value'],
 				'autoincrement' => $row['pk'] && $type[0] === 'INTEGER',
 				'vendor' => $row,
@@ -98,7 +98,7 @@ class SqliteReflector implements Dibi\Reflector
 			$column = $indexes[$index]['columns'][0];
 			$primary = false;
 			foreach ($columns as $info) {
-				if ($column == $info['name']) {
+				if ($column === $info['name']) {
 					$primary = $info['vendor']['pk'];
 					break;
 				}

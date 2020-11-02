@@ -627,7 +627,7 @@ XX
 		if ($matches[8]) { // SQL identifier substitution
 			$m = substr($matches[8], 0, -1);
 			$m = $this->connection->getSubstitutes()->$m;
-			return $matches[9] == ''
+			return $matches[9] === ''
 				? $this->formatValue($m, null)
 				: $m . $matches[9]; // value or identifier
 		}
