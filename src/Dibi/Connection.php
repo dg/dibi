@@ -403,6 +403,23 @@ class Connection implements IConnection
 
 
 	/**
+	 * @return mixed
+	 */
+	public function transaction(callable $callback)
+	{
+		$this->begin();
+		try {
+			$res = $callback();
+		} catch (\Throwable $e) {
+			$this->rollback();
+			throw $e;
+		}
+		$this->commit();
+		return $res;
+	}
+
+
+	/**
 	 * Result set factory.
 	 */
 	public function createResultSet(ResultDriver $resultDriver): Result

@@ -48,3 +48,24 @@ $conn->query('INSERT INTO [products]', [
 ]);
 $conn->commit();
 Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
+
+
+
+Assert::exception(function () use ($conn) {
+	$conn->transaction(function () use ($conn) {
+		$conn->query('INSERT INTO [products]', [
+			'title' => 'Test product',
+		]);
+		throw new Exception('my exception');
+	});
+}, \Throwable::class, 'my exception');
+
+Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
+
+$conn->transaction(function () use ($conn) {
+	$conn->query('INSERT INTO [products]', [
+		'title' => 'Test product',
+	]);
+});
+
+Assert::same(5, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());

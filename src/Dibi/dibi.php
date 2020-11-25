@@ -25,6 +25,7 @@ declare(strict_types=1);
  * @method static void begin(string $savepoint = null)
  * @method static void commit(string $savepoint = null)
  * @method static void rollback(string $savepoint = null)
+ * @method static mixed transaction(callable $callback)
  * @method static Dibi\Reflection\Database getDatabaseInfo()
  * @method static Dibi\Fluent command()
  * @method static Dibi\Fluent select(...$args)
