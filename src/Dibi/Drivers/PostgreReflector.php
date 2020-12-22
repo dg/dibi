@@ -28,9 +28,6 @@ class PostgreReflector implements Dibi\Reflector
 
 	public function __construct(Dibi\Driver $driver, string $version)
 	{
-		if ($version < 7.4) {
-			throw new Dibi\DriverException('Reflection requires PostgreSQL 7.4 and newer.');
-		}
 		$this->driver = $driver;
 		$this->version = $version;
 	}
