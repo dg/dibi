@@ -46,7 +46,7 @@ trait Strict
 	public static function __callStatic(string $name, array $args)
 	{
 		$rc = new ReflectionClass(static::class);
-		$items = array_intersect($rc->getMethods(ReflectionMethod::IS_PUBLIC), $rc->getMethods(ReflectionMethod::IS_STATIC));
+		$items = array_filter($rc->getMethods(\ReflectionMethod::IS_STATIC), function ($m) { return $m->isPublic(); });
 		$items = array_map(function ($item) { return $item->getName(); }, $items);
 		$hint = ($t = Helpers::getSuggestion($items, $name))
 			? ", did you mean $t()?"
@@ -68,7 +68,7 @@ trait Strict
 			return $ret;
 		}
 		$rc = new ReflectionClass($this);
-		$items = array_diff($rc->getProperties(ReflectionProperty::IS_PUBLIC), $rc->getProperties(ReflectionProperty::IS_STATIC));
+		$items = array_filter($rc->getProperties(ReflectionProperty::IS_PUBLIC), function ($p) { return !$p->isStatic(); });
 		$items = array_map(function ($item) { return $item->getName(); }, $items);
 		$hint = ($t = Helpers::getSuggestion($items, $name))
 			? ", did you mean $$t?"
@@ -84,7 +84,7 @@ trait Strict
 	public function __set(string $name, $value)
 	{
 		$rc = new ReflectionClass($this);
-		$items = array_diff($rc->getProperties(ReflectionProperty::IS_PUBLIC), $rc->getProperties(ReflectionProperty::IS_STATIC));
+		$items = array_filter($rc->getProperties(ReflectionProperty::IS_PUBLIC), function ($p) { return !$p->isStatic(); });
 		$items = array_map(function ($item) { return $item->getName(); }, $items);
 		$hint = ($t = Helpers::getSuggestion($items, $name))
 			? ", did you mean $$t?"
