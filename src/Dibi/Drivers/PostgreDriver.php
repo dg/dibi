@@ -188,7 +188,7 @@ class PostgreDriver implements Dibi\Driver
 	 */
 	public function begin(string $savepoint = null): void
 	{
-		$this->query($savepoint ? "SAVEPOINT $savepoint" : 'START TRANSACTION');
+		$this->query($savepoint ? "SAVEPOINT {$this->escapeIdentifier($savepoint)}" : 'START TRANSACTION');
 	}
 
 
@@ -198,7 +198,7 @@ class PostgreDriver implements Dibi\Driver
 	 */
 	public function commit(string $savepoint = null): void
 	{
-		$this->query($savepoint ? "RELEASE SAVEPOINT $savepoint" : 'COMMIT');
+		$this->query($savepoint ? "RELEASE SAVEPOINT {$this->escapeIdentifier($savepoint)}" : 'COMMIT');
 	}
 
 
@@ -208,7 +208,7 @@ class PostgreDriver implements Dibi\Driver
 	 */
 	public function rollback(string $savepoint = null): void
 	{
-		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT $savepoint" : 'ROLLBACK');
+		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT {$this->escapeIdentifier($savepoint)}" : 'ROLLBACK');
 	}
 
 
