@@ -15,12 +15,14 @@ Database access functions in PHP are not standardised. This library
 hides the differences between them, and above all, it gives you a very handy interface.
 
 
-Support Project
----------------
+Support Me
+----------
 
 Do you like Dibi? Are you looking forward to the new features?
 
-[![Donate](https://files.nette.org/icons/donation-1.svg?)](https://nette.org/make-donation?to=dibi)
+[![Buy me a coffee](https://files.nette.org/icons/donation-3.svg)](https://github.com/sponsors/dg)
+
+Thank you!
 
 
 Installation
