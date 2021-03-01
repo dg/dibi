@@ -47,8 +47,7 @@ class Fluent implements IDataSource
 
 	public const REMOVE = false;
 
-	/** @var array */
-	public static $masks = [
+	public static array $masks = [
 		'SELECT' => ['SELECT', 'DISTINCT', 'FROM', 'WHERE', 'GROUP BY',
 			'HAVING', 'ORDER BY', 'LIMIT', 'OFFSET', ],
 		'UPDATE' => ['UPDATE', 'SET', 'WHERE', 'ORDER BY', 'LIMIT'],
@@ -56,8 +55,8 @@ class Fluent implements IDataSource
 		'DELETE' => ['DELETE', 'FROM', 'USING', 'WHERE', 'ORDER BY', 'LIMIT'],
 	];
 
-	/** @var array  default modifiers for arrays */
-	public static $modifiers = [
+	/** default modifiers for arrays */
+	public static array $modifiers = [
 		'SELECT' => '%n',
 		'FROM' => '%n',
 		'IN' => '%in',
@@ -69,8 +68,8 @@ class Fluent implements IDataSource
 		'GROUP BY' => '%by',
 	];
 
-	/** @var array  clauses separators */
-	public static $separators = [
+	/** clauses separators */
+	public static array $separators = [
 		'SELECT' => ',',
 		'FROM' => ',',
 		'WHERE' => 'AND',
@@ -84,41 +83,35 @@ class Fluent implements IDataSource
 		'INTO' => false,
 	];
 
-	/** @var array  clauses */
-	public static $clauseSwitches = [
+	/** clauses */
+	public static array $clauseSwitches = [
 		'JOIN' => 'FROM',
 		'INNER JOIN' => 'FROM',
 		'LEFT JOIN' => 'FROM',
 		'RIGHT JOIN' => 'FROM',
 	];
 
-	/** @var Connection */
-	private $connection;
+	private Connection $connection;
 
-	/** @var array */
-	private $setups = [];
+	private array $setups = [];
 
-	/** @var string|null */
-	private $command;
+	private ?string $command = null;
 
-	/** @var array */
-	private $clauses = [];
+	private array $clauses = [];
 
-	/** @var array */
-	private $flags = [];
+	private array $flags = [];
 
-	/** @var array|null */
 	private $cursor;
 
-	/** @var HashMap  normalized clauses */
-	private static $normalizer;
+	/** normalized clauses */
+	private static HashMap $normalizer;
 
 
 	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
 
-		if (self::$normalizer === null) {
+		if (!isset(self::$normalizer)) {
 			self::$normalizer = new HashMap([self::class, '_formatClause']);
 		}
 	}

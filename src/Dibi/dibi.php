@@ -52,23 +52,23 @@ class dibi
 		ASC = 'ASC',
 		DESC = 'DESC';
 
-	/** @var string|null  Last SQL command @see dibi::query() */
-	public static $sql;
+	/** Last SQL command @see dibi::query() */
+	public static ?string $sql = null;
 
-	/** @var float|null  Elapsed time for last query */
-	public static $elapsedTime;
+	/** Elapsed time for last query */
+	public static ?float $elapsedTime = null;
 
-	/** @var float  Elapsed time for all queries */
-	public static $totalTime;
+	/** Elapsed time for all queries */
+	public static float $totalTime = 0;
 
-	/** @var int  Number or queries */
-	public static $numOfQueries = 0;
+	/** Number or queries */
+	public static int $numOfQueries = 0;
 
 	/** @var Dibi\Connection[]  Connection registry storage for Dibi\Connection objects */
-	private static $registry = [];
+	private static array $registry = [];
 
-	/** @var Dibi\Connection  Current connection */
-	private static $connection;
+	/** Current connection */
+	private static Dibi\Connection $connection;
 
 
 	/**
