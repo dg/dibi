@@ -60,7 +60,7 @@ class SqlsrvDriver implements Dibi\Driver
 			$options = $config['options'];
 
 			// Default values
-			$options['CharacterSet'] = $options['CharacterSet'] ?? 'UTF-8';
+			$options['CharacterSet'] ??= 'UTF-8';
 			$options['PWD'] = (string) $options['PWD'];
 			$options['UID'] = (string) $options['UID'];
 			$options['Database'] = (string) $options['Database'];

@@ -75,8 +75,8 @@ class Helpers
 				$sql = \dibi::$sql;
 			}
 
-			static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|FETCH\s+NEXT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE|START\s+TRANSACTION|BEGIN|COMMIT|ROLLBACK(?:\s+TO\s+SAVEPOINT)?|(?:RELEASE\s+)?SAVEPOINT';
-			static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|LIKE|RLIKE|REGEXP|TRUE|FALSE';
+			$keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|FETCH\s+NEXT|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE|START\s+TRANSACTION|BEGIN|COMMIT|ROLLBACK(?:\s+TO\s+SAVEPOINT)?|(?:RELEASE\s+)?SAVEPOINT';
+			$keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|LIKE|RLIKE|REGEXP|TRUE|FALSE';
 
 			// insert new lines
 			$sql = " $sql ";
@@ -162,7 +162,7 @@ class Helpers
 	/** @internal */
 	public static function escape(Driver $driver, $value, string $type): string
 	{
-		static $types = [
+		$types = [
 			Type::TEXT => 'text',
 			Type::BINARY => 'binary',
 			Type::BOOL => 'bool',
@@ -184,7 +184,7 @@ class Helpers
 	 */
 	public static function detectType(string $type): ?string
 	{
-		static $patterns = [
+		$patterns = [
 			'^_' => Type::TEXT, // PostgreSQL arrays
 			'RANGE$' => Type::TEXT, // PostgreSQL range types
 			'BYTEA|BLOB|BIN' => Type::BINARY,
