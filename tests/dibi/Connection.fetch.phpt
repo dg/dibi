@@ -33,13 +33,13 @@ Assert::equal([
 $res = $conn->query('SELECT * FROM [products] ORDER BY product_id');
 Assert::same(
 	[1 => 'Chair', 'Table', 'Computer'],
-	$res->fetchPairs('product_id', 'title')
+	$res->fetchPairs('product_id', 'title'),
 );
 
 $res = $conn->query('SELECT * FROM [products] ORDER BY product_id');
 Assert::same(
 	[1 => 'Chair', 'Table', 'Computer'],
-	$res->fetchPairs()
+	$res->fetchPairs(),
 );
 
 
