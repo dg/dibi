@@ -25,7 +25,7 @@ $fluent = $conn->select('*')
 
 Assert::same(
 	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d]'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->from('table')->as('table.Alias')
@@ -34,21 +34,21 @@ $fluent->from('table')->as('table.Alias')
 
 Assert::same(
 	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [table] AS [table.Alias] INNER JOIN [table1] ON table.col = table1.col INNER JOIN [table2] ON table.col = table2.col'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->from('anotherTable');
 
 Assert::same(
 	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [table] AS [table.Alias] INNER JOIN [table1] ON table.col = table1.col INNER JOIN [table2] ON table.col = table2.col , [anotherTable]'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->removeClause('from')->from('anotherTable');
 
 Assert::same(
 	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [anotherTable]'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->as('anotherAlias')
@@ -58,7 +58,7 @@ $fluent->as('anotherAlias')
 
 Assert::same(
 	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [anotherTable] AS [anotherAlias] INNER JOIN [table3] ON table.col = table3.col'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->where('col > %i', $max)
@@ -71,14 +71,14 @@ $fluent->where('col > %i', $max)
 
 Assert::same(
 	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [anotherTable] AS [anotherAlias] INNER JOIN [table3] ON table.col = table3.col WHERE col > 10 OR col < 5 AND active = 1 AND [col] IN (1, 2, 3) ORDER BY [val] ASC , [val2] DESC , [val3] DESC'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->orderBy(Dibi\Fluent::REMOVE);
 
 Assert::same(
 	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [anotherTable] AS [anotherAlias] INNER JOIN [table3] ON table.col = table3.col WHERE col > 10 OR col < 5 AND active = 1 AND [col] IN (1, 2, 3)'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 
@@ -86,7 +86,7 @@ $fluent = $conn->select('*')
 	->select(
 		$conn->select('count(*)')
 		->from('precteni')->as('P')
-		->where('P.id_clanku', '=', 'C.id_clanku')
+		->where('P.id_clanku', '=', 'C.id_clanku'),
 	)
 	->from('clanky')->as('C')
 	->where('id_clanku=%i', 123)
@@ -99,7 +99,7 @@ Assert::same(
 		'sqlsrv' => 'SELECT * , (SELECT count(*) FROM [precteni] AS [P] WHERE P.id_clanku = C.id_clanku) FROM [clanky] AS [C] WHERE id_clanku=123 OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY',
 		'SELECT * , (SELECT count(*) FROM [precteni] AS [P] WHERE P.id_clanku = C.id_clanku) FROM [clanky] AS [C] WHERE id_clanku=123 LIMIT 1',
 	]),
-	(string) $fluent
+	(string) $fluent,
 );
 
 
@@ -112,7 +112,7 @@ $fluent = $conn->select('*')
 
 Assert::same(
 	reformat('SELECT * , [x] AS [xAlias] FROM [products] INNER JOIN [orders] USING (product_id) INNER JOIN [customers] USING ([customer_id]) INNER JOIN [items] USING ([customer_id], [order_id])'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 
@@ -124,7 +124,7 @@ $fluent = $conn->command()->select()
 
 Assert::same(
 	reformat('SELECT * FROM [products] INNER JOIN [orders] USING (product_id)'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 
@@ -138,7 +138,7 @@ Assert::same(
 		'sqlsrv' => "SELECT * FROM [me] AS [t] WHERE col > 10 AND ([x] = N'a') AND (b) AND (c)",
 		"SELECT * FROM [me] AS [t] WHERE col > 10 AND ([x] = 'a') AND (b) AND (c)",
 	]),
-	(string) $fluent
+	(string) $fluent,
 );
 
 
@@ -158,5 +158,5 @@ $fluent = $conn->select('*')->from('abc')
 
 Assert::same(
 	reformat('SELECT * FROM [abc] WHERE x IN ((SELECT [id] FROM [xyz]))'),
-	(string) $fluent
+	(string) $fluent,
 );

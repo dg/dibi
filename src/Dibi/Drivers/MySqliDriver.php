@@ -96,7 +96,7 @@ class MySqliDriver implements Dibi\Driver
 				$config['database'] ?? '',
 				$config['port'] ?? 0,
 				$config['socket'],
-				$config['flags'] ?? 0
+				$config['flags'] ?? 0,
 			);
 
 			if ($this->connection->connect_errno) {
