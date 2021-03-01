@@ -19,14 +19,12 @@ class FileLogger
 {
 	use Dibi\Strict;
 
-	/** @var string  Name of the file where SQL errors should be logged */
-	public $file;
+	/** Name of the file where SQL errors should be logged */
+	public string $file;
 
-	/** @var int */
-	public $filter;
+	public int $filter;
 
-	/** @var bool */
-	private $errorsOnly;
+	private bool $errorsOnly;
 
 
 	public function __construct(string $file, ?int $filter = null, bool $errorsOnly = false)

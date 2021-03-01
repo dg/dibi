@@ -22,14 +22,13 @@ class Result
 {
 	use Dibi\Strict;
 
-	/** @var Dibi\ResultDriver */
-	private $driver;
+	private Dibi\ResultDriver $driver;
 
 	/** @var Column[]|null */
-	private $columns;
+	private ?array $columns;
 
 	/** @var Column[]|null */
-	private $names;
+	private ?array $names;
 
 
 	public function __construct(Dibi\ResultDriver $driver)
@@ -81,7 +80,7 @@ class Result
 
 	protected function initColumns(): void
 	{
-		if ($this->columns === null) {
+		if (!isset($this->columns)) {
 			$this->columns = [];
 			$reflector = $this->driver instanceof Dibi\Reflector
 				? $this->driver

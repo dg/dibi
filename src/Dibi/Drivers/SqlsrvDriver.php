@@ -32,11 +32,9 @@ class SqlsrvDriver implements Dibi\Driver
 	/** @var resource */
 	private $connection;
 
-	/** @var int|null  Affected rows */
-	private $affectedRows;
+	private ?int $affectedRows;
 
-	/** @var string */
-	private $version = '';
+	private string $version = '';
 
 
 	/** @throws Dibi\NotSupportedException */

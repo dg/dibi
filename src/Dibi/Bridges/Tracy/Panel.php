@@ -22,17 +22,14 @@ class Panel implements Tracy\IBarPanel
 {
 	use Dibi\Strict;
 
-	/** @var int maximum SQL length */
-	public static $maxLength = 1000;
+	/** maximum SQL length */
+	public static int $maxLength = 1000;
 
-	/** @var bool|string  explain queries? */
-	public $explain;
+	public bool|string $explain;
 
-	/** @var int */
-	public $filter;
+	public int $filter;
 
-	/** @var array */
-	private $events = [];
+	private array $events = [];
 
 
 	public function __construct($explain = true, ?int $filter = null)

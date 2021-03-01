@@ -27,14 +27,11 @@ class SqliteDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
-	/** @var SQLite3 */
-	private $connection;
+	private SQLite3 $connection;
 
-	/** @var string  Date format */
-	private $fmtDate;
+	private string $fmtDate;
 
-	/** @var string  Datetime format */
-	private $fmtDateTime;
+	private string $fmtDateTime;
 
 
 	/** @throws Dibi\NotSupportedException */

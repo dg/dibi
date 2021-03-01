@@ -33,11 +33,10 @@ class FirebirdDriver implements Dibi\Driver
 	/** @var resource */
 	private $connection;
 
-	/** @var resource|null */
+	/** @var ?resource */
 	private $transaction;
 
-	/** @var bool */
-	private $inTransaction = false;
+	private bool $inTransaction = false;
 
 
 	/** @throws Dibi\NotSupportedException */
