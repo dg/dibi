@@ -23,7 +23,7 @@ Assert::same(
 	$conn->translate('REPLACE INTO [products]', [
 		'title' => 'Drticka',
 		'price' => 318,
-	])
+	]),
 );
 
 
@@ -38,7 +38,7 @@ Assert::same(
 		'sqlsrv' => "INSERT INTO [products] ([title], [price], [brand]) VALUES (N'Super Product', 12, NULL) , (N'Super Product', 12, NULL) , (N'Super Product', 12, NULL)",
 		"INSERT INTO [products] ([title], [price], [brand]) VALUES ('Super Product', 12, NULL) , ('Super Product', 12, NULL) , ('Super Product', 12, NULL)",
 	]),
-	$conn->translate('INSERT INTO [products]', $array, $array, $array)
+	$conn->translate('INSERT INTO [products]', $array, $array, $array),
 );
 
 
@@ -53,7 +53,7 @@ Assert::same(
 		'sqlsrv' => "INSERT INTO [products]  ([pole], [bit]) VALUES (N'hodnota1', 1) , (N'hodnota2', 1) , (N'hodnota3', 1)",
 		"INSERT INTO [products]  ([pole], [bit]) VALUES ('hodnota1', 1) , ('hodnota2', 1) , ('hodnota3', 1)",
 	]),
-	$conn->translate('INSERT INTO [products] %ex', $array)
+	$conn->translate('INSERT INTO [products] %ex', $array),
 );
 
 
@@ -66,7 +66,7 @@ Assert::same(
 	$conn->translate('UPDATE [colors] SET', [
 		'color' => 'blue',
 		'order' => 12,
-	], 'WHERE [id]=%i', 123)
+	], 'WHERE [id]=%i', 123),
 );
 
 
@@ -74,20 +74,20 @@ Assert::same(
 $array = [1, 2, 3];
 Assert::same(
 	reformat('SELECT * FROM [people] WHERE [id] IN ( 1, 2, 3 )'),
-	$conn->translate('SELECT * FROM [people] WHERE [id] IN (', $array, ')')
+	$conn->translate('SELECT * FROM [people] WHERE [id] IN (', $array, ')'),
 );
 
 
 // long numbers
 Assert::same(
 	reformat('SELECT -123456789123456789123456789'),
-	$conn->translate('SELECT %i', '-123456789123456789123456789')
+	$conn->translate('SELECT %i', '-123456789123456789123456789'),
 );
 
 // long float numbers
 Assert::same(
 	reformat('SELECT -.12345678912345678912345678e10'),
-	$conn->translate('SELECT %f', '-.12345678912345678912345678e10')
+	$conn->translate('SELECT %f', '-.12345678912345678912345678e10'),
 );
 
 // invalid input
@@ -101,7 +101,7 @@ Assert::same(
 		'sqlsrv' => "SELECT * FROM [table] WHERE id=10 AND name=N'ahoj'",
 		"SELECT * FROM [table] WHERE id=10 AND name='ahoj'",
 	]),
-	$conn->translate('SELECT * FROM [table] WHERE id=%i AND name=%s', 10, 'ahoj')
+	$conn->translate('SELECT * FROM [table] WHERE id=%i AND name=%s', 10, 'ahoj'),
 );
 
 Assert::same(
@@ -109,7 +109,7 @@ Assert::same(
 		'sqlsrv' => "TEST ([cond] > 2) OR ([cond2] = N'3') OR (cond3 < RAND())",
 		"TEST ([cond] > 2) OR ([cond2] = '3') OR (cond3 < RAND())",
 	]),
-	$conn->translate('TEST %or', ['[cond] > 2', '[cond2] = "3"', 'cond3 < RAND()'])
+	$conn->translate('TEST %or', ['[cond] > 2', '[cond2] = "3"', 'cond3 < RAND()']),
 );
 
 Assert::same(
@@ -117,7 +117,7 @@ Assert::same(
 		'sqlsrv' => "TEST ([cond] > 2) AND ([cond2] = N'3') AND (cond3 < RAND())",
 		"TEST ([cond] > 2) AND ([cond2] = '3') AND (cond3 < RAND())",
 	]),
-	$conn->translate('TEST %and', ['[cond] > 2', '[cond2] = "3"', 'cond3 < RAND()'])
+	$conn->translate('TEST %and', ['[cond] > 2', '[cond2] = "3"', 'cond3 < RAND()']),
 );
 
 
@@ -126,7 +126,7 @@ $where[] = '[age] > 20';
 $where[] = '[email] IS NOT NULL';
 Assert::same(
 	reformat('SELECT * FROM [table] WHERE ([age] > 20) AND ([email] IS NOT NULL)'),
-	$conn->translate('SELECT * FROM [table] WHERE %and', $where)
+	$conn->translate('SELECT * FROM [table] WHERE %and', $where),
 );
 
 
@@ -139,14 +139,14 @@ Assert::same(
 		'sqlsrv' => "SELECT * FROM [table] WHERE ([age] IS NULL) AND ([email] = N'ahoj') AND ([id] IN (10, 20, 30))",
 		"SELECT * FROM [table] WHERE ([age] IS NULL) AND ([email] = 'ahoj') AND ([id] IN (10, 20, 30))",
 	]),
-	$conn->translate('SELECT * FROM [table] WHERE %and', $where)
+	$conn->translate('SELECT * FROM [table] WHERE %and', $where),
 );
 
 
 $where = [];
 Assert::same(
 	reformat('SELECT * FROM [table] WHERE 1=1'),
-	$conn->translate('SELECT * FROM [table] WHERE %and', $where)
+	$conn->translate('SELECT * FROM [table] WHERE %and', $where),
 );
 
 
@@ -161,7 +161,7 @@ $order = [
 ];
 Assert::same(
 	reformat('SELECT * FROM [people] ORDER BY [field1] ASC, [field2] DESC, [field3] ASC, [field4] DESC, [field5] ASC, [field6] DESC'),
-	$conn->translate('SELECT * FROM [people] ORDER BY %by', $order)
+	$conn->translate('SELECT * FROM [people] ORDER BY %by', $order),
 );
 
 
@@ -172,7 +172,7 @@ Assert::same(
 		'sqlsrv' => 'SELECT * FROM [products] OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY',
 		'SELECT * FROM [products] LIMIT 2',
 	]),
-	$conn->translate('SELECT * FROM [products] %lmt', 2)
+	$conn->translate('SELECT * FROM [products] %lmt', 2),
 );
 
 if ($config['system'] === 'odbc') {
@@ -186,7 +186,7 @@ if ($config['system'] === 'odbc') {
 			'sqlsrv' => 'SELECT * FROM [products] OFFSET 1 ROWS FETCH NEXT 2 ROWS ONLY',
 			'SELECT * FROM [products] LIMIT 2 OFFSET 1',
 		]),
-		$conn->translate('SELECT * FROM [products] %lmt %ofs', 2, 1)
+		$conn->translate('SELECT * FROM [products] %lmt %ofs', 2, 1),
 	);
 
 	// with offset = 50
@@ -197,7 +197,7 @@ if ($config['system'] === 'odbc') {
 			'sqlsrv' => 'SELECT * FROM [products] OFFSET 50 ROWS',
 			'SELECT * FROM [products] LIMIT -1 OFFSET 50',
 		]),
-		$conn->translate('SELECT * FROM [products] %ofs', 50)
+		$conn->translate('SELECT * FROM [products] %ofs', 50),
 	);
 }
 
@@ -223,7 +223,7 @@ Assert::same(
 		'b8%d' => null,
 		'b9%t' => null,
 		'c1%t' => new DateTime('1212-09-26 16:51:34.0124'),
-	])
+	]),
 );
 
 Assert::exception(function () use ($conn) {
@@ -247,13 +247,13 @@ if ($config['system'] === 'postgre') {
 	$conn->query('SET standard_conforming_strings = off');
 	Assert::same(
 		"SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n\\\\%\\\\_\\\\\\\\''\"%'",
-		$conn->translate($args[0], $args[1], $args[2], $args[3])
+		$conn->translate($args[0], $args[1], $args[2], $args[3]),
 	);
 
 	$conn->query('SET standard_conforming_strings = on');
 	Assert::same(
 		"SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n\\%\\_\\\\''\"%'",
-		$conn->translate($args[0], $args[1], $args[2], $args[3])
+		$conn->translate($args[0], $args[1], $args[2], $args[3]),
 	);
 } elseif ($config['driver'] !== 'sqlite') { // sqlite2
 	Assert::same(
@@ -263,7 +263,7 @@ if ($config['system'] === 'postgre') {
 			'sqlsrv' => "SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\n[%][_]\\''\"%'",
 			"SELECT * FROM products WHERE (title LIKE 'C%' AND title LIKE '%r') OR title LIKE '%a\\n\\%\\_\\\\\\\\\\'\"%'",
 		]),
-		$conn->translate($args[0], $args[1], $args[2], $args[3])
+		$conn->translate($args[0], $args[1], $args[2], $args[3]),
 	);
 }
 
@@ -305,7 +305,7 @@ HAVING MAX(salary) > %i', 123, "
 INTO OUTFILE '/tmp/result''.txt'
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"'
 LINES TERMINATED BY '\\n'
-")
+"),
 );
 
 
@@ -457,7 +457,7 @@ WHERE ([test.a] LIKE %d', '1995-03-01', '
 	OR [false]=', false, '
 	OR [str_null]=%sn', '', '
 	OR [str_not_null]=%sn', 'hello', '
-LIMIT 10')
+LIMIT 10'),
 );
 
 
@@ -466,19 +466,19 @@ Assert::same(
 		'sqlsrv' => "TEST  [cond] > 2 [cond2] = N'3' cond3 < RAND() 123",
 		"TEST  [cond] > 2 [cond2] = '3' cond3 < RAND() 123",
 	]),
-	$conn->translate('TEST %ex', ['[cond] > 2', '[cond2] = "3"', 'cond3 < RAND()'], 123)
+	$conn->translate('TEST %ex', ['[cond] > 2', '[cond2] = "3"', 'cond3 < RAND()'], 123),
 );
 
 
 Assert::same(
 	reformat('TEST ([cond] > 2) OR ([cond2] > 3) OR ([cond3] = 10 + 1)'),
-	$conn->translate('TEST %or', ['`cond` > 2', ['[cond2] > %i', '3'], 'cond3%sql' => ['10 + 1']])
+	$conn->translate('TEST %or', ['`cond` > 2', ['[cond2] > %i', '3'], 'cond3%sql' => ['10 + 1']]),
 );
 
 
 Assert::same(
 	reformat('TEST ([cond] = 2) OR ([cond3] = RAND())'),
-	$conn->translate('TEST %or', ['cond' => 2, 'cond3%sql' => 'RAND()'])
+	$conn->translate('TEST %or', ['cond' => 2, 'cond3%sql' => 'RAND()']),
 );
 
 
@@ -487,7 +487,7 @@ Assert::same(
 		'sqlsrv' => "TEST ([cond1] 3) OR ([cond2] RAND()) OR ([cond3] LIKE N'string')",
 		"TEST ([cond1] 3) OR ([cond2] RAND()) OR ([cond3] LIKE 'string')",
 	]),
-	$conn->translate('TEST %or', ['cond1%ex' => 3, 'cond2%ex' => 'RAND()', 'cond3%ex' => ['LIKE %s', 'string']])
+	$conn->translate('TEST %or', ['cond1%ex' => 3, 'cond2%ex' => 'RAND()', 'cond3%ex' => ['LIKE %s', 'string']]),
 );
 
 
@@ -497,7 +497,7 @@ Assert::same(
 		'sqlsrv' => 'SELECT * FROM [test] WHERE [id] LIKE N\'%d%t\' OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY',
 		'SELECT * FROM [test] WHERE [id] LIKE \'%d%t\' LIMIT 10',
 	]),
-	$conn->translate("SELECT * FROM [test] WHERE %n LIKE '%d%t' %lmt", 'id', 10)
+	$conn->translate("SELECT * FROM [test] WHERE %n LIKE '%d%t' %lmt", 'id', 10),
 );
 
 
@@ -506,13 +506,13 @@ $where = [
 ];
 Assert::same(
 	reformat('SELECT * FROM [tablename] WHERE ([tablename].[column] = 1)'),
-	$conn->translate('SELECT * FROM [tablename] WHERE %and', $where)
+	$conn->translate('SELECT * FROM [tablename] WHERE %and', $where),
 );
 
 
 Assert::same(
 	reformat('SELECT FROM ...'),
-	$conn->translate('SELECT FROM ... %lmt', null)
+	$conn->translate('SELECT FROM ... %lmt', null),
 );
 
 Assert::same(
@@ -520,7 +520,7 @@ Assert::same(
 		'sqlsrv' => "SELECT N'%i'",
 		"SELECT '%i'",
 	]),
-	$conn->translate("SELECT '%i'")
+	$conn->translate("SELECT '%i'"),
 );
 
 Assert::same(
@@ -528,7 +528,7 @@ Assert::same(
 		'sqlsrv' => "SELECT N'%i'",
 		"SELECT '%i'",
 	]),
-	$conn->translate('SELECT "%i"')
+	$conn->translate('SELECT "%i"'),
 );
 
 
@@ -543,7 +543,7 @@ Assert::same(
 	], [
 		'product_id' => 1,
 		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
-	])
+	]),
 );
 
 Assert::same(
@@ -554,7 +554,7 @@ Assert::same(
 	$conn->translate('UPDATE [products]', [
 		'product_id' => 1,
 		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
-	])
+	]),
 );
 
 Assert::same(
@@ -565,7 +565,7 @@ Assert::same(
 	$conn->translate('UPDATE [products]', [
 		'product_id' => 1,
 		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
-	])
+	]),
 );
 
 Assert::same(
@@ -576,7 +576,7 @@ Assert::same(
 	$conn->translate('SELECT * FROM [products] WHERE', [
 		'product_id' => 1,
 		'title' => new Dibi\Expression('SHA1(%s)', 'Test product'),
-	])
+	]),
 );
 
 
@@ -588,7 +588,7 @@ Assert::same(
 			'top' => 2,
 		]),
 		new Dibi\Expression('number < %i', 100),
-	])
+	]),
 );
 
 
@@ -613,7 +613,7 @@ Assert::same(
 		'sqlsrv' => "INSERT INTO test ([id], [text], [num]) VALUES (1, N'ahoj', 1), (2, N'jak', -1), (3, N'se', 10), (4, SUM(5), 1)",
 		"INSERT INTO test ([id], [text], [num]) VALUES (1, 'ahoj', 1), (2, 'jak', -1), (3, 'se', 10), (4, SUM(5), 1)",
 	]),
-	$conn->translate('INSERT INTO test %m', $array6)
+	$conn->translate('INSERT INTO test %m', $array6),
 );
 
 
@@ -624,12 +624,12 @@ $by = [
 
 Assert::same(
 	reformat('SELECT * FROM table ORDER BY funkce(nazev_pole) ASC, [jine_pole] DESC'),
-	$conn->translate('SELECT * FROM table ORDER BY %by', $by)
+	$conn->translate('SELECT * FROM table ORDER BY %by', $by),
 );
 
 Assert::same(
 	reformat('INSERT INTO [test].*'),
-	$conn->translate('INSERT INTO [test.*]')
+	$conn->translate('INSERT INTO [test.*]'),
 );
 
 Assert::exception(function () use ($conn) {
@@ -643,23 +643,23 @@ Assert::exception(function () use ($conn) {
 
 Assert::same(
 	reformat('SELECT * FROM table'),
-	$conn->translate('SELECT', new Dibi\Literal('* FROM table'))
+	$conn->translate('SELECT', new Dibi\Literal('* FROM table')),
 );
 
 Assert::same(
 	reformat('SELECT * FROM table'),
-	$conn->translate('SELECT %SQL', new Dibi\Literal('* FROM table'))
+	$conn->translate('SELECT %SQL', new Dibi\Literal('* FROM table')),
 );
 
 Assert::same(
 	reformat('SELECT * FROM table'),
-	$conn->translate(new Dibi\Literal('SELECT * FROM table'))
+	$conn->translate(new Dibi\Literal('SELECT * FROM table')),
 );
 
 
 Assert::same(
 	reformat('SELECT [a].[b] AS [c.d]'),
-	$conn->translate('SELECT %n AS %N', 'a.b', 'c.d')
+	$conn->translate('SELECT %n AS %N', 'a.b', 'c.d'),
 );
 
 
@@ -677,5 +677,5 @@ Assert::same(
 		'spec2%f' => 1000.00,
 		'spec3%i' => 10000,
 		'spec4' => 10000,
-	], 'WHERE [price]=%f', 123.5)
+	], 'WHERE [price]=%f', 123.5),
 );
