@@ -15,8 +15,7 @@ namespace Dibi;
  */
 class Exception extends \Exception
 {
-	/** @var string|null */
-	private $sql;
+	private ?string $sql;
 
 
 	/**
@@ -86,8 +85,7 @@ class NotSupportedException extends Exception
  */
 class ProcedureException extends Exception
 {
-	/** @var string */
-	protected $severity;
+	protected string $severity;
 
 
 	/**

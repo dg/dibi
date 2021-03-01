@@ -40,11 +40,10 @@ class MySqliDriver implements Dibi\Driver
 
 	public const ERROR_DATA_TRUNCATED = 1265;
 
-	/** @var \mysqli */
-	private $connection;
+	private \mysqli $connection;
 
-	/** @var bool  Is buffered (seekable and countable)? */
-	private $buffered;
+	/** Is buffered (seekable and countable)? */
+	private bool $buffered = false;
 
 
 	/** @throws Dibi\NotSupportedException */

@@ -31,26 +31,19 @@ class Event
 		TRANSACTION = 448, // BEGIN | COMMIT | ROLLBACK
 		ALL = 1023;
 
-	/** @var Connection */
-	public $connection;
+	public Connection $connection;
 
-	/** @var int */
-	public $type;
+	public int $type;
 
-	/** @var string */
-	public $sql;
+	public string $sql;
 
-	/** @var Result|DriverException|null */
-	public $result;
+	public Result|DriverException|null $result;
 
-	/** @var float */
-	public $time;
+	public float $time;
 
-	/** @var int|null */
-	public $count;
+	public ?int $count = null;
 
-	/** @var array|null */
-	public $source;
+	public ?array $source = null;
 
 
 	public function __construct(Connection $connection, int $type, string $sql = null)
@@ -61,7 +54,7 @@ class Event
 		$this->time = -microtime(true);
 
 		if ($type === self::QUERY && preg_match('#\(?\s*(SELECT|UPDATE|INSERT|DELETE)#iA', $this->sql, $matches)) {
-			static $types = [
+			static array $types = [
 				'SELECT' => self::SELECT, 'UPDATE' => self::UPDATE,
 				'INSERT' => self::INSERT, 'DELETE' => self::DELETE,
 			];

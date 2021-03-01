@@ -17,35 +17,25 @@ class DataSource implements IDataSource
 {
 	use Strict;
 
-	/** @var Connection */
-	private $connection;
+	private Connection $connection;
 
-	/** @var string */
-	private $sql;
+	private string $sql;
 
-	/** @var Result|null */
-	private $result;
+	private ?Result $result = null;
 
-	/** @var int|null */
-	private $count;
+	private ?int $count = null;
 
-	/** @var int|null */
-	private $totalCount;
+	private ?int $totalCount = null;
 
-	/** @var array */
-	private $cols = [];
+	private array $cols = [];
 
-	/** @var array */
-	private $sorting = [];
+	private array $sorting = [];
 
-	/** @var array */
-	private $conds = [];
+	private array $conds = [];
 
-	/** @var int|null */
-	private $offset;
+	private ?int $offset = null;
 
-	/** @var int|null */
-	private $limit;
+	private ?int $limit = null;
 
 
 	/**
