@@ -95,22 +95,21 @@ final class Translator
 						// note: this can change $this->args & $this->cursor & ...
 						. preg_replace_callback(
 							<<<'XX'
-							/
-							(?=[`['":%?])                       ## speed-up
-							(?:
-								`(.+?)`|                        ## 1) `identifier`
-								\[(.+?)\]|                      ## 2) [identifier]
-								(')((?:''|[^'])*)'|             ## 3,4) string
-								(")((?:""|[^"])*)"|             ## 5,6) "string"
-								('|")|                          ## 7) lone quote
-								:(\S*?:)([a-zA-Z0-9._]?)|       ## 8,9) :substitution:
-								%([a-zA-Z~][a-zA-Z0-9~]{0,5})|  ## 10) modifier
-								(\?)                            ## 11) placeholder
-							)/xs
-XX
-,
+								/
+								(?=[`['":%?])                       ## speed-up
+								(?:
+									`(.+?)`|                        ## 1) `identifier`
+									\[(.+?)\]|                      ## 2) [identifier]
+									(')((?:''|[^'])*)'|             ## 3,4) string
+									(")((?:""|[^"])*)"|             ## 5,6) "string"
+									('|")|                          ## 7) lone quote
+									:(\S*?:)([a-zA-Z0-9._]?)|       ## 8,9) :substitution:
+									%([a-zA-Z~][a-zA-Z0-9~]{0,5})|  ## 10) modifier
+									(\?)                            ## 11) placeholder
+								)/xs
+								XX,
 							[$this, 'cb'],
-							substr($arg, $toSkip)
+							substr($arg, $toSkip),
 						);
 					if (preg_last_error()) {
 						throw new PcreException;
@@ -420,20 +419,20 @@ XX
 						$value = substr($value, 0, $toSkip)
 							. preg_replace_callback(
 								<<<'XX'
-								/
-								(?=[`['":])
-								(?:
-									`(.+?)`|
-									\[(.+?)\]|
-									(')((?:''|[^'])*)'|
-									(")((?:""|[^"])*)"|
-									('|")|
-									:(\S*?:)([a-zA-Z0-9._]?)
-								)/sx
-XX
+																	/
+																	(?=[`['":])
+																	(?:
+																		`(.+?)`|
+																		\[(.+?)\]|
+																		(')((?:''|[^'])*)'|
+																		(")((?:""|[^"])*)"|
+																		('|")|
+																		:(\S*?:)([a-zA-Z0-9._]?)
+																	)/sx
+									XX
 ,
 								[$this, 'cb'],
-								substr($value, $toSkip)
+								substr($value, $toSkip),
 							);
 						if (preg_last_error()) {
 							throw new PcreException;

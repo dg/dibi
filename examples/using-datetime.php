@@ -29,6 +29,6 @@ $dibi->test('
 		'id' => 123,
 		'date' => new DateTime('12.3.2007'),
 		'stamp' => new DateTime('23.1.2007 10:23'),
-	]
+	],
 );
 // -> INSERT INTO [mytable] ([id], [date], [stamp]) VALUES (123, '2007-03-12', '2007-01-23 10-23-00')

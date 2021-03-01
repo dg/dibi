@@ -238,7 +238,7 @@ class DataSource implements IDataSource
 				$this->sorting ? ['ORDER BY %by', $this->sorting] : null,
 				"\n%ofs %lmt",
 				$this->offset,
-				$this->limit
+				$this->limit,
 			);
 		} catch (\Throwable $e) {
 			trigger_error($e->getMessage(), E_USER_ERROR);
@@ -258,7 +258,7 @@ class DataSource implements IDataSource
 		if ($this->count === null) {
 			$this->count = $this->conds || $this->offset || $this->limit
 				? Helpers::intVal($this->connection->nativeQuery(
-					'SELECT COUNT(*) FROM (' . $this->__toString() . ') t'
+					'SELECT COUNT(*) FROM (' . $this->__toString() . ') t',
 				)->fetchSingle())
 				: $this->getTotalCount();
 		}
@@ -273,7 +273,7 @@ class DataSource implements IDataSource
 	{
 		if ($this->totalCount === null) {
 			$this->totalCount = Helpers::intVal($this->connection->nativeQuery(
-				'SELECT COUNT(*) FROM ' . $this->sql
+				'SELECT COUNT(*) FROM ' . $this->sql,
 			)->fetchSingle());
 		}
 		return $this->totalCount;
