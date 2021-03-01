@@ -19,14 +19,12 @@ class MySqliResult implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var \mysqli_result */
-	private $resultSet;
+	private \mysqli_result $resultSet;
 
-	/** @var bool */
-	private $autoFree = true;
+	private bool $autoFree = true;
 
-	/** @var bool  Is buffered (seekable and countable)? */
-	private $buffered;
+	/** Is buffered (seekable and countable)? */
+	private bool $buffered;
 
 
 	public function __construct(\mysqli_result $resultSet, bool $buffered)

@@ -32,14 +32,12 @@ class OracleDriver implements Dibi\Driver
 	/** @var resource */
 	private $connection;
 
-	/** @var bool */
-	private $autocommit = true;
+	private bool $autocommit = true;
 
-	/** @var bool  use native datetime format */
-	private $nativeDate;
+	/** use native datetime format */
+	private bool $nativeDate;
 
-	/** @var int|null Number of affected rows */
-	private $affectedRows;
+	private ?int $affectedRows;
 
 
 	/** @throws Dibi\NotSupportedException */
