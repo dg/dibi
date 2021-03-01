@@ -25,7 +25,7 @@ $conn->query(
 	'CREATE TRIGGER %n ON %n AFTER INSERT AS INSERT INTO %n DEFAULT VALUES',
 	'UpdAAB',
 	'aab',
-	'aaa'
+	'aaa',
 );
 
 $conn->query('INSERT INTO %n DEFAULT VALUES', 'aab');
