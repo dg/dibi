@@ -33,8 +33,7 @@ class PostgreDriver implements Dibi\Driver
 	/** @var resource|PgSql\Connection */
 	private $connection;
 
-	/** @var int|null  Affected rows */
-	private $affectedRows;
+	private ?int $affectedRows;
 
 
 	/** @throws Dibi\NotSupportedException */

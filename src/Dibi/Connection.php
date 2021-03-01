@@ -22,25 +22,22 @@ class Connection implements IConnection
 {
 	use Strict;
 
-	/** @var array of function (Event $event); Occurs after query is executed */
-	public $onEvent = [];
+	/** function (Event $event); Occurs after query is executed */
+	public ?array $onEvent = [];
 
-	/** @var array  Current connection configuration */
-	private $config;
+	/** Current connection configuration */
+	private array $config;
 
 	/** @var string[]  resultset formats */
-	private $formats;
+	private array $formats;
 
-	/** @var Driver|null */
-	private $driver;
+	private ?Driver $driver = null;
 
-	/** @var Translator|null */
-	private $translator;
+	private ?Translator $translator = null;
 
-	/** @var HashMap Substitutes for identifiers */
-	private $substitutes;
+	private HashMap $substitutes;
 
-	private $transactionDepth = 0;
+	private int $transactionDepth = 0;
 
 
 	/**
