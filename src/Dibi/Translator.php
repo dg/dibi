@@ -17,38 +17,28 @@ final class Translator
 {
 	use Strict;
 
-	/** @var Connection */
-	private $connection;
+	private Connection $connection;
 
-	/** @var Driver */
-	private $driver;
+	private Driver $driver;
 
-	/** @var int */
-	private $cursor = 0;
+	private int $cursor = 0;
 
-	/** @var array */
-	private $args;
+	private array $args;
 
 	/** @var string[] */
-	private $errors;
+	private array $errors;
 
-	/** @var bool */
-	private $comment = false;
+	private bool $comment = false;
 
-	/** @var int */
-	private $ifLevel = 0;
+	private int $ifLevel = 0;
 
-	/** @var int */
-	private $ifLevelStart = 0;
+	private int $ifLevelStart = 0;
 
-	/** @var int|null */
-	private $limit;
+	private ?int $limit = null;
 
-	/** @var int|null */
-	private $offset;
+	private ?int $offset = null;
 
-	/** @var HashMap */
-	private $identifiers;
+	private HashMap $identifiers;
 
 
 	public function __construct(Connection $connection)

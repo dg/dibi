@@ -20,11 +20,9 @@ class SqliteResult implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var \SQLite3Result */
-	private $resultSet;
+	private \SQLite3Result $resultSet;
 
-	/** @var bool */
-	private $autoFree = true;
+	private bool $autoFree = true;
 
 
 	public function __construct(\SQLite3Result $resultSet)

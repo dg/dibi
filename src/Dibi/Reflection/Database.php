@@ -23,14 +23,12 @@ class Database
 {
 	use Dibi\Strict;
 
-	/** @var Dibi\Reflector */
-	private $reflector;
+	private Dibi\Reflector $reflector;
 
-	/** @var string|null */
-	private $name;
+	private ?string $name;
 
-	/** @var Table[]|null */
-	private $tables;
+	/** @var Table[] */
+	private array $tables;
 
 
 	public function __construct(Dibi\Reflector $reflector, ?string $name = null)
@@ -89,7 +87,7 @@ class Database
 
 	protected function init(): void
 	{
-		if ($this->tables === null) {
+		if (!isset($this->tables)) {
 			$this->tables = [];
 			foreach ($this->reflector->getTables() as $info) {
 				$this->tables[strtolower($info['name'])] = new Table($this->reflector, $info);

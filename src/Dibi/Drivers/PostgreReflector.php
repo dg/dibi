@@ -19,11 +19,9 @@ class PostgreReflector implements Dibi\Reflector
 {
 	use Dibi\Strict;
 
-	/** @var Dibi\Driver */
-	private $driver;
+	private Dibi\Driver $driver;
 
-	/** @var string */
-	private $version;
+	private string $version;
 
 
 	public function __construct(Dibi\Driver $driver, string $version)
