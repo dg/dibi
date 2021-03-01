@@ -31,7 +31,7 @@ $name = $cond1 ? 'K%' : null;
 $dibi->test('
 	SELECT *
 	FROM customers
-	%if', isset($name), 'WHERE name LIKE ?', $name, '%end'
+	%if', isset($name), 'WHERE name LIKE ?', $name, '%end',
 );
 // -> SELECT * FROM customers WHERE name LIKE 'K%'
 
@@ -54,7 +54,7 @@ $dibi->test('
 	WHERE
 		%if', isset($name), 'name LIKE ?', $name, '
 			%if', $cond2, 'AND admin=1 %end
-		%else 1 LIMIT 10 %end'
+		%else 1 LIMIT 10 %end',
 );
 // -> SELECT * FROM customers WHERE LIMIT 10
 

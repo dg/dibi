@@ -54,6 +54,6 @@ define('SUBST_ACTIVE', 7);
 $dibi->test("
 	UPDATE :account:user
 	SET name='John Doe', status=:active:
-	WHERE id=", 7
+	WHERE id=", 7,
 );
 // -> UPDATE eshop_user SET name='John Doe', status=7 WHERE id= 7

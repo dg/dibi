@@ -75,7 +75,7 @@ class Connection implements IConnection
 		Helpers::alias($config, 'host', 'hostname');
 		Helpers::alias($config, 'result|formatDate', 'resultDate');
 		Helpers::alias($config, 'result|formatDateTime', 'resultDateTime');
-		$config['driver'] = $config['driver'] ?? 'mysqli';
+		$config['driver'] ??= 'mysqli';
 		$config['name'] = $name;
 		$this->config = $config;
 
@@ -93,7 +93,7 @@ class Connection implements IConnection
 			$this->onEvent[] = [new Loggers\FileLogger($config['profiler']['file'], $filter, $errorsOnly), 'logEvent'];
 		}
 
-		$this->substitutes = new HashMap(function (string $expr) { return ":$expr:"; });
+		$this->substitutes = new HashMap(fn(string $expr) => ":$expr:");
 		if (!empty($config['substitutes'])) {
 			foreach ($config['substitutes'] as $key => $value) {
 				$this->substitutes->$key = $value;
@@ -514,7 +514,7 @@ class Connection implements IConnection
 	{
 		return strpos($value, ':') === false
 			? $value
-			: preg_replace_callback('#:([^:\s]*):#', function (array $m) { return $this->substitutes->{$m[1]}; }, $value);
+			: preg_replace_callback('#:([^:\s]*):#', fn(array $m) => $this->substitutes->{$m[1]}, $value);
 	}
 
 
