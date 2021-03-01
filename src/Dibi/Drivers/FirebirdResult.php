@@ -23,8 +23,7 @@ class FirebirdResult implements Dibi\ResultDriver
 	/** @var resource */
 	private $resultSet;
 
-	/** @var bool */
-	private $autoFree = true;
+	private bool $autoFree = true;
 
 
 	/**
