@@ -20,14 +20,14 @@ $fluent = $conn->update('table', $arr)
 
 Assert::same(
 	reformat('UPDATE IGNORE DELAYED [table] SET [title]=\'Super Product\', [price]=12, [brand]=NULL'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->set(['another' => 123]);
 
 Assert::same(
 	reformat('UPDATE IGNORE DELAYED [table] SET [title]=\'Super Product\', [price]=12, [brand]=NULL , [another]=123'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 
@@ -39,5 +39,5 @@ $arr = [
 $fluent = $conn->update(['table1', 'table2'], $arr);
 Assert::same(
 	reformat('UPDATE [table1], [table2] SET [table1].[title]=\'Super Product\', [table2].[price]=12, [table2].[brand]=NULL'),
-	(string) $fluent
+	(string) $fluent,
 );
