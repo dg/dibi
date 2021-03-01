@@ -16,7 +16,7 @@ Assert::match(
 	reformat('
 SELECT *
 FROM (SELECT * FROM products) t'),
-	(string) $ds
+	(string) $ds,
 );
 
 
@@ -24,7 +24,7 @@ Assert::same(3, $ds->count());
 Assert::same(3, $ds->getTotalCount());
 Assert::same(
 	reformat('SELECT COUNT(*) FROM (SELECT * FROM products) t'),
-	dibi::$sql
+	dibi::$sql,
 );
 
 
@@ -38,7 +38,7 @@ FROM (SELECT * FROM products) t
  WHERE (title like '%a%')
  ORDER BY [title] DESC
  "),
-	(string) $ds
+	(string) $ds,
 );
 
 
@@ -52,7 +52,7 @@ FROM (SELECT * FROM products) t
  WHERE (title like '%a%') AND (product_id = 1)
  ORDER BY [title] DESC, [product_id] ASC
  "),
-	(string) $ds
+	(string) $ds,
 );
 
 
@@ -66,7 +66,7 @@ FROM (SELECT * FROM products) t
  WHERE (title like '%a%') AND (product_id = 1) AND (product_id = 1)
  ORDER BY [product_id] ASC
  "),
-	(string) $ds
+	(string) $ds,
 );
 
 
@@ -94,7 +94,7 @@ FROM (SELECT * FROM products) t
  WHERE (title like '%a%') AND (product_id = 1) AND (product_id = 1)
  ORDER BY [product_id] ASC
 "),
-	dibi::$sql
+	dibi::$sql,
 );
 
 
@@ -107,7 +107,7 @@ FROM (SELECT * FROM products) t
  WHERE (title like '%a%') AND (product_id = 1) AND (product_id = 1)
  ORDER BY [product_id] ASC
 ) t"),
-	(string) $fluent
+	(string) $fluent,
 );
 
 
@@ -116,7 +116,7 @@ Assert::match(
 	reformat('
 SELECT *
 FROM (SELECT [title] FROM [products]) t'),
-	(string) $ds
+	(string) $ds,
 );
 
 Assert::equal(new Row([
@@ -128,7 +128,7 @@ Assert::same(1, $conn->dataSource('SELECT * FROM products ORDER BY product_id')-
 
 Assert::same(
 	[1 => 'Chair', 'Table', 'Computer'],
-	$conn->dataSource('SELECT * FROM products ORDER BY product_id')->fetchPairs()
+	$conn->dataSource('SELECT * FROM products ORDER BY product_id')->fetchPairs(),
 );
 
 Assert::equal([
@@ -153,7 +153,7 @@ Assert::match(
 	reformat('
 SELECT *
 FROM [products]'),
-	(string) $ds
+	(string) $ds,
 );
 
 Assert::same(3, $ds->count());

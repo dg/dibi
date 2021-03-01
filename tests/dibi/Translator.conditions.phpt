@@ -27,8 +27,8 @@ FROM [customers]
 		isset($name),
 		'WHERE [name] LIKE %s',
 		'xxx',
-		'%end'
-	)
+		'%end',
+	),
 );
 
 
@@ -42,8 +42,8 @@ FROM  [customers] /* ... */'),
 SELECT *
 FROM %if',
 		true,
-		'[customers] %else [products]'
-	)
+		'[customers] %else [products]',
+	),
 );
 
 
@@ -62,7 +62,7 @@ FROM [people]
 WHERE [id] > 0
 	%if', false, 'AND [foo]=%i', 1, '
 	%else %if', true, 'AND [bar]=%i', 1, '
-')
+'),
 );
 
 
@@ -97,8 +97,8 @@ WHERE
 		%if',
 		false,
 		'AND [admin]=1 %end
-	%else 1 LIMIT 10 %end'
-	)
+	%else 1 LIMIT 10 %end',
+	),
 );
 
 
@@ -113,6 +113,6 @@ Assert::same(
 		3,
 		'%ofs',
 		5,
-		'%end'
-	)
+		'%end',
+	),
 );

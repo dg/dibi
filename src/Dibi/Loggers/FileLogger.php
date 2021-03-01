@@ -57,7 +57,7 @@ class FileLogger
 			$this->writeToFile(
 				$event,
 				"ERROR: $message"
-					. "\n-- SQL: " . $event->sql
+					. "\n-- SQL: " . $event->sql,
 			);
 		} else {
 			$this->writeToFile(
@@ -65,7 +65,7 @@ class FileLogger
 				'OK: ' . $event->sql
 					. ($event->count ? ";\n-- rows: " . $event->count : '')
 					. "\n-- takes: " . sprintf('%0.3f ms', $event->time * 1000)
-					. "\n-- source: " . implode(':', $event->source)
+					. "\n-- source: " . implode(':', $event->source),
 			);
 		}
 	}
