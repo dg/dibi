@@ -206,7 +206,7 @@ class Result implements IDataSource
 	 */
 	final public function fetchAll(?int $offset = null, ?int $limit = null): array
 	{
-		$limit = $limit ?? -1;
+		$limit ??= -1;
 		$this->seek($offset ?: 0);
 		$row = $this->fetch();
 		if (!$row) {

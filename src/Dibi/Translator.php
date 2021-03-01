@@ -96,22 +96,21 @@ final class Translator
 						// note: this can change $this->args & $this->cursor & ...
 						. preg_replace_callback(
 							<<<'XX'
-							/
-							(?=[`['":%?])                       ## speed-up
-							(?:
-								`(.+?)`|                        ## 1) `identifier`
-								\[(.+?)\]|                      ## 2) [identifier]
-								(')((?:''|[^'])*)'|             ## 3,4) string
-								(")((?:""|[^"])*)"|             ## 5,6) "string"
-								('|")|                          ## 7) lone quote
-								:(\S*?:)([a-zA-Z0-9._]?)|       ## 8,9) :substitution:
-								%([a-zA-Z~][a-zA-Z0-9~]{0,5})|  ## 10) modifier
-								(\?)                            ## 11) placeholder
-							)/xs
-XX
-,
+								/
+								(?=[`['":%?])                       ## speed-up
+								(?:
+									`(.+?)`|                        ## 1) `identifier`
+									\[(.+?)\]|                      ## 2) [identifier]
+									(')((?:''|[^'])*)'|             ## 3,4) string
+									(")((?:""|[^"])*)"|             ## 5,6) "string"
+									('|")|                          ## 7) lone quote
+									:(\S*?:)([a-zA-Z0-9._]?)|       ## 8,9) :substitution:
+									%([a-zA-Z~][a-zA-Z0-9~]{0,5})|  ## 10) modifier
+									(\?)                            ## 11) placeholder
+								)/xs
+								XX,
 							[$this, 'cb'],
-							substr($arg, $toSkip)
+							substr($arg, $toSkip),
 						);
 					if (preg_last_error()) {
 						throw new PcreException;
@@ -280,7 +279,7 @@ XX
 								$proto = array_keys($v);
 							}
 						} else {
-							return $this->errors[] = '**Unexpected type ' . (is_object($v) ? get_class($v) : gettype($v)) . '**';
+							return $this->errors[] = '**Unexpected type ' . (is_object($v) ? $v::class : gettype($v)) . '**';
 						}
 
 						$pair = explode('%', $k, 2); // split into identifier & modifier
@@ -349,7 +348,7 @@ XX
 				) {
 					// continue
 				} else {
-					$type = is_object($value) ? get_class($value) : gettype($value);
+					$type = is_object($value) ? $value::class : gettype($value);
 					return $this->errors[] = "**Invalid combination of type $type and modifier %$modifier**";
 				}
 			}
@@ -437,20 +436,20 @@ XX
 						$value = substr($value, 0, $toSkip)
 							. preg_replace_callback(
 								<<<'XX'
-								/
-								(?=[`['":])
-								(?:
-									`(.+?)`|
-									\[(.+?)\]|
-									(')((?:''|[^'])*)'|
-									(")((?:""|[^"])*)"|
-									('|")|
-									:(\S*?:)([a-zA-Z0-9._]?)
-								)/sx
-XX
+																	/
+																	(?=[`['":])
+																	(?:
+																		`(.+?)`|
+																		\[(.+?)\]|
+																		(')((?:''|[^'])*)'|
+																		(")((?:""|[^"])*)"|
+																		('|")|
+																		:(\S*?:)([a-zA-Z0-9._]?)
+																	)/sx
+									XX
 ,
 								[$this, 'cb'],
-								substr($value, $toSkip)
+								substr($value, $toSkip),
 							);
 						if (preg_last_error()) {
 							throw new PcreException;
@@ -516,7 +515,7 @@ XX
 			return $this->connection->translate(...$value->getValues());
 
 		} else {
-			$type = is_object($value) ? get_class($value) : gettype($value);
+			$type = is_object($value) ? $value::class : gettype($value);
 			return $this->errors[] = "**Unexpected $type**";
 		}
 	}
