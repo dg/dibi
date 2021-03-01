@@ -24,8 +24,7 @@ class PostgreResult implements Dibi\ResultDriver
 	/** @var resource|PgSql\Result */
 	private $resultSet;
 
-	/** @var bool */
-	private $autoFree = true;
+	private bool $autoFree = true;
 
 
 	/**
