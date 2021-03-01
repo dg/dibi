@@ -20,7 +20,7 @@ use ReflectionProperty;
 trait Strict
 {
 	/** @var array [method => [type => callback]] */
-	private static $extMethods;
+	private static array $extMethods;
 
 
 	/**

@@ -17,14 +17,11 @@ class ResultIterator implements \Iterator, \Countable
 {
 	use Strict;
 
-	/** @var Result */
-	private $result;
+	private Result $result;
 
-	/** @var mixed */
-	private $row;
+	private mixed $row;
 
-	/** @var int */
-	private $pointer = 0;
+	private int $pointer = 0;
 
 
 	public function __construct(Result $result)
