@@ -13,13 +13,16 @@ switch ($config['system']) {
 	case 'mysql':
 		Assert::equal('10:20:30.0', $translator->formatValue(new DateInterval('PT10H20M30S'), null));
 		Assert::equal('-1:00:00.0', $translator->formatValue(DateInterval::createFromDateString('-1 hour'), null));
-		Assert::exception(function () use ($translator) {
-			$translator->formatValue(new DateInterval('P2Y4DT6H8M'), null);
-		}, Dibi\NotSupportedException::class, 'Only time interval is supported.');
+		Assert::exception(
+			fn() => $translator->formatValue(new DateInterval('P2Y4DT6H8M'), null),
+			Dibi\NotSupportedException::class,
+			'Only time interval is supported.',
+		);
 		break;
 
 	default:
-		Assert::exception(function () use ($translator) {
-			$translator->formatValue(new DateInterval('PT10H20M30S'), null);
-		}, Dibi\Exception::class);
+		Assert::exception(
+			fn() => $translator->formatValue(new DateInterval('PT10H20M30S'), null),
+			Dibi\Exception::class,
+		);
 }

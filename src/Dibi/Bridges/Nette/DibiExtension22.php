@@ -66,7 +66,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 		if (class_exists(Tracy\Debugger::class)) {
 			$connection->addSetup(
 				[new Nette\DI\Statement('Tracy\Debugger::getBlueScreen'), 'addPanel'],
-				[[Dibi\Bridges\Tracy\Panel::class, 'renderException']]
+				[[Dibi\Bridges\Tracy\Panel::class, 'renderException']],
 			);
 		}
 

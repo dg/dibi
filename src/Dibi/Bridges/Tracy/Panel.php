@@ -174,7 +174,7 @@ class Panel implements Tracy\IBarPanel
 	private function getConnectionName(Dibi\Connection $connection): string
 	{
 		$driver = $connection->getConfig('driver');
-		return (is_object($driver) ? get_class($driver) : $driver)
+		return (is_object($driver) ? $driver::class : $driver)
 			. ($connection->getConfig('name') ? '/' . $connection->getConfig('name') : '')
 			. ($connection->getConfig('host') ? "\u{202f}@\u{202f}" . $connection->getConfig('host') : '');
 	}

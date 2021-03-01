@@ -15,23 +15,32 @@ $conn = new Dibi\Connection($config);
 $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 
 
-$e = Assert::exception(function () use ($conn) {
-	$conn->query('SELECT');
-}, Dibi\DriverException::class, '%a%', 1);
+$e = Assert::exception(
+	fn() => $conn->query('SELECT'),
+	Dibi\DriverException::class,
+	'%a%',
+	1,
+);
 
 Assert::same('SELECT', $e->getSql());
 
 
-$e = Assert::exception(function () use ($conn) {
-	$conn->query('INSERT INTO products (product_id, title) VALUES (1, "New")');
-}, Dibi\UniqueConstraintViolationException::class, null, 19);
+$e = Assert::exception(
+	fn() => $conn->query('INSERT INTO products (product_id, title) VALUES (1, "New")'),
+	Dibi\UniqueConstraintViolationException::class,
+	null,
+	19,
+);
 
 Assert::same("INSERT INTO products (product_id, title) VALUES (1, 'New')", $e->getSql());
 
 
-$e = Assert::exception(function () use ($conn) {
-	$conn->query('INSERT INTO products (title) VALUES (NULL)');
-}, Dibi\NotNullConstraintViolationException::class, null, 19);
+$e = Assert::exception(
+	fn() => $conn->query('INSERT INTO products (title) VALUES (NULL)'),
+	Dibi\NotNullConstraintViolationException::class,
+	null,
+	19,
+);
 
 Assert::same('INSERT INTO products (title) VALUES (NULL)', $e->getSql());
 

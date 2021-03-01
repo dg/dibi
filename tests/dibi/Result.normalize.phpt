@@ -162,9 +162,10 @@ test('', function () {
 	if (PHP_VERSION_ID < 80000) {
 		Assert::same(['col' => 0], @$result->test(['col' => ''])); // triggers warning since PHP 7.1
 	} else {
-		Assert::exception(function () use ($result) {
-			Assert::same(['col' => 0], $result->test(['col' => '']));
-		}, TypeError::class);
+		Assert::exception(
+			fn() => Assert::same(['col' => 0], $result->test(['col' => ''])),
+			TypeError::class,
+		);
 	}
 
 	Assert::same(['col' => 0], $result->test(['col' => '0']));
@@ -189,9 +190,10 @@ test('', function () {
 	$result->setType('col', Type::DATETIME);
 
 	Assert::same(['col' => null], $result->test(['col' => null]));
-	Assert::exception(function () use ($result) {
-		$result->test(['col' => true]);
-	}, TypeError::class);
+	Assert::exception(
+		fn() => $result->test(['col' => true]),
+		TypeError::class,
+	);
 	Assert::same(['col' => null], $result->test(['col' => false]));
 
 	Assert::same(['col' => null], $result->test(['col' => '']));
@@ -208,9 +210,10 @@ test('', function () {
 	$result->setFormat(Type::DATETIME, 'Y-m-d H:i:s');
 
 	Assert::same(['col' => null], $result->test(['col' => null]));
-	Assert::exception(function () use ($result) {
-		$result->test(['col' => true]);
-	}, TypeError::class);
+	Assert::exception(
+		fn() => $result->test(['col' => true]),
+		TypeError::class,
+	);
 	Assert::same(['col' => null], $result->test(['col' => false]));
 
 	Assert::same(['col' => null], $result->test(['col' => '']));
@@ -226,9 +229,10 @@ test('', function () {
 	$result->setType('col', Type::DATE);
 
 	Assert::same(['col' => null], $result->test(['col' => null]));
-	Assert::exception(function () use ($result) {
-		$result->test(['col' => true]);
-	}, TypeError::class);
+	Assert::exception(
+		fn() => $result->test(['col' => true]),
+		TypeError::class,
+	);
 	Assert::same(['col' => null], $result->test(['col' => false]));
 
 	Assert::same(['col' => null], $result->test(['col' => '']));
@@ -242,9 +246,10 @@ test('', function () {
 	$result->setType('col', Type::TIME);
 
 	Assert::same(['col' => null], $result->test(['col' => null]));
-	Assert::exception(function () use ($result) {
-		$result->test(['col' => true]);
-	}, TypeError::class);
+	Assert::exception(
+		fn() => $result->test(['col' => true]),
+		TypeError::class,
+	);
 	Assert::same(['col' => null], $result->test(['col' => false]));
 
 	Assert::same(['col' => null], $result->test(['col' => '']));
