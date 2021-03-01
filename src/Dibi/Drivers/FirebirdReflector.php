@@ -19,8 +19,7 @@ class FirebirdReflector implements Dibi\Reflector
 {
 	use Dibi\Strict;
 
-	/** @var Dibi\Driver */
-	private $driver;
+	private Dibi\Driver $driver;
 
 
 	public function __construct(Dibi\Driver $driver)

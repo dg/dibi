@@ -14,8 +14,7 @@ class Helpers
 {
 	use Strict;
 
-	/** @var HashMap */
-	private static $types;
+	private static HashMap $types;
 
 
 	/**
@@ -205,7 +204,7 @@ class Helpers
 	/** @internal */
 	public static function getTypeCache(): HashMap
 	{
-		if (self::$types === null) {
+		if (!isset(self::$types)) {
 			self::$types = new HashMap([self::class, 'detectType']);
 		}
 		return self::$types;
