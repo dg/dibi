@@ -29,17 +29,13 @@ class PdoDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
-	/** @var PDO|null  Connection resource */
-	private $connection;
+	private ?PDO $connection;
 
-	/** @var int|null  Affected rows */
-	private $affectedRows;
+	private ?int $affectedRows;
 
-	/** @var string */
-	private $driverName;
+	private string $driverName;
 
-	/** @var string */
-	private $serverVersion = '';
+	private string $serverVersion = '';
 
 
 	/** @throws Dibi\NotSupportedException */

@@ -29,11 +29,11 @@ class Column
 {
 	use Dibi\Strict;
 
-	/** @var Dibi\Reflector|null when created by Result */
-	private $reflector;
+	/** when created by Result */
+	private ?Dibi\Reflector $reflector;
 
 	/** @var array (name, nativetype, [table], [fullname], [size], [nullable], [default], [autoincrement], [vendor]) */
-	private $info;
+	private array $info;
 
 
 	public function __construct(?Dibi\Reflector $reflector, array $info)
