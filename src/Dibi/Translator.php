@@ -159,9 +159,8 @@ final class Translator
 
 	/**
 	 * Apply modifier to single value.
-	 * @param  mixed  $value
 	 */
-	public function formatValue($value, ?string $modifier): string
+	public function formatValue(mixed $value, ?string $modifier): string
 	{
 		if ($this->comment) {
 			return '...';
