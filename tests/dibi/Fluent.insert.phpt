@@ -21,40 +21,40 @@ $fluent = $conn->insert('table', $arr)
 
 Assert::same(
 	reformat('INSERT IGNORE DELAYED INTO [table] ([title], [price], [brand]) VALUES (\'Super Product\', 12, NULL)'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->setFlag('IGNORE', false);
 
 Assert::same(
 	reformat('INSERT DELAYED INTO [table] ([title], [price], [brand]) VALUES (\'Super Product\', 12, NULL)'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->setFlag('HIGH_priority');
 
 Assert::same(
 	reformat('INSERT DELAYED HIGH_PRIORITY INTO [table] ([title], [price], [brand]) VALUES (\'Super Product\', 12, NULL)'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->into('anotherTable');
 
 Assert::same(
 	reformat('INSERT DELAYED HIGH_PRIORITY INTO [anotherTable] VALUES (\'Super Product\', 12, NULL)'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->values('%l', $arr);
 
 Assert::same(
 	reformat('INSERT DELAYED HIGH_PRIORITY INTO [anotherTable] VALUES (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL)'),
-	(string) $fluent
+	(string) $fluent,
 );
 
 $fluent->values($arr);
 
 Assert::same(
 	reformat('INSERT DELAYED HIGH_PRIORITY INTO [anotherTable] VALUES (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL) , (\'Super Product\', 12, NULL)'),
-	(string) $fluent
+	(string) $fluent,
 );

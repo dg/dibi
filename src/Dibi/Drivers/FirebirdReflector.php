@@ -242,7 +242,7 @@ class FirebirdReflector implements Dibi\Reflector
 				END AS TRIGGER_ENABLED
 			FROM RDB\$TRIGGERS
 			WHERE RDB\$SYSTEM_FLAG = 0"
-			. ($table === null ? ';' : " AND RDB\$RELATION_NAME = UPPER('$table');")
+			. ($table === null ? ';' : " AND RDB\$RELATION_NAME = UPPER('$table');"),
 		);
 		$triggers = [];
 		while ($row = $res->fetch(true)) {
