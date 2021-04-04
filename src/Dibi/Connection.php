@@ -337,6 +337,10 @@ class Connection implements IConnection
 	 */
 	public function begin(string $savepoint = null): void
 	{
+		if ($this->transactionDepth !== 0) {
+			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
+		}
+
 		if (!$this->driver) {
 			$this->connect();
 		}
@@ -361,6 +365,10 @@ class Connection implements IConnection
 	 */
 	public function commit(string $savepoint = null): void
 	{
+		if ($this->transactionDepth !== 0) {
+			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
+		}
+
 		if (!$this->driver) {
 			$this->connect();
 		}
@@ -385,6 +393,10 @@ class Connection implements IConnection
 	 */
 	public function rollback(string $savepoint = null): void
 	{
+		if ($this->transactionDepth !== 0) {
+			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
+		}
+
 		if (!$this->driver) {
 			$this->connect();
 		}
