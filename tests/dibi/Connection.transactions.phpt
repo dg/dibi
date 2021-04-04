@@ -52,8 +52,8 @@ Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSing
 
 
 Assert::exception(function () use ($conn) {
-	$conn->transaction(function () use ($conn) {
-		$conn->query('INSERT INTO [products]', [
+	$conn->transaction(function (Dibi\Connection $connection) {
+		$connection->query('INSERT INTO [products]', [
 			'title' => 'Test product',
 		]);
 		throw new Exception('my exception');
@@ -62,8 +62,8 @@ Assert::exception(function () use ($conn) {
 
 Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
 
-$conn->transaction(function () use ($conn) {
-	$conn->query('INSERT INTO [products]', [
+$conn->transaction(function (Dibi\Connection $connection) {
+	$connection->query('INSERT INTO [products]', [
 		'title' => 'Test product',
 	]);
 });

@@ -398,7 +398,7 @@ class Connection implements IConnection
 	{
 		$this->begin();
 		try {
-			$res = $callback();
+			$res = $callback($this);
 		} catch (\Throwable $e) {
 			$this->rollback();
 			throw $e;
