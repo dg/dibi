@@ -59,7 +59,7 @@ class dibi
 	public static ?float $elapsedTime = null;
 
 	/** Elapsed time for all queries */
-	public static float $totalTime;
+	public static float $totalTime = 0;
 
 	/** Number or queries */
 	public static int $numOfQueries = 0;
