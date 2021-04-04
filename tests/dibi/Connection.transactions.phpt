@@ -30,42 +30,46 @@ Assert::exception(function () use ($conn) {
 */
 
 
-$conn->begin();
-Assert::same(3, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
-$conn->query('INSERT INTO [products]', [
-	'title' => 'Test product',
-]);
-Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
-$conn->rollback();
-Assert::same(3, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
+test('begin() & rollback()', function () use ($conn) {
+	$conn->begin();
+	Assert::same(3, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
+	$conn->query('INSERT INTO [products]', [
+		'title' => 'Test product',
+	]);
+	Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
+	$conn->rollback();
+	Assert::same(3, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
+});
 
 
+test('begin() & commit()', function () use ($conn) {
+	$conn->begin();
+	$conn->query('INSERT INTO [products]', [
+		'title' => 'Test product',
+	]);
+	$conn->commit();
+	Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
+});
 
 
-$conn->begin();
-$conn->query('INSERT INTO [products]', [
-	'title' => 'Test product',
-]);
-$conn->commit();
-Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
+test('transaction() fail', function () use ($conn) {
+	Assert::exception(function () use ($conn) {
+		$conn->transaction(function (Dibi\Connection $connection) {
+			$connection->query('INSERT INTO [products]', [
+				'title' => 'Test product',
+			]);
+			throw new Exception('my exception');
+		});
+	}, \Throwable::class, 'my exception');
+	Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
+});
 
 
-
-Assert::exception(function () use ($conn) {
+test('transaction() success', function () use ($conn) {
 	$conn->transaction(function (Dibi\Connection $connection) {
 		$connection->query('INSERT INTO [products]', [
 			'title' => 'Test product',
 		]);
-		throw new Exception('my exception');
 	});
-}, \Throwable::class, 'my exception');
-
-Assert::same(4, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
-
-$conn->transaction(function (Dibi\Connection $connection) {
-	$connection->query('INSERT INTO [products]', [
-		'title' => 'Test product',
-	]);
+	Assert::same(5, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
 });
-
-Assert::same(5, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
