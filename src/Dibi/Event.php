@@ -54,7 +54,7 @@ class Event
 		$this->time = -microtime(true);
 
 		if ($type === self::QUERY && preg_match('#\(?\s*(SELECT|UPDATE|INSERT|DELETE)#iA', $this->sql, $matches)) {
-			static array $types = [
+			static $types = [
 				'SELECT' => self::SELECT, 'UPDATE' => self::UPDATE,
 				'INSERT' => self::INSERT, 'DELETE' => self::DELETE,
 			];
