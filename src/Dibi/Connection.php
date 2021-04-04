@@ -37,6 +37,8 @@ class Connection implements IConnection
 
 	private HashMap $substitutes;
 
+	private int $transactionDepth = 0;
+
 
 	/**
 	 * Connection options: (see driver-specific options too)
@@ -396,14 +398,27 @@ class Connection implements IConnection
 
 	public function transaction(callable $callback): mixed
 	{
-		$this->begin();
+		if ($this->transactionDepth === 0) {
+			$this->begin();
+		}
+
+		$this->transactionDepth++;
 		try {
 			$res = $callback($this);
 		} catch (\Throwable $e) {
-			$this->rollback();
-			throw $e;
 		}
-		$this->commit();
+		$this->transactionDepth--;
+
+		if (isset($e)) {
+			if ($this->transactionDepth === 0) {
+				$this->rollback();
+			}
+			throw $e;
+
+		} elseif ($this->transactionDepth === 0) {
+			$this->commit();
+		}
+
 		return $res;
 	}
 
