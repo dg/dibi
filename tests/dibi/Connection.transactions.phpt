@@ -73,3 +73,38 @@ test('transaction() success', function () use ($conn) {
 	});
 	Assert::same(5, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
 });
+
+
+test('nested transaction() call fail', function () use ($conn) {
+	Assert::exception(function () use ($conn) {
+		$conn->transaction(function (Dibi\Connection $connection) {
+			$connection->query('INSERT INTO [products]', [
+				'title' => 'Test product',
+			]);
+
+			$connection->transaction(function (Dibi\Connection $connection2) {
+				$connection2->query('INSERT INTO [products]', [
+					'title' => 'Test product',
+				]);
+				throw new Exception('my exception');
+			});
+		});
+	}, \Throwable::class, 'my exception');
+	Assert::same(5, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
+});
+
+
+test('nested transaction() call success', function () use ($conn) {
+	$conn->transaction(function (Dibi\Connection $connection) {
+		$connection->query('INSERT INTO [products]', [
+			'title' => 'Test product',
+		]);
+
+		$connection->transaction(function (Dibi\Connection $connection2) {
+			$connection2->query('INSERT INTO [products]', [
+				'title' => 'Test product',
+			]);
+		});
+	});
+	Assert::same(7, (int) $conn->query('SELECT COUNT(*) FROM [products]')->fetchSingle());
+});
