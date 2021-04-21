@@ -35,6 +35,10 @@ Assert::error(function () use ($row) {
 Assert::false(isset($row->missing));
 Assert::false(isset($row['missing']));
 
+// ??
+Assert::same(123, $row->missing ?? 123);
+Assert::same(123, $row['missing'] ?? 123);
+
 
 // suggestions
 Assert::error(function () use ($row) {

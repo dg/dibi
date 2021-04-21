@@ -53,6 +53,12 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 
+	public function __isset(string $key): bool
+	{
+		return false;
+	}
+
+
 	/********************* interfaces ArrayAccess, Countable & IteratorAggregate ****************d*g**/
 
 
