@@ -72,7 +72,7 @@ class MySqliDriver implements Dibi\Driver
 				$host = ini_get('mysqli.default_host');
 				if ($host) {
 					$config['host'] = $host;
-					$config['port'] = ini_get('mysqli.default_port');
+					$config['port'] = (int) ini_get('mysqli.default_port');
 				} else {
 					$config['host'] = null;
 					$config['port'] = null;
