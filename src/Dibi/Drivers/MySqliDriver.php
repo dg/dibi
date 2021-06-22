@@ -33,6 +33,7 @@ use Dibi;
 class MySqliDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
+	use NoParameterizedQueries;
 
 	public const ERROR_ACCESS_DENIED = 1045;
 

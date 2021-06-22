@@ -28,6 +28,7 @@ use PDO;
 class PdoDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
+	use NoParameterizedQueries;
 
 	/** @var PDO|null  Connection resource */
 	private $connection;

@@ -98,6 +98,24 @@ interface Driver
 	 */
 	function escapeLike(string $value, int $pos): string;
 
+	function addParameter(QueryParameter $param) : void;
+
+	function bindText(?string $value, ?string $length = null, ?string $encoding = null): QueryParameter;
+
+	function bindAsciiText(?string $value, ?string $length = null, ?string $encoding = null): QueryParameter;
+
+	function bindIdentifier(?string $value): QueryParameter;
+
+	function bindInt(?int $value): QueryParameter;
+
+	function bindNumeric(?float $value, string $precision, string $scale): QueryParameter;
+
+	function bindDate(?\DateTimeInterface $value): QueryParameter;
+
+	function bindDateTime(?\DateTimeInterface $value): QueryParameter;
+
+	function bindDateInterval(?\DateInterval $value): QueryParameter;
+
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
