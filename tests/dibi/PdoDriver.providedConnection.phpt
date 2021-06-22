@@ -17,16 +17,14 @@ function buildPdoDriver(?int $errorMode)
 }
 
 
-// PDO error mode: exception
-Assert::exception(function () {
-	buildPdoDriver(PDO::ERRMODE_EXCEPTION);
-}, Dibi\DriverException::class, 'PDO connection in exception or warning error mode is not supported.');
+// PDO error mode: exception is accepted
+buildPdoDriver(PDO::ERRMODE_EXCEPTION);
 
 
 // PDO error mode: warning
 Assert::exception(function () {
 	buildPdoDriver(PDO::ERRMODE_WARNING);
-}, Dibi\DriverException::class, 'PDO connection in exception or warning error mode is not supported.');
+}, Dibi\DriverException::class, 'PDO connection in warning error mode is not supported.');
 
 
 test('PDO error mode: explicitly set silent', function () {
