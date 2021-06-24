@@ -257,7 +257,7 @@ class SqlsrvDriver implements Dibi\Driver
 			\SQLSRV_PARAM_IN,
 			$param->phpType,
 			$param->sqlType,
-		];		
+		];
 	}
 
 	function bindAsciiText(?string $value, ?string $length = null, ?string $encoding = null): QueryParameter {
