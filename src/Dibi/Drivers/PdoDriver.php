@@ -97,7 +97,7 @@ class PdoDriver implements Dibi\Driver
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
 		if (count($this->paramValues) > 0) {
-			$res = $this->connection->prepare($sql, $this->paramValues);
+			$res = $this->connection->prepare($sql);
 			if ($res) {
 				$count = count($this->paramValues);
 				for ($index = 0; $index < $count && $res; $index++) {
@@ -107,11 +107,17 @@ class PdoDriver implements Dibi\Driver
 					}
 				}
 				if ($res) {
-					$res->execute();
+					$success = $res->execute();
+					if (!$success) {
+						$res = false;
+					}
 				}
 			}
+			$this->paramValues = [];
+		} else {
+			$res = $this->connection->query($sql);
 		}
-		$res = $this->connection->query($sql);
+
 		if ($res) {
 			$this->affectedRows = $res->rowCount();
 			return $res->columnCount() ? $this->createResultDriver($res) : null;
