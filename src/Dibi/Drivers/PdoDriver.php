@@ -11,6 +11,7 @@ namespace Dibi\Drivers;
 
 use Dibi;
 use Dibi\Helpers;
+use Dibi\QueryParameter;
 use PDO;
 
 
@@ -28,7 +29,6 @@ use PDO;
 class PdoDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
-	use NoParameterizedQueries;
 
 	/** @var PDO|null  Connection resource */
 	private $connection;
@@ -42,6 +42,8 @@ class PdoDriver implements Dibi\Driver
 	/** @var string */
 	private $serverVersion = '';
 
+	/** @var array */
+	private $paramValues = [];
 
 	/** @throws Dibi\NotSupportedException */
 	public function __construct(array $config)
@@ -94,6 +96,21 @@ class PdoDriver implements Dibi\Driver
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
+		if (count($this->paramValues) > 0) {
+			$res = $this->connection->prepare($sql, $this->paramValues);
+			if ($res) {
+				$count = count($this->paramValues);
+				for ($index = 0; $index < $count && $res; $index++) {
+					$success = $res->bindParam($index+1, $this->paramValues[$index]['var'], $this->paramValues[$index]['type']);
+					if (!$success) {
+						$res = false;
+					}
+				}
+				if ($res) {
+					$res->execute();
+				}
+			}
+		}
 		$res = $this->connection->query($sql);
 		if ($res) {
 			$this->affectedRows = $res->rowCount();
@@ -350,6 +367,53 @@ class PdoDriver implements Dibi\Driver
 		}
 	}
 
+	public function addParameter(QueryParameter $param) : void {
+		// https://www.php.net/manual/en/sqlsrv.constants.php
+		$this->paramValues[] = [
+			'var' => $param->value,
+			'type' => $param->sqlType
+		];
+	}
+
+	function bindAsciiText(?string $value, ?string $length = null, ?string $encoding = null): QueryParameter {
+		// return new QueryParameter($value, \SQLSRV_SQLTYPE_VARCHAR($length ?? 'max'), \SQLSRV_PHPTYPE_STRING($encoding ?? 'UTF-8'));
+		return new QueryParameter($value, PDO::PARAM_STR, null);
+	}
+
+	function bindText(?string $value, ?string $length = null, ?string $encoding = null): QueryParameter {
+		// return new QueryParameter($value, \SQLSRV_SQLTYPE_NVARCHAR($length ?? 'max'), \SQLSRV_PHPTYPE_STRING($encoding ?? 'UTF-8'));
+		return new QueryParameter($value, PDO::PARAM_STR, null);
+	}
+
+	function bindIdentifier(?string $value): QueryParameter {
+		// return new QueryParameter($value, \SQLSRV_SQLTYPE_UNIQUEIDENTIFIER, \SQLSRV_PHPTYPE_STRING('UTF-8'));
+		return new QueryParameter($value, PDO::PARAM_STR, null);
+	}
+
+	function bindInt(?int $value): QueryParameter {
+		// return new QueryParameter($value, \SQLSRV_SQLTYPE_INT, \SQLSRV_PHPTYPE_INT);
+		return new QueryParameter($value, PDO::PARAM_INT, null);
+	}
+
+	function bindNumeric(?float $value, string $precision, string $scale): QueryParameter {
+		// return new QueryParameter($value, \SQLSRV_SQLTYPE_NUMERIC($precision, $scale), \SQLSRV_PHPTYPE_FLOAT);
+		return new QueryParameter($value, PDO::PARAM_STR, null);
+	}
+
+	function bindDate(?\DateTimeInterface $value): QueryParameter {
+		// return new QueryParameter($value, \SQLSRV_SQLTYPE_DATE, \SQLSRV_PHPTYPE_DATETIME);
+		return new QueryParameter($value, PDO::PARAM_STR, null);
+	}
+
+	function bindDateTime(?\DateTimeInterface $value): QueryParameter {
+		// return new QueryParameter($value, \SQLSRV_SQLTYPE_DATETIME2, \SQLSRV_PHPTYPE_DATETIME);
+		return new QueryParameter($value, PDO::PARAM_STR, null);
+	}
+
+	function bindDateInterval(?\DateInterval $value): QueryParameter {
+		// return new QueryParameter($value, \SQLSRV_SQLTYPE_DATETIMEOFFSET, \SQLSRV_PHPTYPE_STRING('UTF-8'));
+		return new QueryParameter($value, PDO::PARAM_STR, null);
+	}
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.

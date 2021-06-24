@@ -603,11 +603,9 @@ XX
 				}
 				return '';
 
-			} elseif ($mod === 'tsql') { // parameterized query
+			} elseif ($mod === 'pq') { // parameterized query
 				if ($this->comment) {
 					return "parameterized query";
-				} else {
-					
 				}
 				return '?';
 			} else { // default processing

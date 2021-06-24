@@ -62,6 +62,27 @@ test('', function () use ($config) {
 	Assert::equal('hello', $conn->query('SELECT %s', 'hello')->fetchSingle());
 });
 
+test('Binding to int Query Parameters', function () use ($config) {
+	$conn = new Connection($config);
+	$driver = $conn->getDriver();
+	try {
+		Assert::equal(PHP_INT_MAX, $conn->query('SELECT %pq', $driver->bindInt(PHP_INT_MAX))->fetchSingle());
+		Assert::null($conn->query('SELECT %pq', $driver->bindInt(null))->fetchSingle());
+	} catch (Dibi\NotSupportedException $_) {
+	}
+});
+
+test('Binding to Text Query Parameters', function () use ($config) {
+	$conn = new Connection($config);
+	$driver = $conn->getDriver();
+	try {
+		Assert::equal('hello', $conn->query('SELECT %pq', $driver->bindAsciiText('hello'))->fetchSingle());
+		Assert::equal('hello', $conn->query('SELECT %pq', $driver->bindText('hello'))->fetchSingle());
+		Assert::null($conn->query('SELECT %pq', $driver->bindText(null))->fetchSingle());
+		Assert::null($conn->query('SELECT %pq', $driver->bindAsciiText(null))->fetchSingle());
+	} catch (Dibi\NotSupportedException $_) {
+	}
+});
 
 test('', function () use ($config) {
 	Assert::exception(function () use ($config) {
