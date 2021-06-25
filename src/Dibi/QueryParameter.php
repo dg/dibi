@@ -10,18 +10,18 @@ declare(strict_types=1);
 namespace Dibi;
 
 class QueryParameter {
-    use Strict;
+	use Strict;
 
 	public $sqlType;
-    public $phpType;
+	public $phpType;
 	public $value;
 
-    public function __construct($value, $sqlType, $phpType)
-    {
-        $this->sqlType = $sqlType;
-        $this->phpType = $phpType;
-        $this->value = $value;
-    }
+	public function __construct($value, $sqlType, $phpType)
+	{
+		$this->sqlType = $sqlType;
+		$this->phpType = $phpType;
+		$this->value = $value;
+	}
 
 	public function __toString() : string
 	{
