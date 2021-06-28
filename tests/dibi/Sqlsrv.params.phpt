@@ -20,9 +20,11 @@ $tests = function ($conn) {
 	Assert::equal('❤️‍🔥', $conn->fetchSingle('SELECT [name] FROM Customers WHERE [name] = %pq', $driver->bindText('❤️‍🔥')));
 
 	$param = $driver->bindText('testing', '20', 'UTF-8');
-	Assert::equal(\SQLSRV_SQLTYPE_NVARCHAR('20'), $param->sqlType);
+	$expectedSqlType = \SQLSRV_SQLTYPE_NVARCHAR('20');
+	$expectedPhpType = \SQLSRV_PHPTYPE_STRING('UTF-8');
+	Assert::equal($expectedSqlType, $param->sqlType);
 	Assert::equal('testing', $param->value);
-	Assert::equal(\SQLSRV_PHPTYPE_STRING('UTF-8'), $param->phpType);
+	Assert::equal($expectedPhpType, $param->phpType);
 
 	Assert::equal('?????', $conn->query('SELECT %pq', $driver->bindAsciiText('❤️‍🔥'))->fetchSingle());
 
