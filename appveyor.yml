@@ -6,8 +6,9 @@ cache:
 clone_folder: c:\projects\dibi
 
 services:
-    - mssql2012sp1
+#    - mssql2012sp1
 #    - mssql2014
+    - mssql2016
     - mysql
 
 init:
