@@ -33,7 +33,7 @@ install:
     - cmd /c start /wait AccessDatabaseEngine_X64.exe /passive
 
     # Install ODBC Driver for SQL Server x64 Version 17.7.2
-    - IF %PHP%==1 curl curl -L -v https://go.microsoft.com/fwlink/?linkid=2156851 --output msodbcsql.msi
+    - IF %PHP%==1 curl --silent --location --output msodbcsql.msi https://go.microsoft.com/fwlink/?linkid=2156851
     - cmd /c start /wait msiexec /qn /passive /i msodbcsql.msi
 
     # Install Nette Tester
