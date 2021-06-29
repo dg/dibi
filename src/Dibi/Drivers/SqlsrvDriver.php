@@ -11,7 +11,7 @@ namespace Dibi\Drivers;
 
 use Dibi;
 use Dibi\Helpers;
-
+use Dibi\QueryParameter;
 
 /**
  * The driver for Microsoft SQL Server and SQL Azure databases.
@@ -29,6 +29,9 @@ class SqlsrvDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
+	// https://docs.microsoft.com/en-us/sql/t-sql/data-types/int-bigint-smallint-and-tinyint-transact-sql?view=sql-server-ver15
+	private const SQLSERVER_MAX_INT = 2147483647;
+
 	/** @var resource */
 	private $connection;
 
@@ -36,6 +39,8 @@ class SqlsrvDriver implements Dibi\Driver
 
 	private string $version = '';
 
+	/** @var array */
+	private $paramValues = [];
 
 	/** @throws Dibi\NotSupportedException */
 	public function __construct(array $config)
@@ -84,7 +89,6 @@ class SqlsrvDriver implements Dibi\Driver
 		@sqlsrv_close($this->connection); // @ - connection can be already disconnected
 	}
 
-
 	/**
 	 * Executes the SQL query.
 	 * @throws Dibi\DriverException
@@ -92,7 +96,8 @@ class SqlsrvDriver implements Dibi\Driver
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
 		$this->affectedRows = null;
-		$res = sqlsrv_query($this->connection, $sql);
+		$res = sqlsrv_query($this->connection, $sql, $this->paramValues); // TODO Change this to include bound parameters
+		$this->paramValues = [];
 
 		if ($res === false) {
 			$info = sqlsrv_errors();
@@ -248,6 +253,55 @@ class SqlsrvDriver implements Dibi\Driver
 		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 	}
 
+	public function addParameter(QueryParameter $param) : void {
+		// https://www.php.net/manual/en/sqlsrv.constants.php
+		$this->paramValues[] = [
+			$param->value,
+			\SQLSRV_PARAM_IN,
+			$param->phpType,
+			$param->sqlType,
+		];
+	}
+
+	function bindAsciiText(?string $value, ?string $length = null, ?string $encoding = null): QueryParameter {
+		$phpType = \SQLSRV_PHPTYPE_STRING($encoding ?: 'UTF-8');
+		$sqlType = \SQLSRV_SQLTYPE_VARCHAR($length ?: 'max');
+		return new QueryParameter($value, $sqlType, $phpType);
+	}
+
+	function bindText(?string $value, ?string $length = null, ?string $encoding = null): QueryParameter {
+		$phpType = \SQLSRV_PHPTYPE_STRING($encoding ?: 'UTF-8');
+		$sqlType = \SQLSRV_SQLTYPE_NVARCHAR($length ?: 'max');
+		return new QueryParameter($value, $sqlType, $phpType);
+	}
+
+	function bindIdentifier(?string $value): QueryParameter {
+		$phpType = \SQLSRV_PHPTYPE_STRING('UTF-8');
+		return new QueryParameter($value, \SQLSRV_SQLTYPE_UNIQUEIDENTIFIER, $phpType);
+	}
+
+	function bindInt(?int $value): QueryParameter {
+		$sqlType = ($value == null || $value <= self::SQLSERVER_MAX_INT) ? \SQLSRV_SQLTYPE_INT : \SQLSRV_SQLTYPE_BIGINT;
+		return new QueryParameter($value, $sqlType, \SQLSRV_PHPTYPE_INT);
+	}
+
+	function bindNumeric(?float $value, string $precision, string $scale): QueryParameter {
+		$sqlType = \SQLSRV_SQLTYPE_NUMERIC($precision, $scale);
+		return new QueryParameter($value, $sqlType, \SQLSRV_PHPTYPE_FLOAT);
+	}
+
+	function bindDate(?\DateTimeInterface $value): QueryParameter {
+		return new QueryParameter($value, \SQLSRV_SQLTYPE_DATE, \SQLSRV_PHPTYPE_DATETIME);
+	}
+
+	function bindDateTime(?\DateTimeInterface $value): QueryParameter {
+		return new QueryParameter($value, \SQLSRV_SQLTYPE_DATETIME2, \SQLSRV_PHPTYPE_DATETIME);
+	}
+
+	function bindDateInterval(?\DateInterval $value): QueryParameter {
+		$phpType = \SQLSRV_PHPTYPE_STRING('UTF-8');
+		return new QueryParameter($value, \SQLSRV_SQLTYPE_DATETIMEOFFSET, $phpType);
+	}
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.

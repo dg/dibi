@@ -18,7 +18,7 @@ SET IDENTITY_INSERT products OFF;
 
 CREATE TABLE customers (
 	customer_id int NOT NULL IDENTITY(11,1),
-	name varchar(50) NOT NULL,
+	name nvarchar(50) NOT NULL,
 	PRIMARY KEY(customer_id)
 );
 

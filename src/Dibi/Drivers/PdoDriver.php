@@ -11,6 +11,7 @@ namespace Dibi\Drivers;
 
 use Dibi;
 use Dibi\Helpers;
+use Dibi\QueryParameter;
 use PDO;
 
 
@@ -28,6 +29,7 @@ use PDO;
 class PdoDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
+	use NoParameterizedQueries;
 
 	private ?PDO $connection;
 
@@ -36,7 +38,6 @@ class PdoDriver implements Dibi\Driver
 	private string $driverName;
 
 	private string $serverVersion = '';
-
 
 	/** @throws Dibi\NotSupportedException */
 	public function __construct(array $config)
@@ -344,7 +345,6 @@ class PdoDriver implements Dibi\Driver
 				throw new Dibi\NotImplementedException;
 		}
 	}
-
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.

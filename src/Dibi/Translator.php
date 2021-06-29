@@ -117,6 +117,11 @@ final class Translator
 				$arg = iterator_to_array($arg);
 			}
 
+			if ($arg instanceof QueryParameter) {
+				$this->driver->addParameter($arg);
+				continue;
+			}
+
 			if (is_array($arg) && is_string(key($arg))) {
 				// associative array -> autoselect between SET or VALUES & LIST
 				if ($commandIns === null) {
@@ -586,6 +591,11 @@ final class Translator
 				}
 				return '';
 
+			} elseif ($mod === 'pq') { // parameterized query
+				if ($this->comment) {
+					return "parameterized query";
+				}
+				return '?';
 			} else { // default processing
 				$cursor++;
 				return $this->formatValue($this->args[$cursor - 1], $mod);

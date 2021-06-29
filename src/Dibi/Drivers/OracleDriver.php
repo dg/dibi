@@ -28,6 +28,7 @@ use Dibi;
 class OracleDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
+	use NoParameterizedQueries;
 
 	/** @var resource */
 	private $connection;
