@@ -176,6 +176,7 @@ In addition to the `?` wildcard char, we can also use modifiers:
 | %ex | SQL expression or array of expressions
 | %lmt | special - adds LIMIT to the query
 | %ofs | special - adds OFFSET to the query
+| %pq  | special - sends the parameterized query down to the underlying DB driver for binding
 
 Example:
 
@@ -200,6 +201,15 @@ $table = 'blog.users';
 $column = 'name';
 $result = $database->query('SELECT * FROM %n WHERE %n = ?', $table, $column, $value);
 // SELECT * FROM `blog`.`users` WHERE `name` = 'Jim'
+```
+
+The modifier `%pq` inserts a `?` into the query sent to the underlying database driver and allows the caller to bind the parameterized query values to the positional modifiers.
+
+Example:
+
+```php
+$result = $database->query('SELECT * FROM users WHERE name = %pq', $database->getDriver()->bindText($name));
+// SELECT * FROM `users` WHERE `name` = ?
 ```
 
 Three special modifiers are available for LIKE:

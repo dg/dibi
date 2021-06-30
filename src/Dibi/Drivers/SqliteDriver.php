@@ -26,6 +26,7 @@ use SQLite3;
 class SqliteDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
+	use NoParameterizedQueries;
 
 	private SQLite3 $connection;
 

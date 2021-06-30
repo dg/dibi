@@ -6,8 +6,9 @@ cache:
 clone_folder: c:\projects\dibi
 
 services:
-    - mssql2012sp1
+#    - mssql2012sp1
 #    - mssql2014
+    - mssql2016
     - mysql
 
 init:
@@ -31,6 +32,10 @@ install:
     # Install Microsoft Access Database Engine x64
     - IF %PHP%==1 curl https://download.microsoft.com/download/2/4/3/24375141-E08D-4803-AB0E-10F2E3A07AAA/AccessDatabaseEngine_X64.exe --output AccessDatabaseEngine_X64.exe
     - cmd /c start /wait AccessDatabaseEngine_X64.exe /passive
+
+    # Install ODBC Driver for SQL Server x64 Version 17.7.2
+    - IF %PHP%==1 curl --silent --location --output msodbcsql.msi https://go.microsoft.com/fwlink/?linkid=2156851
+    - cmd /c start /wait msiexec /qn /passive /i msodbcsql.msi
 
     # Install Nette Tester
     - cd c:\projects\dibi

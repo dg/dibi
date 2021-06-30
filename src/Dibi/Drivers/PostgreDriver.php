@@ -28,6 +28,7 @@ use Dibi\Helpers;
 class PostgreDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
+	use NoParameterizedQueries;
 
 	/** @var resource */
 	private $connection;

@@ -17,7 +17,8 @@
 		"tracy/tracy": "^2.8",
 		"nette/tester": "^2.4",
 		"nette/di": "^3.0",
-		"phpstan/phpstan": "^0.12"
+		"phpstan/phpstan": "^0.12",
+		"nette/code-checker": "^3.2"
 	},
 	"replace": {
 		"dg/dibi": "*"
