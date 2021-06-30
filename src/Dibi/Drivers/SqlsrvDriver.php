@@ -53,6 +53,9 @@ class SqlsrvDriver implements Dibi\Driver
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
+			if (!is_resource($this->connection)) {
+				throw new \InvalidArgumentException("Configuration option 'resource' is not resource.");
+			}
 
 		} else {
 			$options = $config['options'];
@@ -65,13 +68,13 @@ class SqlsrvDriver implements Dibi\Driver
 
 			sqlsrv_configure('WarningsReturnAsErrors', 0);
 			$this->connection = sqlsrv_connect($config['host'], $options);
+			if (!is_resource($this->connection)) {
+				$info = sqlsrv_errors(SQLSRV_ERR_ERRORS);
+				throw new Dibi\DriverException($info[0]['message'], $info[0]['code']);
+			}
 			sqlsrv_configure('WarningsReturnAsErrors', 1);
 		}
 
-		if (!is_resource($this->connection)) {
-			$info = sqlsrv_errors(SQLSRV_ERR_ERRORS);
-			throw new Dibi\DriverException($info[0]['message'], $info[0]['code']);
-		}
 		$this->version = sqlsrv_server_info($this->connection)['SQLServerVersion'];
 	}
 
