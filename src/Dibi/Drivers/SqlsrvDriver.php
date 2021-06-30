@@ -264,14 +264,18 @@ class SqlsrvDriver implements Dibi\Driver
 	}
 
 	function bindAsciiText(?string $value, ?string $length = null, ?string $encoding = null): QueryParameter {
-		$phpType = \SQLSRV_PHPTYPE_STRING($encoding ?: 'UTF-8');
-		$sqlType = \SQLSRV_SQLTYPE_VARCHAR($length ?: 'max');
+		$encoding = $encoding ?: 'UTF-8';
+		$length = $length ?: 'max';
+		$phpType = \SQLSRV_PHPTYPE_STRING($encoding);
+		$sqlType = \SQLSRV_SQLTYPE_VARCHAR($length);
 		return new QueryParameter($value, $sqlType, $phpType);
 	}
 
 	function bindText(?string $value, ?string $length = null, ?string $encoding = null): QueryParameter {
-		$phpType = \SQLSRV_PHPTYPE_STRING($encoding ?: 'UTF-8');
-		$sqlType = \SQLSRV_SQLTYPE_NVARCHAR($length ?: 'max');
+		$encoding = $encoding ?: 'UTF-8';
+		$length = $length ?: 'max';
+		$phpType = \SQLSRV_PHPTYPE_STRING($encoding);
+		$sqlType = \SQLSRV_SQLTYPE_NVARCHAR($length);
 		return new QueryParameter($value, $sqlType, $phpType);
 	}
 
