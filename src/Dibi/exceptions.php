@@ -56,17 +56,9 @@ class DriverException extends Exception
  */
 class PcreException extends Exception
 {
-	public function __construct(string $message = '%msg.')
+	public function __construct()
 	{
-		static $messages = [
-			PREG_INTERNAL_ERROR => 'Internal error',
-			PREG_BACKTRACK_LIMIT_ERROR => 'Backtrack limit was exhausted',
-			PREG_RECURSION_LIMIT_ERROR => 'Recursion limit was exhausted',
-			PREG_BAD_UTF8_ERROR => 'Malformed UTF-8 data',
-			5 => 'Offset didn\'t correspond to the begin of a valid UTF-8 code point', // PREG_BAD_UTF8_OFFSET_ERROR
-		];
-		$code = preg_last_error();
-		parent::__construct(str_replace('%msg', $messages[$code] ?? 'Unknown error', $message), $code);
+		parent::__construct(preg_last_error_msg(), preg_last_error());
 	}
 }
 
