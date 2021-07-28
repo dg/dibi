@@ -36,7 +36,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	{
 		$time = $this[$key];
 		if (!$time instanceof DateTime) {
-			if (!$time || substr((string) $time, 0, 3) === '000') { // '', null, false, '0000-00-00', ...
+			if (!$time || str_starts_with((string) $time, '000')) { // '', null, false, '0000-00-00', ...
 				return null;
 			}
 			$time = new DateTime($time);
