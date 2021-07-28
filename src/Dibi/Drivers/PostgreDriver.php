@@ -139,7 +139,7 @@ class PostgreDriver implements Dibi\Driver
 			$message = substr($message, strlen($m[0]));
 		}
 
-		if ($code === '0A000' && strpos($message, 'truncate') !== false) {
+		if ($code === '0A000' && str_contains($message, 'truncate')) {
 			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
 
 		} elseif ($code === '23502') {
