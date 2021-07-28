@@ -198,7 +198,7 @@ final class Translator
 								$v = $this->formatValue($v, $pair[1]);
 								if ($pair[1] === 'l' || $pair[1] === 'in') {
 									$op = 'IN ';
-								} elseif (strpos($pair[1], 'like') !== false) {
+								} elseif (str_contains($pair[1], 'like')) {
 									$op = 'LIKE ';
 								} elseif ($v === 'NULL') {
 									$op = 'IS ';
