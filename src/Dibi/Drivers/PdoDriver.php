@@ -12,6 +12,7 @@ namespace Dibi\Drivers;
 use Dibi;
 use Dibi\Helpers;
 use PDO;
+use PDOException;
 
 
 /**
@@ -57,8 +58,8 @@ class PdoDriver implements Dibi\Driver
 			$this->connection = $config['resource'];
 			unset($config['resource'], $config['pdo']);
 
-			if ($this->connection->getAttribute(PDO::ATTR_ERRMODE) !== PDO::ERRMODE_SILENT) {
-				throw new Dibi\DriverException('PDO connection in exception or warning error mode is not supported.');
+			if ($this->connection->getAttribute(PDO::ATTR_ERRMODE) === PDO::ERRMODE_WARNING) {
+				throw new Dibi\DriverException('PDO connection in warning error mode is not supported.');
 			}
 
 		} else {
@@ -93,15 +94,18 @@ class PdoDriver implements Dibi\Driver
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
-		$res = $this->connection->query($sql);
-		if ($res) {
-			$this->affectedRows = $res->rowCount();
-			return $res->columnCount() ? $this->createResultDriver($res) : null;
+		try {
+			$res = $this->connection->query($sql);
+			if ($res) {
+				$this->affectedRows = $res->rowCount();
+				return $res->columnCount() ? $this->createResultDriver($res) : null;
+			}
+			[$sqlState, $code, $message] = $this->connection->errorInfo();
+		} catch (PDOException $e) {
+			[$sqlState, $code, $message] = $e->errorInfo;
 		}
-
 		$this->affectedRows = null;
 
-		[$sqlState, $code, $message] = $this->connection->errorInfo();
 		$message = "SQLSTATE[$sqlState]: $message";
 		switch ($this->driverName) {
 			case 'mysql':
