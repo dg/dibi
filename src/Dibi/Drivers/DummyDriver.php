@@ -18,6 +18,7 @@ use Dibi;
 class DummyDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
 	use Dibi\Strict;
+	use NoParameterizedQueries;
 
 	public function disconnect(): void
 	{
@@ -128,7 +129,6 @@ class DummyDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
 		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
 	}
-
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
