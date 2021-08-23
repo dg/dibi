@@ -22,7 +22,7 @@ class Helpers
 	 * Prints out a syntax highlighted version of the SQL command or Result.
 	 * @param  string|Result  $sql
 	 */
-	public static function dump($sql = null, bool $return = false): ?string
+	public static function dump($sql = null, bool $return = false, bool $returnStringWrapping = true): ?string
 	{
 		ob_start();
 		if ($sql instanceof Result && PHP_SAPI === 'cli') {
@@ -82,7 +82,10 @@ class Helpers
 			// reduce spaces
 			$sql = preg_replace('#[ \t]{2,}#', ' ', $sql);
 
-			$sql = wordwrap($sql, 100);
+			if ($returnStringWrapping) {
+				$sql = wordwrap($sql, 100);
+			}
+			
 			$sql = preg_replace("#([ \t]*\r?\n){2,}#", "\n", $sql);
 
 			// syntax highlight
