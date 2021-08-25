@@ -62,37 +62,38 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	/********************* interfaces ArrayAccess, Countable & IteratorAggregate ****************d*g**/
 
 
-	final public function count()
+	final public function count(): int
 	{
 		return count((array) $this);
 	}
 
 
-	final public function getIterator()
+	final public function getIterator(): \ArrayIterator
 	{
 		return new \ArrayIterator($this);
 	}
 
 
-	final public function offsetSet($nm, $val)
+	final public function offsetSet($nm, $val): void
 	{
 		$this->$nm = $val;
 	}
 
 
+	#[\ReturnTypeWillChange]
 	final public function offsetGet($nm)
 	{
 		return $this->$nm;
 	}
 
 
-	final public function offsetExists($nm)
+	final public function offsetExists($nm): bool
 	{
 		return isset($this->$nm);
 	}
 
 
-	final public function offsetUnset($nm)
+	final public function offsetUnset($nm): void
 	{
 		unset($this->$nm);
 	}
