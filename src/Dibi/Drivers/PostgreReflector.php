@@ -100,7 +100,7 @@ class PostgreReflector implements Dibi\Reflector
 					a.atttypmod-4 AS character_maximum_length,
 					NOT a.attnotnull AS is_nullable,
 					a.attnum AS ordinal_position,
-					adef.adsrc AS column_default
+					pg_get_expr(adef.adbin, adef.adrelid) AS column_default
 				FROM
 					pg_attribute a
 					JOIN pg_type ON a.atttypid = pg_type.oid
