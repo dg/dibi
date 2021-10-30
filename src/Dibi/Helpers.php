@@ -181,6 +181,7 @@ class Helpers
 	{
 		static $patterns = [
 			'^_' => Type::TEXT, // PostgreSQL arrays
+			'RANGE$' => Type::TEXT, // PostgreSQL range types
 			'BYTEA|BLOB|BIN' => Type::BINARY,
 			'TEXT|CHAR|POINT|INTERVAL|STRING' => Type::TEXT,
 			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT|^TINY$' => Type::INTEGER,
