@@ -24,7 +24,7 @@ class Helpers
 	{
 		ob_start();
 		if ($sql instanceof Result && PHP_SAPI === 'cli') {
-			$hasColors = (substr((string) getenv('TERM'), 0, 5) === 'xterm');
+			$hasColors = (str_starts_with((string) getenv('TERM'), 'xterm'));
 			$maxLen = 0;
 			foreach ($sql as $i => $row) {
 				if ($i === 0) {
@@ -86,7 +86,7 @@ class Helpers
 			// syntax highlight
 			$highlighter = "#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is";
 			if (PHP_SAPI === 'cli') {
-				if (substr((string) getenv('TERM'), 0, 5) === 'xterm') {
+				if (str_starts_with((string) getenv('TERM'), 'xterm')) {
 					$sql = preg_replace_callback($highlighter, function (array $m) {
 						if (!empty($m[1])) { // comment
 							return "\033[1;30m" . $m[1] . "\033[0m";
@@ -179,6 +179,7 @@ class Helpers
 	{
 		static $patterns = [
 			'^_' => Type::TEXT, // PostgreSQL arrays
+			'RANGE$' => Type::TEXT, // PostgreSQL range types
 			'BYTEA|BLOB|BIN' => Type::BINARY,
 			'TEXT|CHAR|POINT|INTERVAL|STRING' => Type::TEXT,
 			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT|^TINY$' => Type::INTEGER,
@@ -249,7 +250,7 @@ class Helpers
 			if (strtoupper(substr($s, 0, 10)) === 'DELIMITER ') {
 				$delimiter = trim(substr($s, 10));
 
-			} elseif (substr($ts = rtrim($s), -strlen($delimiter)) === $delimiter) {
+			} elseif (str_ends_with($ts = rtrim($s), $delimiter)) {
 				$sql .= substr($ts, 0, -strlen($delimiter));
 				$driver->query($sql);
 				$sql = '';
