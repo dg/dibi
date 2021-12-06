@@ -470,6 +470,11 @@ final class Translator
 			}
 		}
 
+		// object-to-scalar procession
+		if ($value instanceof \BackedEnum && is_scalar($value->value)) {
+			$value = $value->value;
+		}
+
 		// without modifier procession
 		if (is_string($value)) {
 			return $this->driver->escapeText($value);
