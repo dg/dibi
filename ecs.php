@@ -17,5 +17,8 @@ return function (Symfony\Component\DependencyInjection\Loader\Configurator\Conta
 		// issue #260
 		PhpCsFixer\Fixer\Operator\TernaryToNullCoalescingFixer::class => ['src/Dibi/HashMap.php'],
 		SlevomatCodingStandard\Sniffs\ControlStructures\RequireNullCoalesceOperatorSniff::class => ['src/Dibi/HashMap.php'],
+
+		// PHP 8.1
+		'tests/dibi/Translator.enums.phpt',
 	]);
 };
