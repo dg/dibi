@@ -19,8 +19,7 @@ class NoDataResult implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var int */
-	private $rows;
+	private int $rows;
 
 
 	public function __construct(int $rows)
@@ -61,7 +60,7 @@ class NoDataResult implements Dibi\ResultDriver
 	}
 
 
-	public function getResultResource()
+	public function getResultResource(): mixed
 	{
 		return null;
 	}

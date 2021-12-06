@@ -28,7 +28,7 @@ $dibi->test('
 	SELECT COUNT(*) as [count]
 	FROM [comments]
 	WHERE [ip] LIKE ?', $ipMask, '
-	AND [date] > ', new Dibi\DateTime($timestamp)
+	AND [date] > ', new Dibi\DateTime($timestamp),
 );
 // -> SELECT COUNT(*) as [count] FROM [comments] WHERE [ip] LIKE '192.168.%' AND [date] > 876693600
 
@@ -69,7 +69,7 @@ $array = [1, 2, 3];
 $dibi->test('
 	SELECT *
 	FROM people
-	WHERE id IN (?)', $array
+	WHERE id IN (?)', $array,
 );
 // -> SELECT * FROM people WHERE id IN ( 1, 2, 3 )
 

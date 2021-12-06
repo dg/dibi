@@ -29,11 +29,11 @@ class Column
 {
 	use Dibi\Strict;
 
-	/** @var Dibi\Reflector|null when created by Result */
-	private $reflector;
+	/** when created by Result */
+	private ?Dibi\Reflector $reflector;
 
 	/** @var array (name, nativetype, [table], [fullname], [size], [nullable], [default], [autoincrement], [vendor]) */
-	private $info;
+	private array $info;
 
 
 	public function __construct(Dibi\Reflector $reflector = null, array $info)
@@ -72,7 +72,9 @@ class Column
 
 	public function getTableName(): ?string
 	{
-		return isset($this->info['table']) && $this->info['table'] != null ? $this->info['table'] : null; // intentionally ==
+		return isset($this->info['table']) && $this->info['table'] != null // intentionally ==
+			? $this->info['table']
+			: null;
 	}
 
 
@@ -106,15 +108,13 @@ class Column
 	}
 
 
-	/** @return mixed */
-	public function getDefault()
+	public function getDefault(): mixed
 	{
 		return $this->info['default'] ?? null;
 	}
 
 
-	/** @return mixed */
-	public function getVendorInfo(string $key)
+	public function getVendorInfo(string $key): mixed
 	{
 		return $this->info['vendor'][$key] ?? null;
 	}

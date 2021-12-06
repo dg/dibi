@@ -40,11 +40,10 @@ class MySqliDriver implements Dibi\Driver
 
 	public const ERROR_DATA_TRUNCATED = 1265;
 
-	/** @var \mysqli */
-	private $connection;
+	private \mysqli $connection;
 
-	/** @var bool  Is buffered (seekable and countable)? */
-	private $buffered;
+	/** Is buffered (seekable and countable)? */
+	private bool $buffered = false;
 
 
 	/** @throws Dibi\NotSupportedException */
@@ -72,7 +71,7 @@ class MySqliDriver implements Dibi\Driver
 				$host = ini_get('mysqli.default_host');
 				if ($host) {
 					$config['host'] = $host;
-					$config['port'] = ini_get('mysqli.default_port');
+					$config['port'] = (int) ini_get('mysqli.default_port');
 				} else {
 					$config['host'] = null;
 					$config['port'] = null;
@@ -95,7 +94,7 @@ class MySqliDriver implements Dibi\Driver
 				$config['database'] ?? '',
 				$config['port'] ?? 0,
 				$config['socket'],
-				$config['flags'] ?? 0
+				$config['flags'] ?? 0,
 			);
 
 			if ($this->connection->connect_errno) {
@@ -131,6 +130,15 @@ class MySqliDriver implements Dibi\Driver
 
 
 	/**
+	 * Pings a server connection, or tries to reconnect if the connection has gone down.
+	 */
+	public function ping(): bool
+	{
+		return $this->connection->ping();
+	}
+
+
+	/**
 	 * Executes the SQL query.
 	 * @throws Dibi\DriverException
 	 */
@@ -148,7 +156,7 @@ class MySqliDriver implements Dibi\Driver
 	}
 
 
-	public static function createException(string $message, $code, string $sql): Dibi\DriverException
+	public static function createException(string $message, int|string $code, string $sql): Dibi\DriverException
 	{
 		if (in_array($code, [1216, 1217, 1451, 1452, 1701], true)) {
 			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
@@ -188,7 +196,9 @@ class MySqliDriver implements Dibi\Driver
 	 */
 	public function getAffectedRows(): ?int
 	{
-		return $this->connection->affected_rows === -1 ? null : $this->connection->affected_rows;
+		return $this->connection->affected_rows === -1
+			? null
+			: $this->connection->affected_rows;
 	}
 
 
@@ -305,7 +315,7 @@ class MySqliDriver implements Dibi\Driver
 		if ($value->y || $value->m || $value->d) {
 			throw new Dibi\NotSupportedException('Only time interval is supported.');
 		}
-		return $value->format('%r%H:%I:%S.%f');
+		return $value->format("'%r%H:%I:%S.%f'");
 	}
 
 

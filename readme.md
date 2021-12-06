@@ -2,7 +2,7 @@
 =========================================================
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/dibi/dibi.svg)](https://packagist.org/packages/dibi/dibi)
-[![Build Status](https://travis-ci.org/dg/dibi.svg?branch=master)](https://travis-ci.org/dg/dibi)
+[![Tests](https://github.com/dg/dibi/workflows/Tests/badge.svg?branch=master)](https://github.com/dg/dibi/actions)
 [![Build Status Windows](https://ci.appveyor.com/api/projects/status/github/dg/dibi?branch=master&svg=true)](https://ci.appveyor.com/project/dg/dibi/branch/master)
 [![Latest Stable Version](https://poser.pugx.org/dibi/dibi/v/stable)](https://github.com/dg/dibi/releases)
 [![License](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://github.com/dg/dibi/blob/master/license.md)
@@ -14,7 +14,15 @@ Introduction
 Database access functions in PHP are not standardised. This library
 hides the differences between them, and above all, it gives you a very handy interface.
 
-If you like Dibi, **[please make a donation now](https://nette.org/make-donation?to=dibi)**. Thank you!
+
+Support Me
+----------
+
+Do you like Dibi? Are you looking forward to the new features?
+
+[![Buy me a coffee](https://files.nette.org/icons/donation-3.svg)](https://github.com/sponsors/dg)
+
+Thank you!
 
 
 Installation
@@ -26,7 +34,7 @@ Install Dibi via Composer:
 composer require dibi/dibi
 ```
 
-The Dibi 4.1 requires PHP version 7.1 and supports PHP up to 7.4.
+The Dibi 5.0 requires PHP version 8.0 and supports PHP up to 8.1.
 
 
 Usage
@@ -42,11 +50,11 @@ The database connection is represented by the object `Dibi\Connection`:
 
 ```php
 $database = new Dibi\Connection([
-    'driver'   => 'mysqli',
-    'host'     => 'localhost',
-    'username' => 'root',
-    'password' => '***',
-    'database' => 'table',
+	'driver'   => 'mysqli',
+	'host'     => 'localhost',
+	'username' => 'root',
+	'password' => '***',
+	'database' => 'table',
 ]);
 
 $result = $database->query('SELECT * FROM users');
@@ -56,12 +64,12 @@ Alternatively, you can use the `dibi` static register, which maintains a connect
 
 ```php
 dibi::connect([
-    'driver'   => 'mysqli',
-    'host'     => 'localhost',
-    'username' => 'root',
-    'password' => '***',
-    'database' => 'test',
-    'charset'  => 'utf8',
+	'driver'   => 'mysqli',
+	'host'     => 'localhost',
+	'username' => 'root',
+	'password' => '***',
+	'database' => 'test',
+	'charset'  => 'utf8',
 ]);
 
 $result = dibi::query('SELECT * FROM users');
@@ -229,8 +237,8 @@ Example:
 
 ```php
 $arr = [
-    'a' => 'hello',
-    'b'  => true,
+	'a' => 'hello',
+	'b'  => true,
 ];
 
 $database->query('INSERT INTO table %v', $arr);
@@ -502,7 +510,7 @@ $all = $result->fetchAssoc('customer_id|order_id');
 // we will iterate like this:
 foreach ($all as $customerId => $orders) {
    foreach ($orders as $orderId => $order) {
-       ...
+	   ...
    }
 }
 ```
@@ -534,7 +542,7 @@ $all = $result->fetchAssoc('name[]order_id');
 // we get all the Arnolds in the results
 foreach ($all['Arnold Rimmer'] as $arnoldOrders) {
    foreach ($arnoldOrders as $orderId => $order) {
-       ...
+	   ...
    }
 }
 ```
@@ -548,8 +556,8 @@ foreach ($all as $customerId => $orders) {
    echo "Customer $customerId":
 
    foreach ($orders as $orderId => $order) {
-       echo "ID number: $order->number";
-       // customer name is in $order->name
+	   echo "ID number: $order->number";
+	   // customer name is in $order->name
    }
 }
 ```
@@ -571,7 +579,7 @@ foreach ($all as $customerId => $row) {
    echo "Customer $row->name":
 
    foreach ($row->order_id as $orderId => $order) {
-       echo "ID number: $order->number";
+	   echo "ID number: $order->number";
    }
 }
 ```

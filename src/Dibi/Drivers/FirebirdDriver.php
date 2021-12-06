@@ -33,11 +33,10 @@ class FirebirdDriver implements Dibi\Driver
 	/** @var resource */
 	private $connection;
 
-	/** @var resource|null */
+	/** @var ?resource */
 	private $transaction;
 
-	/** @var bool */
-	private $inTransaction = false;
+	private bool $inTransaction = false;
 
 
 	/** @throws Dibi\NotSupportedException */
@@ -62,11 +61,9 @@ class FirebirdDriver implements Dibi\Driver
 				'buffers' => 0,
 			];
 
-			if (empty($config['persistent'])) {
-				$this->connection = @ibase_connect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
-			} else {
-				$this->connection = @ibase_pconnect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
-			}
+			$this->connection = empty($config['persistent'])
+				? @ibase_connect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']) // intentionally @
+				: @ibase_pconnect($config['database'], $config['username'], $config['password'], $config['charset'], $config['buffers']); // intentionally @
 
 			if (!is_resource($this->connection)) {
 				throw new Dibi\DriverException(ibase_errmsg(), ibase_errcode());
@@ -90,11 +87,13 @@ class FirebirdDriver implements Dibi\Driver
 	 */
 	public function query(string $sql): ?Dibi\ResultDriver
 	{
-		$resource = $this->inTransaction ? $this->transaction : $this->connection;
+		$resource = $this->inTransaction
+			? $this->transaction
+			: $this->connection;
 		$res = ibase_query($resource, $sql);
 
 		if ($res === false) {
-			if (ibase_errcode() == self::ERROR_EXCEPTION_THROWN) {
+			if (ibase_errcode() === self::ERROR_EXCEPTION_THROWN) {
 				preg_match('/exception (\d+) (\w+) (.*)/i', ibase_errmsg(), $match);
 				throw new Dibi\ProcedureException($match[3], $match[1], $match[2], $sql);
 
@@ -190,7 +189,7 @@ class FirebirdDriver implements Dibi\Driver
 	 * Returns the connection resource.
 	 * @return resource|null
 	 */
-	public function getResource()
+	public function getResource(): mixed
 	{
 		return is_resource($this->connection) ? $this->connection : null;
 	}

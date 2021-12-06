@@ -22,20 +22,17 @@ class Panel implements Tracy\IBarPanel
 {
 	use Dibi\Strict;
 
-	/** @var int maximum SQL length */
-	public static $maxLength = 1000;
+	/** maximum SQL length */
+	public static int $maxLength = 1000;
 
-	/** @var bool|string  explain queries? */
-	public $explain;
+	public bool|string $explain;
 
-	/** @var int */
-	public $filter;
+	public int $filter;
 
-	/** @var array */
-	private $events = [];
+	private array $events = [];
 
 
-	public function __construct($explain = true, int $filter = null)
+	public function __construct(bool $explain = true, int $filter = null)
 	{
 		$this->filter = $filter ?: Event::QUERY;
 		$this->explain = $explain;
@@ -45,7 +42,7 @@ class Panel implements Tracy\IBarPanel
 	public function register(Dibi\Connection $connection): void
 	{
 		Tracy\Debugger::getBar()->addPanel($this);
-		Tracy\Debugger::getBlueScreen()->addPanel([__CLASS__, 'renderException']);
+		Tracy\Debugger::getBlueScreen()->addPanel([self::class, 'renderException']);
 		$connection->onEvent[] = [$this, 'logEvent'];
 	}
 
@@ -105,6 +102,15 @@ class Panel implements Tracy\IBarPanel
 		}
 
 		$totalTime = $s = null;
+
+		$singleConnection = reset($this->events)->connection;
+		foreach ($this->events as $event) {
+			if ($event->connection !== $singleConnection) {
+				$singleConnection = null;
+				break;
+			}
+		}
+
 		foreach ($this->events as $event) {
 			$totalTime += $event->time;
 			$connection = $event->connection;
@@ -112,7 +118,9 @@ class Panel implements Tracy\IBarPanel
 			if ($this->explain && $event->type === Event::SELECT) {
 				$backup = [$connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime];
 				$connection->onEvent = null;
-				$cmd = is_string($this->explain) ? $this->explain : ($connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
+				$cmd = is_string($this->explain)
+					? $this->explain
+					: ($connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
 				try {
 					$explain = @Helpers::dump($connection->nativeQuery("$cmd $event->sql"), true);
 				} catch (Dibi\Exception $e) {
@@ -120,7 +128,7 @@ class Panel implements Tracy\IBarPanel
 				[$connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime] = $backup;
 			}
 
-			$s .= '<tr><td>' . number_format($event->time * 1000, 3, '.', ' ');
+			$s .= '<tr><td data-order="' . $event->time . '">' . number_format($event->time * 1000, 3, '.', ' ');
 			if ($explain) {
 				static $counter;
 				$counter++;
@@ -132,10 +140,13 @@ class Panel implements Tracy\IBarPanel
 				$s .= "<div id='tracy-debug-DibiProfiler-row-$counter' class='tracy-collapsed'>{$explain}</div>";
 			}
 			if ($event->source) {
-				$s .= Tracy\Helpers::editorLink($event->source[0], $event->source[1]);//->class('tracy-DibiProfiler-source');
+				$s .= Tracy\Helpers::editorLink($event->source[0], $event->source[1]); //->class('tracy-DibiProfiler-source');
 			}
 
-			$s .= "</td><td>{$event->count}</td></tr>";
+			$s .= "</td><td>{$event->count}</td>";
+			if (!$singleConnection) {
+				$s .= '<td>' . htmlspecialchars($this->getConnectionName($connection)) . '</td></tr>';
+			}
 		}
 
 		return '<style> #tracy-debug td.tracy-DibiProfiler-sql { background: white !important }
@@ -143,12 +154,21 @@ class Panel implements Tracy\IBarPanel
 			#tracy-debug tracy-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
 			<h1>Queries: ' . count($this->events)
 				. ($totalTime === null ? '' : ', time: ' . number_format($totalTime * 1000, 1, '.', ' ') . ' ms') . ', '
-				. htmlspecialchars($connection->getConfig('driver') . ($connection->getConfig('name') ? '/' . $connection->getConfig('name') : '')
-				. ($connection->getConfig('host') ? ' @ ' . $connection->getConfig('host') : '')) . '</h1>
+				. htmlspecialchars($this->getConnectionName($singleConnection)) . '</h1>
 			<div class="tracy-inner tracy-DibiProfiler">
-			<table>
-				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Rows</th></tr>' . $s . '
+			<table class="tracy-sortable">
+				<tr><th>Time&nbsp;ms</th><th>SQL Statement</th><th>Rows</th>' . (!$singleConnection ? '<th>Connection</th>' : '') . '</tr>
+				' . $s . '
 			</table>
 			</div>';
+	}
+
+
+	private function getConnectionName(Dibi\Connection $connection): string
+	{
+		$driver = $connection->getConfig('driver');
+		return (is_object($driver) ? get_class($driver) : $driver)
+			. ($connection->getConfig('name') ? '/' . $connection->getConfig('name') : '')
+			. ($connection->getConfig('host') ? ' @ ' . $connection->getConfig('host') : '');
 	}
 }

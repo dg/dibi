@@ -30,6 +30,6 @@ class Type
 
 	final public function __construct()
 	{
-		throw new \LogicException('Cannot instantiate static class ' . __CLASS__);
+		throw new \LogicException('Cannot instantiate static class ' . self::class);
 	}
 }

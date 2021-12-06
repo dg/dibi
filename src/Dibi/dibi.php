@@ -25,6 +25,7 @@ declare(strict_types=1);
  * @method static void begin(string $savepoint = null)
  * @method static void commit(string $savepoint = null)
  * @method static void rollback(string $savepoint = null)
+ * @method static mixed transaction(callable $callback)
  * @method static Dibi\Reflection\Database getDatabaseInfo()
  * @method static Dibi\Fluent command()
  * @method static Dibi\Fluent select(...$args)
@@ -44,30 +45,30 @@ class dibi
 
 	/** version */
 	public const
-		VERSION = '4.1.3';
+		VERSION = '5.0-dev';
 
 	/** sorting order */
 	public const
 		ASC = 'ASC',
 		DESC = 'DESC';
 
-	/** @var string|null  Last SQL command @see dibi::query() */
-	public static $sql;
+	/** Last SQL command @see dibi::query() */
+	public static ?string $sql = null;
 
-	/** @var float|null  Elapsed time for last query */
-	public static $elapsedTime;
+	/** Elapsed time for last query */
+	public static ?float $elapsedTime = null;
 
-	/** @var float  Elapsed time for all queries */
-	public static $totalTime;
+	/** Elapsed time for all queries */
+	public static float $totalTime = 0;
 
-	/** @var int  Number or queries */
-	public static $numOfQueries = 0;
+	/** Number or queries */
+	public static int $numOfQueries = 0;
 
 	/** @var Dibi\Connection[]  Connection registry storage for Dibi\Connection objects */
-	private static $registry = [];
+	private static array $registry = [];
 
-	/** @var Dibi\Connection  Current connection */
-	private static $connection;
+	/** Current connection */
+	private static Dibi\Connection $connection;
 
 
 	/**
@@ -75,7 +76,7 @@ class dibi
 	 */
 	final public function __construct()
 	{
-		throw new LogicException('Cannot instantiate static class ' . get_class($this));
+		throw new LogicException('Cannot instantiate static class ' . static::class);
 	}
 
 
@@ -87,7 +88,7 @@ class dibi
 	 * @param  array   $config  connection parameters
 	 * @throws Dibi\Exception
 	 */
-	public static function connect($config = [], string $name = '0'): Dibi\Connection
+	public static function connect(array $config = [], string $name = '0'): Dibi\Connection
 	{
 		return self::$connection = self::$registry[$name] = new Dibi\Connection($config, $name);
 	}
@@ -150,10 +151,9 @@ class dibi
 
 	/**
 	 * Prints out a syntax highlighted version of the SQL command or Result.
-	 * @param  string|Dibi\Result  $sql
 	 * @param  bool  $return  return output instead of printing it?
 	 */
-	public static function dump($sql = null, bool $return = false): ?string
+	public static function dump(string|Dibi\Result $sql = null, bool $return = false): ?string
 	{
 		return Dibi\Helpers::dump($sql, $return);
 	}

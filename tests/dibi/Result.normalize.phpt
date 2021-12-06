@@ -24,7 +24,18 @@ class MockResult extends Dibi\Result
 }
 
 
-test(function () {
+test('', function () {
+	$result = new MockResult;
+	$result->setType('col', Type::TEXT);
+	$result->setFormat(Type::TEXT, 'native');
+
+	Assert::same(['col' => null], $result->test(['col' => null]));
+	Assert::same(['col' => true], $result->test(['col' => true]));
+	Assert::same(['col' => false], $result->test(['col' => false]));
+});
+
+
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::BOOL);
 
@@ -46,7 +57,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::TEXT);
 
@@ -62,7 +73,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::FLOAT);
 
@@ -139,7 +150,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::INTEGER);
 
@@ -147,7 +158,14 @@ test(function () {
 	Assert::same(['col' => 1], $result->test(['col' => true]));
 	Assert::same(['col' => 0], $result->test(['col' => false]));
 
-	Assert::same(['col' => 0], @$result->test(['col' => ''])); // triggers warning in PHP 7.1
+	if (PHP_VERSION_ID < 80000) {
+		Assert::same(['col' => 0], @$result->test(['col' => ''])); // triggers warning since PHP 7.1
+	} else {
+		Assert::exception(function () use ($result) {
+			Assert::same(['col' => 0], $result->test(['col' => '']));
+		}, TypeError::class);
+	}
+
 	Assert::same(['col' => 0], $result->test(['col' => '0']));
 	Assert::same(['col' => 1], $result->test(['col' => '1']));
 	Assert::same(['col' => 10], $result->test(['col' => '10']));
@@ -165,7 +183,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::DATETIME);
 
@@ -183,7 +201,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::DATETIME);
 	$result->setFormat(Type::DATETIME, 'Y-m-d H:i:s');
@@ -202,7 +220,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::DATE);
 
@@ -218,7 +236,7 @@ test(function () {
 });
 
 
-test(function () {
+test('', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::TIME);
 

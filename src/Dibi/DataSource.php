@@ -17,35 +17,25 @@ class DataSource implements IDataSource
 {
 	use Strict;
 
-	/** @var Connection */
-	private $connection;
+	private Connection $connection;
 
-	/** @var string */
-	private $sql;
+	private string $sql;
 
-	/** @var Result|null */
-	private $result;
+	private ?Result $result = null;
 
-	/** @var int|null */
-	private $count;
+	private ?int $count = null;
 
-	/** @var int|null */
-	private $totalCount;
+	private ?int $totalCount = null;
 
-	/** @var array */
-	private $cols = [];
+	private array $cols = [];
 
-	/** @var array */
-	private $sorting = [];
+	private array $sorting = [];
 
-	/** @var array */
-	private $conds = [];
+	private array $conds = [];
 
-	/** @var int|null */
-	private $offset;
+	private ?int $offset = null;
 
-	/** @var int|null */
-	private $limit;
+	private ?int $limit = null;
 
 
 	/**
@@ -53,11 +43,9 @@ class DataSource implements IDataSource
 	 */
 	public function __construct(string $sql, Connection $connection)
 	{
-		if (strpbrk($sql, " \t\r\n") === false) {
-			$this->sql = $connection->getDriver()->escapeIdentifier($sql); // table name
-		} else {
-			$this->sql = '(' . $sql . ') t'; // SQL command
-		}
+		$this->sql = strpbrk($sql, " \t\r\n") === false
+			? $connection->getDriver()->escapeIdentifier($sql) // table name
+			: '(' . $sql . ') t'; // SQL command
 		$this->connection = $connection;
 	}
 
@@ -67,7 +55,7 @@ class DataSource implements IDataSource
 	 * @param  string|array  $col  column name or array of column names
 	 * @param  string  $as        column alias
 	 */
-	public function select($col, string $as = null): self
+	public function select(string|array $col, string $as = null): static
 	{
 		if (is_array($col)) {
 			$this->cols = $col;
@@ -82,14 +70,11 @@ class DataSource implements IDataSource
 	/**
 	 * Adds conditions to query.
 	 */
-	public function where($cond): self
+	public function where($cond): static
 	{
-		if (is_array($cond)) {
-			// TODO: not consistent with select and orderBy
-			$this->conds[] = $cond;
-		} else {
-			$this->conds[] = func_get_args();
-		}
+		$this->conds[] = is_array($cond)
+			? $cond // TODO: not consistent with select and orderBy
+			: func_get_args();
 		$this->result = $this->count = null;
 		return $this;
 	}
@@ -99,7 +84,7 @@ class DataSource implements IDataSource
 	 * Selects columns to order by.
 	 * @param  string|array  $row  column name or array of column names
 	 */
-	public function orderBy($row, string $direction = 'ASC'): self
+	public function orderBy(string|array $row, string $direction = 'ASC'): static
 	{
 		if (is_array($row)) {
 			$this->sorting = $row;
@@ -114,7 +99,7 @@ class DataSource implements IDataSource
 	/**
 	 * Limits number of rows.
 	 */
-	public function applyLimit(int $limit, int $offset = null): self
+	public function applyLimit(int $limit, int $offset = null): static
 	{
 		$this->limit = $limit;
 		$this->offset = $offset;
@@ -163,7 +148,7 @@ class DataSource implements IDataSource
 	 * Like fetch(), but returns only first field.
 	 * @return mixed  value on success, null if no next record
 	 */
-	public function fetchSingle()
+	public function fetchSingle(): mixed
 	{
 		return $this->getResult()->fetchSingle();
 	}
@@ -231,18 +216,19 @@ class DataSource implements IDataSource
 	 */
 	public function __toString(): string
 	{
-		try {
-			return $this->connection->translate('
-SELECT %n', (empty($this->cols) ? '*' : $this->cols), '
-FROM %SQL', $this->sql, '
-%ex', $this->conds ? ['WHERE %and', $this->conds] : null, '
-%ex', $this->sorting ? ['ORDER BY %by', $this->sorting] : null, '
-%ofs %lmt', $this->offset, $this->limit
-			);
-		} catch (\Throwable $e) {
-			trigger_error($e->getMessage(), E_USER_ERROR);
-			return '';
-		}
+		return $this->connection->translate(
+			"\nSELECT %n",
+			(empty($this->cols) ? '*' : $this->cols),
+			"\nFROM %SQL",
+			$this->sql,
+			"\n%ex",
+			$this->conds ? ['WHERE %and', $this->conds] : null,
+			"\n%ex",
+			$this->sorting ? ['ORDER BY %by', $this->sorting] : null,
+			"\n%ofs %lmt",
+			$this->offset,
+			$this->limit,
+		);
 	}
 
 
@@ -257,7 +243,7 @@ FROM %SQL', $this->sql, '
 		if ($this->count === null) {
 			$this->count = $this->conds || $this->offset || $this->limit
 				? Helpers::intVal($this->connection->nativeQuery(
-					'SELECT COUNT(*) FROM (' . $this->__toString() . ') t'
+					'SELECT COUNT(*) FROM (' . $this->__toString() . ') t',
 				)->fetchSingle())
 				: $this->getTotalCount();
 		}
@@ -272,7 +258,7 @@ FROM %SQL', $this->sql, '
 	{
 		if ($this->totalCount === null) {
 			$this->totalCount = Helpers::intVal($this->connection->nativeQuery(
-				'SELECT COUNT(*) FROM ' . $this->sql
+				'SELECT COUNT(*) FROM ' . $this->sql,
 			)->fetchSingle());
 		}
 		return $this->totalCount;

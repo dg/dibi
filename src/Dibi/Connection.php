@@ -22,32 +22,41 @@ class Connection implements IConnection
 {
 	use Strict;
 
-	/** @var array of function (Event $event); Occurs after query is executed */
-	public $onEvent = [];
+	/** function (Event $event); Occurs after query is executed */
+	public array $onEvent = [];
 
-	/** @var array  Current connection configuration */
-	private $config;
+	/** Current connection configuration */
+	private array $config;
 
-	/** @var Driver|null */
-	private $driver;
+	/** @var string[]  resultset formats */
+	private array $formats;
 
-	/** @var Translator|null */
-	private $translator;
+	private ?Driver $driver = null;
 
-	/** @var HashMap Substitutes for identifiers */
-	private $substitutes;
+	private ?Translator $translator = null;
+
+	private HashMap $substitutes;
+
+	private int $transactionDepth = 0;
 
 
 	/**
 	 * Connection options: (see driver-specific options too)
 	 *   - lazy (bool) => if true, connection will be established only when required
 	 *   - result (array) => result set options
-	 *       - formatDateTime => date-time format (if empty, DateTime objects will be returned)
-	 *       - formatJson => json format (
-	 *           "string" for leaving value as is,
-	 *           "object" for decoding json as \stdClass,
-	 *           "array" for decoding json as an array - default
-	 *       )
+	 *       - normalize => normalizes result fields (default: true)
+	 *       - formatDateTime => date-time format
+	 *           empty for decoding as Dibi\DateTime (default)
+	 *           "..." formatted according to given format, see https://www.php.net/manual/en/datetime.format.php
+	 *           "native" for leaving value as is
+	 *       - formatTimeInterval => time-interval format
+	 *           empty for decoding as DateInterval (default)
+	 *           "..." formatted according to given format, see https://www.php.net/manual/en/dateinterval.format.php
+	 *           "native" for leaving value as is
+	 *       - formatJson => json format
+	 *           "array" for decoding json as an array (default)
+	 *           "object" for decoding json as \stdClass
+	 *           "native" for leaving value as is
 	 *   - profiler (array)
 	 *       - run (bool) => enable profiler?
 	 *       - file => file to log
@@ -63,10 +72,16 @@ class Connection implements IConnection
 		Helpers::alias($config, 'host', 'hostname');
 		Helpers::alias($config, 'result|formatDate', 'resultDate');
 		Helpers::alias($config, 'result|formatDateTime', 'resultDateTime');
-		$config['driver'] = $config['driver'] ?? 'mysqli';
+		$config['driver'] ??= 'mysqli';
 		$config['name'] = $name;
-		$config['result']['formatJson'] = $config['result']['formatJson'] ?? 'array';
 		$this->config = $config;
+
+		$this->formats = [
+			Type::DATE => $this->config['result']['formatDate'],
+			Type::DATETIME => $this->config['result']['formatDateTime'],
+			Type::JSON => $this->config['result']['formatJson'] ?? 'array',
+			Type::TIME_INTERVAL => $this->config['result']['formatTimeInterval'] ?? null,
+		];
 
 		// profiler
 		if (isset($config['profiler']['file']) && (!isset($config['profiler']['run']) || $config['profiler']['run'])) {
@@ -75,7 +90,7 @@ class Connection implements IConnection
 			$this->onEvent[] = [new Loggers\FileLogger($config['profiler']['file'], $filter, $errorsOnly), 'logEvent'];
 		}
 
-		$this->substitutes = new HashMap(function (string $expr) { return ":$expr:"; });
+		$this->substitutes = new HashMap(fn(string $expr) => ":$expr:");
 		if (!empty($config['substitutes'])) {
 			foreach ($config['substitutes'] as $key => $value) {
 				$this->substitutes->$key = $value;
@@ -171,9 +186,8 @@ class Connection implements IConnection
 	/**
 	 * Returns configuration variable. If no $key is passed, returns the entire array.
 	 * @see self::__construct
-	 * @return mixed
 	 */
-	final public function getConfig(string $key = null, $default = null)
+	final public function getConfig(string $key = null, $default = null): mixed
 	{
 		return $key === null
 			? $this->config
@@ -195,34 +209,34 @@ class Connection implements IConnection
 
 	/**
 	 * Generates (translates) and executes SQL query.
-	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
-	final public function query(...$args): Result
+	final public function query(mixed ...$args): Result
 	{
-		return $this->nativeQuery($this->translateArgs($args));
+		return $this->nativeQuery($this->translate(...$args));
 	}
 
 
 	/**
 	 * Generates SQL query.
-	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
-	final public function translate(...$args): string
+	final public function translate(mixed ...$args): string
 	{
-		return $this->translateArgs($args);
+		if (!$this->driver) {
+			$this->connect();
+		}
+		return (clone $this->translator)->translate($args);
 	}
 
 
 	/**
 	 * Generates and prints SQL query.
-	 * @param  mixed  ...$args
 	 */
-	final public function test(...$args): bool
+	final public function test(mixed ...$args): bool
 	{
 		try {
-			Helpers::dump($this->translateArgs($args));
+			Helpers::dump($this->translate(...$args));
 			return true;
 
 		} catch (Exception $e) {
@@ -238,24 +252,11 @@ class Connection implements IConnection
 
 	/**
 	 * Generates (translates) and returns SQL query as DataSource.
-	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
-	final public function dataSource(...$args): DataSource
+	final public function dataSource(mixed ...$args): DataSource
 	{
-		return new DataSource($this->translateArgs($args), $this);
-	}
-
-
-	/**
-	 * Generates SQL query.
-	 */
-	protected function translateArgs(array $args): string
-	{
-		if (!$this->driver) {
-			$this->connect();
-		}
-		return (clone $this->translator)->translate($args);
+		return new DataSource($this->translate(...$args), $this);
 	}
 
 
@@ -328,6 +329,10 @@ class Connection implements IConnection
 	 */
 	public function begin(string $savepoint = null): void
 	{
+		if ($this->transactionDepth !== 0) {
+			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
+		}
+
 		if (!$this->driver) {
 			$this->connect();
 		}
@@ -352,6 +357,10 @@ class Connection implements IConnection
 	 */
 	public function commit(string $savepoint = null): void
 	{
+		if ($this->transactionDepth !== 0) {
+			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
+		}
+
 		if (!$this->driver) {
 			$this->connect();
 		}
@@ -376,6 +385,10 @@ class Connection implements IConnection
 	 */
 	public function rollback(string $savepoint = null): void
 	{
+		if ($this->transactionDepth !== 0) {
+			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
+		}
+
 		if (!$this->driver) {
 			$this->connect();
 		}
@@ -395,15 +408,39 @@ class Connection implements IConnection
 	}
 
 
+	public function transaction(callable $callback): mixed
+	{
+		if ($this->transactionDepth === 0) {
+			$this->begin();
+		}
+
+		$this->transactionDepth++;
+		try {
+			$res = $callback($this);
+		} catch (\Throwable $e) {
+			$this->transactionDepth--;
+			if ($this->transactionDepth === 0) {
+				$this->rollback();
+			}
+			throw $e;
+		}
+
+		$this->transactionDepth--;
+		if ($this->transactionDepth === 0) {
+			$this->commit();
+		}
+
+		return $res;
+	}
+
+
 	/**
 	 * Result set factory.
 	 */
 	public function createResultSet(ResultDriver $resultDriver): Result
 	{
-		$res = new Result($resultDriver);
-		return $res->setFormat(Type::DATE, $this->config['result']['formatDate'])
-			->setFormat(Type::DATETIME, $this->config['result']['formatDateTime'])
-			->setFormat(Type::JSON, $this->config['result']['formatJson']);
+		return (new Result($resultDriver, $this->config['result']['normalize'] ?? true))
+			->setFormats($this->formats);
 	}
 
 
@@ -464,9 +501,9 @@ class Connection implements IConnection
 	 */
 	public function substitute(string $value): string
 	{
-		return strpos($value, ':') === false
-			? $value
-			: preg_replace_callback('#:([^:\s]*):#', function (array $m) { return $this->substitutes->{$m[1]}; }, $value);
+		return str_contains($value, ':')
+			? preg_replace_callback('#:([^:\s]*):#', fn(array $m) => $this->substitutes->{$m[1]}, $value)
+			: $value;
 	}
 
 
@@ -475,10 +512,9 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
-	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
-	public function fetch(...$args): ?Row
+	public function fetch(mixed ...$args): ?Row
 	{
 		return $this->query($args)->fetch();
 	}
@@ -486,11 +522,10 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
-	 * @param  mixed  ...$args
 	 * @return Row[]|array[]
 	 * @throws Exception
 	 */
-	public function fetchAll(...$args): array
+	public function fetchAll(mixed ...$args): array
 	{
 		return $this->query($args)->fetchAll();
 	}
@@ -498,11 +533,9 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
-	 * @param  mixed  ...$args
-	 * @return mixed
 	 * @throws Exception
 	 */
-	public function fetchSingle(...$args)
+	public function fetchSingle(mixed ...$args): mixed
 	{
 		return $this->query($args)->fetchSingle();
 	}
@@ -510,10 +543,9 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
-	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
-	public function fetchPairs(...$args): array
+	public function fetchPairs(mixed ...$args): array
 	{
 		return $this->query($args)->fetchPairs();
 	}
@@ -562,7 +594,7 @@ class Connection implements IConnection
 	 */
 	public function __wakeup()
 	{
-		throw new NotSupportedException('You cannot serialize or unserialize ' . get_class($this) . ' instances.');
+		throw new NotSupportedException('You cannot serialize or unserialize ' . static::class . ' instances.');
 	}
 
 
@@ -571,7 +603,7 @@ class Connection implements IConnection
 	 */
 	public function __sleep()
 	{
-		throw new NotSupportedException('You cannot serialize or unserialize ' . get_class($this) . ' instances.');
+		throw new NotSupportedException('You cannot serialize or unserialize ' . static::class . ' instances.');
 	}
 
 

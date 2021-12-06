@@ -23,8 +23,7 @@ class FirebirdResult implements Dibi\ResultDriver
 	/** @var resource */
 	private $resultSet;
 
-	/** @var bool */
-	private $autoFree = true;
+	private bool $autoFree = true;
 
 
 	/**
@@ -62,10 +61,12 @@ class FirebirdResult implements Dibi\ResultDriver
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		$result = $assoc ? @ibase_fetch_assoc($this->resultSet, IBASE_TEXT) : @ibase_fetch_row($this->resultSet, IBASE_TEXT); // intentionally @
+		$result = $assoc
+			? @ibase_fetch_assoc($this->resultSet, IBASE_TEXT)
+			: @ibase_fetch_row($this->resultSet, IBASE_TEXT); // intentionally @
 
 		if (ibase_errcode()) {
-			if (ibase_errcode() == FirebirdDriver::ERROR_EXCEPTION_THROWN) {
+			if (ibase_errcode() === FirebirdDriver::ERROR_EXCEPTION_THROWN) {
 				preg_match('/exception (\d+) (\w+) (.*)/is', ibase_errmsg(), $match);
 				throw new Dibi\ProcedureException($match[3], $match[1], $match[2]);
 
@@ -101,7 +102,7 @@ class FirebirdResult implements Dibi\ResultDriver
 	 * Returns the result set resource.
 	 * @return resource|null
 	 */
-	public function getResultResource()
+	public function getResultResource(): mixed
 	{
 		$this->autoFree = false;
 		return is_resource($this->resultSet) ? $this->resultSet : null;

@@ -17,38 +17,28 @@ final class Translator
 {
 	use Strict;
 
-	/** @var Connection */
-	private $connection;
+	private Connection $connection;
 
-	/** @var Driver */
-	private $driver;
+	private Driver $driver;
 
-	/** @var int */
-	private $cursor = 0;
+	private int $cursor = 0;
 
-	/** @var array */
-	private $args;
+	private array $args;
 
 	/** @var string[] */
-	private $errors;
+	private array $errors;
 
-	/** @var bool */
-	private $comment = false;
+	private bool $comment = false;
 
-	/** @var int */
-	private $ifLevel = 0;
+	private int $ifLevel = 0;
 
-	/** @var int */
-	private $ifLevelStart = 0;
+	private int $ifLevelStart = 0;
 
-	/** @var int|null */
-	private $limit;
+	private ?int $limit = null;
 
-	/** @var int|null */
-	private $offset;
+	private ?int $offset = null;
 
-	/** @var HashMap */
-	private $identifiers;
+	private HashMap $identifiers;
 
 
 	public function __construct(Connection $connection)
@@ -92,24 +82,25 @@ final class Translator
 					$sql[] = $arg;
 				} else {
 					$sql[] = substr($arg, 0, $toSkip)
-/*
-					. preg_replace_callback('/
-					(?=[`[\'":%?])                    ## speed-up
-					(?:
-						`(.+?)`|                     ## 1) `identifier`
-						\[(.+?)\]|                   ## 2) [identifier]
-						(\')((?:\'\'|[^\'])*)\'|     ## 3,4) 'string'
-						(")((?:""|[^"])*)"|          ## 5,6) "string"
-						(\'|")|                      ## 7) lone quote
-						:(\S*?:)([a-zA-Z0-9._]?)|    ## 8,9) :substitution:
-						%([a-zA-Z~][a-zA-Z0-9~]{0,5})|## 10) modifier
-						(\?)                         ## 11) placeholder
-					)/xs',
-*/                  // note: this can change $this->args & $this->cursor & ...
-					. preg_replace_callback('/(?=[`[\'":%?])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?)|%([a-zA-Z~][a-zA-Z0-9~]{0,5})|(\?))/s',
+						// note: this can change $this->args & $this->cursor & ...
+						. preg_replace_callback(
+							<<<'XX'
+								/
+								(?=[`['":%?])                       ## speed-up
+								(?:
+									`(.+?)`|                        ## 1) `identifier`
+									\[(.+?)\]|                      ## 2) [identifier]
+									(')((?:''|[^'])*)'|             ## 3,4) string
+									(")((?:""|[^"])*)"|             ## 5,6) "string"
+									('|")|                          ## 7) lone quote
+									:(\S*?:)([a-zA-Z0-9._]?)|       ## 8,9) :substitution:
+									%([a-zA-Z~][a-zA-Z0-9~]{0,5})|  ## 10) modifier
+									(\?)                            ## 11) placeholder
+								)/xs
+								XX,
 							[$this, 'cb'],
-							substr($arg, $toSkip)
-					);
+							substr($arg, $toSkip),
+						);
 					if (preg_last_error()) {
 						throw new PcreException;
 					}
@@ -168,9 +159,8 @@ final class Translator
 
 	/**
 	 * Apply modifier to single value.
-	 * @param  mixed  $value
 	 */
-	public function formatValue($value, ?string $modifier): string
+	public function formatValue(mixed $value, ?string $modifier): string
 	{
 		if ($this->comment) {
 			return '...';
@@ -205,7 +195,7 @@ final class Translator
 								$v = $this->formatValue($v, $pair[1]);
 								if ($pair[1] === 'l' || $pair[1] === 'in') {
 									$op = 'IN ';
-								} elseif (strpos($pair[1], 'like') !== false) {
+								} elseif (str_contains($pair[1], 'like')) {
 									$op = 'LIKE ';
 								} elseif ($v === 'NULL') {
 									$op = 'IS ';
@@ -289,7 +279,7 @@ final class Translator
 						if (is_array($v)) {
 							$vx[] = $this->formatValue($v, 'ex');
 						} elseif (is_string($k)) {
-							$v = (is_string($v) && strncasecmp($v, 'd', 1)) || $v > 0 ? 'ASC' : 'DESC';
+							$v = (is_string($v) ? strncasecmp($v, 'd', 1) : $v > 0) ? 'ASC' : 'DESC';
 							$vx[] = $this->identifiers->$k . ' ' . $v;
 						} else {
 							$vx[] = $this->identifiers->$v;
@@ -322,7 +312,13 @@ final class Translator
 				} elseif ($value instanceof Expression && $modifier === 'ex') {
 					return $this->connection->translate(...$value->getValues());
 
-				} elseif ($value instanceof \DateTimeInterface && ($modifier === 'd' || $modifier === 't' || $modifier === 'dt')) {
+				} elseif (
+					$value instanceof \DateTimeInterface
+					&& ($modifier === 'd'
+						|| $modifier === 't'
+						|| $modifier === 'dt'
+					)
+				) {
 					// continue
 				} else {
 					$type = is_object($value) ? get_class($value) : gettype($value);
@@ -332,21 +328,29 @@ final class Translator
 
 			switch ($modifier) {
 				case 's':  // string
-					return $value === null ? 'NULL' : $this->driver->escapeText((string) $value);
+					return $value === null
+						? 'NULL'
+						: $this->driver->escapeText((string) $value);
 
 				case 'bin':// binary
-					return $value === null ? 'NULL' : $this->driver->escapeBinary($value);
+					return $value === null
+						? 'NULL'
+						: $this->driver->escapeBinary($value);
 
 				case 'b':  // boolean
-					return $value === null ? 'NULL' : $this->driver->escapeBool((bool) $value);
+					return $value === null
+						? 'NULL'
+						: $this->driver->escapeBool((bool) $value);
 
 				case 'sN': // string or null
 				case 'sn':
-					return $value == '' ? 'NULL' : $this->driver->escapeText((string) $value); // notice two equal signs
+					return $value === '' || $value === 0 || $value === null
+						? 'NULL'
+						: $this->driver->escapeText((string) $value);
 
 				case 'iN': // signed int or null
-					if ($value == '') {
-						$value = null;
+					if ($value === '' || $value === 0 || $value === null) {
+						return 'NULL';
 					}
 					// break omitted
 				case 'i':  // signed int
@@ -384,7 +388,9 @@ final class Translator
 					} elseif (!$value instanceof \DateTimeInterface) {
 						$value = new DateTime($value);
 					}
-					return $modifier === 'd' ? $this->driver->escapeDate($value) : $this->driver->escapeDateTime($value);
+					return $modifier === 'd'
+						? $this->driver->escapeDate($value)
+						: $this->driver->escapeDateTime($value);
 
 				case 'by':
 				case 'n':  // composed identifier name
@@ -400,11 +406,23 @@ final class Translator
 					$toSkip = strcspn($value, '`[\'":');
 					if (strlen($value) !== $toSkip) {
 						$value = substr($value, 0, $toSkip)
-						. preg_replace_callback(
-							'/(?=[`[\'":])(?:`(.+?)`|\[(.+?)\]|(\')((?:\'\'|[^\'])*)\'|(")((?:""|[^"])*)"|(\'|")|:(\S*?:)([a-zA-Z0-9._]?))/s',
-							[$this, 'cb'],
-							substr($value, $toSkip)
-						);
+							. preg_replace_callback(
+								<<<'XX'
+																	/
+																	(?=[`['":])
+																	(?:
+																		`(.+?)`|
+																		\[(.+?)\]|
+																		(')((?:''|[^'])*)'|
+																		(")((?:""|[^"])*)"|
+																		('|")|
+																		:(\S*?:)([a-zA-Z0-9._]?)
+																	)/sx
+									XX
+,
+								[$this, 'cb'],
+								substr($value, $toSkip),
+							);
 						if (preg_last_error()) {
 							throw new PcreException;
 						}
@@ -597,7 +615,9 @@ final class Translator
 		if ($matches[8]) { // SQL identifier substitution
 			$m = substr($matches[8], 0, -1);
 			$m = $this->connection->getSubstitutes()->$m;
-			return $matches[9] == '' ? $this->formatValue($m, null) : $m . $matches[9]; // value or identifier
+			return $matches[9] === ''
+				? $this->formatValue($m, null)
+				: $m . $matches[9]; // value or identifier
 		}
 
 		throw new \Exception('this should be never executed');

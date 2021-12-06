@@ -19,14 +19,12 @@ class FileLogger
 {
 	use Dibi\Strict;
 
-	/** @var string  Name of the file where SQL errors should be logged */
-	public $file;
+	/** Name of the file where SQL errors should be logged */
+	public string $file;
 
-	/** @var int */
-	public $filter;
+	public int $filter;
 
-	/** @var bool */
-	private $errorsOnly;
+	private bool $errorsOnly;
 
 
 	public function __construct(string $file, int $filter = null, bool $errorsOnly = false)
@@ -57,7 +55,7 @@ class FileLogger
 			$this->writeToFile(
 				$event,
 				"ERROR: $message"
-					. "\n-- SQL: " . $event->sql
+					. "\n-- SQL: " . $event->sql,
 			);
 		} else {
 			$this->writeToFile(
@@ -65,7 +63,7 @@ class FileLogger
 				'OK: ' . $event->sql
 					. ($event->count ? ";\n-- rows: " . $event->count : '')
 					. "\n-- takes: " . sprintf('%0.3f ms', $event->time * 1000)
-					. "\n-- source: " . implode(':', $event->source)
+					. "\n-- source: " . implode(':', $event->source),
 			);
 		}
 	}
@@ -73,8 +71,9 @@ class FileLogger
 
 	private function writeToFile(Dibi\Event $event, string $message): void
 	{
+		$driver = $event->connection->getConfig('driver');
 		$message .=
-			"\n-- driver: " . $event->connection->getConfig('driver') . '/' . $event->connection->getConfig('name')
+			"\n-- driver: " . (is_object($driver) ? get_class($driver) : $driver) . '/' . $event->connection->getConfig('name')
 			. "\n-- " . date('Y-m-d H:i:s')
 			. "\n\n";
 		file_put_contents($this->file, $message, FILE_APPEND | LOCK_EX);

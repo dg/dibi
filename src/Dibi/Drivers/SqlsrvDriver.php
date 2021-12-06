@@ -32,11 +32,9 @@ class SqlsrvDriver implements Dibi\Driver
 	/** @var resource */
 	private $connection;
 
-	/** @var int|null  Affected rows */
-	private $affectedRows;
+	private ?int $affectedRows;
 
-	/** @var string */
-	private $version = '';
+	private string $version = '';
 
 
 	/** @throws Dibi\NotSupportedException */
@@ -53,23 +51,28 @@ class SqlsrvDriver implements Dibi\Driver
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
+			if (!is_resource($this->connection)) {
+				throw new \InvalidArgumentException("Configuration option 'resource' is not resource.");
+			}
 
 		} else {
 			$options = $config['options'];
 
 			// Default values
-			$options['CharacterSet'] = $options['CharacterSet'] ?? 'UTF-8';
+			$options['CharacterSet'] ??= 'UTF-8';
 			$options['PWD'] = (string) $options['PWD'];
 			$options['UID'] = (string) $options['UID'];
 			$options['Database'] = (string) $options['Database'];
 
+			sqlsrv_configure('WarningsReturnAsErrors', 0);
 			$this->connection = sqlsrv_connect($config['host'], $options);
+			if (!is_resource($this->connection)) {
+				$info = sqlsrv_errors(SQLSRV_ERR_ERRORS);
+				throw new Dibi\DriverException($info[0]['message'], $info[0]['code']);
+			}
+			sqlsrv_configure('WarningsReturnAsErrors', 1);
 		}
 
-		if (!is_resource($this->connection)) {
-			$info = sqlsrv_errors();
-			throw new Dibi\DriverException($info[0]['message'], $info[0]['code']);
-		}
 		$this->version = sqlsrv_server_info($this->connection)['SQLServerVersion'];
 	}
 
@@ -98,7 +101,9 @@ class SqlsrvDriver implements Dibi\Driver
 
 		} elseif (is_resource($res)) {
 			$this->affectedRows = Helpers::false2Null(sqlsrv_rows_affected($res));
-			return sqlsrv_num_fields($res) ? $this->createResultDriver($res) : null;
+			return sqlsrv_num_fields($res)
+				? $this->createResultDriver($res)
+				: null;
 		}
 		return null;
 	}
@@ -161,7 +166,7 @@ class SqlsrvDriver implements Dibi\Driver
 	 * Returns the connection resource.
 	 * @return resource|null
 	 */
-	public function getResource()
+	public function getResource(): mixed
 	{
 		return is_resource($this->connection) ? $this->connection : null;
 	}
@@ -200,7 +205,7 @@ class SqlsrvDriver implements Dibi\Driver
 
 	public function escapeBinary(string $value): string
 	{
-		return "'" . str_replace("'", "''", $value) . "'";
+		return '0x' . bin2hex($value);
 	}
 
 

@@ -23,6 +23,10 @@ try {
 	$config = reset($config);
 }
 
+if (isset($config['port'])) {
+	$config['port'] = (int) $config['port'];
+}
+
 
 // lock
 define('TEMP_DIR', __DIR__ . '/../tmp');
@@ -37,7 +41,7 @@ if ($config['system'] === 'odbc') {
 }
 
 
-function test(Closure $function)
+function test(string $title, Closure $function): void
 {
 	$function();
 }

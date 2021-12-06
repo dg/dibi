@@ -29,17 +29,13 @@ class PdoDriver implements Dibi\Driver
 {
 	use Dibi\Strict;
 
-	/** @var PDO|null  Connection resource */
-	private $connection;
+	private ?PDO $connection;
 
-	/** @var int|null  Affected rows */
-	private $affectedRows;
+	private ?int $affectedRows;
 
-	/** @var string */
-	private $driverName;
+	private string $driverName;
 
-	/** @var string */
-	private $serverVersion = '';
+	private string $serverVersion = '';
 
 
 	/** @throws Dibi\NotSupportedException */
@@ -56,19 +52,21 @@ class PdoDriver implements Dibi\Driver
 		if ($config['resource'] instanceof PDO) {
 			$this->connection = $config['resource'];
 			unset($config['resource'], $config['pdo']);
+
+			if ($this->connection->getAttribute(PDO::ATTR_ERRMODE) !== PDO::ERRMODE_SILENT) {
+				throw new Dibi\DriverException('PDO connection in exception or warning error mode is not supported.');
+			}
+
 		} else {
 			try {
 				$this->connection = new PDO($config['dsn'], $config['username'], $config['password'], $config['options']);
+				$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
 			} catch (\PDOException $e) {
 				if ($e->getMessage() === 'could not find driver') {
 					throw new Dibi\NotSupportedException('PHP extension for PDO is not loaded.');
 				}
 				throw new Dibi\DriverException($e->getMessage(), $e->getCode());
 			}
-		}
-
-		if ($this->connection->getAttribute(PDO::ATTR_ERRMODE) !== PDO::ERRMODE_SILENT) {
-			throw new Dibi\DriverException('PDO connection in exception or warning error mode is not supported.');
 		}
 
 		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
@@ -232,21 +230,17 @@ class PdoDriver implements Dibi\Driver
 	 */
 	public function escapeText(string $value): string
 	{
-		if ($this->driverName === 'odbc') {
-			return "'" . str_replace("'", "''", $value) . "'";
-		} else {
-			return $this->connection->quote($value, PDO::PARAM_STR);
-		}
+		return $this->driverName === 'odbc'
+			? "'" . str_replace("'", "''", $value) . "'"
+			: $this->connection->quote($value, PDO::PARAM_STR);
 	}
 
 
 	public function escapeBinary(string $value): string
 	{
-		if ($this->driverName === 'odbc') {
-			return "'" . str_replace("'", "''", $value) . "'";
-		} else {
-			return $this->connection->quote($value, PDO::PARAM_LOB);
-		}
+		return $this->driverName === 'odbc'
+			? "'" . str_replace("'", "''", $value) . "'"
+			: $this->connection->quote($value, PDO::PARAM_LOB);
 	}
 
 

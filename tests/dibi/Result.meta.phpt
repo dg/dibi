@@ -28,14 +28,14 @@ Assert::same(4, $res->getColumnCount());
 
 Assert::same(
 	['product_id', 'order_id', 'name', 'xXx'],
-	$info->getColumnNames()
+	$info->getColumnNames(),
 );
 
 
-if (!in_array($config['driver'], ['sqlite', 'pdo', 'sqlsrv'], true)) {
+if (!in_array($config['driver'], ['sqlite', 'sqlite3', 'pdo', 'sqlsrv'], true)) {
 	Assert::same(
 		['products.product_id', 'orders.order_id', 'customers.name', 'xXx'],
-		$info->getColumnNames(true)
+		$info->getColumnNames(true),
 	);
 }
 
@@ -43,7 +43,7 @@ if (!in_array($config['driver'], ['sqlite', 'pdo', 'sqlsrv'], true)) {
 $columns = $info->getColumns();
 
 Assert::same('product_id', $columns[0]->getName());
-if (!in_array($config['driver'], ['sqlite', 'pdo', 'sqlsrv'], true)) {
+if (!in_array($config['driver'], ['sqlite', 'sqlite3', 'pdo', 'sqlsrv'], true)) {
 	Assert::same('products', $columns[0]->getTableName());
 }
 Assert::null($columns[0]->getVendorInfo('xxx'));

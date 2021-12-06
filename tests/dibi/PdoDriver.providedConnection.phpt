@@ -29,13 +29,6 @@ Assert::exception(function () {
 }, Dibi\DriverException::class, 'PDO connection in exception or warning error mode is not supported.');
 
 
-// PDO error mode: explicitly set silent
-test(function () {
+test('PDO error mode: explicitly set silent', function () {
 	buildPdoDriver(PDO::ERRMODE_SILENT);
-});
-
-
-// PDO error mode: implicitly set silent
-test(function () {
-	buildPdoDriver(null);
 });

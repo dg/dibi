@@ -32,14 +32,12 @@ class OracleDriver implements Dibi\Driver
 	/** @var resource */
 	private $connection;
 
-	/** @var bool */
-	private $autocommit = true;
+	private bool $autocommit = true;
 
-	/** @var bool  use native datetime format */
-	private $nativeDate;
+	/** use native datetime format */
+	private bool $nativeDate;
 
-	/** @var int|null Number of affected rows */
-	private $affectedRows;
+	private ?int $affectedRows;
 
 
 	/** @throws Dibi\NotSupportedException */
@@ -96,7 +94,9 @@ class OracleDriver implements Dibi\Driver
 
 			} elseif (is_resource($res)) {
 				$this->affectedRows = Dibi\Helpers::false2Null(oci_num_rows($res));
-				return oci_num_fields($res) ? $this->createResultDriver($res) : null;
+				return oci_num_fields($res)
+					? $this->createResultDriver($res)
+					: null;
 			}
 		} else {
 			$err = oci_error($this->connection);
@@ -183,7 +183,7 @@ class OracleDriver implements Dibi\Driver
 	 * Returns the connection resource.
 	 * @return resource|null
 	 */
-	public function getResource()
+	public function getResource(): mixed
 	{
 		return is_resource($this->connection) ? $this->connection : null;
 	}

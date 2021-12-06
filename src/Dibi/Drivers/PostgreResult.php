@@ -11,6 +11,7 @@ namespace Dibi\Drivers;
 
 use Dibi;
 use Dibi\Helpers;
+use PgSql;
 
 
 /**
@@ -20,15 +21,14 @@ class PostgreResult implements Dibi\ResultDriver
 {
 	use Dibi\Strict;
 
-	/** @var resource */
+	/** @var resource|PgSql\Result */
 	private $resultSet;
 
-	/** @var bool */
-	private $autoFree = true;
+	private bool $autoFree = true;
 
 
 	/**
-	 * @param  resource  $resultSet
+	 * @param  resource|PgSql\Result  $resultSet
 	 */
 	public function __construct($resultSet)
 	{
@@ -97,7 +97,9 @@ class PostgreResult implements Dibi\ResultDriver
 				'table' => pg_field_table($this->resultSet, $i),
 				'nativetype' => pg_field_type($this->resultSet, $i),
 			];
-			$row['fullname'] = $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'];
+			$row['fullname'] = $row['table']
+				? $row['table'] . '.' . $row['name']
+				: $row['name'];
 			$columns[] = $row;
 		}
 		return $columns;
@@ -106,12 +108,14 @@ class PostgreResult implements Dibi\ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|null
+	 * @return resource|PgSql\Result|null
 	 */
-	public function getResultResource()
+	public function getResultResource(): mixed
 	{
 		$this->autoFree = false;
-		return is_resource($this->resultSet) ? $this->resultSet : null;
+		return is_resource($this->resultSet) || $this->resultSet instanceof PgSql\Result
+			? $this->resultSet
+			: null;
 	}
 
 

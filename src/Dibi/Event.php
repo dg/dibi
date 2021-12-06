@@ -31,26 +31,19 @@ class Event
 		TRANSACTION = 448, // BEGIN | COMMIT | ROLLBACK
 		ALL = 1023;
 
-	/** @var Connection */
-	public $connection;
+	public Connection $connection;
 
-	/** @var int */
-	public $type;
+	public int $type;
 
-	/** @var string */
-	public $sql;
+	public string $sql;
 
-	/** @var Result|DriverException|null */
-	public $result;
+	public Result|DriverException|null $result;
 
-	/** @var float */
-	public $time;
+	public float $time;
 
-	/** @var int|null */
-	public $count;
+	public ?int $count = null;
 
-	/** @var array|null */
-	public $source;
+	public ?array $source = null;
 
 
 	public function __construct(Connection $connection, int $type, string $sql = null)
@@ -70,7 +63,7 @@ class Event
 
 		$dibiDir = dirname((new \ReflectionClass('dibi'))->getFileName()) . DIRECTORY_SEPARATOR;
 		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $row) {
-			if (isset($row['file']) && is_file($row['file']) && strpos($row['file'], $dibiDir) !== 0) {
+			if (isset($row['file']) && is_file($row['file']) && !str_starts_with($row['file'], $dibiDir)) {
 				$this->source = [$row['file'], (int) $row['line']];
 				break;
 			}
@@ -82,10 +75,7 @@ class Event
 	}
 
 
-	/**
-	 * @param  Result|DriverException|null  $result
-	 */
-	public function done($result = null): self
+	public function done(Result|DriverException $result = null): static
 	{
 		$this->result = $result;
 		try {

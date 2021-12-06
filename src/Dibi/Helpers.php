@@ -14,19 +14,17 @@ class Helpers
 {
 	use Strict;
 
-	/** @var HashMap */
-	private static $types;
+	private static HashMap $types;
 
 
 	/**
 	 * Prints out a syntax highlighted version of the SQL command or Result.
-	 * @param  string|Result  $sql
 	 */
-	public static function dump($sql = null, bool $return = false, bool $returnStringWrapping = true): ?string
+	public static function dump(string|Result $sql = null, bool $return = false, bool $returnStringWrapping = true): ?string
 	{
 		ob_start();
 		if ($sql instanceof Result && PHP_SAPI === 'cli') {
-			$hasColors = (substr((string) getenv('TERM'), 0, 5) === 'xterm');
+			$hasColors = (str_starts_with((string) getenv('TERM'), 'xterm'));
 			$maxLen = 0;
 			foreach ($sql as $i => $row) {
 				if ($i === 0) {
@@ -85,13 +83,13 @@ class Helpers
 			if ($returnStringWrapping) {
 				$sql = wordwrap($sql, 100);
 			}
-			
+
 			$sql = preg_replace("#([ \t]*\r?\n){2,}#", "\n", $sql);
 
 			// syntax highlight
 			$highlighter = "#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is";
 			if (PHP_SAPI === 'cli') {
-				if (substr((string) getenv('TERM'), 0, 5) === 'xterm') {
+				if (str_starts_with((string) getenv('TERM'), 'xterm')) {
 					$sql = preg_replace_callback($highlighter, function (array $m) {
 						if (!empty($m[1])) { // comment
 							return "\033[1;30m" . $m[1] . "\033[0m";
@@ -146,8 +144,8 @@ class Helpers
 	{
 		$best = null;
 		$min = (strlen($value) / 4 + 1) * 10 + .1;
-		foreach (array_unique($items, SORT_REGULAR) as $item) {
-			$item = is_object($item) ? $item->getName() : $item;
+		$items = array_map('strval', $items);
+		foreach (array_unique($items) as $item) {
 			if (($len = levenshtein($item, $value, 10, 11, 10)) > 0 && $len < $min) {
 				$min = $len;
 				$best = $item;
@@ -184,6 +182,7 @@ class Helpers
 	{
 		static $patterns = [
 			'^_' => Type::TEXT, // PostgreSQL arrays
+			'RANGE$' => Type::TEXT, // PostgreSQL range types
 			'BYTEA|BLOB|BIN' => Type::BINARY,
 			'TEXT|CHAR|POINT|INTERVAL|STRING' => Type::TEXT,
 			'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT|^TINY$' => Type::INTEGER,
@@ -207,8 +206,8 @@ class Helpers
 	/** @internal */
 	public static function getTypeCache(): HashMap
 	{
-		if (self::$types === null) {
-			self::$types = new HashMap([__CLASS__, 'detectType']);
+		if (!isset(self::$types)) {
+			self::$types = new HashMap([self::class, 'detectType']);
 		}
 		return self::$types;
 	}
@@ -233,7 +232,7 @@ class Helpers
 
 	/**
 	 * Import SQL dump from file.
-	 * @return int  count of sql commands
+	 * Returns count of sql commands
 	 */
 	public static function loadFromFile(Connection $connection, string $file, callable $onProgress = null): int
 	{
@@ -254,7 +253,7 @@ class Helpers
 			if (strtoupper(substr($s, 0, 10)) === 'DELIMITER ') {
 				$delimiter = trim(substr($s, 10));
 
-			} elseif (substr($ts = rtrim($s), -strlen($delimiter)) === $delimiter) {
+			} elseif (str_ends_with($ts = rtrim($s), $delimiter)) {
 				$sql .= substr($ts, 0, -strlen($delimiter));
 				$driver->query($sql);
 				$sql = '';
@@ -281,14 +280,14 @@ class Helpers
 
 
 	/** @internal */
-	public static function false2Null($val)
+	public static function false2Null(mixed $val): mixed
 	{
 		return $val === false ? null : $val;
 	}
 
 
 	/** @internal */
-	public static function intVal($value): int
+	public static function intVal(mixed $value): int
 	{
 		if (is_int($value)) {
 			return $value;

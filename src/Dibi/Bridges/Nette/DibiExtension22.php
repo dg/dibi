@@ -19,13 +19,15 @@ use Tracy;
  */
 class DibiExtension22 extends Nette\DI\CompilerExtension
 {
-	/** @var bool|null */
-	private $debugMode;
+	private ?bool $debugMode;
+
+	private ?bool $cliMode;
 
 
-	public function __construct(bool $debugMode = null)
+	public function __construct(bool $debugMode = null, bool $cliMode = null)
 	{
 		$this->debugMode = $debugMode;
+		$this->cliMode = $cliMode;
 	}
 
 
@@ -38,7 +40,11 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 			$this->debugMode = $container->parameters['debugMode'];
 		}
 
-		$useProfiler = $config['profiler'] ?? (class_exists(Tracy\Debugger::class) && $this->debugMode);
+		if ($this->cliMode === null) {
+			$this->cliMode = $container->parameters['consoleMode'];
+		}
+
+		$useProfiler = $config['profiler'] ?? (class_exists(Tracy\Debugger::class) && $this->debugMode && !$this->cliMode);
 
 		unset($config['profiler']);
 
@@ -57,7 +63,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 		if (class_exists(Tracy\Debugger::class)) {
 			$connection->addSetup(
 				[new Nette\DI\Statement('Tracy\Debugger::getBlueScreen'), 'addPanel'],
-				[[Dibi\Bridges\Tracy\Panel::class, 'renderException']]
+				[[Dibi\Bridges\Tracy\Panel::class, 'renderException']],
 			);
 		}
 		if ($useProfiler) {

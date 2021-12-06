@@ -19,18 +19,13 @@ class PostgreReflector implements Dibi\Reflector
 {
 	use Dibi\Strict;
 
-	/** @var Dibi\Driver */
-	private $driver;
+	private Dibi\Driver $driver;
 
-	/** @var string */
-	private $version;
+	private string $version;
 
 
 	public function __construct(Dibi\Driver $driver, string $version)
 	{
-		if ($version < 7.4) {
-			throw new Dibi\DriverException('Reflection requires PostgreSQL 7.4 and newer.');
-		}
 		$this->driver = $driver;
 		$this->version = $version;
 	}
@@ -105,7 +100,7 @@ class PostgreReflector implements Dibi\Reflector
 					a.atttypmod-4 AS character_maximum_length,
 					NOT a.attnotnull AS is_nullable,
 					a.attnum AS ordinal_position,
-					adef.adsrc AS column_default
+					pg_get_expr(adef.adbin, adef.adrelid) AS column_default
 				FROM
 					pg_attribute a
 					JOIN pg_type ON a.atttypid = pg_type.oid
@@ -130,7 +125,7 @@ class PostgreReflector implements Dibi\Reflector
 				'size' => $size > 0 ? $size : null,
 				'nullable' => $row['is_nullable'] === 'YES' || $row['is_nullable'] === 't' || $row['is_nullable'] === true,
 				'default' => $row['column_default'],
-				'autoincrement' => (int) $row['ordinal_position'] === $primary && substr($row['column_default'] ?? '', 0, 7) === 'nextval',
+				'autoincrement' => (int) $row['ordinal_position'] === $primary && str_starts_with($row['column_default'] ?? '', 'nextval'),
 				'vendor' => $row,
 			];
 		}
@@ -251,7 +246,10 @@ class PostgreReflector implements Dibi\Reflector
 				$references[$row['name']] = array_combine($l, $f);
 			}
 
-			if (isset($references[$row['name']][$row['lnum']]) && $references[$row['name']][$row['lnum']] === $row['fnum']) {
+			if (
+				isset($references[$row['name']][$row['lnum']])
+				&& $references[$row['name']][$row['lnum']] === $row['fnum']
+			) {
 				$fKeys[$row['name']]['local'][] = $row['local'];
 				$fKeys[$row['name']]['foreign'][] = $row['foreign'];
 			}

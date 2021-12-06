@@ -19,12 +19,17 @@ Assert::same(
 SELECT *
 FROM [customers]
 /* WHERE ... LIKE ... */'),
-
-	$conn->translate('
+	$conn->translate(
+		'
 SELECT *
 FROM [customers]
-%if', isset($name), 'WHERE [name] LIKE %s', 'xxx', '%end'
-));
+%if',
+		isset($name),
+		'WHERE [name] LIKE %s',
+		'xxx',
+		'%end',
+	),
+);
 
 
 // if & else & end (last end is optional)
@@ -32,11 +37,14 @@ Assert::same(
 	reformat('
 SELECT *
 FROM  [customers] /* ... */'),
-
-	$conn->translate('
+	$conn->translate(
+		'
 SELECT *
-FROM %if', true, '[customers] %else [products]'
-));
+FROM %if',
+		true,
+		'[customers] %else [products]',
+	),
+);
 
 
 // if & else & (optional) end
@@ -48,14 +56,14 @@ WHERE [id] > 0
 	/* AND ...=...
 	*/  AND [bar]=1
 '),
-
 	$conn->translate('
 SELECT *
 FROM [people]
 WHERE [id] > 0
 	%if', false, 'AND [foo]=%i', 1, '
 	%else %if', true, 'AND [bar]=%i', 1, '
-'));
+'),
+);
 
 
 // nested condition
@@ -76,24 +84,35 @@ WHERE
 		/* AND ...=1 */
 	/* 1 LIMIT 10 */",
 	]),
-
-	$conn->translate('
+	$conn->translate(
+		'
 SELECT *
 FROM [customers]
 WHERE
-	%if', true, '[name] LIKE %s', 'xxx', '
-		%if', false, 'AND [admin]=1 %end
-	%else 1 LIMIT 10 %end'
-));
+	%if',
+		true,
+		'[name] LIKE %s',
+		'xxx',
+		'
+		%if',
+		false,
+		'AND [admin]=1 %end
+	%else 1 LIMIT 10 %end',
+	),
+);
 
 
 // limit & offset
 Assert::same(
 	'SELECT * FROM foo /* (limit 3) (offset 5) */',
 	$conn->translate(
-	'SELECT * FROM foo',
-	'%if', false,
-		'%lmt', 3,
-		'%ofs', 5,
-	'%end'
-));
+		'SELECT * FROM foo',
+		'%if',
+		false,
+		'%lmt',
+		3,
+		'%ofs',
+		5,
+		'%end',
+	),
+);

@@ -19,32 +19,31 @@ class Result implements IDataSource
 {
 	use Strict;
 
-	/** @var ResultDriver */
-	private $driver;
+	private ?ResultDriver $driver;
 
-	/** @var array  Translate table */
-	private $types = [];
+	/** Translate table */
+	private array $types = [];
 
-	/** @var Reflection\Result|null */
-	private $meta;
+	private ?Reflection\Result $meta;
 
-	/** @var bool  Already fetched? Used for allowance for first seek(0) */
-	private $fetched = false;
+	/** Already fetched? Used for allowance for first seek(0) */
+	private bool $fetched = false;
 
-	/** @var string|null  returned object class */
-	private $rowClass = Row::class;
+	/** returned object class */
+	private ?string $rowClass = Row::class;
 
 	/** @var callable|null  returned object factory */
 	private $rowFactory;
 
-	/** @var array  format */
-	private $formats = [];
+	private array $formats = [];
 
 
-	public function __construct(ResultDriver $driver)
+	public function __construct(ResultDriver $driver, bool $normalize = true)
 	{
 		$this->driver = $driver;
-		$this->detectTypes();
+		if ($normalize) {
+			$this->detectTypes();
+		}
 	}
 
 
@@ -83,7 +82,9 @@ class Result implements IDataSource
 	 */
 	final public function seek(int $row): bool
 	{
-		return ($row !== 0 || $this->fetched) ? $this->getResultDriver()->seek($row) : true;
+		return ($row !== 0 || $this->fetched)
+			? $this->getResultDriver()->seek($row)
+			: true;
 	}
 
 
@@ -129,7 +130,7 @@ class Result implements IDataSource
 	/**
 	 * Set fetched object class. This class should extend the Row class.
 	 */
-	public function setRowClass(?string $class): self
+	public function setRowClass(?string $class): static
 	{
 		$this->rowClass = $class;
 		return $this;
@@ -148,7 +149,7 @@ class Result implements IDataSource
 	/**
 	 * Set a factory to create fetched object instances. These should extend the Row class.
 	 */
-	public function setRowFactory(callable $callback): self
+	public function setRowFactory(callable $callback): static
 	{
 		$this->rowFactory = $callback;
 		return $this;
@@ -158,9 +159,8 @@ class Result implements IDataSource
 	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
-	 * @return Row|array|null
 	 */
-	final public function fetch()
+	final public function fetch(): Row|array|null
 	{
 		$row = $this->getResultDriver()->fetch(true);
 		if ($row === null) {
@@ -179,9 +179,9 @@ class Result implements IDataSource
 
 	/**
 	 * Like fetch(), but returns only first field.
-	 * @return mixed value on success, null if no next record
+	 * Returns value on success, null if no next record
 	 */
-	final public function fetchSingle()
+	final public function fetchSingle(): mixed
 	{
 		$row = $this->getResultDriver()->fetch(true);
 		if ($row === null) {
@@ -199,7 +199,7 @@ class Result implements IDataSource
 	 */
 	final public function fetchAll(int $offset = null, int $limit = null): array
 	{
-		$limit = $limit === null ? -1 : $limit;
+		$limit = $limit ?? -1;
 		$this->seek($offset ?: 0);
 		$row = $this->fetch();
 		if (!$row) {
@@ -230,7 +230,7 @@ class Result implements IDataSource
 	 */
 	final public function fetchAssoc(string $assoc): array
 	{
-		if (strpos($assoc, ',') !== false) {
+		if (str_contains($assoc, ',')) {
 			return $this->oldFetchAssoc($assoc);
 		}
 
@@ -242,6 +242,9 @@ class Result implements IDataSource
 
 		$data = null;
 		$assoc = preg_split('#(\[\]|->|=|\|)#', $assoc, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+		if (!$assoc) {
+			throw new \InvalidArgumentException("Invalid descriptor '$assoc'.");
+		}
 
 		// check columns
 		foreach ($assoc as $as) {
@@ -292,6 +295,7 @@ class Result implements IDataSource
 		} while ($row = $this->fetch());
 
 		unset($x);
+		/** @var mixed[] $data */
 		return $data;
 	}
 
@@ -353,11 +357,9 @@ class Result implements IDataSource
 			}
 
 			if ($x === null) { // build leaf
-				if ($leaf === '=') {
-					$x = $row->toArray();
-				} else {
-					$x = $row;
-				}
+				$x = $leaf === '='
+					? $row->toArray()
+					: $row;
 			}
 		} while ($row = $this->fetch());
 
@@ -450,8 +452,12 @@ class Result implements IDataSource
 				continue;
 			}
 			$value = $row[$key];
+			$format = $this->formats[$type] ?? null;
 
-			if ($type === Type::TEXT) {
+			if ($type === null || $format === 'native') {
+				$row[$key] = $value;
+
+			} elseif ($type === Type::TEXT) {
 				$row[$key] = (string) $value;
 
 			} elseif ($type === Type::INTEGER) {
@@ -479,30 +485,30 @@ class Result implements IDataSource
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
 
 			} elseif ($type === Type::DATETIME || $type === Type::DATE || $type === Type::TIME) {
-				if ($value && substr((string) $value, 0, 3) !== '000') { // '', null, false, '0000-00-00', ...
+				if ($value && !str_starts_with((string) $value, '0000-00')) { // '', null, false, '0000-00-00', ...
 					$value = new DateTime($value);
-					$row[$key] = empty($this->formats[$type]) ? $value : $value->format($this->formats[$type]);
+					$row[$key] = $format ? $value->format($format) : $value;
 				} else {
 					$row[$key] = null;
 				}
 
 			} elseif ($type === Type::TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)\z#', $value, $m);
-				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
-				$row[$key]->invert = (int) (bool) $m[1];
+				$value = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
+				$value->invert = (int) (bool) $m[1];
+				$row[$key] = $format ? $value->format($format) : $value;
 
 			} elseif ($type === Type::BINARY) {
-				$row[$key] = is_string($value) ? $this->getResultDriver()->unescapeBinary($value) : $value;
+				$row[$key] = is_string($value)
+					? $this->getResultDriver()->unescapeBinary($value)
+					: $value;
 
 			} elseif ($type === Type::JSON) {
-				if ($this->formats[$type] === 'string') {
+				if ($format === 'string') { // back compatibility with 'native'
 					$row[$key] = $value;
 				} else {
-					$row[$key] = json_decode($value, $this->formats[$type] === 'array');
+					$row[$key] = json_decode($value, $format === 'array');
 				}
-
-			} elseif ($type === null) {
-				$row[$key] = $value;
 
 			} else {
 				throw new \RuntimeException('Unexpected type ' . $type);
@@ -515,7 +521,7 @@ class Result implements IDataSource
 	 * Define column type.
 	 * @param  string|null  $type  use constant Type::*
 	 */
-	final public function setType(string $column, ?string $type): self
+	final public function setType(string $column, ?string $type): static
 	{
 		$this->types[$column] = $type;
 		return $this;
@@ -541,11 +547,21 @@ class Result implements IDataSource
 
 
 	/**
-	 * Sets date format.
+	 * Sets type format.
 	 */
-	final public function setFormat(string $type, ?string $format): self
+	final public function setFormat(string $type, ?string $format): static
 	{
 		$this->formats[$type] = $format;
+		return $this;
+	}
+
+
+	/**
+	 * Sets type formats.
+	 */
+	final public function setFormats(array $formats): static
+	{
+		$this->formats = $formats;
 		return $this;
 	}
 
@@ -567,7 +583,7 @@ class Result implements IDataSource
 	 */
 	public function getInfo(): Reflection\Result
 	{
-		if ($this->meta === null) {
+		if (!isset($this->meta)) {
 			$this->meta = new Reflection\Result($this->getResultDriver());
 		}
 		return $this->meta;
