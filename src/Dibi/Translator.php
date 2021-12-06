@@ -326,6 +326,11 @@ XX
 			}
 		}
 
+		// object-to-scalar procession
+		if ($value instanceof \BackedEnum && is_scalar($value->value)) {
+			$value = $value->value;
+		}
+
 		// with modifier procession
 		if ($modifier) {
 			if ($value !== null && !is_scalar($value)) {  // array is already processed
