@@ -163,7 +163,7 @@ class dibi
 	/**
 	 * Strips microseconds part.
 	 */
-	public static function stripMicroseconds(\DateTimeInterface $dt): \DateTimeInterface
+	public static function stripMicroseconds(DateTimeInterface $dt): DateTimeInterface
 	{
 		$class = get_class($dt);
 		return new $class($dt->format('Y-m-d H:i:s'), $dt->getTimezone());

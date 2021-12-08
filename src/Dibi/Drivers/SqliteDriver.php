@@ -57,7 +57,7 @@ class SqliteDriver implements Dibi\Driver
 		} else {
 			try {
 				$this->connection = new SQLite3($config['database']);
-			} catch (\Exception $e) {
+			} catch (\Throwable $e) {
 				throw new Dibi\DriverException($e->getMessage(), $e->getCode());
 			}
 		}

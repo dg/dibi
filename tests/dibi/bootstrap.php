@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 // The Nette Tester command-line runner can be
@@ -18,7 +19,7 @@ date_default_timezone_set('Europe/Prague');
 // load connection
 try {
 	$config = Tester\Environment::loadData();
-} catch (Exception $e) {
+} catch (Throwable $e) {
 	$config = parse_ini_file(__DIR__ . '/../databases.ini', true);
 	$config = reset($config);
 }
