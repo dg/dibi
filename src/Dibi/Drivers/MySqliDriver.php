@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Dibi\Drivers;
 
 use Dibi;
+use Throwable;
 
 
 /**
@@ -246,7 +247,11 @@ class MySqliDriver implements Dibi\Driver
 	 */
 	public function getResource(): ?\mysqli
 	{
-		return @$this->connection->thread_id ? $this->connection : null;
+		try {
+			return @$this->connection->thread_id ? $this->connection : null;
+		} catch (Throwable $e) {
+			return null;
+		}
 	}
 
 
