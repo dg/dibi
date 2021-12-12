@@ -64,6 +64,15 @@ test('', function () use ($config) {
 
 
 test('', function () use ($config) {
+	$conn = new Connection($config);
+	Assert::true($conn->isConnected());
+
+	$conn->__destruct();
+	Assert::false($conn->isConnected());
+});
+
+
+test('', function () use ($config) {
 	Assert::exception(function () use ($config) {
 		new Connection($config + ['onConnect' => '']);
 	}, InvalidArgumentException::class, "Configuration option 'onConnect' must be array.");
