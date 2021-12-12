@@ -103,6 +103,7 @@ class PostgreResult implements Dibi\ResultDriver
 				: $row['name'];
 			$columns[] = $row;
 		}
+
 		return $columns;
 	}
 

@@ -92,6 +92,7 @@ class SqliteDriver implements Dibi\Driver
 		} elseif ($res instanceof \SQLite3Result && $res->numColumns()) {
 			return $this->createResultDriver($res);
 		}
+
 		return null;
 	}
 

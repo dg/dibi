@@ -62,6 +62,7 @@ class Database
 		foreach ($this->tables as $table) {
 			$res[] = $table->getName();
 		}
+
 		return $res;
 	}
 

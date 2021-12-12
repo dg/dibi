@@ -64,6 +64,7 @@ class PostgreDriver implements Dibi\Driver
 					}
 				}
 			}
+
 			$connectType = $config['connect_type'] ?? PGSQL_CONNECT_FORCE_NEW;
 
 			set_error_handler(function (int $severity, string $message) use (&$error) {
@@ -127,6 +128,7 @@ class PostgreDriver implements Dibi\Driver
 				return $this->createResultDriver($res);
 			}
 		}
+
 		return null;
 	}
 
@@ -264,6 +266,7 @@ class PostgreDriver implements Dibi\Driver
 		if (!$this->getResource()) {
 			throw new Dibi\Exception('Lost connection to server.');
 		}
+
 		return "'" . pg_escape_string($this->connection, $value) . "'";
 	}
 
@@ -273,6 +276,7 @@ class PostgreDriver implements Dibi\Driver
 		if (!$this->getResource()) {
 			throw new Dibi\Exception('Lost connection to server.');
 		}
+
 		return "'" . pg_escape_bytea($this->connection, $value) . "'";
 	}
 
@@ -328,9 +332,11 @@ class PostgreDriver implements Dibi\Driver
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 		}
+
 		if ($limit !== null) {
 			$sql .= ' LIMIT ' . $limit;
 		}
+
 		if ($offset) {
 			$sql .= ' OFFSET ' . $offset;
 		}

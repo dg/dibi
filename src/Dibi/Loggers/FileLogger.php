@@ -54,6 +54,7 @@ class FileLogger
 			if ($code = $event->result->getCode()) {
 				$message = "[$code] $message";
 			}
+
 			$this->writeToFile(
 				$event,
 				"ERROR: $message"

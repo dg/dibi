@@ -104,6 +104,7 @@ class OracleDriver implements Dibi\Driver
 			$err = oci_error($this->connection);
 			throw new Dibi\DriverException($err['message'], $err['code'], $sql);
 		}
+
 		return null;
 	}
 
@@ -163,6 +164,7 @@ class OracleDriver implements Dibi\Driver
 			$err = oci_error($this->connection);
 			throw new Dibi\DriverException($err['message'], $err['code']);
 		}
+
 		$this->autocommit = true;
 	}
 
@@ -177,6 +179,7 @@ class OracleDriver implements Dibi\Driver
 			$err = oci_error($this->connection);
 			throw new Dibi\DriverException($err['message'], $err['code']);
 		}
+
 		$this->autocommit = true;
 	}
 

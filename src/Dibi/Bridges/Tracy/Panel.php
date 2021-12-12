@@ -58,6 +58,7 @@ class Panel implements Tracy\IBarPanel
 		if (($event->type & $this->filter) === 0) {
 			return;
 		}
+
 		$this->events[] = $event;
 	}
 
@@ -88,6 +89,7 @@ class Panel implements Tracy\IBarPanel
 		foreach ($this->events as $event) {
 			$totalTime += $event->time;
 		}
+
 		return '<span title="dibi"><svg viewBox="0 0 2048 2048" style="vertical-align: bottom; width:1.23em; height:1.55em"><path fill="' . ($count ? '#b079d6' : '#aaa') . '" d="M1024 896q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128v-170q119 84 325 127t443 43zm0 768q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128v-170q119 84 325 127t443 43zm0-384q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128v-170q119 84 325 127t443 43zm0-1152q208 0 385 34.5t280 93.5 103 128v128q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128v-128q0-69 103-128t280-93.5 385-34.5z"/></svg><span class="tracy-label">'
 			. $count . "\u{a0}queries"
 			. ($totalTime ? ' / ' . number_format($totalTime * 1000, 1, '.', "\u{202f}") . "\u{202f}ms" : '')
@@ -128,6 +130,7 @@ class Panel implements Tracy\IBarPanel
 					$explain = @Helpers::dump($connection->nativeQuery("$cmd $event->sql"), true);
 				} catch (Dibi\Exception $e) {
 				}
+
 				[$connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime] = $backup;
 			}
 
@@ -142,6 +145,7 @@ class Panel implements Tracy\IBarPanel
 			if ($explain) {
 				$s .= "<div id='tracy-debug-DibiProfiler-row-$counter' class='tracy-collapsed'>{$explain}</div>";
 			}
+
 			if ($event->source) {
 				$s .= Tracy\Helpers::editorLink($event->source[0], $event->source[1]); //->class('tracy-DibiProfiler-source');
 			}

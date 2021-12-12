@@ -55,6 +55,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 			foreach ((array) $config['flags'] as $flag) {
 				$flags |= constant($flag);
 			}
+
 			$config['flags'] = $flags;
 		}
 
@@ -68,6 +69,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 				[[Dibi\Bridges\Tracy\Panel::class, 'renderException']]
 			);
 		}
+
 		if ($useProfiler) {
 			$panel = $container->addDefinition($this->prefix('panel'))
 				->setFactory(Dibi\Bridges\Tracy\Panel::class, [

@@ -136,6 +136,7 @@ class Fluent implements IDataSource
 			if (isset(self::$masks[$clause])) {
 				$this->clauses = array_fill_keys(self::$masks[$clause], null);
 			}
+
 			$this->cursor = &$this->clauses[$clause];
 			$this->cursor = [];
 			$this->command = $clause;
@@ -165,7 +166,6 @@ class Fluent implements IDataSource
 					$this->cursor[] = $sep;
 				}
 			}
-
 		} else {
 			// append to currect flow
 			if ($args === [self::REMOVE]) {
@@ -203,6 +203,7 @@ class Fluent implements IDataSource
 			if ($arg instanceof self) {
 				$arg = new Literal("($arg)");
 			}
+
 			$this->cursor[] = $arg;
 		}
 
@@ -245,6 +246,7 @@ class Fluent implements IDataSource
 		} else {
 			unset($this->flags[$flag]);
 		}
+
 		return $this;
 	}
 
@@ -390,6 +392,7 @@ class Fluent implements IDataSource
 			$method = array_shift($setup);
 			$res->$method(...$setup);
 		}
+
 		return $res;
 	}
 
@@ -428,7 +431,6 @@ class Fluent implements IDataSource
 				$args = array_merge(['%lmt %ofs', $data['LIMIT'][0] ?? null, $data['OFFSET'][0] ?? null], $args);
 				unset($data['LIMIT'], $data['OFFSET']);
 			}
-
 		} else {
 			$clause = self::$normalizer->$clause;
 			if (array_key_exists($clause, $this->clauses)) {
@@ -444,6 +446,7 @@ class Fluent implements IDataSource
 				if ($clause === $this->command && $this->flags) {
 					$args[] = implode(' ', array_keys($this->flags));
 				}
+
 				foreach ($statement as $arg) {
 					$args[] = $arg;
 				}
@@ -464,6 +467,7 @@ class Fluent implements IDataSource
 			$s .= 'By';
 			trigger_error("Did you mean '$s'?", E_USER_NOTICE);
 		}
+
 		return strtoupper(preg_replace('#[a-z](?=[A-Z])#', '$0 ', $s));
 	}
 
@@ -475,6 +479,7 @@ class Fluent implements IDataSource
 			$this->clauses[$clause] = &$val;
 			unset($val);
 		}
+
 		$this->cursor = &$foo;
 	}
 }

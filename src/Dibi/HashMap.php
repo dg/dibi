@@ -50,6 +50,7 @@ final class HashMap extends HashMapBase
 		if ($nm === '') {
 			$nm = "\xFF";
 		}
+
 		$this->$nm = $val;
 	}
 

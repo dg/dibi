@@ -170,6 +170,7 @@ class Result implements IDataSource
 		if ($row === null) {
 			return null;
 		}
+
 		$this->fetched = true;
 		$this->normalize($row);
 		if ($this->rowFactory) {
@@ -177,6 +178,7 @@ class Result implements IDataSource
 		} elseif ($this->rowClass) {
 			return new $this->rowClass($row);
 		}
+
 		return $row;
 	}
 
@@ -191,6 +193,7 @@ class Result implements IDataSource
 		if ($row === null) {
 			return null;
 		}
+
 		$this->fetched = true;
 		$this->normalize($row);
 		return reset($row);
@@ -215,6 +218,7 @@ class Result implements IDataSource
 			if ($limit === 0) {
 				break;
 			}
+
 			$limit--;
 			$data[] = $row;
 		} while ($row = $this->fetch());
@@ -287,7 +291,6 @@ class Result implements IDataSource
 					} else {
 						$x = &$x->{$assoc[$i + 1]};
 					}
-
 				} elseif ($as !== '|') { // associative-array node
 					$x = &$x[(string) $row->$as];
 				}
@@ -345,7 +348,6 @@ class Result implements IDataSource
 					} else {
 						$x = &$x[$assoc[$i + 1]];
 					}
-
 				} elseif ($as === '@') { // "object" node
 					if ($x === null) {
 						$x = clone $row;
@@ -354,7 +356,6 @@ class Result implements IDataSource
 					} else {
 						$x = &$x->{$assoc[$i + 1]};
 					}
-
 				} else { // associative-array node
 					$x = &$x[(string) $row->$as];
 				}
@@ -398,6 +399,7 @@ class Result implements IDataSource
 				do {
 					$data[] = $row[$key];
 				} while ($row = $this->fetch());
+
 				return $data;
 			}
 
@@ -412,6 +414,7 @@ class Result implements IDataSource
 				do {
 					$data[] = $row[$value];
 				} while ($row = $this->fetch());
+
 				return $data;
 			}
 
@@ -455,6 +458,7 @@ class Result implements IDataSource
 			if (!isset($row[$key])) { // null
 				continue;
 			}
+
 			$value = $row[$key];
 			$format = $this->formats[$type] ?? null;
 
@@ -478,9 +482,11 @@ class Result implements IDataSource
 				} elseif ($p !== false && $e !== false) {
 					$value = rtrim($value, '.');
 				}
+
 				if ($value === '' || $value[0] === '.') {
 					$value = '0' . $value;
 				}
+
 				$row[$key] = $value === str_replace(',', '.', (string) ($float = (float) $value))
 					? $float
 					: $value;
@@ -495,7 +501,6 @@ class Result implements IDataSource
 				} else {
 					$row[$key] = null;
 				}
-
 			} elseif ($type === Type::TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)\z#', $value, $m);
 				$value = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
@@ -513,7 +518,6 @@ class Result implements IDataSource
 				} else {
 					$row[$key] = json_decode($value, $format === 'array');
 				}
-
 			} else {
 				throw new \RuntimeException('Unexpected type ' . $type);
 			}
@@ -590,6 +594,7 @@ class Result implements IDataSource
 		if ($this->meta === null) {
 			$this->meta = new Reflection\Result($this->getResultDriver());
 		}
+
 		return $this->meta;
 	}
 

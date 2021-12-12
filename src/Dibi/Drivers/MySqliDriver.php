@@ -88,6 +88,7 @@ class MySqliDriver implements Dibi\Driver
 					$this->connection->options($key, $value);
 				}
 			}
+
 			@$this->connection->real_connect( // intentionally @
 				(empty($config['persistent']) ? '' : 'p:') . $config['host'],
 				$config['username'],
@@ -153,6 +154,7 @@ class MySqliDriver implements Dibi\Driver
 		} elseif ($res instanceof \mysqli_result) {
 			return $this->createResultDriver($res);
 		}
+
 		return null;
 	}
 
@@ -191,6 +193,7 @@ class MySqliDriver implements Dibi\Driver
 		foreach ($matches as $m) {
 			$res[$m[1]] = (int) $m[2];
 		}
+
 		return $res;
 	}
 
@@ -319,6 +322,7 @@ class MySqliDriver implements Dibi\Driver
 		if ($value->y || $value->m || $value->d) {
 			throw new Dibi\NotSupportedException('Only time interval is supported.');
 		}
+
 		return $value->format("'%r%H:%I:%S.%f'");
 	}
 

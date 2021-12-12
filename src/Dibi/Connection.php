@@ -150,16 +150,17 @@ class Connection implements IConnection
 			if ($event) {
 				$this->onEvent($event->done());
 			}
+
 			if (isset($this->config['onConnect'])) {
 				foreach ($this->config['onConnect'] as $sql) {
 					$this->query($sql);
 				}
 			}
-
 		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
+
 			throw $e;
 		}
 	}
@@ -207,6 +208,7 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		return $this->driver;
 	}
 
@@ -232,6 +234,7 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		return (clone $this->translator)->translate($args);
 	}
 
@@ -252,6 +255,7 @@ class Connection implements IConnection
 			} else {
 				echo get_class($e) . ': ' . $e->getMessage() . (PHP_SAPI === 'cli' ? "\n" : '<br>');
 			}
+
 			return false;
 		}
 	}
@@ -287,6 +291,7 @@ class Connection implements IConnection
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
+
 			throw $e;
 		}
 
@@ -294,6 +299,7 @@ class Connection implements IConnection
 		if ($event) {
 			$this->onEvent($event->done($res));
 		}
+
 		return $res;
 	}
 
@@ -307,10 +313,12 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		$rows = $this->driver->getAffectedRows();
 		if ($rows === null || $rows < 0) {
 			throw new Exception('Cannot retrieve number of affected rows.');
 		}
+
 		return $rows;
 	}
 
@@ -324,10 +332,12 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		$id = $this->driver->getInsertId($sequence);
 		if ($id === null) {
 			throw new Exception('Cannot retrieve last generated ID.');
 		}
+
 		return $id;
 	}
 
@@ -344,17 +354,18 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		$event = $this->onEvent ? new Event($this, Event::BEGIN, $savepoint) : null;
 		try {
 			$this->driver->begin($savepoint);
 			if ($event) {
 				$this->onEvent($event->done());
 			}
-
 		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
+
 			throw $e;
 		}
 	}
@@ -372,17 +383,18 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		$event = $this->onEvent ? new Event($this, Event::COMMIT, $savepoint) : null;
 		try {
 			$this->driver->commit($savepoint);
 			if ($event) {
 				$this->onEvent($event->done());
 			}
-
 		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
+
 			throw $e;
 		}
 	}
@@ -400,17 +412,18 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		$event = $this->onEvent ? new Event($this, Event::ROLLBACK, $savepoint) : null;
 		try {
 			$this->driver->rollback($savepoint);
 			if ($event) {
 				$this->onEvent($event->done());
 			}
-
 		} catch (DriverException $e) {
 			if ($event) {
 				$this->onEvent($event->done($e));
 			}
+
 			throw $e;
 		}
 	}
@@ -433,6 +446,7 @@ class Connection implements IConnection
 			if ($this->transactionDepth === 0) {
 				$this->rollback();
 			}
+
 			throw $e;
 		}
 
@@ -484,6 +498,7 @@ class Connection implements IConnection
 		if ($args instanceof Traversable) {
 			$args = iterator_to_array($args);
 		}
+
 		return $this->command()->insert()
 			->into('%n', $table, '(%n)', array_keys($args))->values('%l', $args);
 	}
@@ -601,6 +616,7 @@ class Connection implements IConnection
 		if (!$this->driver) {
 			$this->connect();
 		}
+
 		return new Reflection\Database($this->driver->getReflector(), $this->config['database'] ?? null);
 	}
 

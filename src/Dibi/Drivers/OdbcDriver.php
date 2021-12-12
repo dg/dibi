@@ -96,6 +96,7 @@ class OdbcDriver implements Dibi\Driver
 				? $this->createResultDriver($res)
 				: null;
 		}
+
 		return null;
 	}
 
@@ -139,6 +140,7 @@ class OdbcDriver implements Dibi\Driver
 		if (!odbc_commit($this->connection)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
+
 		odbc_autocommit($this->connection, PHP_VERSION_ID < 80000 ? 1 : true);
 	}
 
@@ -152,6 +154,7 @@ class OdbcDriver implements Dibi\Driver
 		if (!odbc_rollback($this->connection)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
+
 		odbc_autocommit($this->connection, PHP_VERSION_ID < 80000 ? 1 : true);
 	}
 

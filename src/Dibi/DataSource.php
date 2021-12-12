@@ -72,6 +72,7 @@ class DataSource implements IDataSource
 		} else {
 			$this->cols[$col] = $as;
 		}
+
 		$this->result = null;
 		return $this;
 	}
@@ -101,6 +102,7 @@ class DataSource implements IDataSource
 		} else {
 			$this->sorting[$row] = $direction;
 		}
+
 		$this->result = null;
 		return $this;
 	}
@@ -135,6 +137,7 @@ class DataSource implements IDataSource
 		if ($this->result === null) {
 			$this->result = $this->connection->nativeQuery($this->__toString());
 		}
+
 		return $this->result;
 	}
 
@@ -262,6 +265,7 @@ class DataSource implements IDataSource
 				)->fetchSingle())
 				: $this->getTotalCount();
 		}
+
 		return $this->count;
 	}
 
@@ -276,6 +280,7 @@ class DataSource implements IDataSource
 				'SELECT COUNT(*) FROM ' . $this->sql
 			)->fetchSingle());
 		}
+
 		return $this->totalCount;
 	}
 }

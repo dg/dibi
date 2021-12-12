@@ -40,8 +40,10 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 			if (!$time || substr((string) $time, 0, 7) === '0000-00') { // '', null, false, '0000-00-00', ...
 				return null;
 			}
+
 			$time = new DateTime($time);
 		}
+
 		return $format === null ? $time : $time->format($format);
 	}
 

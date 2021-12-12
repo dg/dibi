@@ -66,6 +66,7 @@ class PostgreReflector implements Dibi\Reflector
 		while ($row = $res->fetch(true)) {
 			$tables[] = $row;
 		}
+
 		return $tables;
 	}
 
@@ -131,6 +132,7 @@ class PostgreReflector implements Dibi\Reflector
 				'vendor' => $row,
 			];
 		}
+
 		return $columns;
 	}
 
@@ -180,6 +182,7 @@ class PostgreReflector implements Dibi\Reflector
 				}
 			}
 		}
+
 		return array_values($indexes);
 	}
 
