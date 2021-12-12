@@ -147,9 +147,11 @@ if ($config['system'] === 'mysql') {
 		->limit(' 1; DROP TABLE users')
 		->offset(' 1; DROP TABLE users');
 
-	Assert::error(function () use ($fluent) {
-		(string) $fluent;
-	}, E_USER_ERROR, "Expected number, ' 1; DROP TABLE users' given.");
+	Assert::exception(
+		fn() => (string) $fluent,
+		Dibi\Exception::class,
+		"Expected number, ' 1; DROP TABLE users' given.",
+	);
 }
 
 

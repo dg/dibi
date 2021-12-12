@@ -125,7 +125,7 @@ class OdbcDriver implements Dibi\Driver
 	 */
 	public function begin(?string $savepoint = null): void
 	{
-		if (!odbc_autocommit($this->connection, PHP_VERSION_ID < 80000 ? 0 : false)) {
+		if (!odbc_autocommit($this->connection, false)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 	}
@@ -141,7 +141,7 @@ class OdbcDriver implements Dibi\Driver
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 
-		odbc_autocommit($this->connection, PHP_VERSION_ID < 80000 ? 1 : true);
+		odbc_autocommit($this->connection, true);
 	}
 
 
@@ -155,7 +155,7 @@ class OdbcDriver implements Dibi\Driver
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 
-		odbc_autocommit($this->connection, PHP_VERSION_ID < 80000 ? 1 : true);
+		odbc_autocommit($this->connection, true);
 	}
 
 
