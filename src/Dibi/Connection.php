@@ -181,9 +181,8 @@ class Connection implements IConnection
 	/**
 	 * Returns configuration variable. If no $key is passed, returns the entire array.
 	 * @see self::__construct
-	 * @return mixed
 	 */
-	final public function getConfig(?string $key = null, $default = null)
+	final public function getConfig(?string $key = null, $default = null): mixed
 	{
 		return $key === null
 			? $this->config
@@ -206,10 +205,9 @@ class Connection implements IConnection
 
 	/**
 	 * Generates (translates) and executes SQL query.
-	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
-	final public function query(...$args): Result
+	final public function query(mixed ...$args): Result
 	{
 		return $this->nativeQuery($this->translate(...$args));
 	}
@@ -217,10 +215,9 @@ class Connection implements IConnection
 
 	/**
 	 * Generates SQL query.
-	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
-	final public function translate(...$args): string
+	final public function translate(mixed ...$args): string
 	{
 		if (!$this->driver) {
 			$this->connect();
@@ -232,9 +229,8 @@ class Connection implements IConnection
 
 	/**
 	 * Generates and prints SQL query.
-	 * @param  mixed  ...$args
 	 */
-	final public function test(...$args): bool
+	final public function test(mixed ...$args): bool
 	{
 		try {
 			Helpers::dump($this->translate(...$args));
@@ -254,10 +250,9 @@ class Connection implements IConnection
 
 	/**
 	 * Generates (translates) and returns SQL query as DataSource.
-	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
-	final public function dataSource(...$args): DataSource
+	final public function dataSource(mixed ...$args): DataSource
 	{
 		return new DataSource($this->translate(...$args), $this);
 	}
@@ -420,10 +415,7 @@ class Connection implements IConnection
 	}
 
 
-	/**
-	 * @return mixed
-	 */
-	public function transaction(callable $callback)
+	public function transaction(callable $callback): mixed
 	{
 		if ($this->transactionDepth === 0) {
 			$this->begin();
@@ -529,10 +521,9 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
-	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
-	public function fetch(...$args): ?Row
+	public function fetch(mixed ...$args): ?Row
 	{
 		return $this->query($args)->fetch();
 	}
@@ -540,11 +531,10 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
-	 * @param  mixed  ...$args
 	 * @return Row[]|array[]
 	 * @throws Exception
 	 */
-	public function fetchAll(...$args): array
+	public function fetchAll(mixed ...$args): array
 	{
 		return $this->query($args)->fetchAll();
 	}
@@ -552,11 +542,9 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
-	 * @param  mixed  ...$args
-	 * @return mixed
 	 * @throws Exception
 	 */
-	public function fetchSingle(...$args)
+	public function fetchSingle(mixed ...$args): mixed
 	{
 		return $this->query($args)->fetchSingle();
 	}
@@ -564,10 +552,9 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
-	 * @param  mixed  ...$args
 	 * @throws Exception
 	 */
-	public function fetchPairs(...$args): array
+	public function fetchPairs(mixed ...$args): array
 	{
 		return $this->query($args)->fetchPairs();
 	}
