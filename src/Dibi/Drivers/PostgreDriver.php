@@ -227,7 +227,7 @@ class PostgreDriver implements Dibi\Driver
 	 * Returns the connection resource.
 	 * @return resource|null
 	 */
-	public function getResource()
+	public function getResource(): mixed
 	{
 		return is_resource($this->connection) || $this->connection instanceof PgSql\Connection
 			? $this->connection

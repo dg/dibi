@@ -109,15 +109,13 @@ class Column
 	}
 
 
-	/** @return mixed */
-	public function getDefault()
+	public function getDefault(): mixed
 	{
 		return $this->info['default'] ?? null;
 	}
 
 
-	/** @return mixed */
-	public function getVendorInfo(string $key)
+	public function getVendorInfo(string $key): mixed
 	{
 		return $this->info['vendor'][$key] ?? null;
 	}

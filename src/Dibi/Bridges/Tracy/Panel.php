@@ -32,7 +32,7 @@ class Panel implements Tracy\IBarPanel
 	private array $events = [];
 
 
-	public function __construct($explain = true, ?int $filter = null)
+	public function __construct(bool $explain = true, ?int $filter = null)
 	{
 		$this->filter = $filter ?: Event::QUERY;
 		$this->explain = $explain;
