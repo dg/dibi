@@ -229,24 +229,19 @@ class DataSource implements IDataSource
 	 */
 	public function __toString(): string
 	{
-		try {
-			return $this->connection->translate(
-				"\nSELECT %n",
-				(empty($this->cols) ? '*' : $this->cols),
-				"\nFROM %SQL",
-				$this->sql,
-				"\n%ex",
-				$this->conds ? ['WHERE %and', $this->conds] : null,
-				"\n%ex",
-				$this->sorting ? ['ORDER BY %by', $this->sorting] : null,
-				"\n%ofs %lmt",
-				$this->offset,
-				$this->limit,
-			);
-		} catch (\Throwable $e) {
-			trigger_error($e->getMessage(), E_USER_ERROR);
-			return '';
-		}
+		return $this->connection->translate(
+			"\nSELECT %n",
+			(empty($this->cols) ? '*' : $this->cols),
+			"\nFROM %SQL",
+			$this->sql,
+			"\n%ex",
+			$this->conds ? ['WHERE %and', $this->conds] : null,
+			"\n%ex",
+			$this->sorting ? ['ORDER BY %by', $this->sorting] : null,
+			"\n%ofs %lmt",
+			$this->offset,
+			$this->limit,
+		);
 	}
 
 
