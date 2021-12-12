@@ -55,7 +55,7 @@ class DataSource implements IDataSource
 	 * @param  string|array  $col  column name or array of column names
 	 * @param  string  $as        column alias
 	 */
-	public function select($col, ?string $as = null): self
+	public function select(string|array $col, ?string $as = null): static
 	{
 		if (is_array($col)) {
 			$this->cols = $col;
@@ -71,7 +71,7 @@ class DataSource implements IDataSource
 	/**
 	 * Adds conditions to query.
 	 */
-	public function where($cond): self
+	public function where($cond): static
 	{
 		$this->conds[] = is_array($cond)
 			? $cond // TODO: not consistent with select and orderBy
@@ -85,7 +85,7 @@ class DataSource implements IDataSource
 	 * Selects columns to order by.
 	 * @param  string|array  $row  column name or array of column names
 	 */
-	public function orderBy($row, string $direction = 'ASC'): self
+	public function orderBy(string|array $row, string $direction = 'ASC'): static
 	{
 		if (is_array($row)) {
 			$this->sorting = $row;
@@ -101,7 +101,7 @@ class DataSource implements IDataSource
 	/**
 	 * Limits number of rows.
 	 */
-	public function applyLimit(int $limit, ?int $offset = null): self
+	public function applyLimit(int $limit, ?int $offset = null): static
 	{
 		$this->limit = $limit;
 		$this->offset = $offset;
@@ -151,7 +151,7 @@ class DataSource implements IDataSource
 	 * Like fetch(), but returns only first field.
 	 * @return mixed  value on success, null if no next record
 	 */
-	public function fetchSingle()
+	public function fetchSingle(): mixed
 	{
 		return $this->getResult()->fetchSingle();
 	}
