@@ -107,7 +107,7 @@ class dibi
 	 * Retrieve active connection.
 	 * @throws Dibi\Exception
 	 */
-	public static function getConnection(string $name = null): Dibi\Connection
+	public static function getConnection(?string $name = null): Dibi\Connection
 	{
 		if ($name === null) {
 			if (self::$connection === null) {

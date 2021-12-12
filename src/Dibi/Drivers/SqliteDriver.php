@@ -146,7 +146,7 @@ class SqliteDriver implements Dibi\Driver
 	 * Begins a transaction (if supported).
 	 * @throws Dibi\DriverException
 	 */
-	public function begin(string $savepoint = null): void
+	public function begin(?string $savepoint = null): void
 	{
 		$this->query($savepoint ? "SAVEPOINT $savepoint" : 'BEGIN');
 	}
@@ -156,7 +156,7 @@ class SqliteDriver implements Dibi\Driver
 	 * Commits statements in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function commit(string $savepoint = null): void
+	public function commit(?string $savepoint = null): void
 	{
 		$this->query($savepoint ? "RELEASE SAVEPOINT $savepoint" : 'COMMIT');
 	}
@@ -166,7 +166,7 @@ class SqliteDriver implements Dibi\Driver
 	 * Rollback changes in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback(string $savepoint = null): void
+	public function rollback(?string $savepoint = null): void
 	{
 		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT $savepoint" : 'ROLLBACK');
 	}

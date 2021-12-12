@@ -204,7 +204,7 @@ class Result implements IDataSource
 	 * Fetches all records from table.
 	 * @return Row[]|array[]
 	 */
-	final public function fetchAll(int $offset = null, int $limit = null): array
+	final public function fetchAll(?int $offset = null, ?int $limit = null): array
 	{
 		$limit = $limit ?? -1;
 		$this->seek($offset ?: 0);
@@ -377,7 +377,7 @@ class Result implements IDataSource
 	 * Fetches all records from table like $key => $value pairs.
 	 * @throws \InvalidArgumentException
 	 */
-	final public function fetchPairs(string $key = null, string $value = null): array
+	final public function fetchPairs(?string $key = null, ?string $value = null): array
 	{
 		$this->seek(0);
 		$row = $this->fetch();

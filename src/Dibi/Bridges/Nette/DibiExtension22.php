@@ -26,7 +26,7 @@ class DibiExtension22 extends Nette\DI\CompilerExtension
 	private $cliMode;
 
 
-	public function __construct(bool $debugMode = null, bool $cliMode = null)
+	public function __construct(?bool $debugMode = null, ?bool $cliMode = null)
 	{
 		$this->debugMode = $debugMode;
 		$this->cliMode = $cliMode;

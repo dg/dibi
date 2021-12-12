@@ -35,7 +35,7 @@ class Panel implements Tracy\IBarPanel
 	private $events = [];
 
 
-	public function __construct($explain = true, int $filter = null)
+	public function __construct($explain = true, ?int $filter = null)
 	{
 		$this->filter = $filter ?: Event::QUERY;
 		$this->explain = $explain;

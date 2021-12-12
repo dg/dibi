@@ -33,7 +33,7 @@ class Database
 	private $tables;
 
 
-	public function __construct(Dibi\Reflector $reflector, string $name = null)
+	public function __construct(Dibi\Reflector $reflector, ?string $name = null)
 	{
 		$this->reflector = $reflector;
 		$this->name = $name;

@@ -215,7 +215,7 @@ class FirebirdReflector implements Dibi\Reflector
 	 * Returns metadata for all triggers in a table or database.
 	 * (Only if user has permissions on ALTER TABLE, INSERT/UPDATE/DELETE record in table)
 	 */
-	public function getTriggersMeta(string $table = null): array
+	public function getTriggersMeta(?string $table = null): array
 	{
 		$res = $this->driver->query(
 			"
@@ -263,7 +263,7 @@ class FirebirdReflector implements Dibi\Reflector
 	 * Returns list of triggers for given table.
 	 * (Only if user has permissions on ALTER TABLE, INSERT/UPDATE/DELETE record in table)
 	 */
-	public function getTriggers(string $table = null): array
+	public function getTriggers(?string $table = null): array
 	{
 		$q = 'SELECT TRIM(RDB$TRIGGER_NAME)
 			FROM RDB$TRIGGERS

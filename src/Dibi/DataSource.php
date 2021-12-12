@@ -65,7 +65,7 @@ class DataSource implements IDataSource
 	 * @param  string|array  $col  column name or array of column names
 	 * @param  string  $as        column alias
 	 */
-	public function select($col, string $as = null): self
+	public function select($col, ?string $as = null): self
 	{
 		if (is_array($col)) {
 			$this->cols = $col;
@@ -111,7 +111,7 @@ class DataSource implements IDataSource
 	/**
 	 * Limits number of rows.
 	 */
-	public function applyLimit(int $limit, int $offset = null): self
+	public function applyLimit(int $limit, ?int $offset = null): self
 	{
 		$this->limit = $limit;
 		$this->offset = $offset;
@@ -188,7 +188,7 @@ class DataSource implements IDataSource
 	/**
 	 * Fetches all records from table like $key => $value pairs.
 	 */
-	public function fetchPairs(string $key = null, string $value = null): array
+	public function fetchPairs(?string $key = null, ?string $value = null): array
 	{
 		return $this->getResult()->fetchPairs($key, $value);
 	}

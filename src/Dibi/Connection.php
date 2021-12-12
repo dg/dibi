@@ -68,7 +68,7 @@ class Connection implements IConnection
 	 *   - onConnect (array) => list of SQL queries to execute (by Connection::query()) after connection is established
 	 * @throws Exception
 	 */
-	public function __construct(array $config, string $name = null)
+	public function __construct(array $config, ?string $name = null)
 	{
 		Helpers::alias($config, 'username', 'user');
 		Helpers::alias($config, 'password', 'pass');
@@ -192,7 +192,7 @@ class Connection implements IConnection
 	 * @see self::__construct
 	 * @return mixed
 	 */
-	final public function getConfig(string $key = null, $default = null)
+	final public function getConfig(?string $key = null, $default = null)
 	{
 		return $key === null
 			? $this->config
@@ -327,7 +327,7 @@ class Connection implements IConnection
 	 * Retrieves the ID generated for an AUTO_INCREMENT column by the previous INSERT query.
 	 * @throws Exception
 	 */
-	public function getInsertId(string $sequence = null): int
+	public function getInsertId(?string $sequence = null): int
 	{
 		if (!$this->driver) {
 			$this->connect();
@@ -345,7 +345,7 @@ class Connection implements IConnection
 	/**
 	 * Begins a transaction (if supported).
 	 */
-	public function begin(string $savepoint = null): void
+	public function begin(?string $savepoint = null): void
 	{
 		if ($this->transactionDepth !== 0) {
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
@@ -374,7 +374,7 @@ class Connection implements IConnection
 	/**
 	 * Commits statements in a transaction.
 	 */
-	public function commit(string $savepoint = null): void
+	public function commit(?string $savepoint = null): void
 	{
 		if ($this->transactionDepth !== 0) {
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
@@ -403,7 +403,7 @@ class Connection implements IConnection
 	/**
 	 * Rollback changes in a transaction.
 	 */
-	public function rollback(string $savepoint = null): void
+	public function rollback(?string $savepoint = null): void
 	{
 		if ($this->transactionDepth !== 0) {
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
@@ -602,7 +602,7 @@ class Connection implements IConnection
 	 * @param  callable  $onProgress  function (int $count, ?float $percent): void
 	 * @return int  count of sql commands
 	 */
-	public function loadFile(string $file, callable $onProgress = null): int
+	public function loadFile(string $file, ?callable $onProgress = null): int
 	{
 		return Helpers::loadFromFile($this, $file, $onProgress);
 	}

@@ -133,7 +133,7 @@ class PostgreDriver implements Dibi\Driver
 	}
 
 
-	public static function createException(string $message, $code = null, string $sql = null): Dibi\DriverException
+	public static function createException(string $message, $code = null, ?string $sql = null): Dibi\DriverException
 	{
 		if ($code === null && preg_match('#^ERROR:\s+(\S+):\s*#', $message, $m)) {
 			$code = $m[1];
@@ -189,7 +189,7 @@ class PostgreDriver implements Dibi\Driver
 	 * Begins a transaction (if supported).
 	 * @throws Dibi\DriverException
 	 */
-	public function begin(string $savepoint = null): void
+	public function begin(?string $savepoint = null): void
 	{
 		$this->query($savepoint ? "SAVEPOINT {$this->escapeIdentifier($savepoint)}" : 'START TRANSACTION');
 	}
@@ -199,7 +199,7 @@ class PostgreDriver implements Dibi\Driver
 	 * Commits statements in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function commit(string $savepoint = null): void
+	public function commit(?string $savepoint = null): void
 	{
 		$this->query($savepoint ? "RELEASE SAVEPOINT {$this->escapeIdentifier($savepoint)}" : 'COMMIT');
 	}
@@ -209,7 +209,7 @@ class PostgreDriver implements Dibi\Driver
 	 * Rollback changes in a transaction.
 	 * @throws Dibi\DriverException
 	 */
-	public function rollback(string $savepoint = null): void
+	public function rollback(?string $savepoint = null): void
 	{
 		$this->query($savepoint ? "ROLLBACK TO SAVEPOINT {$this->escapeIdentifier($savepoint)}" : 'ROLLBACK');
 	}
