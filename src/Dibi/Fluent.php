@@ -120,7 +120,7 @@ class Fluent implements IDataSource
 	/**
 	 * Appends new argument to the clause.
 	 */
-	public function __call(string $clause, array $args): self
+	public function __call(string $clause, array $args): static
 	{
 		$clause = self::$normalizer->$clause;
 
@@ -207,7 +207,7 @@ class Fluent implements IDataSource
 	/**
 	 * Switch to a clause.
 	 */
-	public function clause(string $clause): self
+	public function clause(string $clause): static
 	{
 		$this->cursor = &$this->clauses[self::$normalizer->$clause];
 		if ($this->cursor === null) {
@@ -221,7 +221,7 @@ class Fluent implements IDataSource
 	/**
 	 * Removes a clause.
 	 */
-	public function removeClause(string $clause): self
+	public function removeClause(string $clause): static
 	{
 		$this->clauses[self::$normalizer->$clause] = null;
 		return $this;
@@ -231,7 +231,7 @@ class Fluent implements IDataSource
 	/**
 	 * Change a SQL flag.
 	 */
-	public function setFlag(string $flag, bool $value = true): self
+	public function setFlag(string $flag, bool $value = true): static
 	{
 		$flag = strtoupper($flag);
 		if ($value) {
@@ -271,7 +271,7 @@ class Fluent implements IDataSource
 	/**
 	 * Adds Result setup.
 	 */
-	public function setupResult(string $method): self
+	public function setupResult(string $method): static
 	{
 		$this->setups[] = func_get_args();
 		return $this;
@@ -283,10 +283,10 @@ class Fluent implements IDataSource
 
 	/**
 	 * Generates and executes SQL query.
-	 * @return Result|int|null  result set or number of affected rows
+	 * Returns result set or number of affected rows
 	 * @throws Exception
 	 */
-	public function execute(?string $return = null)
+	public function execute(?string $return = null): Result|int|null
 	{
 		$res = $this->query($this->_export());
 		switch ($return) {
@@ -302,9 +302,8 @@ class Fluent implements IDataSource
 
 	/**
 	 * Generates, executes SQL query and fetches the single row.
-	 * @return Row|array|null
 	 */
-	public function fetch()
+	public function fetch(): Row|array|null
 	{
 		return $this->command === 'SELECT' && !$this->clauses['LIMIT']
 			? $this->query($this->_export(null, ['%lmt', 1]))->fetch()
@@ -314,9 +313,9 @@ class Fluent implements IDataSource
 
 	/**
 	 * Like fetch(), but returns only first field.
-	 * @return mixed  value on success, null if no next record
+	 * Returns value on success, null if no next record
 	 */
-	public function fetchSingle()
+	public function fetchSingle(): mixed
 	{
 		return $this->command === 'SELECT' && !$this->clauses['LIMIT']
 			? $this->query($this->_export(null, ['%lmt', 1]))->fetchSingle()

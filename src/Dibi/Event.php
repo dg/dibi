@@ -75,10 +75,7 @@ class Event
 	}
 
 
-	/**
-	 * @param  Result|DriverException|null  $result
-	 */
-	public function done($result = null): self
+	public function done(Result|DriverException|null $result = null): static
 	{
 		$this->result = $result;
 		try {

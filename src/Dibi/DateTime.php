@@ -17,10 +17,7 @@ class DateTime extends \DateTimeImmutable
 {
 	use Strict;
 
-	/**
-	 * @param  string|int  $time
-	 */
-	public function __construct($time = 'now', ?\DateTimeZone $timezone = null)
+	public function __construct(string|int $time = 'now', ?\DateTimeZone $timezone = null)
 	{
 		$timezone = $timezone ?: new \DateTimeZone(date_default_timezone_get());
 		if (is_numeric($time)) {

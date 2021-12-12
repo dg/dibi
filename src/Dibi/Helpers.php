@@ -19,9 +19,8 @@ class Helpers
 
 	/**
 	 * Prints out a syntax highlighted version of the SQL command or Result.
-	 * @param  string|Result  $sql
 	 */
-	public static function dump($sql = null, bool $return = false): ?string
+	public static function dump(string|Result|null $sql = null, bool $return = false): ?string
 	{
 		ob_start();
 		if ($sql instanceof Result && PHP_SAPI === 'cli') {
@@ -237,7 +236,7 @@ class Helpers
 
 	/**
 	 * Import SQL dump from file.
-	 * @return int  count of sql commands
+	 * Returns count of sql commands
 	 */
 	public static function loadFromFile(Connection $connection, string $file, ?callable $onProgress = null): int
 	{
@@ -285,14 +284,14 @@ class Helpers
 
 
 	/** @internal */
-	public static function false2Null($val)
+	public static function false2Null(mixed $val): mixed
 	{
 		return $val === false ? null : $val;
 	}
 
 
 	/** @internal */
-	public static function intVal($value): int
+	public static function intVal(mixed $value): int
 	{
 		if (is_int($value)) {
 			return $value;

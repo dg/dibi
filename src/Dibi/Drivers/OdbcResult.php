@@ -125,7 +125,7 @@ class OdbcResult implements Dibi\ResultDriver
 	 * Returns the result set resource.
 	 * @return resource|null
 	 */
-	public function getResultResource()
+	public function getResultResource(): mixed
 	{
 		$this->autoFree = false;
 		return is_resource($this->resultSet) ? $this->resultSet : null;
