@@ -126,7 +126,7 @@ class Result implements IDataSource
 	/**
 	 * Set fetched object class. This class should extend the Row class.
 	 */
-	public function setRowClass(?string $class): self
+	public function setRowClass(?string $class): static
 	{
 		$this->rowClass = $class;
 		return $this;
@@ -145,7 +145,7 @@ class Result implements IDataSource
 	/**
 	 * Set a factory to create fetched object instances. These should extend the Row class.
 	 */
-	public function setRowFactory(callable $callback): self
+	public function setRowFactory(callable $callback): static
 	{
 		$this->rowFactory = $callback;
 		return $this;
@@ -155,9 +155,8 @@ class Result implements IDataSource
 	/**
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
-	 * @return Row|array|null
 	 */
-	final public function fetch()
+	final public function fetch(): mixed
 	{
 		$row = $this->getResultDriver()->fetch(true);
 		if ($row === null) {
@@ -178,9 +177,9 @@ class Result implements IDataSource
 
 	/**
 	 * Like fetch(), but returns only first field.
-	 * @return mixed value on success, null if no next record
+	 * Returns value on success, null if no next record
 	 */
-	final public function fetchSingle()
+	final public function fetchSingle(): mixed
 	{
 		$row = $this->getResultDriver()->fetch(true);
 		if ($row === null) {
@@ -522,7 +521,7 @@ class Result implements IDataSource
 	 * Define column type.
 	 * @param  string|null  $type  use constant Type::*
 	 */
-	final public function setType(string $column, ?string $type): self
+	final public function setType(string $column, ?string $type): static
 	{
 		$this->types[$column] = $type;
 		return $this;
@@ -550,7 +549,7 @@ class Result implements IDataSource
 	/**
 	 * Sets type format.
 	 */
-	final public function setFormat(string $type, ?string $format): self
+	final public function setFormat(string $type, ?string $format): static
 	{
 		$this->formats[$type] = $format;
 		return $this;
@@ -560,7 +559,7 @@ class Result implements IDataSource
 	/**
 	 * Sets type formats.
 	 */
-	final public function setFormats(array $formats): self
+	final public function setFormats(array $formats): static
 	{
 		$this->formats = $formats;
 		return $this;

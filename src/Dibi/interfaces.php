@@ -67,9 +67,8 @@ interface Driver
 
 	/**
 	 * Returns the connection resource.
-	 * @return mixed
 	 */
-	function getResource();
+	function getResource(): mixed;
 
 	/**
 	 * Returns the connection reflector.
@@ -117,7 +116,6 @@ interface ResultDriver
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @return bool  true on success, false if unable to seek to specified record
 	 * @throws Exception
 	 */
 	function seek(int $row): bool;
@@ -142,9 +140,8 @@ interface ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return mixed
 	 */
-	function getResultResource();
+	function getResultResource(): mixed;
 
 	/**
 	 * Decodes data from result set.

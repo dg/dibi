@@ -18,11 +18,12 @@ class Exception extends \Exception
 	private ?string $sql;
 
 
-	/**
-	 * @param  int|string  $code
-	 */
-	public function __construct(string $message = '', $code = 0, ?string $sql = null, ?\Throwable $previous = null)
-	{
+	public function __construct(
+		string $message = '',
+		int|string $code = 0,
+		?string $sql = null,
+		?\Throwable $previous = null,
+	) {
 		parent::__construct($message, 0, $previous);
 		$this->code = $code;
 		$this->sql = $sql;

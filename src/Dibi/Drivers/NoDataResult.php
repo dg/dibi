@@ -58,7 +58,7 @@ class NoDataResult implements Dibi\ResultDriver
 	}
 
 
-	public function getResultResource()
+	public function getResultResource(): mixed
 	{
 		return null;
 	}
