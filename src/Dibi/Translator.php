@@ -174,6 +174,11 @@ final class Translator
 			$value = iterator_to_array($value);
 		}
 
+		// Enum support
+		if ($value instanceof \UnitEnum) {
+			$value = $value->value;
+		}
+
 		if (is_array($value)) {
 			$vx = $kx = [];
 			switch ($modifier) {
