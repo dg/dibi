@@ -160,7 +160,7 @@ class Result implements IDataSource
 	 * Fetches the row at current position, process optional type conversion.
 	 * and moves the internal cursor to the next position
 	 */
-	final public function fetch(): Row|array|null
+	final public function fetch(): mixed
 	{
 		$row = $this->getResultDriver()->fetch(true);
 		if ($row === null) {
