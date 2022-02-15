@@ -23,7 +23,7 @@ class Connection implements IConnection
 	use Strict;
 
 	/** function (Event $event); Occurs after query is executed */
-	public array $onEvent = [];
+	public ?array $onEvent = [];
 
 	/** Current connection configuration */
 	private array $config;
