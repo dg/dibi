@@ -72,13 +72,6 @@ class PostgreReflector implements Dibi\Reflector
 	public function getColumns(string $table): array
 	{
 		$_table = $this->driver->escapeText($this->driver->escapeIdentifier($table));
-		$res = $this->driver->query("
-			SELECT indkey
-			FROM pg_class
-			LEFT JOIN pg_index on pg_class.oid = pg_index.indrelid AND pg_index.indisprimary
-			WHERE pg_class.oid = $_table::regclass
-		");
-		$primary = (int) $res->fetch(true)['indkey'];
 
 		$res = $this->driver->query("
 			SELECT *
@@ -123,7 +116,7 @@ class PostgreReflector implements Dibi\Reflector
 				'size' => $size > 0 ? $size : null,
 				'nullable' => $row['is_nullable'] === 'YES' || $row['is_nullable'] === 't' || $row['is_nullable'] === true,
 				'default' => $row['column_default'],
-				'autoincrement' => (int) $row['ordinal_position'] === $primary && str_starts_with($row['column_default'] ?? '', 'nextval'),
+				'autoincrement' => str_starts_with($row['column_default'] ?? '', 'nextval('),
 				'vendor' => $row,
 			];
 		}
