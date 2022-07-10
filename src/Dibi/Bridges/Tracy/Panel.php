@@ -159,7 +159,7 @@ class Panel implements Tracy\IBarPanel
 		return '<style> #tracy-debug td.tracy-DibiProfiler-sql { background: white !important }
 			#tracy-debug .tracy-DibiProfiler-source { color: #999 !important }
 			#tracy-debug tracy-DibiProfiler tr table { margin: 8px 0; max-height: 150px; overflow:auto } </style>
-			<h1>Queries:\u{a0}' . count($this->events)
+			<h1>Queries:' . "\u{a0}" . count($this->events)
 				. ($totalTime === null ? '' : ", time:\u{a0}" . number_format($totalTime * 1000, 1, '.', "\u{202f}") . "\u{202f}ms") . ', '
 				. htmlspecialchars($this->getConnectionName($singleConnection)) . '</h1>
 			<div class="tracy-inner tracy-DibiProfiler">
