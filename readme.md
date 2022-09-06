@@ -34,7 +34,7 @@ Install Dibi via Composer:
 composer require dibi/dibi
 ```
 
-The Dibi 4.2 requires PHP version 7.2 and supports PHP up to 8.1.
+The Dibi 4.2 requires PHP version 7.2 and supports PHP up to 8.2.
 
 
 Usage
