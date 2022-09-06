@@ -11,7 +11,7 @@
 		}
 	],
 	"require": {
-		"php": ">=7.2"
+		"php": ">=8.0 <8.3"
 	},
 	"require-dev": {
 		"tracy/tracy": "~2.2",
