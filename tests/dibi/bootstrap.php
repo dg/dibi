@@ -51,7 +51,7 @@ function test(string $title, Closure $function): void
 /** Replaces [] with driver-specific quotes */
 function reformat($s)
 {
-	global $config;
+	$config = $GLOBALS['config'];
 	if (is_array($s)) {
 		if (isset($s[$config['system']])) {
 			return $s[$config['system']];
@@ -72,7 +72,7 @@ function reformat($s)
 
 function num($n)
 {
-	global $config;
+	$config = $GLOBALS['config'];
 	if (substr($config['dsn'] ?? '', 0, 5) === 'odbc:') {
 		$n = is_float($n) ? "$n.0" : (string) $n;
 	}
