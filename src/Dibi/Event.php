@@ -63,7 +63,11 @@ class Event
 
 		$dibiDir = dirname((new \ReflectionClass('dibi'))->getFileName()) . DIRECTORY_SEPARATOR;
 		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $row) {
-			if (isset($row['file']) && is_file($row['file']) && !str_starts_with($row['file'], $dibiDir)) {
+			if (
+				isset($row['file'])
+				&& !str_starts_with($row['file'], $dibiDir)
+				&& !str_ends_with($row['file'], ": eval()'d code")
+			) {
 				$this->source = [$row['file'], (int) $row['line']];
 				break;
 			}
