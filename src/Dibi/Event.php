@@ -66,7 +66,7 @@ class Event
 			if (
 				isset($row['file'])
 				&& preg_match('~\.(php.?|phtml)$~', $row['file'])
-				&& substr($row['file'], 0, strlen($dibiDir)) !== $dibiDir
+				&& !str_starts_with($row['file'], $dibiDir)
 			) {
 				$this->source = [$row['file'], (int) $row['line']];
 				break;

@@ -234,7 +234,7 @@ class Result implements IDataSource
 	 */
 	final public function fetchAssoc(string $assoc): array
 	{
-		if (strpos($assoc, ',') !== false) {
+		if (str_contains($assoc, ',')) {
 			return $this->oldFetchAssoc($assoc);
 		}
 
@@ -491,7 +491,7 @@ class Result implements IDataSource
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
 
 			} elseif ($type === Type::DATETIME || $type === Type::DATE || $type === Type::TIME) {
-				if ($value && substr((string) $value, 0, 7) !== '0000-00') { // '', null, false, '0000-00-00', ...
+				if ($value && !str_starts_with((string) $value, '0000-00')) { // '', null, false, '0000-00-00', ...
 					$value = new DateTime($value);
 					$row[$key] = $format ? $value->format($format) : $value;
 				} else {

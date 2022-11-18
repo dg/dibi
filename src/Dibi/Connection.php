@@ -516,9 +516,9 @@ class Connection implements IConnection
 	 */
 	public function substitute(string $value): string
 	{
-		return strpos($value, ':') === false
-			? $value
-			: preg_replace_callback('#:([^:\s]*):#', fn(array $m) => $this->substitutes->{$m[1]}, $value);
+		return str_contains($value, ':')
+			? preg_replace_callback('#:([^:\s]*):#', fn(array $m) => $this->substitutes->{$m[1]}, $value)
+			: $value;
 	}
 
 
