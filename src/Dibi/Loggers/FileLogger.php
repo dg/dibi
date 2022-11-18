@@ -70,7 +70,7 @@ class FileLogger
 	{
 		$driver = $event->connection->getConfig('driver');
 		$message .=
-			"\n-- driver: " . (is_object($driver) ? $driver::class : $driver) . '/' . $event->connection->getConfig('name')
+			"\n-- driver: " . get_debug_type($driver) . '/' . $event->connection->getConfig('name')
 			. "\n-- " . date('Y-m-d H:i:s')
 			. "\n\n";
 		file_put_contents($this->file, $message, FILE_APPEND | LOCK_EX);

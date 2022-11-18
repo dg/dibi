@@ -187,7 +187,7 @@ final class Translator
 								$v = $this->formatValue($v, $pair[1]);
 								if ($pair[1] === 'l' || $pair[1] === 'in') {
 									$op = 'IN ';
-								} elseif (strpos($pair[1], 'like') !== false) {
+								} elseif (str_contains($pair[1], 'like')) {
 									$op = 'LIKE ';
 								} elseif ($v === 'NULL') {
 									$op = 'IS ';
@@ -257,7 +257,7 @@ final class Translator
 								$proto = array_keys($v);
 							}
 						} else {
-							return $this->errors[] = '**Unexpected type ' . (is_object($v) ? $v::class : gettype($v)) . '**';
+							return $this->errors[] = '**Unexpected type ' . get_debug_type($v) . '**';
 						}
 
 						$pair = explode('%', $k, 2); // split into identifier & modifier
@@ -326,7 +326,7 @@ final class Translator
 				) {
 					// continue
 				} else {
-					$type = is_object($value) ? $value::class : gettype($value);
+					$type = get_debug_type($value);
 					return $this->errors[] = "**Invalid combination of type $type and modifier %$modifier**";
 				}
 			}
@@ -492,7 +492,7 @@ final class Translator
 			return $this->connection->translate(...$value->getValues());
 
 		} else {
-			$type = is_object($value) ? $value::class : gettype($value);
+			$type = get_debug_type($value);
 			return $this->errors[] = "**Unexpected $type**";
 		}
 	}
