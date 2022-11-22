@@ -238,3 +238,15 @@ interface IConnection
 	 */
 	function rollback(?string $savepoint = null): void;
 }
+
+
+/**
+ * Value object to SQL expression translator.
+ */
+interface ObjectTranslator
+{
+	/**
+	 * Translate object to expression, return NULL when cannot handle such object type.
+	 */
+	function translateObject(object $object): ?Expression;
+}

@@ -21,6 +21,8 @@ final class Translator
 
 	private Driver $driver;
 
+	private ?ObjectTranslator $objectTranslator = null;
+
 	private int $cursor = 0;
 
 	private array $args;
@@ -46,6 +48,12 @@ final class Translator
 		$this->connection = $connection;
 		$this->driver = $connection->getDriver();
 		$this->identifiers = new HashMap([$this, 'delimite']);
+	}
+
+
+	public function setObjectTranslator(?ObjectTranslator $translator): void
+	{
+		$this->objectTranslator = $translator;
 	}
 
 
@@ -312,6 +320,15 @@ final class Translator
 
 					return implode(', ', $vx);
 			}
+		}
+
+		if ($this->objectTranslator
+			&& is_object($value)
+			&& $modifier === null
+			&& !$value instanceof Literal
+			&& !$value instanceof Expression
+		) {
+			$value = $this->objectTranslator->translateObject($value) ?? $value;
 		}
 
 		// object-to-scalar procession

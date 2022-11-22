@@ -35,6 +35,8 @@ class Connection implements IConnection
 
 	private ?Translator $translator = null;
 
+	private ?ObjectTranslator $objectTranslator = null;
+
 	private HashMap $substitutes;
 
 	private int $transactionDepth = 0;
@@ -126,6 +128,7 @@ class Connection implements IConnection
 		if ($this->config['driver'] instanceof Driver) {
 			$this->driver = $this->config['driver'];
 			$this->translator = new Translator($this);
+			$this->translator->setObjectTranslator($this->objectTranslator);
 			return;
 
 		} elseif (is_subclass_of($this->config['driver'], Driver::class)) {
@@ -143,6 +146,7 @@ class Connection implements IConnection
 		try {
 			$this->driver = new $class($this->config);
 			$this->translator = new Translator($this);
+			$this->translator->setObjectTranslator($this->objectTranslator);
 
 			if ($event) {
 				$this->onEvent($event->done());
@@ -519,6 +523,22 @@ class Connection implements IConnection
 		return str_contains($value, ':')
 			? preg_replace_callback('#:([^:\s]*):#', fn(array $m) => $this->substitutes->{$m[1]}, $value)
 			: $value;
+	}
+
+
+	/********************* value objects translation ****************d*g**/
+
+
+	public function setObjectTranslator(?ObjectTranslator $translator): void
+	{
+		$this->objectTranslator = $translator;
+		$this->translator?->setObjectTranslator($translator);
+	}
+
+
+	public function getObjectTranslator(): ?ObjectTranslator
+	{
+		return $this->objectTranslator;
 	}
 
 
