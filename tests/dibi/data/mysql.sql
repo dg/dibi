@@ -1,8 +1,7 @@
-DROP DATABASE IF EXISTS dibi_test;
-CREATE DATABASE dibi_test;
-USE dibi_test;
-
+DROP TABLE IF EXISTS `orders`;
 DROP TABLE IF EXISTS `products`;
+DROP TABLE IF EXISTS `customers`;
+
 CREATE TABLE `products` (
 	`product_id` int(11) NOT NULL AUTO_INCREMENT,
 	`title` varchar(100) NOT NULL,
@@ -15,7 +14,6 @@ INSERT INTO `products` (`product_id`, `title`) VALUES
 (3, 'Computer'),
 (2, 'Table');
 
-DROP TABLE IF EXISTS `customers`;
 CREATE TABLE `customers` (
 	`customer_id` int(11) NOT NULL AUTO_INCREMENT,
 	`name` varchar(100) NOT NULL,
@@ -30,7 +28,6 @@ INSERT INTO `customers` (`customer_id`, `name`) VALUES
 (5, 'Kryten'),
 (6, 'Kristine Kochanski');
 
-DROP TABLE IF EXISTS `orders`;
 CREATE TABLE `orders` (
 	`order_id` int(11) NOT NULL AUTO_INCREMENT,
 	`customer_id` int(11) NOT NULL,
