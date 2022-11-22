@@ -35,6 +35,11 @@ class Connection implements IConnection
 
 	private ?Translator $translator = null;
 
+	/** @var array<string, callable(object): Expression | null> */
+	private array $translators = [];
+
+	private bool $sortTranslators = false;
+
 	private HashMap $substitutes;
 
 	private int $transactionDepth = 0;
@@ -519,6 +524,59 @@ class Connection implements IConnection
 		return str_contains($value, ':')
 			? preg_replace_callback('#:([^:\s]*):#', fn(array $m) => $this->substitutes->{$m[1]}, $value)
 			: $value;
+	}
+
+
+	/********************* value objects translation ****************d*g**/
+
+
+	/**
+	 * @param  callable(object): Expression  $translator
+	 */
+	public function setObjectTranslator(string $class, callable $translator): void
+	{
+		$this->translators[$class] = $translator;
+		$this->sortTranslators = true;
+	}
+
+
+	public function translateObject(object $object): ?Expression
+	{
+		if ($this->sortTranslators) {
+			$this->translators = array_filter($this->translators);
+			uksort($this->translators, fn($a, $b) => is_subclass_of($a, $b) ? -1 : 1);
+			$this->sortTranslators = false;
+		}
+
+		if (array_key_exists($object::class, $this->translators)) {
+			$translator = $this->translators[$object::class];
+
+		} else {
+			$translator = null;
+			foreach ($this->translators as $class => $t) {
+				if ($object instanceof $class) {
+					$translator = $t;
+					break;
+				}
+			}
+			$this->translators[$object::class] = $translator;
+		}
+
+		if ($translator === null) {
+			return null;
+		}
+
+		$result = $translator($object);
+		if (!$result instanceof Expression) {
+			throw new Exception(sprintf(
+				"Object translator for class '%s' returned '%s' but %s expected.",
+				$object::class,
+				get_debug_type($result),
+				Expression::class,
+			));
+		}
+
+		return $result;
 	}
 
 
