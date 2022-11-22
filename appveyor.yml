@@ -5,13 +5,16 @@ cache:
 
 clone_folder: c:\projects\dibi
 
+environment:
+    MYSQL_PWD: Password12!
+
 services:
     - mssql2012sp1
 #    - mssql2014
     - mysql
 
 init:
-    - SET PATH=c:\php;%PATH%
+    - SET PATH=c:\php;c:\Program Files\MySQL\MySQL Server 5.7\bin;%PATH%
     - SET ANSICON=121x90 (121x90)
 
 install:
@@ -39,6 +42,10 @@ install:
 
     # Create databases.ini
     - copy tests\databases.appveyor.ini tests\databases.ini
+
+before_test:
+    # Create MySQL database
+    - mysql --user=root -e "CREATE DATABASE dibi_test"
 
 test_script:
     - vendor\bin\tester tests -s -p c:\php\php -c tests\php-win.ini
