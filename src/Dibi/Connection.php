@@ -35,6 +35,9 @@ class Connection implements IConnection
 
 	private ?Translator $translator = null;
 
+	/** @var array<string, callable(object): Expression> */
+	private array $translators = [];
+
 	private HashMap $substitutes;
 
 	private int $transactionDepth = 0;
@@ -519,6 +522,24 @@ class Connection implements IConnection
 		return str_contains($value, ':')
 			? preg_replace_callback('#:([^:\s]*):#', fn(array $m) => $this->substitutes->{$m[1]}, $value)
 			: $value;
+	}
+
+
+	/********************* value objects translation ****************d*g**/
+
+
+	/** @param  callable(object): Expression  $translator */
+	public function addObjectTranslator(string $class, callable $translator): self
+	{
+		$this->translators[$class] = $translator;
+		return $this;
+	}
+
+
+	/** @return array<string, callable(object): Expression> */
+	public function getObjectTranslators(): array
+	{
+		return $this->translators;
 	}
 
 

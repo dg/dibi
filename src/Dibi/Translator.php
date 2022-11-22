@@ -314,6 +314,19 @@ final class Translator
 			}
 		}
 
+		if (is_object($value)
+			&& $modifier === null
+			&& !$value instanceof Literal
+			&& !$value instanceof Expression
+		) {
+			foreach ($this->connection->getObjectTranslators() as $class => $translator) {
+				if ($value instanceof $class) {
+					$value = $translator($value);
+					return $this->connection->translate(...$value->getValues());
+				}
+			}
+		}
+
 		// object-to-scalar procession
 		if ($value instanceof \BackedEnum && is_scalar($value->value)) {
 			$value = $value->value;
