@@ -36,7 +36,7 @@ class SqliteResult implements Dibi\ResultDriver
 	 */
 	public function __destruct()
 	{
-		if ($this->autoFree && $this->getResultResource()) {
+		if ($this->autoFree && is_resource($this->getResultResource())) {
 			@$this->free();
 		}
 	}
