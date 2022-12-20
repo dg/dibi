@@ -532,6 +532,7 @@ class Connection implements IConnection
 	public function addObjectTranslator(string $class, callable $translator): self
 	{
 		$this->translators[$class] = $translator;
+		uksort($this->translators, fn($a, $b) => class_exists($a, false) && is_subclass_of($a, $b) ? -1 : 1);
 		return $this;
 	}
 
