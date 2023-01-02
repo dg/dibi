@@ -31,10 +31,7 @@ test('Without object translator', function () use ($conn) {
 
 
 test('Basics', function () use ($conn) {
-	$conn->setObjectTranslator(
-		Email::class,
-		fn(Email $email) => new Dibi\Expression('?', $email->address),
-	);
+	$conn->setObjectTranslator(fn(Email $email) => new Dibi\Expression('?', $email->address));
 	Assert::same(
 		reformat([
 			'sqlsrv' => "N'address@example.com'",
@@ -56,10 +53,7 @@ test('DateTime', function () use ($conn) {
 
 
 	// With object translator
-	$conn->setObjectTranslator(
-		Time::class,
-		fn(Time $time) => new Dibi\Expression('OwnTime(?)', $time->format('H:i:s')),
-	);
+	$conn->setObjectTranslator(fn(Time $time) => new Dibi\Expression('OwnTime(?)', $time->format('H:i:s')));
 	Assert::same(
 		reformat([
 			'sqlsrv' => "OwnTime(N'12:13:14')",
@@ -92,10 +86,7 @@ test('DateTime', function () use ($conn) {
 	);
 
 	// But DateTime translation can be overloaded
-	$conn->setObjectTranslator(
-		DateTimeInterface::class,
-		fn (DateTimeInterface $dt) => new Dibi\Expression('OwnDateTime'),
-	);
+	$conn->setObjectTranslator(fn(DateTimeInterface $dt) => new Dibi\Expression('OwnDateTime'));
 	Assert::same(
 		'OwnDateTime',
 		$conn->translate('?', $dt),
@@ -104,9 +95,9 @@ test('DateTime', function () use ($conn) {
 
 
 test('Complex structures', function () use ($conn) {
-	$conn->setObjectTranslator(Email::class, fn(Email $email) => new Dibi\Expression('?', $email->address));
-	$conn->setObjectTranslator(Time::class, fn (Time $time) => new Dibi\Expression('OwnTime(?)', $time->format('H:i:s')));
-	$conn->setObjectTranslator(DateTimeInterface::class, fn (DateTimeInterface $dt) => new Dibi\Expression('OwnDateTime'));
+	$conn->setObjectTranslator(fn(Email $email) => new Dibi\Expression('?', $email->address));
+	$conn->setObjectTranslator(fn(Time $time) => new Dibi\Expression('OwnTime(?)', $time->format('H:i:s')));
+	$conn->setObjectTranslator(fn(DateTimeInterface $dt) => new Dibi\Expression('OwnDateTime'));
 
 	$time = Time::createFromFormat('Y-m-d H:i:s', '2022-11-22 12:13:14');
 	Assert::same(
@@ -129,11 +120,27 @@ test('Complex structures', function () use ($conn) {
 
 
 test('Invalid translator', function () use ($conn) {
-	$conn->setObjectTranslator(
-		Email::class,
-		fn(Email $email) => 'foo',
+	Assert::exception(
+		fn() => $conn->setObjectTranslator(fn($email) => 'foo'),
+		Dibi\Exception::class, "Object translator parameter '\$email' must be declared with typehint.",
 	);
 
+	Assert::exception(
+		fn() => $conn->setObjectTranslator(fn(string $email) => 'foo'),
+		Dibi\Exception::class, "Object translator parameter '\$email' type must be class or interface but 'string' declared.",
+	);
+
+	Assert::exception(
+		fn() => $conn->setObjectTranslator(fn(Email|bool $email) => 'foo'),
+		Dibi\Exception::class, "Object translator parameter '\$email' type must be class or interface but 'bool' declared.",
+	);
+
+	Assert::exception(
+		fn() => $conn->setObjectTranslator(fn(Email|null $email) => 'foo'),
+		Dibi\Exception::class, "Object translator parameter '\$email' must not be nullable.",
+	);
+
+	$conn->setObjectTranslator(fn(Email $email) => 'foo');
 	Assert::exception(
 		fn() => $conn->translate('?', new Email),
 		Dibi\Exception::class, "Object translator for class 'Email' returned 'string' but Dibi\Expression expected.",

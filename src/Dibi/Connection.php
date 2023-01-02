@@ -533,9 +533,39 @@ class Connection implements IConnection
 	/**
 	 * @param  callable(object): Expression  $translator
 	 */
-	public function setObjectTranslator(string $class, callable $translator): void
+	public function setObjectTranslator(callable $translator): void
 	{
-		$this->translators[$class] = $translator;
+		if (!$translator instanceof \Closure) {
+			$translator = \Closure::fromCallable($translator);
+		}
+
+		$param = (new \ReflectionFunction($translator))->getParameters();
+		if (count($param) !== 1) {
+			throw new Exception('Object translator must have exactly one parameter.');
+		}
+
+		$name = '$' . $param[0]->getName();
+		$type = $param[0]->getType();
+		if ($type === null) {
+			throw new Exception("Object translator parameter '$name' must be declared with typehint.");
+		} elseif ($type->allowsNull()) {
+			throw new Exception("Object translator parameter '$name' must not be nullable.");
+		}
+
+		if ($type instanceof \ReflectionNamedType) {
+			$types = [$type];
+		} elseif ($type instanceof \ReflectionUnionType) {
+			$types = $type->getTypes();
+		} else {
+			throw new Exception("Object translator parameter '$name' type must be simple or union.");
+		}
+
+		foreach ($types as $type) {
+			if ($type->isBuiltin()) {
+				throw new Exception("Object translator parameter '$name' type must be class or interface but '$type' declared.");
+			}
+			$this->translators[$type->getName()] = $translator;
+		}
 		$this->sortTranslators = true;
 	}
 
