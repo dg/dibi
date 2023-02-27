@@ -22,7 +22,6 @@ class PdoResult implements Dibi\ResultDriver
 	use Dibi\Strict;
 
 	private ?\PDOStatement $resultSet;
-
 	private string $driverName;
 
 

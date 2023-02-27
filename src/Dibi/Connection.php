@@ -24,19 +24,13 @@ class Connection implements IConnection
 
 	/** function (Event $event); Occurs after query is executed */
 	public ?array $onEvent = [];
-
-	/** Current connection configuration */
 	private array $config;
 
 	/** @var string[]  resultset formats */
 	private array $formats;
-
 	private ?Driver $driver = null;
-
 	private ?Translator $translator = null;
-
 	private HashMap $substitutes;
-
 	private int $transactionDepth = 0;
 
 

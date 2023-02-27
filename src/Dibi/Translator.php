@@ -18,26 +18,17 @@ final class Translator
 	use Strict;
 
 	private Connection $connection;
-
 	private Driver $driver;
-
 	private int $cursor = 0;
-
 	private array $args;
 
 	/** @var string[] */
 	private array $errors;
-
 	private bool $comment = false;
-
 	private int $ifLevel = 0;
-
 	private int $ifLevelStart = 0;
-
 	private ?int $limit = null;
-
 	private ?int $offset = null;
-
 	private HashMap $identifiers;
 
 

@@ -31,9 +31,7 @@ class SqlsrvDriver implements Dibi\Driver
 
 	/** @var resource */
 	private $connection;
-
 	private ?int $affectedRows;
-
 	private string $version = '';
 
 

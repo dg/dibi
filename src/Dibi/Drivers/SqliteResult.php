@@ -21,7 +21,6 @@ class SqliteResult implements Dibi\ResultDriver
 	use Dibi\Strict;
 
 	private \SQLite3Result $resultSet;
-
 	private bool $autoFree = true;
 
 

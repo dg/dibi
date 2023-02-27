@@ -92,15 +92,10 @@ class Fluent implements IDataSource
 	];
 
 	private Connection $connection;
-
 	private array $setups = [];
-
 	private ?string $command = null;
-
 	private array $clauses = [];
-
 	private array $flags = [];
-
 	private $cursor;
 
 	/** normalized clauses */

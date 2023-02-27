@@ -35,7 +35,6 @@ class FirebirdDriver implements Dibi\Driver
 
 	/** @var ?resource */
 	private $transaction;
-
 	private bool $inTransaction = false;
 
 

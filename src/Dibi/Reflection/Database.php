@@ -24,7 +24,6 @@ class Database
 	use Dibi\Strict;
 
 	private Dibi\Reflector $reflector;
-
 	private ?string $name;
 
 	/** @var Table[] */

@@ -21,9 +21,7 @@ class OdbcResult implements Dibi\ResultDriver
 
 	/** @var resource */
 	private $resultSet;
-
 	private bool $autoFree = true;
-
 	private int $row = 0;
 
 

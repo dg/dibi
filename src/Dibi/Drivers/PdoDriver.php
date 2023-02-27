@@ -30,11 +30,8 @@ class PdoDriver implements Dibi\Driver
 	use Dibi\Strict;
 
 	private ?PDO $connection;
-
 	private ?int $affectedRows;
-
 	private string $driverName;
-
 	private string $serverVersion = '';
 
 

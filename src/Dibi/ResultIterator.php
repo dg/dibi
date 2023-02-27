@@ -18,9 +18,7 @@ class ResultIterator implements \Iterator, \Countable
 	use Strict;
 
 	private Result $result;
-
 	private mixed $row;
-
 	private int $pointer = 0;
 
 

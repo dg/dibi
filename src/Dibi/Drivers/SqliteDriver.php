@@ -28,9 +28,7 @@ class SqliteDriver implements Dibi\Driver
 	use Dibi\Strict;
 
 	private SQLite3 $connection;
-
 	private string $fmtDate;
-
 	private string $fmtDateTime;
 
 

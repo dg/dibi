@@ -20,7 +20,6 @@ use Tracy;
 class DibiExtension22 extends Nette\DI\CompilerExtension
 {
 	private ?bool $debugMode;
-
 	private ?bool $cliMode;
 
 

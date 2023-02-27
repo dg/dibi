@@ -21,7 +21,6 @@ class OracleResult implements Dibi\ResultDriver
 
 	/** @var resource */
 	private $resultSet;
-
 	private bool $autoFree = true;
 
 

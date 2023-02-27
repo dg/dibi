@@ -28,9 +28,7 @@ class Table
 	use Dibi\Strict;
 
 	private Dibi\Reflector $reflector;
-
 	private string $name;
-
 	private bool $view;
 
 	/** @var Column[] */
@@ -41,7 +39,6 @@ class Table
 
 	/** @var Index[] */
 	private array $indexes;
-
 	private ?Index $primaryKey;
 
 

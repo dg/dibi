@@ -20,7 +20,6 @@ class PostgreReflector implements Dibi\Reflector
 	use Dibi\Strict;
 
 	private Dibi\Driver $driver;
-
 	private string $version;
 
 

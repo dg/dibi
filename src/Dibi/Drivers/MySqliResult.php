@@ -20,10 +20,7 @@ class MySqliResult implements Dibi\ResultDriver
 	use Dibi\Strict;
 
 	private \mysqli_result $resultSet;
-
 	private bool $autoFree = true;
-
-	/** Is buffered (seekable and countable)? */
 	private bool $buffered;
 
 

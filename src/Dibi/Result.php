@@ -23,7 +23,6 @@ class Result implements IDataSource
 
 	/** Translate table */
 	private array $types = [];
-
 	private ?Reflection\Result $meta;
 
 	/** Already fetched? Used for allowance for first seek(0) */
@@ -34,7 +33,6 @@ class Result implements IDataSource
 
 	/** @var callable|null  returned object factory */
 	private $rowFactory;
-
 	private array $formats = [];
 
 

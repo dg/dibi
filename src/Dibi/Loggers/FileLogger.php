@@ -21,9 +21,7 @@ class FileLogger
 
 	/** Name of the file where SQL errors should be logged */
 	public string $file;
-
 	public int $filter;
-
 	private bool $errorsOnly;
 
 

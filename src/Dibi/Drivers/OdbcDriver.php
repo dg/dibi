@@ -29,9 +29,7 @@ class OdbcDriver implements Dibi\Driver
 
 	/** @var resource */
 	private $connection;
-
 	private ?int $affectedRows;
-
 	private bool $microseconds = true;
 
 
