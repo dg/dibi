@@ -288,12 +288,15 @@ $id = $database->getInsertId($sequence); // or sequence value
 Multiple INSERT:
 
 ```php
-$database->query('INSERT INTO users', [
-	'name' => 'Jim',
-	'year' => 1978,
-], [
-	'name' => 'Jack',
-	'year' => 1987,
+$database->query('INSERT INTO users %m', [
+	'name' => [
+ 		'Jim',
+		'Jack'
+	],
+	'year' => [
+ 		1978,
+   		1987
+	]
 ]);
 // INSERT INTO users (`name`, `year`) VALUES ('Jim', 1978), ('Jack', 1987)
 ```
