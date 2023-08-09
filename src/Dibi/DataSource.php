@@ -15,8 +15,6 @@ namespace Dibi;
  */
 class DataSource implements IDataSource
 {
-	use Strict;
-
 	/** @var Connection */
 	private $connection;
 

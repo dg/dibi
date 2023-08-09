@@ -15,8 +15,6 @@ namespace Dibi;
  */
 final class Translator
 {
-	use Strict;
-
 	/** @var Connection */
 	private $connection;
 

@@ -19,8 +19,6 @@ use PgSql;
  */
 class PostgreResult implements Dibi\ResultDriver
 {
-	use Dibi\Strict;
-
 	/** @var resource|PgSql\Result */
 	private $resultSet;
 

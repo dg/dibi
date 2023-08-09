@@ -15,8 +15,6 @@ namespace Dibi;
  */
 class DateTime extends \DateTimeImmutable
 {
-	use Strict;
-
 	/**
 	 * @param  string|int  $time
 	 */

@@ -17,8 +17,6 @@ use Dibi;
  */
 class MySqliResult implements Dibi\ResultDriver
 {
-	use Dibi\Strict;
-
 	/** @var \mysqli_result */
 	private $resultSet;
 

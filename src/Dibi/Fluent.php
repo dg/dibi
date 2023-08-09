@@ -45,8 +45,6 @@ namespace Dibi;
  */
 class Fluent implements IDataSource
 {
-	use Strict;
-
 	public const REMOVE = false;
 
 	/** @var array */

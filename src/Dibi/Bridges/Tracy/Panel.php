@@ -20,8 +20,6 @@ use Tracy;
  */
 class Panel implements Tracy\IBarPanel
 {
-	use Dibi\Strict;
-
 	/** @var int maximum SQL length */
 	public static $maxLength = 1000;
 

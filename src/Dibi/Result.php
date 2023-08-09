@@ -17,8 +17,6 @@ namespace Dibi;
  */
 class Result implements IDataSource
 {
-	use Strict;
-
 	/** @var ResultDriver|null */
 	private $driver;
 

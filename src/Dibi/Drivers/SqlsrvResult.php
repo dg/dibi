@@ -17,8 +17,6 @@ use Dibi;
  */
 class SqlsrvResult implements Dibi\ResultDriver
 {
-	use Dibi\Strict;
-
 	/** @var resource */
 	private $resultSet;
 

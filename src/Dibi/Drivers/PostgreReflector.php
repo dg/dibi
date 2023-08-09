@@ -17,8 +17,6 @@ use Dibi;
  */
 class PostgreReflector implements Dibi\Reflector
 {
-	use Dibi\Strict;
-
 	/** @var Dibi\Driver */
 	private $driver;
 

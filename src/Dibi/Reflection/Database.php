@@ -21,8 +21,6 @@ use Dibi;
  */
 class Database
 {
-	use Dibi\Strict;
-
 	/** @var Dibi\Reflector */
 	private $reflector;
 

@@ -17,8 +17,6 @@ use Dibi;
  */
 class NoDataResult implements Dibi\ResultDriver
 {
-	use Dibi\Strict;
-
 	/** @var int */
 	private $rows;
 

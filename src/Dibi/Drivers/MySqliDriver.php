@@ -32,8 +32,6 @@ use Dibi;
  */
 class MySqliDriver implements Dibi\Driver
 {
-	use Dibi\Strict;
-
 	public const ERROR_ACCESS_DENIED = 1045;
 
 	public const ERROR_DUPLICATE_ENTRY = 1062;

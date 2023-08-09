@@ -17,8 +17,6 @@ use Dibi;
  */
 class FileLogger
 {
-	use Dibi\Strict;
-
 	/** @var string  Name of the file where SQL errors should be logged */
 	public $file;
 

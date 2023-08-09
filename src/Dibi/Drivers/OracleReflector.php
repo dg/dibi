@@ -17,8 +17,6 @@ use Dibi;
  */
 class OracleReflector implements Dibi\Reflector
 {
-	use Dibi\Strict;
-
 	/** @var Dibi\Driver */
 	private $driver;
 

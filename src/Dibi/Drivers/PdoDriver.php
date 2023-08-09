@@ -27,8 +27,6 @@ use PDO;
  */
 class PdoDriver implements Dibi\Driver
 {
-	use Dibi\Strict;
-
 	/** @var PDO|null  Connection resource */
 	private $connection;
 

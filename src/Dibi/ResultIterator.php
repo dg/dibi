@@ -15,8 +15,6 @@ namespace Dibi;
  */
 class ResultIterator implements \Iterator, \Countable
 {
-	use Strict;
-
 	/** @var Result */
 	private $result;
 

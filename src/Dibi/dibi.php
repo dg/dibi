@@ -37,8 +37,6 @@ declare(strict_types=1);
  */
 class dibi
 {
-	use Dibi\Strict;
-
 	public const
 		AFFECTED_ROWS = 'a',
 		IDENTIFIER = 'n';

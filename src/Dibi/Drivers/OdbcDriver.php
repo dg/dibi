@@ -25,8 +25,6 @@ use Dibi;
  */
 class OdbcDriver implements Dibi\Driver
 {
-	use Dibi\Strict;
-
 	/** @var resource */
 	private $connection;
 

@@ -18,8 +18,6 @@ use Dibi\Helpers;
  */
 class FirebirdResult implements Dibi\ResultDriver
 {
-	use Dibi\Strict;
-
 	/** @var resource */
 	private $resultSet;
 

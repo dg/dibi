@@ -27,8 +27,6 @@ use Dibi;
  */
 class Column
 {
-	use Dibi\Strict;
-
 	/** @var Dibi\Reflector|null when created by Result */
 	private $reflector;
 

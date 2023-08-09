@@ -26,8 +26,6 @@ use Dibi\Helpers;
  */
 class FirebirdDriver implements Dibi\Driver
 {
-	use Dibi\Strict;
-
 	public const ERROR_EXCEPTION_THROWN = -836;
 
 	/** @var resource */

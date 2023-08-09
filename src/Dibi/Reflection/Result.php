@@ -20,8 +20,6 @@ use Dibi;
  */
 class Result
 {
-	use Dibi\Strict;
-
 	/** @var Dibi\ResultDriver */
 	private $driver;
 

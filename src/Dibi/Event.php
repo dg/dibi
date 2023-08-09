@@ -15,8 +15,6 @@ namespace Dibi;
  */
 class Event
 {
-	use Strict;
-
 	/** event type */
 	public const
 		CONNECT = 1,

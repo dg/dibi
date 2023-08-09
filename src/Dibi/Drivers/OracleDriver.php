@@ -27,8 +27,6 @@ use Dibi;
  */
 class OracleDriver implements Dibi\Driver
 {
-	use Dibi\Strict;
-
 	/** @var resource */
 	private $connection;
 

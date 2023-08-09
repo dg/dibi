@@ -25,8 +25,6 @@ use Dibi;
  */
 class Table
 {
-	use Dibi\Strict;
-
 	/** @var Dibi\Reflector */
 	private $reflector;
 

@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Dibi\Reflection;
 
-use Dibi;
 
 
 /**
@@ -20,8 +19,6 @@ use Dibi;
  */
 class ForeignKey
 {
-	use Dibi\Strict;
-
 	/** @var string */
 	private $name;
 

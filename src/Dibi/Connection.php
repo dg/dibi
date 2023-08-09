@@ -20,8 +20,6 @@ use Traversable;
  */
 class Connection implements IConnection
 {
-	use Strict;
-
 	/** @var array of function (Event $event); Occurs after query is executed */
 	public $onEvent = [];
 

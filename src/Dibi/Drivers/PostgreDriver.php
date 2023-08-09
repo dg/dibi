@@ -28,8 +28,6 @@ use PgSql;
  */
 class PostgreDriver implements Dibi\Driver
 {
-	use Dibi\Strict;
-
 	/** @var resource|PgSql\Connection */
 	private $connection;
 

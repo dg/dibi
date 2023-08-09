@@ -12,8 +12,6 @@ namespace Dibi;
 
 class Helpers
 {
-	use Strict;
-
 	/** @var HashMap */
 	private static $types;
 

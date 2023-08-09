@@ -19,8 +19,6 @@ use PDO;
  */
 class PdoResult implements Dibi\ResultDriver
 {
-	use Dibi\Strict;
-
 	/** @var \PDOStatement|null */
 	private $resultSet;
 

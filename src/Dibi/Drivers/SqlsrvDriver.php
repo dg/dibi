@@ -27,8 +27,6 @@ use Dibi\Helpers;
  */
 class SqlsrvDriver implements Dibi\Driver
 {
-	use Dibi\Strict;
-
 	/** @var resource */
 	private $connection;
 

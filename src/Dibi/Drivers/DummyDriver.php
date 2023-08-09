@@ -17,8 +17,6 @@ use Dibi;
  */
 class DummyDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 {
-	use Dibi\Strict;
-
 	public function disconnect(): void
 	{
 	}

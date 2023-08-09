@@ -18,8 +18,6 @@ use Dibi;
  */
 class MySqlReflector implements Dibi\Reflector
 {
-	use Dibi\Strict;
-
 	/** @var Dibi\Driver */
 	private $driver;
 
