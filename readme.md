@@ -341,7 +341,7 @@ $database->query('INSERT INTO users', [
 There are three methods for dealing with transactions:
 
 ```php
-$database->beginTransaction();
+$database->begin();
 
 $database->commit();
 
