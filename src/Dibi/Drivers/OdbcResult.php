@@ -19,9 +19,7 @@ class OdbcResult implements Dibi\ResultDriver
 {
 	/** @var resource */
 	private $resultSet;
-
-	/** @var int  Cursor */
-	private $row = 0;
+	private int $row = 0;
 
 
 	/**

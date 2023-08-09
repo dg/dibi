@@ -15,35 +15,16 @@ namespace Dibi;
  */
 class DataSource implements IDataSource
 {
-	/** @var Connection */
-	private $connection;
-
-	/** @var string */
-	private $sql;
-
-	/** @var Result|null */
-	private $result;
-
-	/** @var int|null */
-	private $count;
-
-	/** @var int|null */
-	private $totalCount;
-
-	/** @var array */
-	private $cols = [];
-
-	/** @var array */
-	private $sorting = [];
-
-	/** @var array */
-	private $conds = [];
-
-	/** @var int|null */
-	private $offset;
-
-	/** @var int|null */
-	private $limit;
+	private Connection $connection;
+	private string $sql;
+	private ?Result $result = null;
+	private ?int $count = null;
+	private ?int $totalCount = null;
+	private array $cols = [];
+	private array $sorting = [];
+	private array $conds = [];
+	private ?int $offset = null;
+	private ?int $limit = null;
 
 
 	/**

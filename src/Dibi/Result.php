@@ -17,26 +17,21 @@ namespace Dibi;
  */
 class Result implements IDataSource
 {
-	/** @var ResultDriver|null */
-	private $driver;
+	private ?ResultDriver $driver;
 
-	/** @var array  Translate table */
-	private $types = [];
+	/** Translate table */
+	private array $types = [];
+	private ?Reflection\Result $meta;
 
-	/** @var Reflection\Result|null */
-	private $meta;
+	/** Already fetched? Used for allowance for first seek(0) */
+	private bool $fetched = false;
 
-	/** @var bool  Already fetched? Used for allowance for first seek(0) */
-	private $fetched = false;
-
-	/** @var string|null  returned object class */
-	private $rowClass = Row::class;
+	/** returned object class */
+	private ?string $rowClass = Row::class;
 
 	/** @var callable|null  returned object factory */
 	private $rowFactory;
-
-	/** @var array  format */
-	private $formats = [];
+	private array $formats = [];
 
 
 	public function __construct(ResultDriver $driver, bool $normalize = true)
@@ -589,7 +584,7 @@ class Result implements IDataSource
 	 */
 	public function getInfo(): Reflection\Result
 	{
-		if ($this->meta === null) {
+		if (!isset($this->meta)) {
 			$this->meta = new Reflection\Result($this->getResultDriver());
 		}
 

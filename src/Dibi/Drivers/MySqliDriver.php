@@ -33,16 +33,11 @@ use Dibi;
 class MySqliDriver implements Dibi\Driver
 {
 	public const ERROR_ACCESS_DENIED = 1045;
-
 	public const ERROR_DUPLICATE_ENTRY = 1062;
-
 	public const ERROR_DATA_TRUNCATED = 1265;
 
-	/** @var \mysqli */
-	private $connection;
-
-	/** @var bool  Is buffered (seekable and countable)? */
-	private $buffered;
+	private \mysqli $connection;
+	private bool $buffered = false;
 
 
 	/** @throws Dibi\NotSupportedException */

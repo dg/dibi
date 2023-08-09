@@ -19,11 +19,8 @@ use PDO;
  */
 class PdoResult implements Dibi\ResultDriver
 {
-	/** @var \PDOStatement|null */
-	private $resultSet;
-
-	/** @var string */
-	private $driverName;
+	private ?\PDOStatement $resultSet;
+	private string $driverName;
 
 
 	public function __construct(\PDOStatement $resultSet, string $driverName)

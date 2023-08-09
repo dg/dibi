@@ -18,8 +18,7 @@ use Dibi\Helpers;
  */
 class SqliteResult implements Dibi\ResultDriver
 {
-	/** @var \SQLite3Result */
-	private $resultSet;
+	private \SQLite3Result $resultSet;
 
 
 	public function __construct(\SQLite3Result $resultSet)

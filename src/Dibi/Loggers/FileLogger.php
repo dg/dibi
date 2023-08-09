@@ -17,14 +17,10 @@ use Dibi;
  */
 class FileLogger
 {
-	/** @var string  Name of the file where SQL errors should be logged */
-	public $file;
-
-	/** @var int */
-	public $filter;
-
-	/** @var bool */
-	private $errorsOnly;
+	/** Name of the file where SQL errors should be logged */
+	public string $file;
+	public int $filter;
+	private bool $errorsOnly;
 
 
 	public function __construct(string $file, ?int $filter = null, bool $errorsOnly = false)

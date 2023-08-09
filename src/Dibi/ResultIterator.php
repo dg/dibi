@@ -15,14 +15,9 @@ namespace Dibi;
  */
 class ResultIterator implements \Iterator, \Countable
 {
-	/** @var Result */
-	private $result;
-
-	/** @var mixed */
-	private $row;
-
-	/** @var int */
-	private $pointer = 0;
+	private Result $result;
+	private mixed $row;
+	private int $pointer = 0;
 
 
 	public function __construct(Result $result)

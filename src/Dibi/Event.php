@@ -29,26 +29,13 @@ class Event
 		TRANSACTION = 448, // BEGIN | COMMIT | ROLLBACK
 		ALL = 1023;
 
-	/** @var Connection */
-	public $connection;
-
-	/** @var int */
-	public $type;
-
-	/** @var string */
-	public $sql;
-
-	/** @var Result|DriverException|null */
-	public $result;
-
-	/** @var float */
-	public $time;
-
-	/** @var int|null */
-	public $count;
-
-	/** @var array|null */
-	public $source;
+	public Connection $connection;
+	public int $type;
+	public string $sql;
+	public Result|DriverException|null $result;
+	public float $time;
+	public ?int $count = null;
+	public ?array $source = null;
 
 
 	public function __construct(Connection $connection, int $type, ?string $sql = null)

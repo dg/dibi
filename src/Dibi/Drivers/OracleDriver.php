@@ -29,15 +29,9 @@ class OracleDriver implements Dibi\Driver
 {
 	/** @var resource */
 	private $connection;
-
-	/** @var bool */
-	private $autocommit = true;
-
-	/** @var bool  use native datetime format */
-	private $nativeDate;
-
-	/** @var int|null Number of affected rows */
-	private $affectedRows;
+	private bool $autocommit = true;
+	private bool $nativeDate;
+	private ?int $affectedRows;
 
 
 	/** @throws Dibi\NotSupportedException */

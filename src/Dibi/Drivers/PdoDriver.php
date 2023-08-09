@@ -27,17 +27,10 @@ use PDO;
  */
 class PdoDriver implements Dibi\Driver
 {
-	/** @var PDO|null  Connection resource */
-	private $connection;
-
-	/** @var int|null  Affected rows */
-	private $affectedRows;
-
-	/** @var string */
-	private $driverName;
-
-	/** @var string */
-	private $serverVersion = '';
+	private ?PDO $connection;
+	private ?int $affectedRows;
+	private string $driverName;
+	private string $serverVersion = '';
 
 
 	/** @throws Dibi\NotSupportedException */

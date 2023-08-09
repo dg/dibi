@@ -17,11 +17,8 @@ use Dibi;
  */
 class PostgreReflector implements Dibi\Reflector
 {
-	/** @var Dibi\Driver */
-	private $driver;
-
-	/** @var string */
-	private $version;
+	private Dibi\Driver $driver;
+	private string $version;
 
 
 	public function __construct(Dibi\Driver $driver, string $version)

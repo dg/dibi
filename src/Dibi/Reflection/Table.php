@@ -25,26 +25,19 @@ use Dibi;
  */
 class Table
 {
-	/** @var Dibi\Reflector */
-	private $reflector;
+	private Dibi\Reflector $reflector;
+	private string $name;
+	private bool $view;
 
-	/** @var string */
-	private $name;
+	/** @var Column[] */
+	private array $columns;
 
-	/** @var bool */
-	private $view;
+	/** @var ForeignKey[] */
+	private array $foreignKeys;
 
-	/** @var Column[]|null */
-	private $columns;
-
-	/** @var ForeignKey[]|null */
-	private $foreignKeys;
-
-	/** @var Index[]|null */
-	private $indexes;
-
-	/** @var Index|null */
-	private $primaryKey;
+	/** @var Index[] */
+	private array $indexes;
+	private ?Index $primaryKey;
 
 
 	public function __construct(Dibi\Reflector $reflector, array $info)
@@ -133,7 +126,7 @@ class Table
 
 	protected function initColumns(): void
 	{
-		if ($this->columns === null) {
+		if (!isset($this->columns)) {
 			$this->columns = [];
 			foreach ($this->reflector->getColumns($this->name) as $info) {
 				$this->columns[strtolower($info['name'])] = new Column($this->reflector, $info);
@@ -144,7 +137,7 @@ class Table
 
 	protected function initIndexes(): void
 	{
-		if ($this->indexes === null) {
+		if (!isset($this->indexes)) {
 			$this->initColumns();
 			$this->indexes = [];
 			foreach ($this->reflector->getIndexes($this->name) as $info) {

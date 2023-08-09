@@ -17,8 +17,7 @@ use Dibi;
  */
 class OracleReflector implements Dibi\Reflector
 {
-	/** @var Dibi\Driver */
-	private $driver;
+	private Dibi\Driver $driver;
 
 
 	public function __construct(Dibi\Driver $driver)

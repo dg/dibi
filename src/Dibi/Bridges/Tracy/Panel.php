@@ -20,17 +20,10 @@ use Tracy;
  */
 class Panel implements Tracy\IBarPanel
 {
-	/** @var int maximum SQL length */
-	public static $maxLength = 1000;
-
-	/** @var bool|string  explain queries? */
-	public $explain;
-
-	/** @var int */
-	public $filter;
-
-	/** @var array */
-	private $events = [];
+	public static int $maxLength = 1000;
+	public bool|string $explain;
+	public int $filter;
+	private array $events = [];
 
 
 	public function __construct($explain = true, ?int $filter = null)

@@ -20,25 +20,16 @@ use Traversable;
  */
 class Connection implements IConnection
 {
-	/** @var array of function (Event $event); Occurs after query is executed */
-	public $onEvent = [];
-
-	/** @var array  Current connection configuration */
-	private $config;
+	/** function (Event $event); Occurs after query is executed */
+	public ?array $onEvent = [];
+	private array $config;
 
 	/** @var string[]  resultset formats */
-	private $formats;
-
-	/** @var Driver|null */
-	private $driver;
-
-	/** @var Translator|null */
-	private $translator;
-
-	/** @var HashMap Substitutes for identifiers */
-	private $substitutes;
-
-	private $transactionDepth = 0;
+	private array $formats;
+	private ?Driver $driver = null;
+	private ?Translator $translator = null;
+	private HashMap $substitutes;
+	private int $transactionDepth = 0;
 
 
 	/**

@@ -15,38 +15,19 @@ namespace Dibi;
  */
 final class Translator
 {
-	/** @var Connection */
-	private $connection;
-
-	/** @var Driver */
-	private $driver;
-
-	/** @var int */
-	private $cursor = 0;
-
-	/** @var array */
-	private $args;
+	private Connection $connection;
+	private Driver $driver;
+	private int $cursor = 0;
+	private array $args;
 
 	/** @var string[] */
-	private $errors;
-
-	/** @var bool */
-	private $comment = false;
-
-	/** @var int */
-	private $ifLevel = 0;
-
-	/** @var int */
-	private $ifLevelStart = 0;
-
-	/** @var int|null */
-	private $limit;
-
-	/** @var int|null */
-	private $offset;
-
-	/** @var HashMap */
-	private $identifiers;
+	private array $errors;
+	private bool $comment = false;
+	private int $ifLevel = 0;
+	private int $ifLevelStart = 0;
+	private ?int $limit = null;
+	private ?int $offset = null;
+	private HashMap $identifiers;
 
 
 	public function __construct(Connection $connection)

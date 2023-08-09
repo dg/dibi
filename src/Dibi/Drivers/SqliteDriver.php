@@ -25,14 +25,9 @@ use SQLite3;
  */
 class SqliteDriver implements Dibi\Driver
 {
-	/** @var SQLite3 */
-	private $connection;
-
-	/** @var string  Date format */
-	private $fmtDate;
-
-	/** @var string  Datetime format */
-	private $fmtDateTime;
+	private SQLite3 $connection;
+	private string $fmtDate;
+	private string $fmtDateTime;
 
 
 	/** @throws Dibi\NotSupportedException */
@@ -100,19 +95,19 @@ class SqliteDriver implements Dibi\Driver
 		if ($code !== 19) {
 			return new Dibi\DriverException($message, $code, $sql);
 
-		} elseif (strpos($message, 'must be unique') !== false
-			|| strpos($message, 'is not unique') !== false
-			|| strpos($message, 'UNIQUE constraint failed') !== false
+		} elseif (str_contains($message, 'must be unique')
+			|| str_contains($message, 'is not unique')
+			|| str_contains($message, 'UNIQUE constraint failed')
 		) {
 			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
 
-		} elseif (strpos($message, 'may not be null') !== false
-			|| strpos($message, 'NOT NULL constraint failed') !== false
+		} elseif (str_contains($message, 'may not be null')
+			|| str_contains($message, 'NOT NULL constraint failed')
 		) {
 			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
 
-		} elseif (strpos($message, 'foreign key constraint failed') !== false
-			|| strpos($message, 'FOREIGN KEY constraint failed') !== false
+		} elseif (str_contains($message, 'foreign key constraint failed')
+			|| str_contains($message, 'FOREIGN KEY constraint failed')
 		) {
 			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
 
