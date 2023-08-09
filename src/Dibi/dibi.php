@@ -42,7 +42,7 @@ class dibi
 		IDENTIFIER = 'n';
 
 	/** version */
-	public const VERSION = '5.0-dev';
+	public const VERSION = '5.0.0';
 
 	/** sorting order */
 	public const
