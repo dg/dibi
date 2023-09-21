@@ -93,6 +93,7 @@ class PdoDriver implements Dibi\Driver
 		$this->affectedRows = null;
 
 		[$sqlState, $code, $message] = $this->connection->errorInfo();
+		$code ??= 0;
 		$message = "SQLSTATE[$sqlState]: $message";
 		throw match ($this->driverName) {
 			'mysql' => MySqliDriver::createException($message, $code, $sql),
@@ -130,7 +131,7 @@ class PdoDriver implements Dibi\Driver
 	{
 		if (!$this->connection->beginTransaction()) {
 			$err = $this->connection->errorInfo();
-			throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
+			throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1] ?? 0);
 		}
 	}
 
@@ -143,7 +144,7 @@ class PdoDriver implements Dibi\Driver
 	{
 		if (!$this->connection->commit()) {
 			$err = $this->connection->errorInfo();
-			throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
+			throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1] ?? 0);
 		}
 	}
 
@@ -156,7 +157,7 @@ class PdoDriver implements Dibi\Driver
 	{
 		if (!$this->connection->rollBack()) {
 			$err = $this->connection->errorInfo();
-			throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1]);
+			throw new Dibi\DriverException("SQLSTATE[$err[0]]: $err[2]", $err[1] ?? 0);
 		}
 	}
 
