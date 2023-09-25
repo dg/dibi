@@ -94,22 +94,13 @@ class PdoDriver implements Dibi\Driver
 
 		[$sqlState, $code, $message] = $this->connection->errorInfo();
 		$message = "SQLSTATE[$sqlState]: $message";
-		switch ($this->driverName) {
-			case 'mysql':
-				throw MySqliDriver::createException($message, $code, $sql);
-
-			case 'oci':
-				throw OracleDriver::createException($message, $code, $sql);
-
-			case 'pgsql':
-				throw PostgreDriver::createException($message, $sqlState, $sql);
-
-			case 'sqlite':
-				throw SqliteDriver::createException($message, $code, $sql);
-
-			default:
-				throw new Dibi\DriverException($message, $code, $sql);
-		}
+		throw match ($this->driverName) {
+			'mysql' => MySqliDriver::createException($message, $code, $sql),
+			'oci' => OracleDriver::createException($message, $code, $sql),
+			'pgsql' => PostgreDriver::createException($message, $sqlState, $sql),
+			'sqlite' => SqliteDriver::createException($message, $code, $sql),
+			default => new Dibi\DriverException($message, $code, $sql),
+		};
 	}
 
 

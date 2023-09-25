@@ -119,7 +119,7 @@ class OdbcDriver implements Dibi\Driver
 	 */
 	public function begin(?string $savepoint = null): void
 	{
-		if (!odbc_autocommit($this->connection, false)) {
+		if (!odbc_autocommit($this->connection)) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
 		}
 	}

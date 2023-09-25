@@ -20,7 +20,7 @@ date_default_timezone_set('Europe/Prague');
 try {
 	$config = Tester\Environment::loadData();
 } catch (Throwable $e) {
-	$config = parse_ini_file(__DIR__ . '/../databases.ini', true);
+	$config = parse_ini_file(__DIR__ . '/../databases.ini', process_sections: true);
 	$config = reset($config);
 }
 

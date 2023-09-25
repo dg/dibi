@@ -62,7 +62,7 @@ class Panel implements Tracy\IBarPanel
 		if ($e instanceof Dibi\Exception && $e->getSql()) {
 			return [
 				'tab' => 'SQL',
-				'panel' => Helpers::dump($e->getSql(), true),
+				'panel' => Helpers::dump($e->getSql(), return: true),
 			];
 		}
 
@@ -118,7 +118,7 @@ class Panel implements Tracy\IBarPanel
 					? $this->explain
 					: ($connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
 				try {
-					$explain = @Helpers::dump($connection->nativeQuery("$cmd $event->sql"), true);
+					$explain = @Helpers::dump($connection->nativeQuery("$cmd $event->sql"), return: true);
 				} catch (Dibi\Exception $e) {
 				}
 
@@ -132,7 +132,7 @@ class Panel implements Tracy\IBarPanel
 				$s .= "<br /><a href='#tracy-debug-DibiProfiler-row-$counter' class='tracy-toggle tracy-collapsed' rel='#tracy-debug-DibiProfiler-row-$counter'>explain</a>";
 			}
 
-			$s .= '</td><td class="tracy-DibiProfiler-sql">' . Helpers::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, true);
+			$s .= '</td><td class="tracy-DibiProfiler-sql">' . Helpers::dump(strlen($event->sql) > self::$maxLength ? substr($event->sql, 0, self::$maxLength) . '...' : $event->sql, return: true);
 			if ($explain) {
 				$s .= "<div id='tracy-debug-DibiProfiler-row-$counter' class='tracy-collapsed'>{$explain}</div>";
 			}

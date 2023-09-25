@@ -24,13 +24,17 @@ Assert::true(isset($row['title']));
 
 
 // missing
-Assert::error(function () use ($row) {
-	$x = $row->missing;
-}, E_USER_NOTICE, "Attempt to read missing column 'missing'.");
+Assert::error(
+	fn() => $x = $row->missing,
+	E_USER_NOTICE,
+	"Attempt to read missing column 'missing'.",
+);
 
-Assert::error(function () use ($row) {
-	$x = $row['missing'];
-}, E_USER_NOTICE, "Attempt to read missing column 'missing'.");
+Assert::error(
+	fn() => $x = $row['missing'],
+	E_USER_NOTICE,
+	"Attempt to read missing column 'missing'.",
+);
 
 Assert::false(isset($row->missing));
 Assert::false(isset($row['missing']));
@@ -41,13 +45,17 @@ Assert::same(123, $row['missing'] ?? 123);
 
 
 // suggestions
-Assert::error(function () use ($row) {
-	$x = $row->tilte;
-}, E_USER_NOTICE, "Attempt to read missing column 'tilte', did you mean 'title'?");
+Assert::error(
+	fn() => $x = $row->tilte,
+	E_USER_NOTICE,
+	"Attempt to read missing column 'tilte', did you mean 'title'?",
+);
 
-Assert::error(function () use ($row) {
-	$x = $row['tilte'];
-}, E_USER_NOTICE, "Attempt to read missing column 'tilte', did you mean 'title'?");
+Assert::error(
+	fn() => $x = $row['tilte'],
+	E_USER_NOTICE,
+	"Attempt to read missing column 'tilte', did you mean 'title'?",
+);
 
 
 // to array

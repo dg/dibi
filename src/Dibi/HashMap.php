@@ -46,7 +46,7 @@ abstract class HashMapBase
  */
 final class HashMap extends HashMapBase
 {
-	public function __set(string $nm, $val)
+	public function __set(string $nm, mixed $val): void
 	{
 		if ($nm === '') {
 			$nm = "\xFF";
@@ -56,7 +56,7 @@ final class HashMap extends HashMapBase
 	}
 
 
-	public function __get(string $nm)
+	public function __get(string $nm): mixed
 	{
 		if ($nm === '') {
 			$nm = "\xFF";
