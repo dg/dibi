@@ -48,6 +48,9 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 
+	/**
+	 * @return mixed
+	 */
 	public function __get(string $key)
 	{
 		$hint = Helpers::getSuggestion(array_keys((array) $this), $key);
