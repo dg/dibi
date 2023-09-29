@@ -17,7 +17,8 @@
 		"tracy/tracy": "^2.9",
 		"nette/tester": "^2.5",
 		"nette/di": "^3.1",
-		"phpstan/phpstan": "^1.0"
+		"phpstan/phpstan": "^1.0",
+		"jetbrains/phpstorm-attributes": "^1.0"
 	},
 	"replace": {
 		"dg/dibi": "*"

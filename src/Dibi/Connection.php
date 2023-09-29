@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Dibi;
 
+use JetBrains\PhpStorm\Language;
 use Traversable;
 
 
@@ -209,7 +210,7 @@ class Connection implements IConnection
 	 * Generates (translates) and executes SQL query.
 	 * @throws Exception
 	 */
-	final public function query(mixed ...$args): Result
+	final public function query(#[Language('GenericSQL')] mixed ...$args): Result
 	{
 		return $this->nativeQuery($this->translate(...$args));
 	}
@@ -219,7 +220,7 @@ class Connection implements IConnection
 	 * Generates SQL query.
 	 * @throws Exception
 	 */
-	final public function translate(mixed ...$args): string
+	final public function translate(#[Language('GenericSQL')] mixed ...$args): string
 	{
 		if (!$this->driver) {
 			$this->connect();
@@ -232,7 +233,7 @@ class Connection implements IConnection
 	/**
 	 * Generates and prints SQL query.
 	 */
-	final public function test(mixed ...$args): bool
+	final public function test(#[Language('GenericSQL')] mixed ...$args): bool
 	{
 		try {
 			Helpers::dump($this->translate(...$args));
@@ -254,7 +255,7 @@ class Connection implements IConnection
 	 * Generates (translates) and returns SQL query as DataSource.
 	 * @throws Exception
 	 */
-	final public function dataSource(mixed ...$args): DataSource
+	final public function dataSource(#[Language('GenericSQL')] mixed ...$args): DataSource
 	{
 		return new DataSource($this->translate(...$args), $this);
 	}
@@ -264,7 +265,7 @@ class Connection implements IConnection
 	 * Executes the SQL query.
 	 * @throws Exception
 	 */
-	final public function nativeQuery(string $sql): Result
+	final public function nativeQuery(#[Language('SQL')] string $sql): Result
 	{
 		if (!$this->driver) {
 			$this->connect();
@@ -593,7 +594,7 @@ class Connection implements IConnection
 	 * Executes SQL query and fetch result - shortcut for query() & fetch().
 	 * @throws Exception
 	 */
-	public function fetch(mixed ...$args): ?Row
+	public function fetch(#[Language('GenericSQL')] mixed ...$args): ?Row
 	{
 		return $this->query($args)->fetch();
 	}
@@ -604,7 +605,7 @@ class Connection implements IConnection
 	 * @return Row[]|array[]
 	 * @throws Exception
 	 */
-	public function fetchAll(mixed ...$args): array
+	public function fetchAll(#[Language('GenericSQL')] mixed ...$args): array
 	{
 		return $this->query($args)->fetchAll();
 	}
@@ -614,7 +615,7 @@ class Connection implements IConnection
 	 * Executes SQL query and fetch first column - shortcut for query() & fetchSingle().
 	 * @throws Exception
 	 */
-	public function fetchSingle(mixed ...$args): mixed
+	public function fetchSingle(#[Language('GenericSQL')] mixed ...$args): mixed
 	{
 		return $this->query($args)->fetchSingle();
 	}
@@ -624,7 +625,7 @@ class Connection implements IConnection
 	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
 	 * @throws Exception
 	 */
-	public function fetchPairs(mixed ...$args): array
+	public function fetchPairs(#[Language('GenericSQL')] mixed ...$args): array
 	{
 		return $this->query($args)->fetchPairs();
 	}
