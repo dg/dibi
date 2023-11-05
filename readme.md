@@ -639,7 +639,7 @@ In the configuration file, we will register the DI extensions and add the `dibi`
 
 ```neon
 extensions:
-	dibi: Dibi\Bridges\Nette\DibiExtension22
+	dibi: Dibi\Bridges\Nette\DibiExtension3
 
 dibi:
 	host: localhost
