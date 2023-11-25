@@ -57,6 +57,7 @@ class SqliteDriver implements Dibi\Driver
 
 		// enable foreign keys support (defaultly disabled; if disabled then foreign key constraints are not enforced)
 		$version = SQLite3::version();
+		$this->connection->enableExceptions(false);
 		if ($version['versionNumber'] >= '3006019') {
 			$this->query('PRAGMA foreign_keys = ON');
 		}
