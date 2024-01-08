@@ -49,7 +49,7 @@ class DibiExtension3 extends Nette\DI\CompilerExtension
 				'formatDateTime' => Expect::string(),
 				'formatTimeInterval' => Expect::string(),
 				'formatJson' => Expect::string(),
-			]),
+			])->castTo('array'),
 		])->otherItems(Expect::type('mixed'))
 			->castTo('array');
 	}
