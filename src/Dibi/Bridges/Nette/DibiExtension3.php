@@ -44,12 +44,12 @@ class DibiExtension3 extends Nette\DI\CompilerExtension
 			'lazy' => Expect::bool(false)->dynamic(),
 			'onConnect' => Expect::array()->dynamic(),
 			'substitutes' => Expect::arrayOf('string')->dynamic(),
-			'result' => Expect::array([
+			'result' => Expect::structure([
 				'normalize' => Expect::bool(true),
 				'formatDateTime' => Expect::string(),
 				'formatTimeInterval' => Expect::string(),
 				'formatJson' => Expect::string(),
-			]),
+			])->castTo('array'),
 		])->otherItems(Expect::type('mixed'))
 			->castTo('array');
 	}
