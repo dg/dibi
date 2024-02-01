@@ -466,7 +466,16 @@ class Result implements IDataSource
 					: $tmp;
 
 			} elseif ($type === Type::FLOAT) {
-				$value = ltrim((string) $value, '0');
+				$value = (string) $value;
+
+				$negative = false;
+				if ($value !== '' && $value[0] === '-') {
+					$value = substr($value, 1);
+					$negative = true;
+				}
+
+				$value = ltrim($value, '0');
+
 				$p = strpos($value, '.');
 				$e = strpos($value, 'e');
 				if ($p !== false && $e === false) {
@@ -477,6 +486,10 @@ class Result implements IDataSource
 
 				if ($value === '' || $value[0] === '.') {
 					$value = '0' . $value;
+				}
+
+				if ($negative) {
+					$value = '-' . $value;
 				}
 
 				$row[$key] = $value === str_replace(',', '.', (string) ($float = (float) $value))
