@@ -219,7 +219,7 @@ final class Translator
 
 				case 'a': // key=val, key=val, ...
 					foreach ($value as $k => $v) {
-						$pair = explode('%', $k, 2); // split into identifier & modifier
+						$pair = explode('%', (string) $k, 2); // split into identifier & modifier
 						$vx[] = $this->identifiers->{$pair[0]} . '='
 							. $this->formatValue($v, $pair[1] ?? (is_array($v) ? 'ex!' : null));
 					}
