@@ -103,7 +103,7 @@ class MySqliResult implements Dibi\ResultDriver
 				'table' => $row['orgtable'],
 				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
 				'nativetype' => $types[$row['type']] ?? $row['type'],
-				'type' => $row['type'] === MYSQLI_TYPE_TIME ? Dibi\Type::TIME_INTERVAL : null,
+				'type' => $row['type'] === MYSQLI_TYPE_TIME ? Dibi\Type::TimeInterval : null,
 				'vendor' => $row,
 			];
 		}

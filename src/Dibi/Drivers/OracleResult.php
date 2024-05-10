@@ -80,7 +80,7 @@ class OracleResult implements Dibi\ResultDriver
 				'name' => oci_field_name($this->resultSet, $i),
 				'table' => null,
 				'fullname' => oci_field_name($this->resultSet, $i),
-				'type' => $type === 'LONG' ? Dibi\Type::TEXT : null,
+				'type' => $type === 'LONG' ? Dibi\Type::Text : null,
 				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
 			];
 		}

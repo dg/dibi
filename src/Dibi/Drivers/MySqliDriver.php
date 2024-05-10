@@ -32,9 +32,18 @@ use Dibi;
  */
 class MySqliDriver implements Dibi\Driver
 {
-	public const ERROR_ACCESS_DENIED = 1045;
-	public const ERROR_DUPLICATE_ENTRY = 1062;
-	public const ERROR_DATA_TRUNCATED = 1265;
+	public const ErrorAccessDenied = 1045;
+	public const ErrorDuplicateEntry = 1062;
+	public const ErrorDataTruncated = 1265;
+
+	/** @deprecated use MySqliDriver::ErrorAccessDenied */
+	public const ERROR_ACCESS_DENIED = self::ErrorAccessDenied;
+
+	/** @deprecated use MySqliDriver::ErrorDuplicateEntry */
+	public const ERROR_DUPLICATE_ENTRY = self::ErrorDuplicateEntry;
+
+	/** @deprecated use MySqliDriver::ErrorDataTruncated */
+	public const ERROR_DATA_TRUNCATED = self::ErrorDataTruncated;
 
 	private \mysqli $connection;
 	private bool $buffered = false;

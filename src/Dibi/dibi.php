@@ -37,12 +37,16 @@ declare(strict_types=1);
  */
 class dibi
 {
-	public const
-		AFFECTED_ROWS = 'a',
-		IDENTIFIER = 'n';
+	public const Version = '5.0.1';
 
-	/** version */
-	public const VERSION = '5.0.1';
+	/** @deprecated use dibi::Version */
+	public const VERSION = self::Version;
+
+	/** @deprecated use Dibi\Fluent::AffectedRows */
+	public const AFFECTED_ROWS = Dibi\Fluent::AffectedRows;
+
+	/** @deprecated use Dibi\Fluent::Identifier */
+	public const IDENTIFIER = Dibi\Fluent::Identifier;
 
 	/** sorting order */
 	public const

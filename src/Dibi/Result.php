@@ -457,15 +457,15 @@ class Result implements IDataSource
 			if ($type === null || $format === 'native') {
 				$row[$key] = $value;
 
-			} elseif ($type === Type::TEXT) {
+			} elseif ($type === Type::Text) {
 				$row[$key] = (string) $value;
 
-			} elseif ($type === Type::INTEGER) {
+			} elseif ($type === Type::Integer) {
 				$row[$key] = is_float($tmp = $value * 1)
 					? (is_string($value) ? $value : (int) $value)
 					: $tmp;
 
-			} elseif ($type === Type::FLOAT) {
+			} elseif ($type === Type::Float) {
 				$value = ltrim((string) $value, '0');
 				$p = strpos($value, '.');
 				$e = strpos($value, 'e');
@@ -483,23 +483,23 @@ class Result implements IDataSource
 					? $float
 					: $value;
 
-			} elseif ($type === Type::BOOL) {
+			} elseif ($type === Type::Bool) {
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
 
-			} elseif ($type === Type::DATETIME || $type === Type::DATE || $type === Type::TIME) {
+			} elseif ($type === Type::DateTime || $type === Type::Date || $type === Type::Time) {
 				if ($value && !str_starts_with((string) $value, '0000-00')) { // '', null, false, '0000-00-00', ...
 					$value = new DateTime($value);
 					$row[$key] = $format ? $value->format($format) : $value;
 				} else {
 					$row[$key] = null;
 				}
-			} elseif ($type === Type::TIME_INTERVAL) {
+			} elseif ($type === Type::TimeInterval) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)\z#', $value, $m);
 				$value = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
 				$value->invert = (int) (bool) $m[1];
 				$row[$key] = $format ? $value->format($format) : $value;
 
-			} elseif ($type === Type::BINARY) {
+			} elseif ($type === Type::Binary) {
 				$row[$key] = is_string($value)
 					? $this->getResultDriver()->unescapeBinary($value)
 					: $value;

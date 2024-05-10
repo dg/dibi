@@ -12,7 +12,7 @@ $conn->loadFile(__DIR__ . "/data/$config[system].sql");
 $res = $conn->query('SELECT * FROM [customers]');
 
 // auto-converts this column to integer
-$res->setType('customer_id', Dibi\Type::DATETIME);
+$res->setType('customer_id', Dibi\Type::DateTime);
 
 Assert::equal(new Dibi\Row([
 	'customer_id' => new Dibi\DateTime('1970-01-01 01:00:01'),
