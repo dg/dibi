@@ -27,9 +27,9 @@ $dibi = new Dibi\Connection([
 // using manual hints
 $res = $dibi->query('SELECT * FROM [customers]');
 
-$res->setType('customer_id', Type::INTEGER)
-	->setType('added', Type::DATETIME)
-	->setFormat(Type::DATETIME, 'Y-m-d H:i:s');
+$res->setType('customer_id', Type::Integer)
+	->setType('added', Type::DateTime)
+	->setFormat(Type::DateTime, 'Y-m-d H:i:s');
 
 
 Tracy\Dumper::dump($res->fetch());

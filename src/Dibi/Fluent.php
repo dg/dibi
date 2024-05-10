@@ -45,7 +45,13 @@ namespace Dibi;
  */
 class Fluent implements IDataSource
 {
-	public const REMOVE = false;
+	public const
+		AffectedRows = 'a',
+		Identifier = 'n',
+		Remove = false;
+
+	/** @deprecated use Fluent::Remove */
+	public const REMOVE = self::Remove;
 
 	public static array $masks = [
 		'SELECT' => ['SELECT', 'DISTINCT', 'FROM', 'WHERE', 'GROUP BY',
@@ -140,7 +146,7 @@ class Fluent implements IDataSource
 			$this->cursor = &$this->clauses[$clause];
 
 			// TODO: really delete?
-			if ($args === [self::REMOVE]) {
+			if ($args === [self::Remove]) {
 				$this->cursor = null;
 				return $this;
 			}
@@ -156,7 +162,7 @@ class Fluent implements IDataSource
 			}
 		} else {
 			// append to currect flow
-			if ($args === [self::REMOVE]) {
+			if ($args === [self::Remove]) {
 				return $this;
 			}
 
@@ -279,15 +285,15 @@ class Fluent implements IDataSource
 	/**
 	 * Generates and executes SQL query.
 	 * Returns result set or number of affected rows
-	 * @return ($return is \dibi::IDENTIFIER|\dibi::AFFECTED_ROWS ? int : Result)
+	 * @return ($return is self::Identifier|self::AffectedRows ? int : Result)
 	 * @throws Exception
 	 */
 	public function execute(?string $return = null): Result|int|null
 	{
 		$res = $this->query($this->_export());
 		return match ($return) {
-			\dibi::IDENTIFIER => $this->connection->getInsertId(),
-			\dibi::AFFECTED_ROWS => $this->connection->getAffectedRows(),
+			self::Identifier => $this->connection->getInsertId(),
+			self::AffectedRows => $this->connection->getAffectedRows(),
 			default => $res,
 		};
 	}

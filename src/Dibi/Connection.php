@@ -74,10 +74,10 @@ class Connection implements IConnection
 		$this->config = $config;
 
 		$this->formats = [
-			Type::DATE => $this->config['result']['formatDate'],
-			Type::DATETIME => $this->config['result']['formatDateTime'],
+			Type::Date => $this->config['result']['formatDate'],
+			Type::DateTime => $this->config['result']['formatDateTime'],
 			Type::JSON => $this->config['result']['formatJson'] ?? 'array',
-			Type::TIME_INTERVAL => $this->config['result']['formatTimeInterval'] ?? null,
+			Type::TimeInterval => $this->config['result']['formatTimeInterval'] ?? null,
 		];
 
 		// profiler

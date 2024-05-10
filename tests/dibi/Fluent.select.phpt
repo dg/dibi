@@ -74,7 +74,7 @@ Assert::same(
 	(string) $fluent,
 );
 
-$fluent->orderBy(Dibi\Fluent::REMOVE);
+$fluent->orderBy(Dibi\Fluent::Remove);
 
 Assert::same(
 	reformat('SELECT * , [a] , [b] AS [bAlias] , [c], [d], [e] , [d] FROM [anotherTable] AS [anotherAlias] INNER JOIN [table3] ON table.col = table3.col WHERE col > 10 OR col < 5 AND active = 1 AND [col] IN (1, 2, 3)'),

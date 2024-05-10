@@ -26,7 +26,10 @@ use Dibi\Helpers;
  */
 class FirebirdDriver implements Dibi\Driver
 {
-	public const ERROR_EXCEPTION_THROWN = -836;
+	public const ErrorExceptionThrown = -836;
+
+	/** @deprecated use FirebirdDriver::ErrorExceptionThrown */
+	public const ERROR_EXCEPTION_THROWN = self::ErrorExceptionThrown;
 
 	/** @var resource */
 	private $connection;
