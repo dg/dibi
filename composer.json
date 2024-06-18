@@ -11,7 +11,7 @@
 		}
 	],
 	"require": {
-		"php": "8.0 - 8.3"
+		"php": "8.0 - 8.4"
 	},
 	"require-dev": {
 		"tracy/tracy": "^2.9",
@@ -26,6 +26,7 @@
 	"autoload": {
 		"classmap": ["src/"]
 	},
+	"minimum-stability": "dev",
 	"scripts": {
 		"phpstan": "phpstan analyse",
 		"tester": "tester tests -s"
