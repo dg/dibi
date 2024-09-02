@@ -33,7 +33,7 @@ enum PureEnum
 
 Assert::equal('1', $translator->formatValue(EnumInt::One, null));
 
-Assert::equal(match ($config['driver']) {
+Assert::equal(match ($config['system']) {
 	'sqlsrv' => "N'one'",
 	default => "'one'",
 }, $translator->formatValue(EnumString::One, null));

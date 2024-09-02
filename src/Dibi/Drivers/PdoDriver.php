@@ -217,17 +217,21 @@ class PdoDriver implements Dibi\Driver
 	 */
 	public function escapeText(string $value): string
 	{
-		return $this->driverName === 'odbc'
-			? "'" . str_replace("'", "''", $value) . "'"
-			: $this->connection->quote($value, PDO::PARAM_STR);
+		return match ($this->driverName) {
+			'odbc' => "'" . str_replace("'", "''", $value) . "'",
+			'sqlsrv' => "N'" . str_replace("'", "''", $value) . "'",
+			default => $this->connection->quote($value, PDO::PARAM_STR),
+		};
 	}
 
 
 	public function escapeBinary(string $value): string
 	{
-		return $this->driverName === 'odbc'
-			? "'" . str_replace("'", "''", $value) . "'"
-			: $this->connection->quote($value, PDO::PARAM_LOB);
+		return match ($this->driverName) {
+			'odbc' => "'" . str_replace("'", "''", $value) . "'",
+			'sqlsrv' => '0x' . bin2hex($value),
+			default => $this->connection->quote($value, PDO::PARAM_LOB),
+		};
 	}
 
 
