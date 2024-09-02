@@ -176,27 +176,14 @@ class PdoDriver implements Dibi\Driver
 	 */
 	public function getReflector(): Dibi\Reflector
 	{
-		switch ($this->driverName) {
-			case 'mysql':
-				return new MySqlReflector($this);
-
-			case 'oci':
-				return new OracleReflector($this);
-
-			case 'pgsql':
-				return new PostgreReflector($this, $this->connection->getAttribute(PDO::ATTR_SERVER_VERSION));
-
-			case 'sqlite':
-				return new SqliteReflector($this);
-
-			case 'mssql':
-			case 'dblib':
-			case 'sqlsrv':
-				return new SqlsrvReflector($this);
-
-			default:
-				throw new Dibi\NotSupportedException;
-		}
+		return match ($this->driverName) {
+			'mysql' => new MySqlReflector($this),
+			'oci' => new OracleReflector($this),
+			'pgsql' => new PostgreReflector($this, $this->connection->getAttribute(PDO::ATTR_SERVER_VERSION)),
+			'sqlite' => new SqliteReflector($this),
+			'mssql', 'dblib', 'sqlsrv' => new SqlsrvReflector($this),
+			default => throw new Dibi\NotSupportedException,
+		};
 	}
 
 
@@ -237,28 +224,14 @@ class PdoDriver implements Dibi\Driver
 
 	public function escapeIdentifier(string $value): string
 	{
-		switch ($this->driverName) {
-			case 'mysql':
-				return '`' . str_replace('`', '``', $value) . '`';
-
-			case 'oci':
-			case 'pgsql':
-				return '"' . str_replace('"', '""', $value) . '"';
-
-			case 'sqlite':
-				return '[' . strtr($value, '[]', '  ') . ']';
-
-			case 'odbc':
-			case 'mssql':
-				return '[' . str_replace(['[', ']'], ['[[', ']]'], $value) . ']';
-
-			case 'dblib':
-			case 'sqlsrv':
-				return '[' . str_replace(']', ']]', $value) . ']';
-
-			default:
-				return $value;
-		}
+		return match ($this->driverName) {
+			'mysql' => '`' . str_replace('`', '``', $value) . '`',
+			'oci', 'pgsql' => '"' . str_replace('"', '""', $value) . '"',
+			'sqlite' => '[' . strtr($value, '[]', '  ') . ']',
+			'odbc', 'mssql' => '[' . str_replace(['[', ']'], ['[[', ']]'], $value) . ']',
+			'dblib', 'sqlsrv' => '[' . str_replace(']', ']]', $value) . ']',
+			default => $value,
+		};
 	}
 
 
@@ -280,16 +253,11 @@ class PdoDriver implements Dibi\Driver
 
 	public function escapeDateTime(\DateTimeInterface $value): string
 	{
-		switch ($this->driverName) {
-			case 'odbc':
-				return $value->format('#m/d/Y H:i:s.u#');
-			case 'mssql':
-			case 'dblib':
-			case 'sqlsrv':
-				return 'CONVERT(DATETIME2(7), ' . $value->format("'Y-m-d H:i:s.u'") . ')';
-			default:
-				return $value->format("'Y-m-d H:i:s.u'");
-		}
+		return match ($this->driverName) {
+			'odbc' => $value->format('#m/d/Y H:i:s.u#'),
+			'mssql', 'dblib', 'sqlsrv' => 'CONVERT(DATETIME2(7), ' . $value->format("'Y-m-d H:i:s.u'") . ')',
+			default => $value->format("'Y-m-d H:i:s.u'"),
+		};
 	}
 
 
