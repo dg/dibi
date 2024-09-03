@@ -233,7 +233,7 @@ class PostgreDriver implements Dibi\Driver
 	 */
 	public function getReflector(): Dibi\Reflector
 	{
-		return new PostgreReflector($this, pg_parameter_status($this->connection, 'server_version'));
+		return new PostgreReflector($this);
 	}
 
 
