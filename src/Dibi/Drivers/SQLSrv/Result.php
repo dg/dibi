@@ -7,20 +7,18 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\SQLSrv;
 
 use Dibi;
+use Dibi\Drivers;
 use function is_resource;
 
 
 /**
- * The driver interacting with result set via ODBC connections.
+ * The driver for Microsoft SQL Server and SQL Azure result set.
  */
-class OdbcResult implements Result
+class Result implements Drivers\Result
 {
-	private int $row = 0;
-
-
 	public function __construct(
 		/** @var resource */
 		private $resultSet,
@@ -33,8 +31,7 @@ class OdbcResult implements Result
 	 */
 	public function getRowCount(): int
 	{
-		// will return -1 with many drivers :-(
-		return odbc_num_rows($this->resultSet);
+		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
 	}
 
 
@@ -44,22 +41,7 @@ class OdbcResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		if ($assoc) {
-			return Dibi\Helpers::false2Null(odbc_fetch_array($this->resultSet, ++$this->row));
-		} else {
-			$set = $this->resultSet;
-			if (!odbc_fetch_row($set, ++$this->row)) {
-				return null;
-			}
-
-			$count = odbc_num_fields($set);
-			$cols = [];
-			for ($i = 1; $i <= $count; $i++) {
-				$cols[] = odbc_result($set, $i);
-			}
-
-			return $cols;
-		}
+		return Dibi\Helpers::false2Null(sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC));
 	}
 
 
@@ -68,8 +50,7 @@ class OdbcResult implements Result
 	 */
 	public function seek(int $row): bool
 	{
-		$this->row = $row;
-		return true;
+		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
 	}
 
 
@@ -78,7 +59,7 @@ class OdbcResult implements Result
 	 */
 	public function free(): void
 	{
-		odbc_free_result($this->resultSet);
+		sqlsrv_free_stmt($this->resultSet);
 	}
 
 
@@ -87,14 +68,12 @@ class OdbcResult implements Result
 	 */
 	public function getResultColumns(): array
 	{
-		$count = odbc_num_fields($this->resultSet);
 		$columns = [];
-		for ($i = 1; $i <= $count; $i++) {
+		foreach ((array) sqlsrv_field_metadata($this->resultSet) as $fieldMetadata) {
 			$columns[] = [
-				'name' => odbc_field_name($this->resultSet, $i),
-				'table' => null,
-				'fullname' => odbc_field_name($this->resultSet, $i),
-				'nativetype' => odbc_field_type($this->resultSet, $i),
+				'name' => $fieldMetadata['Name'],
+				'fullname' => $fieldMetadata['Name'],
+				'nativetype' => $fieldMetadata['Type'],
 			];
 		}
 
