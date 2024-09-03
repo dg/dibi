@@ -25,7 +25,7 @@ use Dibi\Helpers;
  *   - charset => character encoding to set (default is UTF-8)
  *   - resource (resource) => existing connection resource
  */
-class SqlsrvDriver implements Dibi\Driver
+class SqlsrvDriver implements Connection
 {
 	/** @var resource */
 	private $connection;
@@ -83,7 +83,7 @@ class SqlsrvDriver implements Dibi\Driver
 	 * Executes the SQL query.
 	 * @throws Dibi\DriverException
 	 */
-	public function query(string $sql): ?Dibi\ResultDriver
+	public function query(string $sql): ?Result
 	{
 		$this->affectedRows = null;
 		$res = sqlsrv_query($this->connection, $sql);
@@ -170,7 +170,7 @@ class SqlsrvDriver implements Dibi\Driver
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Dibi\Reflector
+	public function getReflector(): Engine
 	{
 		return new SqlsrvReflector($this);
 	}

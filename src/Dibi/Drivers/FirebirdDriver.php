@@ -24,7 +24,7 @@ use Dibi\Helpers;
  *   - buffers (int) => buffers is the number of database buffers to allocate for the server-side cache. If 0 or omitted, server chooses its own default.
  *   - resource (resource) => existing connection resource
  */
-class FirebirdDriver implements Dibi\Driver
+class FirebirdDriver implements Connection
 {
 	public const ErrorExceptionThrown = -836;
 
@@ -85,7 +85,7 @@ class FirebirdDriver implements Dibi\Driver
 	 * Executes the SQL query.
 	 * @throws Dibi\DriverException|Dibi\Exception
 	 */
-	public function query(string $sql): ?Dibi\ResultDriver
+	public function query(string $sql): ?Result
 	{
 		$resource = $this->inTransaction
 			? $this->transaction
@@ -199,7 +199,7 @@ class FirebirdDriver implements Dibi\Driver
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Dibi\Reflector
+	public function getReflector(): Engine
 	{
 		return new FirebirdReflector($this);
 	}

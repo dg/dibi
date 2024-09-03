@@ -25,7 +25,7 @@ use Dibi;
  *   - resource (resource) => existing connection resource
  *   - persistent => Creates persistent connections with oci_pconnect instead of oci_new_connect
  */
-class OracleDriver implements Dibi\Driver
+class OracleDriver implements Connection
 {
 	/** @var resource */
 	private $connection;
@@ -76,7 +76,7 @@ class OracleDriver implements Dibi\Driver
 	 * Executes the SQL query.
 	 * @throws Dibi\DriverException
 	 */
-	public function query(string $sql): ?Dibi\ResultDriver
+	public function query(string $sql): ?Result
 	{
 		$this->affectedRows = null;
 		$res = oci_parse($this->connection, $sql);
@@ -189,7 +189,7 @@ class OracleDriver implements Dibi\Driver
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Dibi\Reflector
+	public function getReflector(): Engine
 	{
 		return new OracleReflector($this);
 	}
