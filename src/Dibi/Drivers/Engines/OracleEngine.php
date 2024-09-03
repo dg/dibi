@@ -25,6 +25,72 @@ class OracleEngine implements Engine
 	}
 
 
+	public function escapeIdentifier(string $value): string
+	{
+		// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
+		return '"' . str_replace('"', '""', $value) . '"';
+	}
+
+
+	public function escapeBool(bool $value): string
+	{
+		return $value ? '1' : '0';
+	}
+
+
+	public function escapeDate(\DateTimeInterface $value): string
+	{
+		return $this->nativeDate // TODO
+			? "to_date('" . $value->format('Y-m-d') . "', 'YYYY-mm-dd')"
+			: $value->format('U');
+	}
+
+
+	public function escapeDateTime(\DateTimeInterface $value): string
+	{
+		return $this->nativeDate // TODO
+			? "to_date('" . $value->format('Y-m-d G:i:s') . "', 'YYYY-mm-dd hh24:mi:ss')"
+			: $value->format('U');
+	}
+
+
+	public function escapeDateInterval(\DateInterval $value): string
+	{
+		throw new Dibi\NotImplementedException;
+	}
+
+
+	/**
+	 * Encodes string for use in a LIKE statement.
+	 */
+	public function escapeLike(string $value, int $pos): string
+	{
+		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\\%_");
+		$value = str_replace("'", "''", $value);
+		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
+	}
+
+
+	/**
+	 * Injects LIMIT/OFFSET to the SQL query.
+	 */
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	{
+		if ($limit < 0 || $offset < 0) {
+			throw new Dibi\NotSupportedException('Negative offset or limit.');
+
+		} elseif ($offset) {
+			// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
+			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
+				. ($limit !== null ? 'WHERE ROWNUM <= ' . ($offset + $limit) : '')
+				. ') WHERE "__rnum" > ' . $offset;
+
+		} elseif ($limit !== null) {
+			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . $limit;
+		}
+	}
+
+
 	/**
 	 * Returns list of tables.
 	 */

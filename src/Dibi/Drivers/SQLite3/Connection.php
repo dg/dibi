@@ -208,61 +208,6 @@ class Connection implements Drivers\Connection
 	}
 
 
-	public function escapeIdentifier(string $value): string
-	{
-		return '[' . strtr($value, '[]', '  ') . ']';
-	}
-
-
-	public function escapeBool(bool $value): string
-	{
-		return $value ? '1' : '0';
-	}
-
-
-	public function escapeDate(\DateTimeInterface $value): string
-	{
-		return $value->format($this->fmtDate);
-	}
-
-
-	public function escapeDateTime(\DateTimeInterface $value): string
-	{
-		return $value->format($this->fmtDateTime);
-	}
-
-
-	public function escapeDateInterval(\DateInterval $value): string
-	{
-		throw new Dibi\NotImplementedException;
-	}
-
-
-	/**
-	 * Encodes string for use in a LIKE statement.
-	 */
-	public function escapeLike(string $value, int $pos): string
-	{
-		$value = addcslashes($this->connection->escapeString($value), '%_\\');
-		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'") . " ESCAPE '\\'";
-	}
-
-
-	/**
-	 * Injects LIMIT/OFFSET to the SQL query.
-	 */
-	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
-	{
-		if ($limit < 0 || $offset < 0) {
-			throw new Dibi\NotSupportedException('Negative offset or limit.');
-
-		} elseif ($limit !== null || $offset) {
-			$sql .= ' LIMIT ' . ($limit ?? '-1')
-				. ($offset ? ' OFFSET ' . $offset : '');
-		}
-	}
-
-
 	/********************* user defined functions ****************d*g**/
 
 

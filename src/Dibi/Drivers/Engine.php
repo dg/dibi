@@ -15,6 +15,26 @@ namespace Dibi\Drivers;
  */
 interface Engine
 {
+	function escapeIdentifier(string $value): string;
+
+	function escapeBool(bool $value): string;
+
+	function escapeDate(\DateTimeInterface $value): string;
+
+	function escapeDateTime(\DateTimeInterface $value): string;
+
+	function escapeDateInterval(\DateInterval $value): string;
+
+	/**
+	 * Encodes string for use in a LIKE statement.
+	 */
+	function escapeLike(string $value, int $pos): string;
+
+	/**
+	 * Injects LIMIT/OFFSET to the SQL query.
+	 */
+	function applyLimit(string &$sql, ?int $limit, ?int $offset): void;
+
 	/**
 	 * Returns list of tables.
 	 * @return array of {name [, (bool) view ]}
