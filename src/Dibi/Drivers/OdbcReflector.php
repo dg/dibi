@@ -15,10 +15,10 @@ use Dibi;
 /**
  * The reflector for ODBC connections.
  */
-class OdbcReflector implements Dibi\Reflector
+class OdbcReflector implements Engine
 {
 	public function __construct(
-		private readonly Dibi\Driver $driver,
+		private readonly Connection $driver,
 	) {
 	}
 
