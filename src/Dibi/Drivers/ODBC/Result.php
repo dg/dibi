@@ -7,17 +7,21 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\ODBC;
 
 use Dibi;
+use Dibi\Drivers;
 use function is_resource;
 
 
 /**
- * The driver for Microsoft SQL Server and SQL Azure result set.
+ * The driver interacting with result set via ODBC connections.
  */
-class SqlsrvResult implements Result
+class Result implements Drivers\Result
 {
+	private int $row = 0;
+
+
 	public function __construct(
 		/** @var resource */
 		private $resultSet,
@@ -30,7 +34,8 @@ class SqlsrvResult implements Result
 	 */
 	public function getRowCount(): int
 	{
-		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
+		// will return -1 with many drivers :-(
+		return odbc_num_rows($this->resultSet);
 	}
 
 
@@ -40,7 +45,22 @@ class SqlsrvResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Dibi\Helpers::false2Null(sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC));
+		if ($assoc) {
+			return Dibi\Helpers::false2Null(odbc_fetch_array($this->resultSet, ++$this->row));
+		} else {
+			$set = $this->resultSet;
+			if (!odbc_fetch_row($set, ++$this->row)) {
+				return null;
+			}
+
+			$count = odbc_num_fields($set);
+			$cols = [];
+			for ($i = 1; $i <= $count; $i++) {
+				$cols[] = odbc_result($set, $i);
+			}
+
+			return $cols;
+		}
 	}
 
 
@@ -49,7 +69,8 @@ class SqlsrvResult implements Result
 	 */
 	public function seek(int $row): bool
 	{
-		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
+		$this->row = $row;
+		return true;
 	}
 
 
@@ -58,7 +79,7 @@ class SqlsrvResult implements Result
 	 */
 	public function free(): void
 	{
-		sqlsrv_free_stmt($this->resultSet);
+		odbc_free_result($this->resultSet);
 	}
 
 
@@ -67,12 +88,14 @@ class SqlsrvResult implements Result
 	 */
 	public function getResultColumns(): array
 	{
+		$count = odbc_num_fields($this->resultSet);
 		$columns = [];
-		foreach ((array) sqlsrv_field_metadata($this->resultSet) as $fieldMetadata) {
+		for ($i = 1; $i <= $count; $i++) {
 			$columns[] = [
-				'name' => $fieldMetadata['Name'],
-				'fullname' => $fieldMetadata['Name'],
-				'nativetype' => $fieldMetadata['Type'],
+				'name' => odbc_field_name($this->resultSet, $i),
+				'table' => null,
+				'fullname' => odbc_field_name($this->resultSet, $i),
+				'nativetype' => odbc_field_type($this->resultSet, $i),
 			];
 		}
 

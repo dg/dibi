@@ -7,29 +7,32 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\SQLite3;
 
+use Dibi;
+use Dibi\Drivers;
 use Dibi\Helpers;
-use PgSql;
+use const SQLITE3_ASSOC, SQLITE3_BLOB, SQLITE3_FLOAT, SQLITE3_INTEGER, SQLITE3_NULL, SQLITE3_NUM, SQLITE3_TEXT;
 
 
 /**
- * The driver for PostgreSQL result set.
+ * The driver for SQLite result set.
  */
-class PostgreResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
-		private readonly PgSql\Result $resultSet,
+		private readonly \SQLite3Result $resultSet,
 	) {
 	}
 
 
 	/**
 	 * Returns the number of rows in a result set.
+	 * @throws Dibi\NotSupportedException
 	 */
 	public function getRowCount(): int
 	{
-		return pg_num_rows($this->resultSet);
+		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
 	}
 
 
@@ -39,16 +42,17 @@ class PostgreResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Helpers::false2Null(pg_fetch_array($this->resultSet, null, $assoc ? PGSQL_ASSOC : PGSQL_NUM));
+		return Helpers::false2Null($this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM));
 	}
 
 
 	/**
 	 * Moves cursor position without fetching row.
+	 * @throws Dibi\NotSupportedException
 	 */
 	public function seek(int $row): bool
 	{
-		return pg_result_seek($this->resultSet, $row);
+		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
 	}
 
 
@@ -57,7 +61,7 @@ class PostgreResult implements Result
 	 */
 	public function free(): void
 	{
-		pg_free_result($this->resultSet);
+		$this->resultSet->finalize();
 	}
 
 
@@ -66,18 +70,16 @@ class PostgreResult implements Result
 	 */
 	public function getResultColumns(): array
 	{
-		$count = pg_num_fields($this->resultSet);
+		$count = $this->resultSet->numColumns();
 		$columns = [];
+		$types = [SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null'];
 		for ($i = 0; $i < $count; $i++) {
-			$row = [
-				'name' => pg_field_name($this->resultSet, $i),
-				'table' => pg_field_table($this->resultSet, $i),
-				'nativetype' => pg_field_type($this->resultSet, $i),
+			$columns[] = [
+				'name' => $this->resultSet->columnName($i),
+				'table' => null,
+				'fullname' => $this->resultSet->columnName($i),
+				'nativetype' => $types[$this->resultSet->columnType($i)] ?? null, // buggy in PHP 7.4.4 & 7.3.16, bug 79414
 			];
-			$row['fullname'] = $row['table']
-				? $row['table'] . '.' . $row['name']
-				: $row['name'];
-			$columns[] = $row;
 		}
 
 		return $columns;
@@ -87,7 +89,7 @@ class PostgreResult implements Result
 	/**
 	 * Returns the result set resource.
 	 */
-	public function getResultResource(): PgSql\Result
+	public function getResultResource(): \SQLite3Result
 	{
 		return $this->resultSet;
 	}
@@ -98,6 +100,6 @@ class PostgreResult implements Result
 	 */
 	public function unescapeBinary(string $value): string
 	{
-		return pg_unescape_bytea($value);
+		return $value;
 	}
 }

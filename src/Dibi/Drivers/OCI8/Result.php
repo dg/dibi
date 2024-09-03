@@ -7,27 +7,27 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\OCI8;
 
 use Dibi;
-use Dibi\Helpers;
-use const SQLITE3_ASSOC, SQLITE3_BLOB, SQLITE3_FLOAT, SQLITE3_INTEGER, SQLITE3_NULL, SQLITE3_NUM, SQLITE3_TEXT;
+use Dibi\Drivers;
+use function is_resource;
 
 
 /**
- * The driver for SQLite result set.
+ * The driver for Oracle result set.
  */
-class SqliteResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
-		private readonly \SQLite3Result $resultSet,
+		/** @var resource */
+		private $resultSet,
 	) {
 	}
 
 
 	/**
 	 * Returns the number of rows in a result set.
-	 * @throws Dibi\NotSupportedException
 	 */
 	public function getRowCount(): int
 	{
@@ -41,17 +41,16 @@ class SqliteResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Helpers::false2Null($this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM));
+		return Dibi\Helpers::false2Null(oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS));
 	}
 
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @throws Dibi\NotSupportedException
 	 */
 	public function seek(int $row): bool
 	{
-		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
+		throw new Dibi\NotImplementedException;
 	}
 
 
@@ -60,7 +59,7 @@ class SqliteResult implements Result
 	 */
 	public function free(): void
 	{
-		$this->resultSet->finalize();
+		oci_free_statement($this->resultSet);
 	}
 
 
@@ -69,15 +68,16 @@ class SqliteResult implements Result
 	 */
 	public function getResultColumns(): array
 	{
-		$count = $this->resultSet->numColumns();
+		$count = oci_num_fields($this->resultSet);
 		$columns = [];
-		$types = [SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null'];
-		for ($i = 0; $i < $count; $i++) {
+		for ($i = 1; $i <= $count; $i++) {
+			$type = oci_field_type($this->resultSet, $i);
 			$columns[] = [
-				'name' => $this->resultSet->columnName($i),
+				'name' => oci_field_name($this->resultSet, $i),
 				'table' => null,
-				'fullname' => $this->resultSet->columnName($i),
-				'nativetype' => $types[$this->resultSet->columnType($i)] ?? null, // buggy in PHP 7.4.4 & 7.3.16, bug 79414
+				'fullname' => oci_field_name($this->resultSet, $i),
+				'type' => $type === 'LONG' ? Dibi\Type::Text : null,
+				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
 			];
 		}
 
@@ -87,10 +87,11 @@ class SqliteResult implements Result
 
 	/**
 	 * Returns the result set resource.
+	 * @return resource|null
 	 */
-	public function getResultResource(): \SQLite3Result
+	public function getResultResource(): mixed
 	{
-		return $this->resultSet;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 
 

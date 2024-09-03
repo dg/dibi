@@ -7,16 +7,17 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\SQLSrv;
 
 use Dibi;
+use Dibi\Drivers;
 use function is_resource;
 
 
 /**
- * The driver for Oracle result set.
+ * The driver for Microsoft SQL Server and SQL Azure result set.
  */
-class OracleResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
 		/** @var resource */
@@ -40,7 +41,7 @@ class OracleResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Dibi\Helpers::false2Null(oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS));
+		return Dibi\Helpers::false2Null(sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC));
 	}
 
 
@@ -49,7 +50,7 @@ class OracleResult implements Result
 	 */
 	public function seek(int $row): bool
 	{
-		throw new Dibi\NotImplementedException;
+		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
 	}
 
 
@@ -58,7 +59,7 @@ class OracleResult implements Result
 	 */
 	public function free(): void
 	{
-		oci_free_statement($this->resultSet);
+		sqlsrv_free_stmt($this->resultSet);
 	}
 
 
@@ -67,16 +68,12 @@ class OracleResult implements Result
 	 */
 	public function getResultColumns(): array
 	{
-		$count = oci_num_fields($this->resultSet);
 		$columns = [];
-		for ($i = 1; $i <= $count; $i++) {
-			$type = oci_field_type($this->resultSet, $i);
+		foreach ((array) sqlsrv_field_metadata($this->resultSet) as $fieldMetadata) {
 			$columns[] = [
-				'name' => oci_field_name($this->resultSet, $i),
-				'table' => null,
-				'fullname' => oci_field_name($this->resultSet, $i),
-				'type' => $type === 'LONG' ? Dibi\Type::Text : null,
-				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
+				'name' => $fieldMetadata['Name'],
+				'fullname' => $fieldMetadata['Name'],
+				'nativetype' => $fieldMetadata['Type'],
 			];
 		}
 
