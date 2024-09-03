@@ -34,7 +34,7 @@ final class Translator
 	{
 		$this->connection = $connection;
 		$this->driver = $connection->getDriver();
-		$this->identifiers = new HashMap([$this, 'delimite']);
+		$this->identifiers = new HashMap($this->delimite(...));
 	}
 
 
@@ -88,7 +88,7 @@ final class Translator
 									(\?)                            ## 11) placeholder
 								)/xs
 								XX,
-							[$this, 'cb'],
+							$this->cb(...),
 							substr($arg, $toSkip),
 						);
 					if (preg_last_error()) {
@@ -434,7 +434,7 @@ final class Translator
 										:(\S*?:)([a-zA-Z0-9._]?)
 									)/sx
 									XX,
-								[$this, 'cb'],
+								$this->cb(...),
 								substr($value, $toSkip),
 							);
 						if (preg_last_error()) {
