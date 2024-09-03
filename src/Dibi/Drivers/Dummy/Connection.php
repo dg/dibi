@@ -7,15 +7,16 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\Dummy;
 
 use Dibi;
+use Dibi\Drivers;
 
 
 /**
  * The dummy driver for testing purposes.
  */
-class DummyDriver implements Connection, Result, Engine
+class Connection implements Drivers\Connection, Drivers\Result, Drivers\Engine
 {
 	public function disconnect(): void
 	{
@@ -64,7 +65,7 @@ class DummyDriver implements Connection, Result, Engine
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Engine
+	public function getReflector(): Drivers\Engine
 	{
 		return $this;
 	}

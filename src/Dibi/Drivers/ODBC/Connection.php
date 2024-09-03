@@ -7,65 +7,59 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\ODBC;
 
 use Dibi;
-use Dibi\Helpers;
+use Dibi\Drivers;
 
 
 /**
- * The driver for Microsoft SQL Server and SQL Azure databases.
+ * The driver interacting with databases via ODBC connections.
  *
  * Driver options:
- *   - host => the MS SQL server host name. It can also include a port number (hostname:port)
+ *   - dsn => driver specific DSN
  *   - username (or user)
  *   - password (or pass)
- *   - database => the database name to select
- *   - options (array) => connection options {@link https://msdn.microsoft.com/en-us/library/cc296161(SQL.90).aspx}
- *   - charset => character encoding to set (default is UTF-8)
+ *   - persistent (bool) => try to find a persistent link?
  *   - resource (resource) => existing connection resource
+ *   - microseconds (bool) => use microseconds in datetime format?
  */
-class SqlsrvDriver implements Connection
+class Connection implements Drivers\Connection
 {
 	/** @var resource */
 	private $connection;
 	private ?int $affectedRows;
+	private bool $microseconds = true;
 
 
 	/** @throws Dibi\NotSupportedException */
 	public function __construct(array $config)
 	{
-		if (!extension_loaded('sqlsrv')) {
-			throw new Dibi\NotSupportedException("PHP extension 'sqlsrv' is not loaded.");
+		if (!extension_loaded('odbc')) {
+			throw new Dibi\NotSupportedException("PHP extension 'odbc' is not loaded.");
 		}
-
-		Helpers::alias($config, 'options|UID', 'username');
-		Helpers::alias($config, 'options|PWD', 'password');
-		Helpers::alias($config, 'options|Database', 'database');
-		Helpers::alias($config, 'options|CharacterSet', 'charset');
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
-			if (!is_resource($this->connection)) {
-				throw new \InvalidArgumentException("Configuration option 'resource' is not resource.");
-			}
 		} else {
-			$options = $config['options'];
+			// default values
+			$config += [
+				'username' => ini_get('odbc.default_user'),
+				'password' => ini_get('odbc.default_pw'),
+				'dsn' => ini_get('odbc.default_db'),
+			];
 
-			// Default values
-			$options['CharacterSet'] ??= 'UTF-8';
-			$options['PWD'] = (string) $options['PWD'];
-			$options['UID'] = (string) $options['UID'];
-			$options['Database'] = (string) $options['Database'];
+			$this->connection = empty($config['persistent'])
+				? @odbc_connect($config['dsn'], $config['username'] ?? '', $config['password'] ?? '') // intentionally @
+				: @odbc_pconnect($config['dsn'], $config['username'] ?? '', $config['password'] ?? ''); // intentionally @
+		}
 
-			sqlsrv_configure('WarningsReturnAsErrors', 0);
-			$this->connection = sqlsrv_connect($config['host'], $options);
-			if (!is_resource($this->connection)) {
-				$info = sqlsrv_errors(SQLSRV_ERR_ERRORS);
-				throw new Dibi\DriverException($info[0]['message'], $info[0]['code']);
-			}
+		if (!is_resource($this->connection)) {
+			throw new Dibi\DriverException(odbc_errormsg() . ' ' . odbc_error());
+		}
 
-			sqlsrv_configure('WarningsReturnAsErrors', 1);
+		if (isset($config['microseconds'])) {
+			$this->microseconds = (bool) $config['microseconds'];
 		}
 	}
 
@@ -75,7 +69,7 @@ class SqlsrvDriver implements Connection
 	 */
 	public function disconnect(): void
 	{
-		@sqlsrv_close($this->connection); // @ - connection can be already disconnected
+		@odbc_close($this->connection); // @ - connection can be already disconnected
 	}
 
 
@@ -86,15 +80,14 @@ class SqlsrvDriver implements Connection
 	public function query(string $sql): ?Result
 	{
 		$this->affectedRows = null;
-		$res = sqlsrv_query($this->connection, $sql);
+		$res = @odbc_exec($this->connection, $sql); // intentionally @
 
 		if ($res === false) {
-			$info = sqlsrv_errors();
-			throw new Dibi\DriverException($info[0]['message'], $info[0]['code'], $sql);
+			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
 
 		} elseif (is_resource($res)) {
-			$this->affectedRows = Helpers::false2Null(sqlsrv_rows_affected($res));
-			return sqlsrv_num_fields($res)
+			$this->affectedRows = Dibi\Helpers::false2Null(odbc_num_rows($res));
+			return odbc_num_fields($res)
 				? $this->createResultDriver($res)
 				: null;
 		}
@@ -117,13 +110,7 @@ class SqlsrvDriver implements Connection
 	 */
 	public function getInsertId(?string $sequence): ?int
 	{
-		$res = sqlsrv_query($this->connection, 'SELECT SCOPE_IDENTITY()');
-		if (is_resource($res)) {
-			$row = sqlsrv_fetch_array($res, SQLSRV_FETCH_NUMERIC);
-			return Dibi\Helpers::intVal($row[0]);
-		}
-
-		return null;
+		throw new Dibi\NotSupportedException('ODBC does not support autoincrementing.');
 	}
 
 
@@ -133,7 +120,9 @@ class SqlsrvDriver implements Connection
 	 */
 	public function begin(?string $savepoint = null): void
 	{
-		sqlsrv_begin_transaction($this->connection);
+		if (!odbc_autocommit($this->connection)) {
+			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
+		}
 	}
 
 
@@ -143,7 +132,11 @@ class SqlsrvDriver implements Connection
 	 */
 	public function commit(?string $savepoint = null): void
 	{
-		sqlsrv_commit($this->connection);
+		if (!odbc_commit($this->connection)) {
+			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
+		}
+
+		odbc_autocommit($this->connection, true);
 	}
 
 
@@ -153,7 +146,20 @@ class SqlsrvDriver implements Connection
 	 */
 	public function rollback(?string $savepoint = null): void
 	{
-		sqlsrv_rollback($this->connection);
+		if (!odbc_rollback($this->connection)) {
+			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection));
+		}
+
+		odbc_autocommit($this->connection, true);
+	}
+
+
+	/**
+	 * Is in transaction?
+	 */
+	public function inTransaction(): bool
+	{
+		return !odbc_autocommit($this->connection);
 	}
 
 
@@ -170,9 +176,9 @@ class SqlsrvDriver implements Connection
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Engine
+	public function getReflector(): Drivers\Engine
 	{
-		return new SqlsrvReflector($this);
+		return new Drivers\Engines\ODBCEngine($this);
 	}
 
 
@@ -180,9 +186,9 @@ class SqlsrvDriver implements Connection
 	 * Result set driver factory.
 	 * @param  resource  $resource
 	 */
-	public function createResultDriver($resource): SqlsrvResult
+	public function createResultDriver($resource): Result
 	{
-		return new SqlsrvResult($resource);
+		return new Result($resource);
 	}
 
 
@@ -194,20 +200,19 @@ class SqlsrvDriver implements Connection
 	 */
 	public function escapeText(string $value): string
 	{
-		return "N'" . str_replace("'", "''", $value) . "'";
+		return "'" . str_replace("'", "''", $value) . "'";
 	}
 
 
 	public function escapeBinary(string $value): string
 	{
-		return '0x' . bin2hex($value);
+		return "'" . str_replace("'", "''", $value) . "'";
 	}
 
 
 	public function escapeIdentifier(string $value): string
 	{
-		// @see https://msdn.microsoft.com/en-us/library/ms176027.aspx
-		return '[' . str_replace(']', ']]', $value) . ']';
+		return '[' . str_replace(['[', ']'], ['[[', ']]'], $value) . ']';
 	}
 
 
@@ -219,13 +224,13 @@ class SqlsrvDriver implements Connection
 
 	public function escapeDate(\DateTimeInterface $value): string
 	{
-		return $value->format("'Y-m-d'");
+		return $value->format('#m/d/Y#');
 	}
 
 
 	public function escapeDateTime(\DateTimeInterface $value): string
 	{
-		return 'CONVERT(DATETIME2(7), ' . $value->format("'Y-m-d H:i:s.u'") . ')';
+		return $value->format($this->microseconds ? '#m/d/Y H:i:s.u#' : '#m/d/Y H:i:s#');
 	}
 
 
@@ -250,15 +255,14 @@ class SqlsrvDriver implements Connection
 	 */
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
-		if ($limit < 0 || $offset < 0) {
+		if ($offset) {
+			throw new Dibi\NotSupportedException('Offset is not supported by this database.');
+
+		} elseif ($limit < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
 		} elseif ($limit !== null) {
-			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
-			$sql = sprintf('%s OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', rtrim($sql), $offset, $limit);
-		} elseif ($offset) {
-			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
-			$sql = sprintf('%s OFFSET %d ROWS', rtrim($sql), $offset);
+			$sql = 'SELECT TOP ' . $limit . ' * FROM (' . $sql . ') t';
 		}
 	}
 }
