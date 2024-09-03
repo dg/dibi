@@ -27,7 +27,7 @@ class Database
 
 
 	public function __construct(
-		private readonly Dibi\Reflector $reflector,
+		private readonly Dibi\Drivers\Engine $reflector,
 		private readonly ?string $name = null,
 	) {
 	}

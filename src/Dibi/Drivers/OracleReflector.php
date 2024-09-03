@@ -15,10 +15,10 @@ use Dibi;
 /**
  * The reflector for Oracle database.
  */
-class OracleReflector implements Dibi\Reflector
+class OracleReflector implements Engine
 {
 	public function __construct(
-		private readonly Dibi\Driver $driver,
+		private readonly Connection $driver,
 	) {
 	}
 

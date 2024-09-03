@@ -20,7 +20,7 @@ use const PREG_SPLIT_DELIM_CAPTURE, PREG_SPLIT_NO_EMPTY;
  */
 class Result implements IDataSource
 {
-	private ?ResultDriver $driver;
+	private ?Drivers\Result $driver;
 
 	/** Translate table */
 	private array $types = [];
@@ -37,7 +37,7 @@ class Result implements IDataSource
 	private array $formats = [];
 
 
-	public function __construct(ResultDriver $driver, bool $normalize = true)
+	public function __construct(Drivers\Result $driver, bool $normalize = true)
 	{
 		$this->driver = $driver;
 		if ($normalize) {
@@ -62,7 +62,7 @@ class Result implements IDataSource
 	 * Safe access to property $driver.
 	 * @throws \RuntimeException
 	 */
-	final public function getResultDriver(): ResultDriver
+	final public function getResultDriver(): Drivers\Result
 	{
 		if ($this->driver === null) {
 			throw new \RuntimeException('Result-set was released from memory.');
