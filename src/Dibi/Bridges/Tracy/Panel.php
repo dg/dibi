@@ -35,8 +35,8 @@ class Panel implements Tracy\IBarPanel
 	public function register(Dibi\Connection $connection): void
 	{
 		Tracy\Debugger::getBar()->addPanel($this);
-		Tracy\Debugger::getBlueScreen()->addPanel([self::class, 'renderException']);
-		$connection->onEvent[] = [$this, 'logEvent'];
+		Tracy\Debugger::getBlueScreen()->addPanel(self::renderException(...));
+		$connection->onEvent[] = $this->logEvent(...);
 	}
 
 

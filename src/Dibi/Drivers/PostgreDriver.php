@@ -23,13 +23,12 @@ use PgSql;
  *   - schema => the schema search path
  *   - charset => character encoding to set (default is utf8)
  *   - persistent (bool) => try to find a persistent link?
- *   - resource (resource) => existing connection resource
+ *   - resource (PgSql\Connection) => existing connection resource
  *   - connect_type (int) => see pg_connect()
  */
 class PostgreDriver implements Dibi\Driver
 {
-	/** @var resource|PgSql\Connection */
-	private $connection;
+	private PgSql\Connection $connection;
 	private ?int $affectedRows;
 
 
@@ -72,7 +71,7 @@ class PostgreDriver implements Dibi\Driver
 			restore_error_handler();
 		}
 
-		if (!is_resource($this->connection) && !$this->connection instanceof PgSql\Connection) {
+		if (!$this->connection instanceof PgSql\Connection) {
 			throw new Dibi\DriverException($error ?: 'Connecting error.');
 		}
 
@@ -118,7 +117,7 @@ class PostgreDriver implements Dibi\Driver
 		if ($res === false) {
 			throw static::createException(pg_last_error($this->connection), null, $sql);
 
-		} elseif (is_resource($res) || $res instanceof PgSql\Result) {
+		} elseif ($res instanceof PgSql\Result) {
 			$this->affectedRows = Helpers::false2Null(pg_affected_rows($res));
 			if (pg_num_fields($res)) {
 				return $this->createResultDriver($res);
@@ -222,13 +221,10 @@ class PostgreDriver implements Dibi\Driver
 
 	/**
 	 * Returns the connection resource.
-	 * @return resource|null
 	 */
-	public function getResource(): mixed
+	public function getResource(): PgSql\Connection
 	{
-		return is_resource($this->connection) || $this->connection instanceof PgSql\Connection
-			? $this->connection
-			: null;
+		return $this->connection;
 	}
 
 
@@ -243,9 +239,8 @@ class PostgreDriver implements Dibi\Driver
 
 	/**
 	 * Result set driver factory.
-	 * @param  resource  $resource
 	 */
-	public function createResultDriver($resource): PostgreResult
+	public function createResultDriver(PgSql\Result $resource): PostgreResult
 	{
 		return new PostgreResult($resource);
 	}
