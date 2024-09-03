@@ -31,7 +31,6 @@ class SqlsrvDriver implements Dibi\Driver
 	/** @var resource */
 	private $connection;
 	private ?int $affectedRows;
-	private string $version = '';
 
 
 	/** @throws Dibi\NotSupportedException */
@@ -69,8 +68,6 @@ class SqlsrvDriver implements Dibi\Driver
 
 			sqlsrv_configure('WarningsReturnAsErrors', 1);
 		}
-
-		$this->version = sqlsrv_server_info($this->connection)['SQLServerVersion'];
 	}
 
 
@@ -257,13 +254,6 @@ class SqlsrvDriver implements Dibi\Driver
 		if ($limit < 0 || $offset < 0) {
 			throw new Dibi\NotSupportedException('Negative offset or limit.');
 
-		} elseif (version_compare($this->version, '11', '<')) { // 11 == SQL Server 2012
-			if ($offset) {
-				throw new Dibi\NotSupportedException('Offset is not supported by this database.');
-
-			} elseif ($limit !== null) {
-				$sql = sprintf('SELECT TOP (%d) * FROM (%s) t', $limit, $sql);
-			}
 		} elseif ($limit !== null) {
 			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
 			$sql = sprintf('%s OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', rtrim($sql), $offset, $limit);
