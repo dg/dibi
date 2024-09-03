@@ -16,10 +16,10 @@ use function sprintf;
 /**
  * The reflector for Microsoft SQL Server and SQL Azure databases.
  */
-class SqlsrvReflector implements Dibi\Reflector
+class SqlsrvReflector implements Engine
 {
 	public function __construct(
-		private readonly Dibi\Driver $driver,
+		private readonly Connection $driver,
 	) {
 	}
 

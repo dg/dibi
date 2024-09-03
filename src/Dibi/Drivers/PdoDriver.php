@@ -25,7 +25,7 @@ use function sprintf;
  *   - options (array) => driver specific options {@see PDO::__construct}
  *   - resource (PDO) => existing connection
  */
-class PdoDriver implements Dibi\Driver
+class PdoDriver implements Connection
 {
 	private ?PDO $connection;
 	private ?int $affectedRows;
@@ -80,7 +80,7 @@ class PdoDriver implements Dibi\Driver
 	 * Executes the SQL query.
 	 * @throws Dibi\DriverException
 	 */
-	public function query(string $sql): ?Dibi\ResultDriver
+	public function query(string $sql): ?Result
 	{
 		$res = $this->connection->query($sql);
 		if ($res) {
@@ -172,7 +172,7 @@ class PdoDriver implements Dibi\Driver
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Dibi\Reflector
+	public function getReflector(): Engine
 	{
 		return match ($this->driverName) {
 			'mysql' => new MySqlReflector($this),

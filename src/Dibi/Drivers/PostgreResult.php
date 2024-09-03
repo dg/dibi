@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Dibi\Drivers;
 
-use Dibi;
 use Dibi\Helpers;
 use PgSql;
 use function is_resource;
@@ -18,7 +17,7 @@ use function is_resource;
 /**
  * The driver for PostgreSQL result set.
  */
-class PostgreResult implements Dibi\ResultDriver
+class PostgreResult implements Result
 {
 	public function __construct(
 		private readonly PgSql\Result $resultSet,
