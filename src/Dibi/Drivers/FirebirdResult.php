@@ -16,7 +16,7 @@ use Dibi\Helpers;
 /**
  * The driver for Firebird/InterBase result set.
  */
-class FirebirdResult implements Dibi\ResultDriver
+class FirebirdResult implements Result
 {
 	public function __construct(
 		/** @var resource */

@@ -15,7 +15,7 @@ use Dibi;
 /**
  * The driver for Oracle result set.
  */
-class OracleResult implements Dibi\ResultDriver
+class OracleResult implements Result
 {
 	public function __construct(
 		/** @var resource */

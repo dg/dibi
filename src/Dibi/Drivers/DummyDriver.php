@@ -15,14 +15,14 @@ use Dibi;
 /**
  * The dummy driver for testing purposes.
  */
-class DummyDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
+class DummyDriver implements Connection, Result, Engine
 {
 	public function disconnect(): void
 	{
 	}
 
 
-	public function query(string $sql): ?Dibi\ResultDriver
+	public function query(string $sql): ?Result
 	{
 		return null;
 	}
@@ -64,7 +64,7 @@ class DummyDriver implements Dibi\Driver, Dibi\ResultDriver, Dibi\Reflector
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Dibi\Reflector
+	public function getReflector(): Engine
 	{
 		return $this;
 	}

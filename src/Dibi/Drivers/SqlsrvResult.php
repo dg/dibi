@@ -15,7 +15,7 @@ use Dibi;
 /**
  * The driver for Microsoft SQL Server and SQL Azure result set.
  */
-class SqlsrvResult implements Dibi\ResultDriver
+class SqlsrvResult implements Result
 {
 	public function __construct(
 		/** @var resource */

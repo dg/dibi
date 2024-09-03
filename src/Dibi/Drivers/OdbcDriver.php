@@ -23,7 +23,7 @@ use Dibi;
  *   - resource (resource) => existing connection resource
  *   - microseconds (bool) => use microseconds in datetime format?
  */
-class OdbcDriver implements Dibi\Driver
+class OdbcDriver implements Connection
 {
 	/** @var resource */
 	private $connection;
@@ -76,7 +76,7 @@ class OdbcDriver implements Dibi\Driver
 	 * Executes the SQL query.
 	 * @throws Dibi\DriverException
 	 */
-	public function query(string $sql): ?Dibi\ResultDriver
+	public function query(string $sql): ?Result
 	{
 		$this->affectedRows = null;
 		$res = @odbc_exec($this->connection, $sql); // intentionally @
@@ -175,7 +175,7 @@ class OdbcDriver implements Dibi\Driver
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Dibi\Reflector
+	public function getReflector(): Engine
 	{
 		return new OdbcReflector($this);
 	}
