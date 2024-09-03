@@ -24,14 +24,12 @@ use function sprintf;
  *   - password (or pass)
  *   - options (array) => driver specific options {@see PDO::__construct}
  *   - resource (PDO) => existing connection
- *   - version
  */
 class PdoDriver implements Dibi\Driver
 {
 	private ?PDO $connection;
 	private ?int $affectedRows;
 	private string $driverName;
-	private string $serverVersion = '';
 
 
 	/** @throws Dibi\NotSupportedException */
@@ -66,7 +64,6 @@ class PdoDriver implements Dibi\Driver
 		}
 
 		$this->driverName = $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME);
-		$this->serverVersion = (string) ($config['version'] ?? @$this->connection->getAttribute(PDO::ATTR_SERVER_VERSION)); // @ - may be not supported
 	}
 
 
@@ -180,7 +177,7 @@ class PdoDriver implements Dibi\Driver
 		return match ($this->driverName) {
 			'mysql' => new MySqlReflector($this),
 			'oci' => new OracleReflector($this),
-			'pgsql' => new PostgreReflector($this, $this->connection->getAttribute(PDO::ATTR_SERVER_VERSION)),
+			'pgsql' => new PostgreReflector($this),
 			'sqlite' => new SqliteReflector($this),
 			'mssql', 'dblib', 'sqlsrv' => new SqlsrvReflector($this),
 			default => throw new Dibi\NotSupportedException,
@@ -360,17 +357,15 @@ class PdoDriver implements Dibi\Driver
 			case 'mssql':
 			case 'sqlsrv':
 			case 'dblib':
-				if (version_compare($this->serverVersion, '11.0') >= 0) { // 11 == SQL Server 2012
-					// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
-					if ($limit !== null) {
-						$sql = sprintf('%s OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', rtrim($sql), $offset, $limit);
-					} elseif ($offset) {
-						$sql = sprintf('%s OFFSET %d ROWS', rtrim($sql), $offset);
-					}
-
-					break;
+				// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
+				if ($limit !== null) {
+					$sql = sprintf('%s OFFSET %d ROWS FETCH NEXT %d ROWS ONLY', rtrim($sql), $offset, $limit);
+				} elseif ($offset) {
+					$sql = sprintf('%s OFFSET %d ROWS', rtrim($sql), $offset);
 				}
-				// break omitted
+
+				break;
+
 			case 'odbc':
 				if ($offset) {
 					throw new Dibi\NotSupportedException('Offset is not supported by this database.');
