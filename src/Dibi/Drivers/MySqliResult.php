@@ -16,7 +16,7 @@ use const MYSQLI_TYPE_LONG, MYSQLI_TYPE_SHORT, MYSQLI_TYPE_TIME, MYSQLI_TYPE_TIN
 /**
  * The driver for MySQL result set.
  */
-class MySqliResult implements Dibi\ResultDriver
+class MySqliResult implements Result
 {
 	public function __construct(
 		private readonly \mysqli_result $resultSet,
