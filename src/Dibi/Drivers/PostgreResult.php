@@ -21,7 +21,7 @@ use function is_resource;
 class PostgreResult implements Dibi\ResultDriver
 {
 	public function __construct(
-		private PgSql\Result $resultSet,
+		private readonly PgSql\Result $resultSet,
 	) {
 	}
 
