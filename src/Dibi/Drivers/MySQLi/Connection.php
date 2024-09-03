@@ -7,9 +7,10 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\MySQLi;
 
 use Dibi;
+use Dibi\Drivers;
 use function in_array;
 use const MYSQLI_REPORT_OFF, MYSQLI_STORE_RESULT, MYSQLI_USE_RESULT, PREG_SET_ORDER;
 
@@ -32,7 +33,7 @@ use const MYSQLI_REPORT_OFF, MYSQLI_STORE_RESULT, MYSQLI_USE_RESULT, PREG_SET_OR
  *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - resource (mysqli) => existing connection resource
  */
-class MySqliDriver implements Connection
+class Connection implements Drivers\Connection
 {
 	public const ErrorAccessDenied = 1045;
 	public const ErrorDuplicateEntry = 1062;
@@ -265,18 +266,18 @@ class MySqliDriver implements Connection
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Engine
+	public function getReflector(): Drivers\Engine
 	{
-		return new MySqlReflector($this);
+		return new Drivers\Engines\MySQLEngine($this);
 	}
 
 
 	/**
 	 * Result set driver factory.
 	 */
-	public function createResultDriver(\mysqli_result $result): MySqliResult
+	public function createResultDriver(\mysqli_result $result): Result
 	{
-		return new MySqliResult($result, $this->buffered);
+		return new Result($result, $this->buffered);
 	}
 
 
