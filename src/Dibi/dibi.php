@@ -37,7 +37,7 @@ declare(strict_types=1);
  */
 class dibi
 {
-	public const Version = '5.1-dev';
+	public const Version = '6.0-dev';
 
 	/** @deprecated use dibi::Version */
 	public const VERSION = self::Version;
