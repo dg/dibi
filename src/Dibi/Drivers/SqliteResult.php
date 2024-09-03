@@ -17,7 +17,7 @@ use const SQLITE3_ASSOC, SQLITE3_BLOB, SQLITE3_FLOAT, SQLITE3_INTEGER, SQLITE3_N
 /**
  * The driver for SQLite result set.
  */
-class SqliteResult implements Dibi\ResultDriver
+class SqliteResult implements Result
 {
 	public function __construct(
 		private readonly \SQLite3Result $resultSet,
