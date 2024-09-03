@@ -7,19 +7,20 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\SQLSrv;
 
-use Dibi\Helpers;
-use PgSql;
+use Dibi;
+use Dibi\Drivers;
 
 
 /**
- * The driver for PostgreSQL result set.
+ * The driver for Microsoft SQL Server and SQL Azure result set.
  */
-class PostgreResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
-		private readonly PgSql\Result $resultSet,
+		/** @var resource */
+		private $resultSet,
 	) {
 	}
 
@@ -29,7 +30,7 @@ class PostgreResult implements Result
 	 */
 	public function getRowCount(): int
 	{
-		return pg_num_rows($this->resultSet);
+		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
 	}
 
 
@@ -39,7 +40,7 @@ class PostgreResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Helpers::false2Null(pg_fetch_array($this->resultSet, null, $assoc ? PGSQL_ASSOC : PGSQL_NUM));
+		return Dibi\Helpers::false2Null(sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC));
 	}
 
 
@@ -48,7 +49,7 @@ class PostgreResult implements Result
 	 */
 	public function seek(int $row): bool
 	{
-		return pg_result_seek($this->resultSet, $row);
+		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
 	}
 
 
@@ -57,7 +58,7 @@ class PostgreResult implements Result
 	 */
 	public function free(): void
 	{
-		pg_free_result($this->resultSet);
+		sqlsrv_free_stmt($this->resultSet);
 	}
 
 
@@ -66,18 +67,13 @@ class PostgreResult implements Result
 	 */
 	public function getResultColumns(): array
 	{
-		$count = pg_num_fields($this->resultSet);
 		$columns = [];
-		for ($i = 0; $i < $count; $i++) {
-			$row = [
-				'name' => pg_field_name($this->resultSet, $i),
-				'table' => pg_field_table($this->resultSet, $i),
-				'nativetype' => pg_field_type($this->resultSet, $i),
+		foreach ((array) sqlsrv_field_metadata($this->resultSet) as $fieldMetadata) {
+			$columns[] = [
+				'name' => $fieldMetadata['Name'],
+				'fullname' => $fieldMetadata['Name'],
+				'nativetype' => $fieldMetadata['Type'],
 			];
-			$row['fullname'] = $row['table']
-				? $row['table'] . '.' . $row['name']
-				: $row['name'];
-			$columns[] = $row;
 		}
 
 		return $columns;
@@ -86,10 +82,11 @@ class PostgreResult implements Result
 
 	/**
 	 * Returns the result set resource.
+	 * @return resource|null
 	 */
-	public function getResultResource(): PgSql\Result
+	public function getResultResource(): mixed
 	{
-		return $this->resultSet;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 
 
@@ -98,6 +95,6 @@ class PostgreResult implements Result
 	 */
 	public function unescapeBinary(string $value): string
 	{
-		return pg_unescape_bytea($value);
+		return $value;
 	}
 }

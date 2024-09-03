@@ -7,25 +7,27 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\SQLite3;
 
 use Dibi;
+use Dibi\Drivers;
+use Dibi\Helpers;
 
 
 /**
- * The driver for Microsoft SQL Server and SQL Azure result set.
+ * The driver for SQLite result set.
  */
-class SqlsrvResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
-		/** @var resource */
-		private $resultSet,
+		private readonly \SQLite3Result $resultSet,
 	) {
 	}
 
 
 	/**
 	 * Returns the number of rows in a result set.
+	 * @throws Dibi\NotSupportedException
 	 */
 	public function getRowCount(): int
 	{
@@ -39,12 +41,13 @@ class SqlsrvResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Dibi\Helpers::false2Null(sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC));
+		return Helpers::false2Null($this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM));
 	}
 
 
 	/**
 	 * Moves cursor position without fetching row.
+	 * @throws Dibi\NotSupportedException
 	 */
 	public function seek(int $row): bool
 	{
@@ -57,7 +60,7 @@ class SqlsrvResult implements Result
 	 */
 	public function free(): void
 	{
-		sqlsrv_free_stmt($this->resultSet);
+		$this->resultSet->finalize();
 	}
 
 
@@ -66,12 +69,15 @@ class SqlsrvResult implements Result
 	 */
 	public function getResultColumns(): array
 	{
+		$count = $this->resultSet->numColumns();
 		$columns = [];
-		foreach ((array) sqlsrv_field_metadata($this->resultSet) as $fieldMetadata) {
+		$types = [SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null'];
+		for ($i = 0; $i < $count; $i++) {
 			$columns[] = [
-				'name' => $fieldMetadata['Name'],
-				'fullname' => $fieldMetadata['Name'],
-				'nativetype' => $fieldMetadata['Type'],
+				'name' => $this->resultSet->columnName($i),
+				'table' => null,
+				'fullname' => $this->resultSet->columnName($i),
+				'nativetype' => $types[$this->resultSet->columnType($i)] ?? null, // buggy in PHP 7.4.4 & 7.3.16, bug 79414
 			];
 		}
 
@@ -81,11 +87,10 @@ class SqlsrvResult implements Result
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|null
 	 */
-	public function getResultResource(): mixed
+	public function getResultResource(): \SQLite3Result
 	{
-		return is_resource($this->resultSet) ? $this->resultSet : null;
+		return $this->resultSet;
 	}
 
 

@@ -7,15 +7,16 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\MySQLi;
 
 use Dibi;
+use Dibi\Drivers;
 
 
 /**
  * The driver for MySQL result set.
  */
-class MySqliResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
 		private readonly \mysqli_result $resultSet,

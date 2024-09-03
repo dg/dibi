@@ -14,7 +14,7 @@ function buildPdoDriver(?int $errorMode)
 		$pdo->setAttribute(PDO::ATTR_ERRMODE, $errorMode);
 	}
 
-	new Dibi\Drivers\PdoDriver(['resource' => $pdo]);
+	new Dibi\Drivers\PDO\Connection(['resource' => $pdo]);
 }
 
 

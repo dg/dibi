@@ -7,15 +7,17 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\Engines;
 
 use Dibi;
+use Dibi\Drivers\Connection;
+use Dibi\Drivers\Engine;
 
 
 /**
  * The reflector for Microsoft SQL Server and SQL Azure databases.
  */
-class SqlsrvReflector implements Engine
+class SQLServerEngine implements Engine
 {
 	public function __construct(
 		private readonly Connection $driver,
