@@ -7,17 +7,21 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\ODBC;
 
 use Dibi;
+use Dibi\Drivers;
 use function is_resource;
 
 
 /**
- * The driver for Oracle result set.
+ * The driver interacting with result set via ODBC connections.
  */
-class OracleResult implements Result
+class Result implements Drivers\Result
 {
+	private int $row = 0;
+
+
 	public function __construct(
 		/** @var resource */
 		private $resultSet,
@@ -30,7 +34,8 @@ class OracleResult implements Result
 	 */
 	public function getRowCount(): int
 	{
-		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
+		// will return -1 with many drivers :-(
+		return odbc_num_rows($this->resultSet);
 	}
 
 
@@ -40,7 +45,22 @@ class OracleResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Dibi\Helpers::false2Null(oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS));
+		if ($assoc) {
+			return Dibi\Helpers::false2Null(odbc_fetch_array($this->resultSet, ++$this->row));
+		} else {
+			$set = $this->resultSet;
+			if (!odbc_fetch_row($set, ++$this->row)) {
+				return null;
+			}
+
+			$count = odbc_num_fields($set);
+			$cols = [];
+			for ($i = 1; $i <= $count; $i++) {
+				$cols[] = odbc_result($set, $i);
+			}
+
+			return $cols;
+		}
 	}
 
 
@@ -49,7 +69,8 @@ class OracleResult implements Result
 	 */
 	public function seek(int $row): bool
 	{
-		throw new Dibi\NotImplementedException;
+		$this->row = $row;
+		return true;
 	}
 
 
@@ -58,7 +79,7 @@ class OracleResult implements Result
 	 */
 	public function free(): void
 	{
-		oci_free_statement($this->resultSet);
+		odbc_free_result($this->resultSet);
 	}
 
 
@@ -67,16 +88,14 @@ class OracleResult implements Result
 	 */
 	public function getResultColumns(): array
 	{
-		$count = oci_num_fields($this->resultSet);
+		$count = odbc_num_fields($this->resultSet);
 		$columns = [];
 		for ($i = 1; $i <= $count; $i++) {
-			$type = oci_field_type($this->resultSet, $i);
 			$columns[] = [
-				'name' => oci_field_name($this->resultSet, $i),
+				'name' => odbc_field_name($this->resultSet, $i),
 				'table' => null,
-				'fullname' => oci_field_name($this->resultSet, $i),
-				'type' => $type === 'LONG' ? Dibi\Type::Text : null,
-				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
+				'fullname' => odbc_field_name($this->resultSet, $i),
+				'nativetype' => odbc_field_type($this->resultSet, $i),
 			];
 		}
 

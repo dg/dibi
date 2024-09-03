@@ -7,21 +7,21 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\PgSQL;
 
-use Dibi;
+use Dibi\Drivers;
 use Dibi\Helpers;
-use PDO;
+use PgSql;
+use function is_resource;
 
 
 /**
- * The driver for PDO result set.
+ * The driver for PostgreSQL result set.
  */
-class PdoResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
-		private ?\PDOStatement $resultSet,
-		private readonly string $driverName,
+		private readonly PgSql\Result $resultSet,
 	) {
 	}
 
@@ -31,7 +31,7 @@ class PdoResult implements Result
 	 */
 	public function getRowCount(): int
 	{
-		return $this->resultSet->rowCount();
+		return pg_num_rows($this->resultSet);
 	}
 
 
@@ -41,7 +41,7 @@ class PdoResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Helpers::false2Null($this->resultSet->fetch($assoc ? PDO::FETCH_ASSOC : PDO::FETCH_NUM));
+		return Helpers::false2Null(pg_fetch_array($this->resultSet, null, $assoc ? PGSQL_ASSOC : PGSQL_NUM));
 	}
 
 
@@ -50,7 +50,7 @@ class PdoResult implements Result
 	 */
 	public function seek(int $row): bool
 	{
-		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
+		return pg_result_seek($this->resultSet, $row);
 	}
 
 
@@ -59,37 +59,27 @@ class PdoResult implements Result
 	 */
 	public function free(): void
 	{
-		$this->resultSet = null;
+		pg_free_result($this->resultSet);
 	}
 
 
 	/**
 	 * Returns metadata for all columns in a result set.
-	 * @throws Dibi\Exception
 	 */
 	public function getResultColumns(): array
 	{
-		$count = $this->resultSet->columnCount();
+		$count = pg_num_fields($this->resultSet);
 		$columns = [];
 		for ($i = 0; $i < $count; $i++) {
-			$row = @$this->resultSet->getColumnMeta($i); // intentionally @
-			if ($row === false) {
-				throw new Dibi\NotSupportedException('Driver does not support meta data.');
-			}
-
-			$row += [
-				'table' => null,
-				'native_type' => 'VAR_STRING',
+			$row = [
+				'name' => pg_field_name($this->resultSet, $i),
+				'table' => pg_field_table($this->resultSet, $i),
+				'nativetype' => pg_field_type($this->resultSet, $i),
 			];
-
-			$columns[] = [
-				'name' => $row['name'],
-				'table' => $row['table'],
-				'nativetype' => $row['native_type'],
-				'type' => $row['native_type'] === 'TIME' && $this->driverName === 'mysql' ? Dibi\Type::TimeInterval : null,
-				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
-				'vendor' => $row,
-			];
+			$row['fullname'] = $row['table']
+				? $row['table'] . '.' . $row['name']
+				: $row['name'];
+			$columns[] = $row;
 		}
 
 		return $columns;
@@ -99,7 +89,7 @@ class PdoResult implements Result
 	/**
 	 * Returns the result set resource.
 	 */
-	public function getResultResource(): ?\PDOStatement
+	public function getResultResource(): PgSql\Result
 	{
 		return $this->resultSet;
 	}
@@ -110,6 +100,6 @@ class PdoResult implements Result
 	 */
 	public function unescapeBinary(string $value): string
 	{
-		return $value;
+		return pg_unescape_bytea($value);
 	}
 }
