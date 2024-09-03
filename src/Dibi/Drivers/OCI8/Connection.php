@@ -7,9 +7,10 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\OCI8;
 
 use Dibi;
+use Dibi\Drivers;
 use function in_array, is_resource;
 
 
@@ -26,7 +27,7 @@ use function in_array, is_resource;
  *   - resource (resource) => existing connection resource
  *   - persistent => Creates persistent connections with oci_pconnect instead of oci_new_connect
  */
-class OracleDriver implements Connection
+class Connection implements Drivers\Connection
 {
 	/** @var resource */
 	private $connection;
@@ -190,9 +191,9 @@ class OracleDriver implements Connection
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Engine
+	public function getReflector(): Drivers\Engine
 	{
-		return new OracleReflector($this);
+		return new Drivers\Engines\OracleEngine($this);
 	}
 
 
@@ -200,9 +201,9 @@ class OracleDriver implements Connection
 	 * Result set driver factory.
 	 * @param  resource  $resource
 	 */
-	public function createResultDriver($resource): OracleResult
+	public function createResultDriver($resource): Result
 	{
-		return new OracleResult($resource);
+		return new Result($resource);
 	}
 
 

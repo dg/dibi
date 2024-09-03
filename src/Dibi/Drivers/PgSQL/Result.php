@@ -7,20 +7,20 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\PgSQL;
 
-use Dibi;
-use function is_resource;
+use Dibi\Drivers;
+use Dibi\Helpers;
+use PgSql;
 
 
 /**
- * The driver for Oracle result set.
+ * The driver for PostgreSQL result set.
  */
-class OracleResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
-		/** @var resource */
-		private $resultSet,
+		private readonly PgSql\Result $resultSet,
 	) {
 	}
 
@@ -30,7 +30,7 @@ class OracleResult implements Result
 	 */
 	public function getRowCount(): int
 	{
-		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
+		return pg_num_rows($this->resultSet);
 	}
 
 
@@ -40,7 +40,7 @@ class OracleResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Dibi\Helpers::false2Null(oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS));
+		return Helpers::false2Null(pg_fetch_array($this->resultSet, null, $assoc ? PGSQL_ASSOC : PGSQL_NUM));
 	}
 
 
@@ -49,7 +49,7 @@ class OracleResult implements Result
 	 */
 	public function seek(int $row): bool
 	{
-		throw new Dibi\NotImplementedException;
+		return pg_result_seek($this->resultSet, $row);
 	}
 
 
@@ -58,7 +58,7 @@ class OracleResult implements Result
 	 */
 	public function free(): void
 	{
-		oci_free_statement($this->resultSet);
+		pg_free_result($this->resultSet);
 	}
 
 
@@ -67,17 +67,18 @@ class OracleResult implements Result
 	 */
 	public function getResultColumns(): array
 	{
-		$count = oci_num_fields($this->resultSet);
+		$count = pg_num_fields($this->resultSet);
 		$columns = [];
-		for ($i = 1; $i <= $count; $i++) {
-			$type = oci_field_type($this->resultSet, $i);
-			$columns[] = [
-				'name' => oci_field_name($this->resultSet, $i),
-				'table' => null,
-				'fullname' => oci_field_name($this->resultSet, $i),
-				'type' => $type === 'LONG' ? Dibi\Type::Text : null,
-				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
+		for ($i = 0; $i < $count; $i++) {
+			$row = [
+				'name' => pg_field_name($this->resultSet, $i),
+				'table' => pg_field_table($this->resultSet, $i),
+				'nativetype' => pg_field_type($this->resultSet, $i),
 			];
+			$row['fullname'] = $row['table']
+				? $row['table'] . '.' . $row['name']
+				: $row['name'];
+			$columns[] = $row;
 		}
 
 		return $columns;
@@ -86,11 +87,10 @@ class OracleResult implements Result
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|null
 	 */
-	public function getResultResource(): mixed
+	public function getResultResource(): PgSql\Result
 	{
-		return is_resource($this->resultSet) ? $this->resultSet : null;
+		return $this->resultSet;
 	}
 
 
@@ -99,6 +99,6 @@ class OracleResult implements Result
 	 */
 	public function unescapeBinary(string $value): string
 	{
-		return $value;
+		return pg_unescape_bytea($value);
 	}
 }

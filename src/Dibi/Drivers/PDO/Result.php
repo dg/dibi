@@ -7,20 +7,22 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\PDO;
 
 use Dibi;
-use function is_resource;
+use Dibi\Drivers;
+use Dibi\Helpers;
+use PDO;
 
 
 /**
- * The driver for Microsoft SQL Server and SQL Azure result set.
+ * The driver for PDO result set.
  */
-class SqlsrvResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
-		/** @var resource */
-		private $resultSet,
+		private ?\PDOStatement $resultSet,
+		private readonly string $driverName,
 	) {
 	}
 
@@ -30,7 +32,7 @@ class SqlsrvResult implements Result
 	 */
 	public function getRowCount(): int
 	{
-		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
+		return $this->resultSet->rowCount();
 	}
 
 
@@ -40,7 +42,7 @@ class SqlsrvResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Dibi\Helpers::false2Null(sqlsrv_fetch_array($this->resultSet, $assoc ? SQLSRV_FETCH_ASSOC : SQLSRV_FETCH_NUMERIC));
+		return Helpers::false2Null($this->resultSet->fetch($assoc ? PDO::FETCH_ASSOC : PDO::FETCH_NUM));
 	}
 
 
@@ -58,21 +60,36 @@ class SqlsrvResult implements Result
 	 */
 	public function free(): void
 	{
-		sqlsrv_free_stmt($this->resultSet);
+		$this->resultSet = null;
 	}
 
 
 	/**
 	 * Returns metadata for all columns in a result set.
+	 * @throws Dibi\Exception
 	 */
 	public function getResultColumns(): array
 	{
+		$count = $this->resultSet->columnCount();
 		$columns = [];
-		foreach ((array) sqlsrv_field_metadata($this->resultSet) as $fieldMetadata) {
+		for ($i = 0; $i < $count; $i++) {
+			$row = @$this->resultSet->getColumnMeta($i); // intentionally @
+			if ($row === false) {
+				throw new Dibi\NotSupportedException('Driver does not support meta data.');
+			}
+
+			$row += [
+				'table' => null,
+				'native_type' => 'VAR_STRING',
+			];
+
 			$columns[] = [
-				'name' => $fieldMetadata['Name'],
-				'fullname' => $fieldMetadata['Name'],
-				'nativetype' => $fieldMetadata['Type'],
+				'name' => $row['name'],
+				'table' => $row['table'],
+				'nativetype' => $row['native_type'],
+				'type' => $row['native_type'] === 'TIME' && $this->driverName === 'mysql' ? Dibi\Type::TimeInterval : null,
+				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
+				'vendor' => $row,
 			];
 		}
 
@@ -82,11 +99,10 @@ class SqlsrvResult implements Result
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|null
 	 */
-	public function getResultResource(): mixed
+	public function getResultResource(): ?\PDOStatement
 	{
-		return is_resource($this->resultSet) ? $this->resultSet : null;
+		return $this->resultSet;
 	}
 
 

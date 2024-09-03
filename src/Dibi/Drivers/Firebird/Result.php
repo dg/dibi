@@ -7,9 +7,10 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\Ibase;
 
 use Dibi;
+use Dibi\Drivers;
 use Dibi\Helpers;
 use function is_resource;
 
@@ -17,7 +18,7 @@ use function is_resource;
 /**
  * The driver for Firebird/InterBase result set.
  */
-class FirebirdResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
 		/** @var resource */
@@ -46,7 +47,7 @@ class FirebirdResult implements Result
 			: @ibase_fetch_row($this->resultSet, IBASE_TEXT); // intentionally @
 
 		if (ibase_errcode()) {
-			if (ibase_errcode() === FirebirdDriver::ERROR_EXCEPTION_THROWN) {
+			if (ibase_errcode() === Connection::ERROR_EXCEPTION_THROWN) {
 				preg_match('/exception (\d+) (\w+) (.*)/is', ibase_errmsg(), $match);
 				throw new Dibi\ProcedureException($match[3], $match[1], $match[2]);
 
