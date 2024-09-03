@@ -16,7 +16,7 @@ use Dibi\Helpers;
 /**
  * The driver for SQLite result set.
  */
-class SqliteResult implements Dibi\ResultDriver
+class SqliteResult implements Result
 {
 	public function __construct(
 		private readonly \SQLite3Result $resultSet,

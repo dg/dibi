@@ -28,7 +28,7 @@ class Result
 
 
 	public function __construct(
-		private readonly Dibi\ResultDriver $driver,
+		private readonly Dibi\Drivers\Result $driver,
 	) {
 	}
 
@@ -78,7 +78,7 @@ class Result
 	{
 		if (!isset($this->columns)) {
 			$this->columns = [];
-			$reflector = $this->driver instanceof Dibi\Reflector
+			$reflector = $this->driver instanceof Dibi\Drivers\Engine
 				? $this->driver
 				: null;
 			foreach ($this->driver->getResultColumns() as $info) {

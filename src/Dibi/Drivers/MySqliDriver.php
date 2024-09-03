@@ -30,7 +30,7 @@ use Dibi;
  *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
  *   - resource (mysqli) => existing connection resource
  */
-class MySqliDriver implements Dibi\Driver
+class MySqliDriver implements Connection
 {
 	public const ErrorAccessDenied = 1045;
 	public const ErrorDuplicateEntry = 1062;
@@ -146,7 +146,7 @@ class MySqliDriver implements Dibi\Driver
 	 * Executes the SQL query.
 	 * @throws Dibi\DriverException
 	 */
-	public function query(string $sql): ?Dibi\ResultDriver
+	public function query(string $sql): ?Result
 	{
 		$res = @$this->connection->query($sql, $this->buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT); // intentionally @
 
@@ -263,7 +263,7 @@ class MySqliDriver implements Dibi\Driver
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Dibi\Reflector
+	public function getReflector(): Engine
 	{
 		return new MySqlReflector($this);
 	}

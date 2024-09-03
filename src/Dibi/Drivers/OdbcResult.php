@@ -15,7 +15,7 @@ use Dibi;
 /**
  * The driver interacting with result set via ODBC connections.
  */
-class OdbcResult implements Dibi\ResultDriver
+class OdbcResult implements Result
 {
 	private int $row = 0;
 

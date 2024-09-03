@@ -15,8 +15,8 @@ namespace Dibi;
  */
 final class Translator
 {
-	private readonly Connection $connection;
-	private readonly Driver $driver;
+	private Connection $connection;
+	private readonly Drivers\Connection $driver;
 	private int $cursor = 0;
 	private array $args;
 

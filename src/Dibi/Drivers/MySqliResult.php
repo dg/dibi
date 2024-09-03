@@ -15,7 +15,7 @@ use Dibi;
 /**
  * The driver for MySQL result set.
  */
-class MySqliResult implements Dibi\ResultDriver
+class MySqliResult implements Result
 {
 	public function __construct(
 		private readonly \mysqli_result $resultSet,
