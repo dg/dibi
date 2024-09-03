@@ -25,7 +25,7 @@ use Dibi;
  */
 class Table
 {
-	private Dibi\Reflector $reflector;
+	private readonly Dibi\Reflector $reflector;
 	private string $name;
 	private bool $view;
 

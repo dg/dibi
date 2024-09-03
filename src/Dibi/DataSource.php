@@ -15,8 +15,8 @@ namespace Dibi;
  */
 class DataSource implements IDataSource
 {
-	private Connection $connection;
-	private string $sql;
+	private readonly Connection $connection;
+	private readonly string $sql;
 	private ?Result $result = null;
 	private ?int $count = null;
 	private ?int $totalCount = null;

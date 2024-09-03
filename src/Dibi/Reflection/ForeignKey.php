@@ -20,8 +20,8 @@ namespace Dibi\Reflection;
 class ForeignKey
 {
 	public function __construct(
-		private string $name,
-		private array $references,
+		private readonly string $name,
+		private readonly array $references,
 	) {
 	}
 

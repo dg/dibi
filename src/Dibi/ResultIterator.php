@@ -20,7 +20,7 @@ class ResultIterator implements \Iterator, \Countable
 
 
 	public function __construct(
-		private Result $result,
+		private readonly Result $result,
 	) {
 	}
 

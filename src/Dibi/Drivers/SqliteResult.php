@@ -19,7 +19,7 @@ use Dibi\Helpers;
 class SqliteResult implements Dibi\ResultDriver
 {
 	public function __construct(
-		private \SQLite3Result $resultSet,
+		private readonly \SQLite3Result $resultSet,
 	) {
 	}
 
