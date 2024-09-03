@@ -18,7 +18,7 @@ use Dibi;
 class NoDataResult implements Dibi\ResultDriver
 {
 	public function __construct(
-		private int $rows,
+		private readonly int $rows,
 	) {
 	}
 
