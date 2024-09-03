@@ -21,7 +21,7 @@ class PdoResult implements Dibi\ResultDriver
 {
 	public function __construct(
 		private ?\PDOStatement $resultSet,
-		private string $driverName,
+		private readonly string $driverName,
 	) {
 	}
 

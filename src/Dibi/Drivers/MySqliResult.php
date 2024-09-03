@@ -18,8 +18,8 @@ use Dibi;
 class MySqliResult implements Dibi\ResultDriver
 {
 	public function __construct(
-		private \mysqli_result $resultSet,
-		private bool $buffered,
+		private readonly \mysqli_result $resultSet,
+		private readonly bool $buffered,
 	) {
 	}
 
