@@ -19,7 +19,6 @@ class PostgreReflector implements Dibi\Reflector
 {
 	public function __construct(
 		private readonly Dibi\Driver $driver,
-		private readonly string $version,
 	) {
 	}
 
@@ -39,18 +38,15 @@ class PostgreReflector implements Dibi\Reflector
 			FROM
 				information_schema.tables
 			WHERE
-				table_schema = ANY (current_schemas(false))";
+				table_schema = ANY (current_schemas(false))
 
-		if ($this->version >= 9.3) {
-			$query .= '
-				UNION ALL
-				SELECT
-					matviewname, 1
-				FROM
-					pg_matviews
-				WHERE
-					schemaname = ANY (current_schemas(false))';
-		}
+			UNION ALL
+			SELECT
+				matviewname, 1
+			FROM
+				pg_matviews
+			WHERE
+				schemaname = ANY (current_schemas(false))";
 
 		$res = $this->driver->query($query);
 		$tables = [];
