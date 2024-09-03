@@ -36,7 +36,7 @@ test('', function () use ($config) {
 
 	Assert::null($conn->getConfig('lazy'));
 	Assert::same($config['driver'], $conn->getConfig('driver'));
-	Assert::type(Dibi\Driver::class, $conn->getDriver());
+	Assert::type(Dibi\Drivers\Connection::class, $conn->getDriver());
 });
 
 
