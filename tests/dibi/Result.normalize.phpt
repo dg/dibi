@@ -222,14 +222,10 @@ test('', function () {
 	Assert::same(['col' => 1], $result->test(['col' => true]));
 	Assert::same(['col' => 0], $result->test(['col' => false]));
 
-	if (PHP_VERSION_ID < 80000) {
-		Assert::same(['col' => 0], @$result->test(['col' => ''])); // triggers warning since PHP 7.1
-	} else {
-		Assert::exception(
-			fn() => Assert::same(['col' => 0], $result->test(['col' => ''])),
-			TypeError::class,
-		);
-	}
+	Assert::exception(
+		fn() => Assert::same(['col' => 0], $result->test(['col' => ''])),
+		TypeError::class,
+	);
 
 	Assert::same(['col' => 0], $result->test(['col' => '0']));
 	Assert::same(['col' => 1], $result->test(['col' => '1']));
