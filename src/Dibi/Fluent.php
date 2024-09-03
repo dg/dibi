@@ -97,7 +97,7 @@ class Fluent implements IDataSource
 		'RIGHT JOIN' => 'FROM',
 	];
 
-	private Connection $connection;
+	private readonly Connection $connection;
 	private array $setups = [];
 	private ?string $command = null;
 	private array $clauses = [];

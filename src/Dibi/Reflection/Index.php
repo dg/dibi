@@ -22,7 +22,7 @@ namespace Dibi\Reflection;
 class Index
 {
 	public function __construct(
-		private array $info,
+		private readonly array $info,
 	) {
 	}
 

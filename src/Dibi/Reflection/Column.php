@@ -28,7 +28,7 @@ use Dibi;
 class Column
 {
 	public function __construct(
-		private ?Dibi\Reflector $reflector,
+		private readonly ?Dibi\Reflector $reflector,
 		private array $info,
 	) {
 	}
