@@ -17,12 +17,9 @@ use Dibi;
  */
 class NoDataResult implements Dibi\ResultDriver
 {
-	private int $rows;
-
-
-	public function __construct(int $rows)
-	{
-		$this->rows = $rows;
+	public function __construct(
+		private int $rows,
+	) {
 	}
 
 

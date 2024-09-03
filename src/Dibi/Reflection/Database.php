@@ -21,17 +21,14 @@ use Dibi;
  */
 class Database
 {
-	private Dibi\Reflector $reflector;
-	private ?string $name;
-
 	/** @var Table[] */
 	private array $tables;
 
 
-	public function __construct(Dibi\Reflector $reflector, ?string $name = null)
-	{
-		$this->reflector = $reflector;
-		$this->name = $name;
+	public function __construct(
+		private Dibi\Reflector $reflector,
+		private ?string $name = null,
+	) {
 	}
 
 

@@ -19,16 +19,10 @@ namespace Dibi\Reflection;
  */
 class ForeignKey
 {
-	private string $name;
-
-	/** @var array of [local, foreign, onDelete, onUpdate] */
-	private array $references;
-
-
-	public function __construct(string $name, array $references)
-	{
-		$this->name = $name;
-		$this->references = $references;
+	public function __construct(
+		private string $name,
+		private array $references,
+	) {
 	}
 
 

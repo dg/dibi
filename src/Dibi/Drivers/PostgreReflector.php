@@ -17,14 +17,10 @@ use Dibi;
  */
 class PostgreReflector implements Dibi\Reflector
 {
-	private Dibi\Driver $driver;
-	private string $version;
-
-
-	public function __construct(Dibi\Driver $driver, string $version)
-	{
-		$this->driver = $driver;
-		$this->version = $version;
+	public function __construct(
+		private Dibi\Driver $driver,
+		private string $version,
+	) {
 	}
 
 

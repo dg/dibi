@@ -15,14 +15,13 @@ namespace Dibi;
  */
 class ResultIterator implements \Iterator, \Countable
 {
-	private Result $result;
 	private mixed $row;
 	private int $pointer = 0;
 
 
-	public function __construct(Result $result)
-	{
-		$this->result = $result;
+	public function __construct(
+		private Result $result,
+	) {
 	}
 
 

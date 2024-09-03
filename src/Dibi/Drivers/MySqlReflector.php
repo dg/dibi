@@ -18,12 +18,9 @@ use Dibi;
  */
 class MySqlReflector implements Dibi\Reflector
 {
-	private Dibi\Driver $driver;
-
-
-	public function __construct(Dibi\Driver $driver)
-	{
-		$this->driver = $driver;
+	public function __construct(
+		private Dibi\Driver $driver,
+	) {
 	}
 
 
