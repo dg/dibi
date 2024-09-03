@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Dibi\Drivers\Engines;
 
+use Dibi;
 use Dibi\Drivers\Connection;
 use Dibi\Drivers\Engine;
 
@@ -21,6 +22,61 @@ class SQLiteEngine implements Engine
 	public function __construct(
 		private readonly Connection $driver,
 	) {
+	}
+
+
+	public function escapeIdentifier(string $value): string
+	{
+		return '[' . strtr($value, '[]', '  ') . ']';
+	}
+
+
+	public function escapeBool(bool $value): string
+	{
+		return $value ? '1' : '0';
+	}
+
+
+	public function escapeDate(\DateTimeInterface $value): string
+	{
+		return $value->format($this->fmtDate); // TODO
+	}
+
+
+	public function escapeDateTime(\DateTimeInterface $value): string
+	{
+		return $value->format($this->fmtDateTime); // TODO
+	}
+
+
+	public function escapeDateInterval(\DateInterval $value): string
+	{
+		throw new Dibi\NotImplementedException;
+	}
+
+
+	/**
+	 * Encodes string for use in a LIKE statement.
+	 */
+	public function escapeLike(string $value, int $pos): string
+	{
+		$value = addcslashes($this->driver->escapeText($value), '%_\\');
+		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'") . " ESCAPE '\\'";
+	}
+
+
+	/**
+	 * Injects LIMIT/OFFSET to the SQL query.
+	 */
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	{
+		if ($limit < 0 || $offset < 0) {
+			throw new Dibi\NotSupportedException('Negative offset or limit.');
+
+		} elseif ($limit !== null || $offset) {
+			$sql .= ' LIMIT ' . ($limit ?? '-1')
+				. ($offset ? ' OFFSET ' . $offset : '');
+		}
 	}
 
 
@@ -49,7 +105,7 @@ class SQLiteEngine implements Engine
 	 */
 	public function getColumns(string $table): array
 	{
-		$res = $this->driver->query("PRAGMA table_info({$this->driver->escapeIdentifier($table)})");
+		$res = $this->driver->query("PRAGMA table_info({$this->escapeIdentifier($table)})");
 		$columns = [];
 		while ($row = $res->fetch(true)) {
 			$column = $row['name'];
@@ -76,7 +132,7 @@ class SQLiteEngine implements Engine
 	 */
 	public function getIndexes(string $table): array
 	{
-		$res = $this->driver->query("PRAGMA index_list({$this->driver->escapeIdentifier($table)})");
+		$res = $this->driver->query("PRAGMA index_list({$this->escapeIdentifier($table)})");
 		$indexes = [];
 		while ($row = $res->fetch(true)) {
 			$indexes[$row['name']]['name'] = $row['name'];
@@ -84,7 +140,7 @@ class SQLiteEngine implements Engine
 		}
 
 		foreach ($indexes as $index => $values) {
-			$res = $this->driver->query("PRAGMA index_info({$this->driver->escapeIdentifier($index)})");
+			$res = $this->driver->query("PRAGMA index_info({$this->escapeIdentifier($index)})");
 			while ($row = $res->fetch(true)) {
 				$indexes[$index]['columns'][$row['seqno']] = $row['name'];
 			}
@@ -127,7 +183,7 @@ class SQLiteEngine implements Engine
 	 */
 	public function getForeignKeys(string $table): array
 	{
-		$res = $this->driver->query("PRAGMA foreign_key_list({$this->driver->escapeIdentifier($table)})");
+		$res = $this->driver->query("PRAGMA foreign_key_list({$this->escapeIdentifier($table)})");
 		$keys = [];
 		while ($row = $res->fetch(true)) {
 			$keys[$row['id']]['name'] = $row['id']; // foreign key name

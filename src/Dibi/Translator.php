@@ -15,8 +15,9 @@ namespace Dibi;
  */
 final class Translator
 {
-	private Connection $connection;
+	private readonly Connection $connection;
 	private readonly Drivers\Connection $driver;
+	private readonly Drivers\Engine $engine;
 	private int $cursor = 0;
 	private array $args;
 
@@ -34,6 +35,7 @@ final class Translator
 	{
 		$this->connection = $connection;
 		$this->driver = $connection->getDriver();
+		$this->engine = $connection->getDatabaseEngine();
 		$this->identifiers = new HashMap($this->delimite(...));
 	}
 
@@ -142,7 +144,7 @@ final class Translator
 
 		// apply limit
 		if ($this->limit !== null || $this->offset !== null) {
-			$this->driver->applyLimit($sql, $this->limit, $this->offset);
+			$this->engine->applyLimit($sql, $this->limit, $this->offset);
 		}
 
 		return $sql;
@@ -207,7 +209,7 @@ final class Translator
 				case 'n':  // key, key, ... identifier names
 					foreach ($value as $k => $v) {
 						if (is_string($k)) {
-							$vx[] = $this->identifiers->$k . (empty($v) ? '' : ' AS ' . $this->driver->escapeIdentifier($v));
+							$vx[] = $this->identifiers->$k . (empty($v) ? '' : ' AS ' . $this->engine->escapeIdentifier($v));
 						} else {
 							$pair = explode('%', $v, 2); // split into identifier & modifier
 							$vx[] = $this->identifiers->{$pair[0]};
@@ -344,7 +346,7 @@ final class Translator
 				case 's':  // string
 					return $value === null
 						? 'NULL'
-						: $this->driver->escapeText((string) $value);
+						: $this->engine->escapeText((string) $value);
 
 				case 'bin':// binary
 					return $value === null
@@ -354,7 +356,7 @@ final class Translator
 				case 'b':  // boolean
 					return $value === null
 						? 'NULL'
-						: $this->driver->escapeBool((bool) $value);
+						: $this->engine->escapeBool((bool) $value);
 
 				case 'sN': // string or null
 				case 'sn':
@@ -404,15 +406,15 @@ final class Translator
 					}
 
 					return $modifier === 'd'
-						? $this->driver->escapeDate($value)
-						: $this->driver->escapeDateTime($value);
+						? $this->engine->escapeDate($value)
+						: $this->engine->escapeDateTime($value);
 
 				case 'by':
 				case 'n':  // composed identifier name
 					return $this->identifiers->$value;
 
 				case 'N':  // identifier name
-					return $this->driver->escapeIdentifier($value);
+					return $this->engine->escapeIdentifier($value);
 
 				case 'ex':
 				case 'sql': // preserve as dibi-SQL  (TODO: leave only %ex)
@@ -448,16 +450,16 @@ final class Translator
 					return (string) $value;
 
 				case 'like~':  // LIKE string%
-					return $this->driver->escapeLike($value, 2);
+					return $this->engine->escapeLike($value, 2);
 
 				case '~like':  // LIKE %string
-					return $this->driver->escapeLike($value, 1);
+					return $this->engine->escapeLike($value, 1);
 
 				case '~like~': // LIKE %string%
-					return $this->driver->escapeLike($value, 3);
+					return $this->engine->escapeLike($value, 3);
 
 				case 'like': // LIKE string
-					return $this->driver->escapeLike($value, 0);
+					return $this->engine->escapeLike($value, 0);
 
 				case 'and':
 				case 'or':
@@ -483,16 +485,16 @@ final class Translator
 			return rtrim(rtrim(number_format($value, 10, '.', ''), '0'), '.');
 
 		} elseif (is_bool($value)) {
-			return $this->driver->escapeBool($value);
+			return $this->engine->escapeBool($value);
 
 		} elseif ($value === null) {
 			return 'NULL';
 
 		} elseif ($value instanceof \DateTimeInterface) {
-			return $this->driver->escapeDateTime($value);
+			return $this->engine->escapeDateTime($value);
 
 		} elseif ($value instanceof \DateInterval) {
-			return $this->driver->escapeDateInterval($value);
+			return $this->engine->escapeDateInterval($value);
 
 		} elseif ($value instanceof Literal) {
 			return (string) $value;
@@ -651,7 +653,7 @@ final class Translator
 		$parts = explode('.', $value);
 		foreach ($parts as &$v) {
 			if ($v !== '*') {
-				$v = $this->driver->escapeIdentifier($v);
+				$v = $this->engine->escapeIdentifier($v);
 			}
 		}
 
