@@ -18,12 +18,9 @@ use Dibi\Helpers;
  */
 class SqliteResult implements Dibi\ResultDriver
 {
-	private \SQLite3Result $resultSet;
-
-
-	public function __construct(\SQLite3Result $resultSet)
-	{
-		$this->resultSet = $resultSet;
+	public function __construct(
+		private \SQLite3Result $resultSet,
+	) {
 	}
 
 

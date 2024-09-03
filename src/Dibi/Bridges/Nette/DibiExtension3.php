@@ -20,14 +20,10 @@ use Tracy;
  */
 class DibiExtension3 extends Nette\DI\CompilerExtension
 {
-	private ?bool $debugMode;
-	private ?bool $cliMode;
-
-
-	public function __construct(?bool $debugMode = null, ?bool $cliMode = null)
-	{
-		$this->debugMode = $debugMode;
-		$this->cliMode = $cliMode;
+	public function __construct(
+		private ?bool $debugMode = null,
+		private ?bool $cliMode = null,
+	) {
 	}
 
 

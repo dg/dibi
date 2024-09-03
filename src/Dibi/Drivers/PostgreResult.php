@@ -19,16 +19,10 @@ use PgSql;
  */
 class PostgreResult implements Dibi\ResultDriver
 {
-	/** @var resource|PgSql\Result */
-	private $resultSet;
-
-
-	/**
-	 * @param  resource|PgSql\Result  $resultSet
-	 */
-	public function __construct($resultSet)
-	{
-		$this->resultSet = $resultSet;
+	public function __construct(
+		/** @var resource|PgSql\Result */
+		private $resultSet,
+	) {
 	}
 
 
