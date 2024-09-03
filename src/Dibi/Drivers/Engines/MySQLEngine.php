@@ -26,6 +26,66 @@ class MySQLEngine implements Engine
 	}
 
 
+	public function escapeIdentifier(string $value): string
+	{
+		return '`' . str_replace('`', '``', $value) . '`';
+	}
+
+
+	public function escapeBool(bool $value): string
+	{
+		return $value ? '1' : '0';
+	}
+
+
+	public function escapeDate(\DateTimeInterface $value): string
+	{
+		return $value->format("'Y-m-d'");
+	}
+
+
+	public function escapeDateTime(\DateTimeInterface $value): string
+	{
+		return $value->format("'Y-m-d H:i:s.u'");
+	}
+
+
+	public function escapeDateInterval(\DateInterval $value): string
+	{
+		if ($value->y || $value->m || $value->d) {
+			throw new Dibi\NotSupportedException('Only time interval is supported.');
+		}
+
+		return $value->format("'%r%H:%I:%S.%f'");
+	}
+
+
+	/**
+	 * Encodes string for use in a LIKE statement.
+	 */
+	public function escapeLike(string $value, int $pos): string
+	{
+		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
+		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
+	}
+
+
+	/**
+	 * Injects LIMIT/OFFSET to the SQL query.
+	 */
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	{
+		if ($limit < 0 || $offset < 0) {
+			throw new Dibi\NotSupportedException('Negative offset or limit.');
+
+		} elseif ($limit !== null || $offset) {
+			// see http://dev.mysql.com/doc/refman/5.0/en/select.html
+			$sql .= ' LIMIT ' . ($limit ?? '18446744073709551615')
+				. ($offset ? ' OFFSET ' . $offset : '');
+		}
+	}
+
+
 	/**
 	 * Returns list of tables.
 	 */
@@ -49,7 +109,7 @@ class MySQLEngine implements Engine
 	 */
 	public function getColumns(string $table): array
 	{
-		$res = $this->driver->query("SHOW FULL COLUMNS FROM {$this->driver->escapeIdentifier($table)}");
+		$res = $this->driver->query("SHOW FULL COLUMNS FROM {$this->escapeIdentifier($table)}");
 		$columns = [];
 		while ($row = $res->fetch(true)) {
 			$type = explode('(', $row['Type']);
@@ -74,7 +134,7 @@ class MySQLEngine implements Engine
 	 */
 	public function getIndexes(string $table): array
 	{
-		$res = $this->driver->query("SHOW INDEX FROM {$this->driver->escapeIdentifier($table)}");
+		$res = $this->driver->query("SHOW INDEX FROM {$this->escapeIdentifier($table)}");
 		$indexes = [];
 		while ($row = $res->fetch(true)) {
 			$indexes[$row['Key_name']]['name'] = $row['Key_name'];

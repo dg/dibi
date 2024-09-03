@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Dibi\Drivers\Engines;
 
+use Dibi;
 use Dibi\Drivers\Connection;
 use Dibi\Drivers\Engine;
 
@@ -21,6 +22,58 @@ class FirebirdEngine implements Engine
 	public function __construct(
 		private readonly Connection $driver,
 	) {
+	}
+
+
+	public function escapeIdentifier(string $value): string
+	{
+		return '"' . str_replace('"', '""', $value) . '"';
+	}
+
+
+	public function escapeBool(bool $value): string
+	{
+		return $value ? '1' : '0';
+	}
+
+
+	public function escapeDate(\DateTimeInterface $value): string
+	{
+		return $value->format("'Y-m-d'");
+	}
+
+
+	public function escapeDateTime(\DateTimeInterface $value): string
+	{
+		return "'" . substr($value->format('Y-m-d H:i:s.u'), 0, -2) . "'";
+	}
+
+
+	public function escapeDateInterval(\DateInterval $value): string
+	{
+		throw new Dibi\NotImplementedException;
+	}
+
+
+	/**
+	 * Encodes string for use in a LIKE statement.
+	 */
+	public function escapeLike(string $value, int $pos): string
+	{
+		$value = addcslashes($this->driver->escapeText($value), '%_\\');
+		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'") . " ESCAPE '\\'";
+	}
+
+
+	/**
+	 * Injects LIMIT/OFFSET to the SQL query.
+	 */
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	{
+		if ($limit > 0 || $offset > 0) {
+			// http://www.firebirdsql.org/refdocs/langrefupd20-select.html
+			$sql = 'SELECT ' . ($limit > 0 ? 'FIRST ' . $limit : '') . ($offset > 0 ? ' SKIP ' . $offset : '') . ' * FROM (' . $sql . ')';
+		}
 	}
 
 
