@@ -7,30 +7,32 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\PDO;
 
 use Dibi;
+use Dibi\Drivers;
 use Dibi\Helpers;
+use PDO;
 
 
 /**
- * The driver for SQLite result set.
+ * The driver for PDO result set.
  */
-class SqliteResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
-		private readonly \SQLite3Result $resultSet,
+		private ?\PDOStatement $resultSet,
+		private readonly string $driverName,
 	) {
 	}
 
 
 	/**
 	 * Returns the number of rows in a result set.
-	 * @throws Dibi\NotSupportedException
 	 */
 	public function getRowCount(): int
 	{
-		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
+		return $this->resultSet->rowCount();
 	}
 
 
@@ -40,13 +42,12 @@ class SqliteResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Helpers::false2Null($this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM));
+		return Helpers::false2Null($this->resultSet->fetch($assoc ? PDO::FETCH_ASSOC : PDO::FETCH_NUM));
 	}
 
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @throws Dibi\NotSupportedException
 	 */
 	public function seek(int $row): bool
 	{
@@ -59,24 +60,36 @@ class SqliteResult implements Result
 	 */
 	public function free(): void
 	{
-		$this->resultSet->finalize();
+		$this->resultSet = null;
 	}
 
 
 	/**
 	 * Returns metadata for all columns in a result set.
+	 * @throws Dibi\Exception
 	 */
 	public function getResultColumns(): array
 	{
-		$count = $this->resultSet->numColumns();
+		$count = $this->resultSet->columnCount();
 		$columns = [];
-		$types = [SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null'];
 		for ($i = 0; $i < $count; $i++) {
-			$columns[] = [
-				'name' => $this->resultSet->columnName($i),
+			$row = @$this->resultSet->getColumnMeta($i); // intentionally @
+			if ($row === false) {
+				throw new Dibi\NotSupportedException('Driver does not support meta data.');
+			}
+
+			$row += [
 				'table' => null,
-				'fullname' => $this->resultSet->columnName($i),
-				'nativetype' => $types[$this->resultSet->columnType($i)] ?? null, // buggy in PHP 7.4.4 & 7.3.16, bug 79414
+				'native_type' => 'VAR_STRING',
+			];
+
+			$columns[] = [
+				'name' => $row['name'],
+				'table' => $row['table'],
+				'nativetype' => $row['native_type'],
+				'type' => $row['native_type'] === 'TIME' && $this->driverName === 'mysql' ? Dibi\Type::TimeInterval : null,
+				'fullname' => $row['table'] ? $row['table'] . '.' . $row['name'] : $row['name'],
+				'vendor' => $row,
 			];
 		}
 
@@ -87,7 +100,7 @@ class SqliteResult implements Result
 	/**
 	 * Returns the result set resource.
 	 */
-	public function getResultResource(): \SQLite3Result
+	public function getResultResource(): ?\PDOStatement
 	{
 		return $this->resultSet;
 	}
