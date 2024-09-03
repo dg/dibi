@@ -57,28 +57,28 @@ $fluent = $conn->select('*')
 	->orderBy('customer_id');
 
 Assert::same(
-	reformat('SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY'),
 	(string) $fluent,
 );
 
 
 $fluent->fetch();
 Assert::same(
-	'SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t',
+	'SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY',
 	dibi::$sql,
 );
 $fluent->fetchSingle();
 Assert::same(
-	reformat('SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY'),
 	dibi::$sql,
 );
 $fluent->fetchAll(0, 3);
 Assert::same(
-	reformat('SELECT TOP (3) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 0 ROWS FETCH NEXT 3 ROWS ONLY'),
 	dibi::$sql,
 );
 Assert::same(
-	reformat('SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY'),
 	(string) $fluent,
 );
 
@@ -86,16 +86,16 @@ Assert::same(
 $fluent->limit(0);
 $fluent->fetch();
 Assert::same(
-	reformat('SELECT TOP (0) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 0 ROWS FETCH NEXT 0 ROWS ONLY'),
 	dibi::$sql,
 );
 $fluent->fetchSingle();
 Assert::same(
-	reformat('SELECT TOP (0) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 0 ROWS FETCH NEXT 0 ROWS ONLY'),
 	dibi::$sql,
 );
 Assert::same(
-	reformat('SELECT TOP (0) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 0 ROWS FETCH NEXT 0 ROWS ONLY'),
 	(string) $fluent,
 );
 
@@ -104,12 +104,12 @@ $fluent->removeClause('limit');
 $fluent->removeClause('offset');
 $fluent->fetch();
 Assert::same(
-	reformat('SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY'),
 	dibi::$sql,
 );
 $fluent->fetchSingle();
 Assert::same(
-	reformat('SELECT TOP (1) * FROM (SELECT * FROM [customers] ORDER BY [customer_id]) t'),
+	reformat('SELECT * FROM [customers] ORDER BY [customer_id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY'),
 	dibi::$sql,
 );
 Assert::same(
