@@ -11,7 +11,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php: ['8.0', '8.1', '8.2', '8.3', '8.4']
+                php: ['8.2', '8.3', '8.4']
 
             fail-fast: false
 
@@ -112,7 +112,7 @@ jobs:
 
 
             - name: Save Code Coverage
-              if: ${{ matrix.php == '8.0' }}
+              if: ${{ matrix.php == '8.2' }}
               env:
                   COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
