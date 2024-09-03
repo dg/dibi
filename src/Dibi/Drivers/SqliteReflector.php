@@ -9,16 +9,15 @@ declare(strict_types=1);
 
 namespace Dibi\Drivers;
 
-use Dibi;
 
 
 /**
  * The reflector for SQLite database.
  */
-class SqliteReflector implements Dibi\Reflector
+class SqliteReflector implements Engine
 {
 	public function __construct(
-		private readonly Dibi\Driver $driver,
+		private readonly Connection $driver,
 	) {
 	}
 
