@@ -7,19 +7,21 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\OCI8;
 
-use Dibi\Helpers;
-use PgSql;
+use Dibi;
+use Dibi\Drivers;
+use function is_resource;
 
 
 /**
- * The driver for PostgreSQL result set.
+ * The driver for Oracle result set.
  */
-class PostgreResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
-		private readonly PgSql\Result $resultSet,
+		/** @var resource */
+		private $resultSet,
 	) {
 	}
 
@@ -29,7 +31,7 @@ class PostgreResult implements Result
 	 */
 	public function getRowCount(): int
 	{
-		return pg_num_rows($this->resultSet);
+		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
 	}
 
 
@@ -39,7 +41,7 @@ class PostgreResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Helpers::false2Null(pg_fetch_array($this->resultSet, null, $assoc ? PGSQL_ASSOC : PGSQL_NUM));
+		return Dibi\Helpers::false2Null(oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS));
 	}
 
 
@@ -48,7 +50,7 @@ class PostgreResult implements Result
 	 */
 	public function seek(int $row): bool
 	{
-		return pg_result_seek($this->resultSet, $row);
+		throw new Dibi\NotImplementedException;
 	}
 
 
@@ -57,7 +59,7 @@ class PostgreResult implements Result
 	 */
 	public function free(): void
 	{
-		pg_free_result($this->resultSet);
+		oci_free_statement($this->resultSet);
 	}
 
 
@@ -66,18 +68,17 @@ class PostgreResult implements Result
 	 */
 	public function getResultColumns(): array
 	{
-		$count = pg_num_fields($this->resultSet);
+		$count = oci_num_fields($this->resultSet);
 		$columns = [];
-		for ($i = 0; $i < $count; $i++) {
-			$row = [
-				'name' => pg_field_name($this->resultSet, $i),
-				'table' => pg_field_table($this->resultSet, $i),
-				'nativetype' => pg_field_type($this->resultSet, $i),
+		for ($i = 1; $i <= $count; $i++) {
+			$type = oci_field_type($this->resultSet, $i);
+			$columns[] = [
+				'name' => oci_field_name($this->resultSet, $i),
+				'table' => null,
+				'fullname' => oci_field_name($this->resultSet, $i),
+				'type' => $type === 'LONG' ? Dibi\Type::Text : null,
+				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
 			];
-			$row['fullname'] = $row['table']
-				? $row['table'] . '.' . $row['name']
-				: $row['name'];
-			$columns[] = $row;
 		}
 
 		return $columns;
@@ -86,10 +87,11 @@ class PostgreResult implements Result
 
 	/**
 	 * Returns the result set resource.
+	 * @return resource|null
 	 */
-	public function getResultResource(): PgSql\Result
+	public function getResultResource(): mixed
 	{
-		return $this->resultSet;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 
 
@@ -98,6 +100,6 @@ class PostgreResult implements Result
 	 */
 	public function unescapeBinary(string $value): string
 	{
-		return pg_unescape_bytea($value);
+		return $value;
 	}
 }

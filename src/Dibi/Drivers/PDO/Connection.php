@@ -7,9 +7,11 @@
 
 declare(strict_types=1);
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\PDO;
 
 use Dibi;
+use Dibi\Drivers;
+use Dibi\Drivers\Engines;
 use Dibi\Helpers;
 use PDO;
 use function sprintf;
@@ -25,7 +27,7 @@ use function sprintf;
  *   - options (array) => driver specific options {@see PDO::__construct}
  *   - resource (PDO) => existing connection
  */
-class PdoDriver implements Connection
+class Connection implements Drivers\Connection
 {
 	private ?PDO $connection;
 	private ?int $affectedRows;
@@ -94,10 +96,10 @@ class PdoDriver implements Connection
 		$code ??= 0;
 		$message = "SQLSTATE[$sqlState]: $message";
 		throw match ($this->driverName) {
-			'mysql' => MySqliDriver::createException($message, $code, $sql),
-			'oci' => OracleDriver::createException($message, $code, $sql),
-			'pgsql' => PostgreDriver::createException($message, $sqlState, $sql),
-			'sqlite' => SqliteDriver::createException($message, $code, $sql),
+			'mysql' => Drivers\MySQLi\Connection::createException($message, $code, $sql),
+			'oci' => Drivers\OCI8\Connection::createException($message, $code, $sql),
+			'pgsql' => Drivers\PgSQL\Connection::createException($message, $sqlState, $sql),
+			'sqlite' => Drivers\SQLite3\Connection::createException($message, $code, $sql),
 			default => new Dibi\DriverException($message, $code, $sql),
 		};
 	}
@@ -172,14 +174,14 @@ class PdoDriver implements Connection
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Engine
+	public function getReflector(): Drivers\Engine
 	{
 		return match ($this->driverName) {
-			'mysql' => new MySqlReflector($this),
-			'oci' => new OracleReflector($this),
-			'pgsql' => new PostgreReflector($this),
-			'sqlite' => new SqliteReflector($this),
-			'mssql', 'dblib', 'sqlsrv' => new SqlsrvReflector($this),
+			'mysql' => new Engines\MySQLEngine($this),
+			'oci' => new Engines\OracleEngine($this),
+			'pgsql' => new Engines\PostgreSQLEngine($this),
+			'sqlite' => new Engines\SQLiteEngine($this),
+			'mssql', 'dblib', 'sqlsrv' => new Engines\SQLServerEngine($this),
 			default => throw new Dibi\NotSupportedException,
 		};
 	}
@@ -188,9 +190,9 @@ class PdoDriver implements Connection
 	/**
 	 * Result set driver factory.
 	 */
-	public function createResultDriver(\PDOStatement $result): PdoResult
+	public function createResultDriver(\PDOStatement $result): Result
 	{
-		return new PdoResult($result, $this->driverName);
+		return new Result($result, $this->driverName);
 	}
 
 
