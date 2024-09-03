@@ -35,7 +35,7 @@ class DataSource implements IDataSource
 	public function __construct(string $sql, Connection $connection)
 	{
 		$this->sql = strpbrk($sql, " \t\r\n") === false
-			? $connection->getDriver()->escapeIdentifier($sql) // table name
+			? $connection->getDatabaseEngine()->escapeIdentifier($sql) // table name
 			: '(' . $sql . ') t'; // SQL command
 		$this->connection = $connection;
 	}
