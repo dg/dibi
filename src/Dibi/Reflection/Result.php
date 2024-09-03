@@ -20,8 +20,6 @@ use Dibi;
  */
 class Result
 {
-	private Dibi\ResultDriver $driver;
-
 	/** @var Column[]|null */
 	private ?array $columns;
 
@@ -29,9 +27,9 @@ class Result
 	private ?array $names;
 
 
-	public function __construct(Dibi\ResultDriver $driver)
-	{
-		$this->driver = $driver;
+	public function __construct(
+		private Dibi\ResultDriver $driver,
+	) {
 	}
 
 

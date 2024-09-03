@@ -17,17 +17,11 @@ use Dibi;
  */
 class FileLogger
 {
-	/** Name of the file where SQL errors should be logged */
-	public string $file;
-	public int $filter;
-	private bool $errorsOnly;
-
-
-	public function __construct(string $file, ?int $filter = null, bool $errorsOnly = false)
-	{
-		$this->file = $file;
-		$this->filter = $filter ?: Dibi\Event::QUERY;
-		$this->errorsOnly = $errorsOnly;
+	public function __construct(
+		public string $file,
+		public int $filter = Dibi\Event::QUERY,
+		private bool $errorsOnly = false,
+	) {
 	}
 
 

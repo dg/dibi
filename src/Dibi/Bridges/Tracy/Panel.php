@@ -21,15 +21,14 @@ use Tracy;
 class Panel implements Tracy\IBarPanel
 {
 	public static int $maxLength = 1000;
-	public bool|string $explain;
-	public int $filter;
+
 	private array $events = [];
 
 
-	public function __construct(bool $explain = true, ?int $filter = null)
-	{
-		$this->filter = $filter ?: Event::QUERY;
-		$this->explain = $explain;
+	public function __construct(
+		public bool|string $explain = true,
+		public int $filter = Event::QUERY,
+	) {
 	}
 
 

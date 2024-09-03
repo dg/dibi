@@ -21,13 +21,9 @@ namespace Dibi\Reflection;
  */
 class Index
 {
-	/** @var array (name, columns, [unique], [primary]) */
-	private array $info;
-
-
-	public function __construct(array $info)
-	{
-		$this->info = $info;
+	public function __construct(
+		private array $info,
+	) {
 	}
 
 
