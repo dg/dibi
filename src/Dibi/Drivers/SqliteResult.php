@@ -20,7 +20,7 @@ use const SQLITE3_ASSOC, SQLITE3_BLOB, SQLITE3_FLOAT, SQLITE3_INTEGER, SQLITE3_N
 class SqliteResult implements Dibi\ResultDriver
 {
 	public function __construct(
-		private \SQLite3Result $resultSet,
+		private readonly \SQLite3Result $resultSet,
 	) {
 	}
 

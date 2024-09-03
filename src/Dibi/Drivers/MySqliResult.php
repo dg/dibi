@@ -19,8 +19,8 @@ use const MYSQLI_TYPE_LONG, MYSQLI_TYPE_SHORT, MYSQLI_TYPE_TIME, MYSQLI_TYPE_TIN
 class MySqliResult implements Dibi\ResultDriver
 {
 	public function __construct(
-		private \mysqli_result $resultSet,
-		private bool $buffered,
+		private readonly \mysqli_result $resultSet,
+		private readonly bool $buffered,
 	) {
 	}
 

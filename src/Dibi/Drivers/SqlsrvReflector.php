@@ -19,7 +19,7 @@ use function sprintf;
 class SqlsrvReflector implements Dibi\Reflector
 {
 	public function __construct(
-		private Dibi\Driver $driver,
+		private readonly Dibi\Driver $driver,
 	) {
 	}
 

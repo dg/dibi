@@ -17,8 +17,8 @@ use function array_filter, array_keys, array_splice, array_values, count, explod
  */
 final class Translator
 {
-	private Connection $connection;
-	private Driver $driver;
+	private readonly Connection $connection;
+	private readonly Driver $driver;
 	private int $cursor = 0;
 	private array $args;
 

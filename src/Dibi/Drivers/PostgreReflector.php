@@ -18,8 +18,8 @@ use Dibi;
 class PostgreReflector implements Dibi\Reflector
 {
 	public function __construct(
-		private Dibi\Driver $driver,
-		private string $version,
+		private readonly Dibi\Driver $driver,
+		private readonly string $version,
 	) {
 	}
 

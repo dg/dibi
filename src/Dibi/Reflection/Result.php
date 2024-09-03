@@ -29,7 +29,7 @@ class Result
 
 
 	public function __construct(
-		private Dibi\ResultDriver $driver,
+		private readonly Dibi\ResultDriver $driver,
 	) {
 	}
 
