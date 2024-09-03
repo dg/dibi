@@ -115,7 +115,7 @@ class Fluent implements IDataSource
 		$this->connection = $connection;
 
 		if (!isset(self::$normalizer)) {
-			self::$normalizer = new HashMap([self::class, '_formatClause']);
+			self::$normalizer = new HashMap(self::_formatClause(...));
 		}
 	}
 

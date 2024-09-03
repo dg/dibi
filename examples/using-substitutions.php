@@ -45,7 +45,7 @@ function substFallBack($expr)
 
 
 // define callback
-$dibi->getSubstitutes()->setCallback('substFallBack');
+$dibi->getSubstitutes()->setCallback(substFallBack(...));
 
 // define substitutes as constants
 define('SUBST_ACCOUNT', 'eshop_');

@@ -21,8 +21,7 @@ use function is_resource;
 class PostgreResult implements Dibi\ResultDriver
 {
 	public function __construct(
-		/** @var resource|PgSql\Result */
-		private $resultSet,
+		private PgSql\Result $resultSet,
 	) {
 	}
 
@@ -89,13 +88,10 @@ class PostgreResult implements Dibi\ResultDriver
 
 	/**
 	 * Returns the result set resource.
-	 * @return resource|PgSql\Result|null
 	 */
-	public function getResultResource(): mixed
+	public function getResultResource(): PgSql\Result
 	{
-		return is_resource($this->resultSet) || $this->resultSet instanceof PgSql\Result
-			? $this->resultSet
-			: null;
+		return $this->resultSet;
 	}
 
 
