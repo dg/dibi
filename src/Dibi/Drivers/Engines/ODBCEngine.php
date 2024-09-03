@@ -25,6 +25,63 @@ class ODBCEngine implements Engine
 	}
 
 
+	public function escapeIdentifier(string $value): string
+	{
+		return '[' . str_replace(['[', ']'], ['[[', ']]'], $value) . ']';
+	}
+
+
+	public function escapeBool(bool $value): string
+	{
+		return $value ? '1' : '0';
+	}
+
+
+	public function escapeDate(\DateTimeInterface $value): string
+	{
+		return $value->format('#m/d/Y#');
+	}
+
+
+	public function escapeDateTime(\DateTimeInterface $value): string
+	{
+		return $value->format($this->microseconds ? '#m/d/Y H:i:s.u#' : '#m/d/Y H:i:s#'); // TODO
+	}
+
+
+	public function escapeDateInterval(\DateInterval $value): string
+	{
+		throw new Dibi\NotImplementedException;
+	}
+
+
+	/**
+	 * Encodes string for use in a LIKE statement.
+	 */
+	public function escapeLike(string $value, int $pos): string
+	{
+		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
+		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
+	}
+
+
+	/**
+	 * Injects LIMIT/OFFSET to the SQL query.
+	 */
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	{
+		if ($offset) {
+			throw new Dibi\NotSupportedException('Offset is not supported by this database.');
+
+		} elseif ($limit < 0) {
+			throw new Dibi\NotSupportedException('Negative offset or limit.');
+
+		} elseif ($limit !== null) {
+			$sql = 'SELECT TOP ' . $limit . ' * FROM (' . $sql . ') t';
+		}
+	}
+
+
 	/**
 	 * Returns list of tables.
 	 */
