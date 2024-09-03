@@ -21,7 +21,7 @@ use const PHP_SAPI;
  * @property-read int $affectedRows
  * @property-read int $insertId
  */
-class Connection implements IConnection
+class Connection
 {
 	/** function (Event $event); Occurs after query is executed */
 	public ?array $onEvent = [];
