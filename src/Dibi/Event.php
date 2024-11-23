@@ -29,7 +29,7 @@ class Event
 		TRANSACTION = 448, // BEGIN | COMMIT | ROLLBACK
 		ALL = 1023;
 
-	public readonly Connection $connection;
+	public readonly IConnection $connection;
 	public int $type;
 	public readonly string $sql;
 	public readonly Result|DriverException|null $result;
@@ -38,7 +38,7 @@ class Event
 	public ?array $source = null;
 
 
-	public function __construct(Connection $connection, int $type, ?string $sql = null)
+	public function __construct(IConnection $connection, int $type, ?string $sql = null)
 	{
 		$this->connection = $connection;
 		$this->type = $type;

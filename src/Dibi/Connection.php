@@ -19,7 +19,7 @@ use Traversable;
  * @property-read int $affectedRows
  * @property-read int $insertId
  */
-class Connection
+class Connection implements IConnection
 {
 	private const Drivers = [
 		'firebird' => Drivers\Ibase\Connection::class,

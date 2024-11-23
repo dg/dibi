@@ -97,7 +97,7 @@ class Fluent implements IDataSource
 		'RIGHT JOIN' => 'FROM',
 	];
 
-	private readonly Connection $connection;
+	private readonly IConnection $connection;
 	private array $setups = [];
 	private ?string $command = null;
 	private array $clauses = [];
@@ -108,7 +108,7 @@ class Fluent implements IDataSource
 	private static HashMap $normalizer;
 
 
-	public function __construct(Connection $connection)
+	public function __construct(IConnection $connection)
 	{
 		$this->connection = $connection;
 
@@ -263,7 +263,7 @@ class Fluent implements IDataSource
 	}
 
 
-	final public function getConnection(): Connection
+	final public function getConnection(): IConnection
 	{
 		return $this->connection;
 	}

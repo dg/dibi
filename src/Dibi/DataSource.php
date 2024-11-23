@@ -15,7 +15,7 @@ namespace Dibi;
  */
 class DataSource implements IDataSource
 {
-	private readonly Connection $connection;
+	private readonly IConnection $connection;
 	private readonly string $sql;
 	private ?Result $result = null;
 	private ?int $count = null;
@@ -30,7 +30,7 @@ class DataSource implements IDataSource
 	/**
 	 * @param  string  $sql  command or table or view name, as data source
 	 */
-	public function __construct(string $sql, Connection $connection)
+	public function __construct(string $sql, IConnection $connection)
 	{
 		$this->sql = strpbrk($sql, " \t\r\n") === false
 			? $connection->getDriver()->escapeIdentifier($sql) // table name
@@ -99,7 +99,7 @@ class DataSource implements IDataSource
 	}
 
 
-	final public function getConnection(): Connection
+	final public function getConnection(): IConnection
 	{
 		return $this->connection;
 	}
