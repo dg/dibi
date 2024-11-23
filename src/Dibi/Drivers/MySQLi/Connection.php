@@ -39,13 +39,13 @@ class Connection implements Drivers\Connection
 	public const ErrorDuplicateEntry = 1062;
 	public const ErrorDataTruncated = 1265;
 
-	/** @deprecated use MySqliDriver::ErrorAccessDenied */
+	#[\Deprecated('use MySqliDriver::ErrorAccessDenied')]
 	public const ERROR_ACCESS_DENIED = self::ErrorAccessDenied;
 
-	/** @deprecated use MySqliDriver::ErrorDuplicateEntry */
+	#[\Deprecated('use MySqliDriver::ErrorDuplicateEntry')]
 	public const ERROR_DUPLICATE_ENTRY = self::ErrorDuplicateEntry;
 
-	/** @deprecated use MySqliDriver::ErrorDataTruncated */
+	#[\Deprecated('use MySqliDriver::ErrorDataTruncated')]
 	public const ERROR_DATA_TRUNCATED = self::ErrorDataTruncated;
 
 	private \mysqli $connection;
