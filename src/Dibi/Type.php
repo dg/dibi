@@ -27,31 +27,31 @@ class Type
 		Time = 't',
 		TimeInterval = 'ti';
 
-	/** @deprecated use Type::Text */
+	#[\Deprecated('use Type::Text')]
 	public const TEXT = self::Text;
 
-	/** @deprecated use Type::Binary */
+	#[\Deprecated('use Type::Binary')]
 	public const BINARY = self::Binary;
 
-	/** @deprecated use Type::Bool */
+	#[\Deprecated('use Type::Bool')]
 	public const BOOL = self::Bool;
 
-	/** @deprecated use Type::Integer */
+	#[\Deprecated('use Type::Integer')]
 	public const INTEGER = self::Integer;
 
-	/** @deprecated use Type::Float */
+	#[\Deprecated('use Type::Float')]
 	public const FLOAT = self::Float;
 
-	/** @deprecated use Type::Date */
+	#[\Deprecated('use Type::Date')]
 	public const DATE = self::Date;
 
-	/** @deprecated use Type::DateTime */
+	#[\Deprecated('use Type::DateTime')]
 	public const DATETIME = self::DateTime;
 
-	/** @deprecated use Type::Time */
+	#[\Deprecated('use Type::Time')]
 	public const TIME = self::Time;
 
-	/** @deprecated use Type::TimeInterval */
+	#[\Deprecated('use Type::TimeInterval')]
 	public const TIME_INTERVAL = self::TimeInterval;
 
 

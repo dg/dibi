@@ -50,7 +50,7 @@ class Fluent implements IDataSource
 		Identifier = 'n',
 		Remove = false;
 
-	/** @deprecated use Fluent::Remove */
+	#[\Deprecated('use Fluent::Remove')]
 	public const REMOVE = self::Remove;
 
 	public static array $masks = [
