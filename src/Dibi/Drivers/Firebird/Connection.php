@@ -30,7 +30,7 @@ class Connection implements Drivers\Connection
 {
 	public const ErrorExceptionThrown = -836;
 
-	/** @deprecated use FirebirdDriver::ErrorExceptionThrown */
+	#[\Deprecated('use FirebirdDriver::ErrorExceptionThrown')]
 	public const ERROR_EXCEPTION_THROWN = self::ErrorExceptionThrown;
 
 	/** @var resource */
