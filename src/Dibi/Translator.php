@@ -15,7 +15,7 @@ namespace Dibi;
  */
 final class Translator
 {
-	private Connection $connection;
+	private IConnection $connection;
 	private readonly Drivers\Connection $driver;
 	private int $cursor = 0;
 	private array $args;
@@ -30,7 +30,7 @@ final class Translator
 	private HashMap $identifiers;
 
 
-	public function __construct(Connection $connection)
+	public function __construct(IConnection $connection)
 	{
 		$this->connection = $connection;
 		$this->driver = $connection->getDriver();

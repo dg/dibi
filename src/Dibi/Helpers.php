@@ -236,7 +236,7 @@ class Helpers
 	 * Import SQL dump from file.
 	 * Returns count of sql commands
 	 */
-	public static function loadFromFile(Connection $connection, string $file, ?callable $onProgress = null): int
+	public static function loadFromFile(IConnection $connection, string $file, ?callable $onProgress = null): int
 	{
 		@set_time_limit(0); // intentionally @
 
