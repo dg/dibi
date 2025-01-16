@@ -18,9 +18,9 @@ $tests = function ($conn) {
 	Assert::false($conn->query("SELECT 'AAxBB' LIKE %~like~", 'A%B')->fetchSingle());
 	Assert::true($conn->query("SELECT 'AA%BB' LIKE %~like~", 'A%B')->fetchSingle());
 
-	Assert::same('AA\\BB', $conn->query("SELECT 'AA\\BB'")->fetchSingle());
-	Assert::false($conn->query("SELECT 'AAxBB' LIKE %~like~", 'A\\B')->fetchSingle());
-	Assert::true($conn->query("SELECT 'AA\\BB' LIKE %~like~", 'A\\B')->fetchSingle());
+	Assert::same('AA\BB', $conn->query("SELECT 'AA\\BB'")->fetchSingle());
+	Assert::false($conn->query("SELECT 'AAxBB' LIKE %~like~", 'A\B')->fetchSingle());
+	Assert::true($conn->query("SELECT 'AA\\BB' LIKE %~like~", 'A\B')->fetchSingle());
 };
 
 $conn = new Dibi\Connection($config);

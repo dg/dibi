@@ -36,5 +36,5 @@ Assert::exception(
 
 test(
 	'PDO error mode: explicitly set silent',
-	fn() => buildPdoDriver(PDO::ERRMODE_SILENT)
+	fn() => buildPdoDriver(PDO::ERRMODE_SILENT),
 );
