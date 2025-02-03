@@ -25,7 +25,7 @@ class MockResult extends Dibi\Result
 }
 
 
-test('', function () {
+test('native text conversion preserves boolean values', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::Text);
 	$result->setFormat(Type::Text, 'native');
@@ -36,7 +36,7 @@ test('', function () {
 });
 
 
-test('', function () {
+test('boolean conversion from diverse representations', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::Bool);
 
@@ -58,7 +58,7 @@ test('', function () {
 });
 
 
-test('', function () {
+test('text conversion of booleans and numerics', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::Text);
 
@@ -74,7 +74,7 @@ test('', function () {
 });
 
 
-test('', function () {
+test('float conversion with various numeric formats', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::Float);
 
@@ -214,7 +214,7 @@ test('', function () {
 });
 
 
-test('', function () {
+test('strict integer conversion with error on empty string', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::Integer);
 
@@ -244,7 +244,7 @@ test('', function () {
 });
 
 
-test('', function () {
+test('dateTime conversion with object instantiation', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::DateTime);
 
@@ -263,7 +263,7 @@ test('', function () {
 });
 
 
-test('', function () {
+test('dateTime conversion using custom format', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::DateTime);
 	$result->setFormat(Type::DateTime, 'Y-m-d H:i:s');
@@ -283,7 +283,7 @@ test('', function () {
 });
 
 
-test('', function () {
+test('date conversion to DateTime instance', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::Date);
 
@@ -300,7 +300,7 @@ test('', function () {
 });
 
 
-test('', function () {
+test('time conversion to DateTime instance', function () {
 	$result = new MockResult;
 	$result->setType('col', Type::Time);
 
