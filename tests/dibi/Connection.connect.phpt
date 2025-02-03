@@ -12,7 +12,7 @@ use Tester\Assert;
 require __DIR__ . '/bootstrap.php';
 
 
-test('', function () use ($config) {
+test('immediate connection and disconnection state', function () use ($config) {
 	$conn = new Connection($config);
 	Assert::true($conn->isConnected());
 
@@ -21,7 +21,7 @@ test('', function () use ($config) {
 });
 
 
-test('lazy', function () use ($config) {
+test('lazy connection initiated on first query', function () use ($config) {
 	$conn = new Connection($config + ['lazy' => true]);
 	Assert::false($conn->isConnected());
 
@@ -30,7 +30,7 @@ test('lazy', function () use ($config) {
 });
 
 
-test('', function () use ($config) {
+test('config retrieval and driver instance access', function () use ($config) {
 	$conn = new Connection($config);
 	Assert::true($conn->isConnected());
 
@@ -40,7 +40,7 @@ test('', function () use ($config) {
 });
 
 
-test('', function () use ($config) {
+test('idempotent disconnect calls', function () use ($config) {
 	$conn = new Connection($config);
 	Assert::true($conn->isConnected());
 
@@ -52,7 +52,7 @@ test('', function () use ($config) {
 });
 
 
-test('', function () use ($config) {
+test('reconnect after disconnection', function () use ($config) {
 	$conn = new Connection($config);
 	Assert::equal('hello', $conn->query('SELECT %s', 'hello')->fetchSingle());
 
@@ -63,7 +63,7 @@ test('', function () use ($config) {
 });
 
 
-test('', function () use ($config) {
+test('destructor disconnects active connection', function () use ($config) {
 	$conn = new Connection($config);
 	Assert::true($conn->isConnected());
 
@@ -72,7 +72,7 @@ test('', function () use ($config) {
 });
 
 
-test('', function () use ($config) {
+test('invalid onConnect option triggers exceptions', function () use ($config) {
 	Assert::exception(
 		fn() => new Connection($config + ['onConnect' => '']),
 		InvalidArgumentException::class,
