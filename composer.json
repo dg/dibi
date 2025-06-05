@@ -24,7 +24,10 @@
 		"dg/dibi": "*"
 	},
 	"autoload": {
-		"classmap": ["src/"]
+		"classmap": ["src/"],
+		"psr-4": {
+			"Dibi\\": "src/Dibi"
+		}
 	},
 	"minimum-stability": "dev",
 	"scripts": {
