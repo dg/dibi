@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace Dibi\Drivers;
 
 use Dibi;
+use function in_array;
+use const MYSQLI_REPORT_OFF, MYSQLI_STORE_RESULT, MYSQLI_USE_RESULT, PREG_SET_ORDER;
 
 
 /**

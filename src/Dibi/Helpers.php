@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Dibi;
 
+use function array_map, array_unique, explode, fclose, fgets, fopen, fstat, getenv, htmlspecialchars, is_float, is_int, is_string, levenshtein, max, mb_strlen, ob_end_flush, ob_get_clean, ob_start, preg_match, preg_replace, preg_replace_callback, rtrim, set_time_limit, str_ends_with, str_repeat, str_starts_with, strlen, strtoupper, substr, trim, wordwrap;
+use const PHP_SAPI;
+
 
 class Helpers
 {

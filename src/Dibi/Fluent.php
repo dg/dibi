@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Dibi;
 
+use function array_key_exists, count, func_get_args, is_array, is_string;
+
 
 /**
  * SQL builder via fluent interfaces.

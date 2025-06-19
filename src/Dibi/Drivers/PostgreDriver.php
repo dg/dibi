@@ -12,6 +12,7 @@ namespace Dibi\Drivers;
 use Dibi;
 use Dibi\Helpers;
 use PgSql;
+use function in_array, is_array, is_resource, strlen;
 
 
 /**

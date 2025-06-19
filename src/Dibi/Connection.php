@@ -11,6 +11,8 @@ namespace Dibi;
 
 use JetBrains\PhpStorm\Language;
 use Traversable;
+use function array_key_exists, is_array, sprintf;
+use const PHP_SAPI;
 
 
 /**

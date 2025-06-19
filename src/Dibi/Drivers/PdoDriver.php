@@ -12,6 +12,7 @@ namespace Dibi\Drivers;
 use Dibi;
 use Dibi\Helpers;
 use PDO;
+use function sprintf;
 
 
 /**

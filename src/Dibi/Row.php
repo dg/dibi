@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Dibi;
 
+use function array_keys, count, str_starts_with;
+
 
 /**
  * Result set single row.
