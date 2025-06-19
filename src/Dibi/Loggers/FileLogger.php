@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace Dibi\Loggers;
 
 use Dibi;
+use function sprintf;
+use const FILE_APPEND, LOCK_EX;
 
 
 /**

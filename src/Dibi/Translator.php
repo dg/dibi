@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Dibi;
 
+use function array_filter, array_keys, array_splice, array_values, count, explode, get_debug_type, gettype, implode, is_array, is_bool, is_float, is_int, is_numeric, is_object, is_scalar, is_string, iterator_to_array, key, ltrim, number_format, preg_last_error, preg_match, preg_replace_callback, reset, rtrim, str_contains, str_replace, strcspn, strlen, strncasecmp, strtoupper, substr, trim;
+
 
 /**
  * SQL translator.

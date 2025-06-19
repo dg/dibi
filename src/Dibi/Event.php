@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Dibi;
 
+use function count, dirname, microtime, preg_match, str_starts_with, strtoupper, trim;
+use const DIRECTORY_SEPARATOR;
+
 
 /**
  * Profiler & logger event.

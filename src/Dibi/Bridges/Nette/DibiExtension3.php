@@ -13,6 +13,7 @@ use Dibi;
 use Nette;
 use Nette\Schema\Expect;
 use Tracy;
+use function is_array;
 
 
 /**

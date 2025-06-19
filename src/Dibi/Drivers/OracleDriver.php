@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Dibi\Drivers;
 
 use Dibi;
+use function in_array, is_resource;
 
 
 /**

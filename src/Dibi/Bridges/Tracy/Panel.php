@@ -13,6 +13,7 @@ use Dibi;
 use Dibi\Event;
 use Dibi\Helpers;
 use Tracy;
+use function count, is_string, strlen;
 
 
 /**

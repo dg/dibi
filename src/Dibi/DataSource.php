@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Dibi;
 
+use function func_get_args, is_array, strpbrk;
+
 
 /**
  * Default implementation of IDataSource.
