@@ -19,6 +19,42 @@ use function is_resource;
  */
 class Result implements Drivers\Result
 {
+	//return values of sqlsrv_field_metadata
+	//https://learn.microsoft.com/en-us/sql/connect/php/sqlsrv-field-metadata
+	private $sqlsrvDataTypes = array(
+		-5=>'SQL_BIGINT',
+		-2=>'SQL_BINARY',
+		-7=>'SQL_BIT',
+		1=>'SQL_CHAR',
+		91=>'SQL_TYPE_DATE',
+		93=>'SQL_TYPE_TIMESTAMP',
+		93=>'SQL_TYPE_TIMESTAMP',
+		-155=>'SQL_SS_TIMESTAMPOFFSET',
+		3=>'SQL_DECIMAL',
+		6=>'SQL_FLOAT',
+		-4=>'SQL_LONGVARBINARY',
+		4=>'SQL_INTEGER',
+		3=>'SQL_DECIMAL',
+		-8=>'SQL_WCHAR',
+		-10=>'SQL_WLONGVARCHAR',
+		2=>'SQL_NUMERIC',
+		-9=>'SQL_WVARCHAR',
+		7=>'SQL_REAL',
+		93=>'SQL_TYPE_TIMESTAMP',
+		5=>'SQL_SMALLINT',
+		3=>'SQL_DECIMAL',
+		-150=>'SQL_SS_VARIANT',
+		-1=>'SQL_LONGVARCHAR',
+		-154=>'SQL_SS_TIME2',
+		-2=>'SQL_BINARY',
+		-6=>'SQL_TINYINT',
+		-151=>'SQL_SS_UDT',
+		-11=>'SQL_GUID',
+		-3=>'SQL_VARBINARY',
+		12=>'SQL_VARCHAR',
+		-152=>'SQL_SS_XML',
+	);
+
 	public function __construct(
 		/** @var resource */
 		private $resultSet,
@@ -73,7 +109,7 @@ class Result implements Drivers\Result
 			$columns[] = [
 				'name' => $fieldMetadata['Name'],
 				'fullname' => $fieldMetadata['Name'],
-				'nativetype' => $fieldMetadata['Type'],
+				'nativetype' => $this->sqlsrvDataTypes[$fieldMetadata['Type']] ?? 'SQL_VARCHAR',
 			];
 		}
 
