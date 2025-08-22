@@ -43,7 +43,7 @@ class Connection implements Drivers\Connection
 
 		$error = null;
 		if (isset($config['resource'])) {
-			$this->connection = $config['resource'];
+            $connection = $config['resource'];
 
 		} else {
 			$config += [
@@ -55,7 +55,7 @@ class Connection implements Drivers\Connection
 				$string = '';
 				Helpers::alias($config, 'user', 'username');
 				Helpers::alias($config, 'dbname', 'database');
-				foreach (['host', 'hostaddr', 'port', 'dbname', 'user', 'password', 'connect_timeout', 'options', 'sslmode', 'service'] as $key) {
+				foreach (['host', 'hostaddr', 'port', 'dbname', 'user', 'password', 'connect_timeout', 'options', 'sslmode', 'sslcert', 'sslrootcert', 'service'] as $key) {
 					if (isset($config[$key])) {
 						$string .= $key . '=' . $config[$key] . ' ';
 					}
@@ -67,15 +67,17 @@ class Connection implements Drivers\Connection
 			set_error_handler(function (int $severity, string $message) use (&$error) {
 				$error = $message;
 			});
-			$this->connection = empty($config['persistent'])
+			$connection = empty($config['persistent'])
 				? pg_connect($string, $connectType)
 				: pg_pconnect($string, $connectType);
 			restore_error_handler();
 		}
 
-		if (!$this->connection instanceof PgSql\Connection) {
+		if (!$connection instanceof PgSql\Connection) {
 			throw new Dibi\DriverException($error ?: 'Connecting error.');
 		}
+
+        $this->connection = $connection;
 
 		pg_set_error_verbosity($this->connection, PGSQL_ERRORS_VERBOSE);
 
