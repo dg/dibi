@@ -11,6 +11,7 @@ namespace Dibi\Drivers\ODBC;
 
 use Dibi;
 use Dibi\Drivers;
+use Odbc;
 use function is_resource;
 
 
@@ -22,12 +23,12 @@ use function is_resource;
  *   - username (or user)
  *   - password (or pass)
  *   - persistent (bool) => try to find a persistent link?
- *   - resource (resource) => existing connection resource
+ *   - resource (resource or Odbc\Connection) => existing connection resource
  *   - microseconds (bool) => use microseconds in datetime format?
  */
 class Connection implements Drivers\Connection
 {
-	/** @var resource */
+	/** @var resource|Odbc\Connection */
 	private $connection;
 	private ?int $affectedRows;
 	private bool $microseconds = true;
@@ -55,7 +56,7 @@ class Connection implements Drivers\Connection
 				: @odbc_pconnect($config['dsn'], $config['username'] ?? '', $config['password'] ?? ''); // intentionally @
 		}
 
-		if (!is_resource($this->connection)) {
+		if (!is_resource($this->connection) && !$this->connection instanceof Odbc\Connection) {
 			throw new Dibi\DriverException(odbc_errormsg() . ' ' . odbc_error());
 		}
 
@@ -85,15 +86,12 @@ class Connection implements Drivers\Connection
 
 		if ($res === false) {
 			throw new Dibi\DriverException(odbc_errormsg($this->connection) . ' ' . odbc_error($this->connection), 0, $sql);
-
-		} elseif (is_resource($res)) {
-			$this->affectedRows = Dibi\Helpers::false2Null(odbc_num_rows($res));
-			return odbc_num_fields($res)
-				? $this->createResultDriver($res)
-				: null;
 		}
 
-		return null;
+		$this->affectedRows = Dibi\Helpers::false2Null(odbc_num_rows($res));
+		return odbc_num_fields($res)
+			? $this->createResultDriver($res)
+			: null;
 	}
 
 

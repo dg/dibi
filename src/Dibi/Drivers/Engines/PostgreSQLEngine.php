@@ -52,7 +52,9 @@ class PostgreSQLEngine implements Engine
 
 	public function escapeDateInterval(\DateInterval $value): string
 	{
-		throw new Dibi\NotImplementedException;
+		// @see https://www.postgresql.org/docs/current/datatype-datetime.html#DATATYPE-INTERVAL-INPUT
+		$interval = $value->format('%y years %m months %d days %h hours %i minutes %s seconds %f microseconds');
+		return ($value->invert ? '-' : '') . "'$interval'::interval";
 	}
 
 
