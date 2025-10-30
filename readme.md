@@ -1,4 +1,4 @@
-[Dibi](https://dibiphp.com) - smart database layer for PHP  [![Buy me a coffee](https://files.nette.org/images/coffee1s.png)](https://nette.org/make-donation?to=dibi)
+[Dibi](https://dibi.nette.org) - smart database layer for PHP  [![Buy me a coffee](https://files.nette.org/images/coffee1s.png)](https://nette.org/make-donation?to=dibi)
 =========================================================
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/dibi/dibi.svg)](https://packagist.org/packages/dibi/dibi)
@@ -41,7 +41,7 @@ Usage
 -----
 
 Refer to the `examples` directory for examples. Dibi documentation is
-available on the [homepage](https://dibiphp.com).
+available on the [homepage](https://dibi.nette.org).
 
 
 ### Connecting to database
