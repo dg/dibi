@@ -11,9 +11,6 @@ Dibi welcomes your contributions. There are several ways to help out:
 Issues
 ------
 
-Please **do not use the issue tracker to ask questions**. We will be happy to help you
-on [Dibi forum](https://forum.dibiphp.com).
-
 A good bug report shouldn't leave others needing to chase you up for more
 information. Please try to be as detailed as possible in your report.
 
@@ -23,8 +20,6 @@ case to convince the project's developers of the merits of this feature.
 
 Contributing
 ------------
-
-The best way to propose a feature is to discuss your ideas on [Dibi forum](https://forum.dibiphp.com) before implementing them.
 
 Please do not fix whitespace, format code, or make a purely cosmetic patch.
 
