@@ -41,7 +41,22 @@ class Result implements Drivers\Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Dibi\Helpers::false2Null(oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS));
+		$result = oci_fetch_array($this->resultSet, ($assoc ? OCI_ASSOC : OCI_NUM) | OCI_RETURN_NULLS);
+
+		/*
+		* Bug query example: SELECT (SELECT col FROM table WHERE ...) AS subcol FROM dual
+		*
+		* Oracle by default stream data per n rows (oci8.default_prefetch in php.ini, default is 100).
+		* 1) First 100 rows are fetched ok
+		* 2) In second fetch call there can be an error (e.g. "ORA-01427: single-row subquery returns more than one row")
+			in this case oci_fetch_all returns false so therefore we need to check for errors here
+		*/
+		$error = oci_error($this->resultSet); 
+		if ($error) {
+			throw new \Dibi\DriverException($error['message'], $error['code']); 
+		}
+
+		return Dibi\Helpers::false2Null($result);
 	}
 
 
