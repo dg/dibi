@@ -202,7 +202,7 @@ class Result implements IDataSource
 	final public function fetchAll(?int $offset = null, ?int $limit = null): array
 	{
 		$limit ??= -1;
-		$this->seek($offset ?: 0);
+		$this->seek($offset ?? 0);
 		$row = $this->fetch();
 		if (!$row) {
 			return [];  // empty result set

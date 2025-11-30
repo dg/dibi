@@ -286,7 +286,7 @@ class Connection implements IConnection
 			throw $e;
 		}
 
-		$res = $this->createResultSet($res ?: new Drivers\NoDataResult(max(0, $this->driver->getAffectedRows())));
+		$res = $this->createResultSet($res ?? new Drivers\NoDataResult(max(0, $this->driver->getAffectedRows())));
 		if ($event) {
 			$this->onEvent($event->done($res));
 		}

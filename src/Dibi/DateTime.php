@@ -17,7 +17,7 @@ class DateTime extends \DateTimeImmutable
 {
 	public function __construct(string|int $time = 'now', ?\DateTimeZone $timezone = null)
 	{
-		$timezone = $timezone ?: new \DateTimeZone(date_default_timezone_get());
+		$timezone ??= new \DateTimeZone(date_default_timezone_get());
 		if (is_numeric($time)) {
 			$tmp = (new self('@' . $time))->setTimezone($timezone);
 			parent::__construct($tmp->format('Y-m-d H:i:s.u'), $tmp->getTimezone());
