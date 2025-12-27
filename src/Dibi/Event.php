@@ -46,7 +46,7 @@ class Event
 		$this->connection = $connection;
 		$this->type = $type;
 		$this->sql = trim((string) $sql);
-		$this->time = -microtime(true);
+		$this->time = -microtime(as_float: true);
 
 		if ($type === self::QUERY && preg_match('#\(?\s*(SELECT|UPDATE|INSERT|DELETE)#iA', $this->sql, $matches)) {
 			$types = [
@@ -79,11 +79,11 @@ class Event
 		$this->result = $result;
 		try {
 			$this->count = $result instanceof Result ? count($result) : null;
-		} catch (Exception $e) {
+		} catch (Exception) {
 			$this->count = null;
 		}
 
-		$this->time += microtime(true);
+		$this->time += microtime(as_float: true);
 		\dibi::$elapsedTime = $this->time;
 		\dibi::$totalTime += $this->time;
 		return $this;

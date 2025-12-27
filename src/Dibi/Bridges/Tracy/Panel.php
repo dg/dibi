@@ -119,7 +119,7 @@ class Panel implements Tracy\IBarPanel
 					: ($connection->getConfig('driver') === 'oracle' ? 'EXPLAIN PLAN FOR' : 'EXPLAIN');
 				try {
 					$explain = @Helpers::dump($connection->nativeQuery("$cmd $event->sql"), return: true);
-				} catch (Dibi\Exception $e) {
+				} catch (Dibi\Exception) {
 				}
 
 				[$connection->onEvent, \dibi::$numOfQueries, \dibi::$totalTime] = $backup;

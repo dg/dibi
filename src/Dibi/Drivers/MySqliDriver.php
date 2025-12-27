@@ -165,13 +165,13 @@ class MySqliDriver implements Dibi\Driver
 
 	public static function createException(string $message, int|string $code, string $sql): Dibi\DriverException
 	{
-		if (in_array($code, [1216, 1217, 1451, 1452, 1701], true)) {
+		if (in_array($code, [1216, 1217, 1451, 1452, 1701], strict: true)) {
 			return new Dibi\ForeignKeyConstraintViolationException($message, $code, $sql);
 
-		} elseif (in_array($code, [1062, 1557, 1569, 1586], true)) {
+		} elseif (in_array($code, [1062, 1557, 1569, 1586], strict: true)) {
 			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);
 
-		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], true)) {
+		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], strict: true)) {
 			return new Dibi\NotNullConstraintViolationException($message, $code, $sql);
 
 		} else {
@@ -256,7 +256,7 @@ class MySqliDriver implements Dibi\Driver
 	{
 		try {
 			return @$this->connection->thread_id ? $this->connection : null;
-		} catch (\Throwable $e) {
+		} catch (\Throwable) {
 			return null;
 		}
 	}

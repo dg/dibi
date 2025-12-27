@@ -439,7 +439,7 @@ class Result implements IDataSource
 			foreach ($this->getResultDriver()->getResultColumns() as $col) {
 				$this->types[$col['name']] = $col['type'] ?? $cache->{$col['nativetype']};
 			}
-		} catch (NotSupportedException $e) {
+		} catch (NotSupportedException) {
 		}
 	}
 

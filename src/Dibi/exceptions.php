@@ -15,18 +15,14 @@ namespace Dibi;
  */
 class Exception extends \Exception
 {
-	private ?string $sql;
-
-
 	public function __construct(
 		string $message = '',
 		int|string $code = 0,
-		?string $sql = null,
+		private readonly ?string $sql = null,
 		?\Throwable $previous = null,
 	) {
 		parent::__construct($message, 0, $previous);
 		$this->code = $code;
-		$this->sql = $sql;
 	}
 
 
@@ -84,16 +80,16 @@ class NotSupportedException extends Exception
  */
 class ProcedureException extends Exception
 {
-	protected string $severity;
-
-
 	/**
 	 * Construct the exception.
 	 */
-	public function __construct(string $message = '', int $code = 0, string $severity = '', ?string $sql = null)
-	{
+	public function __construct(
+		string $message = '',
+		int $code = 0,
+		protected string $severity = '',
+		?string $sql = null,
+	) {
 		parent::__construct($message, $code, $sql);
-		$this->severity = $severity;
 	}
 
 

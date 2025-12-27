@@ -80,10 +80,10 @@ class MySqliResult implements Dibi\ResultDriver
 	{
 		static $types;
 		if ($types === null) {
-			$consts = get_defined_constants(true);
+			$consts = get_defined_constants(categorize: true);
 			$types = [];
 			foreach ($consts['mysqli'] ?? [] as $key => $value) {
-				if (strncmp($key, 'MYSQLI_TYPE_', 12) === 0) {
+				if (str_starts_with($key, 'MYSQLI_TYPE_')) {
 					$types[$value] = substr($key, 12);
 				}
 			}

@@ -290,7 +290,7 @@ final class Translator
 					return implode(', ', $vx);
 
 				case 'ex!':
-					trigger_error('Use Dibi\Expression instead of array: ' . implode(', ', array_filter($value, 'is_scalar')), E_USER_WARNING);
+					trigger_error('Use Dibi\Expression instead of array: ' . implode(', ', array_filter($value, is_scalar(...))), E_USER_WARNING);
 					// break omitted
 				case 'ex':
 				case 'sql':

@@ -19,7 +19,7 @@ date_default_timezone_set('Europe/Prague');
 // load connection
 try {
 	$config = Tester\Environment::loadData();
-} catch (Throwable $e) {
+} catch (Throwable) {
 	$config = parse_ini_file(__DIR__ . '/../databases.ini', process_sections: true);
 	$config = reset($config);
 }
@@ -62,7 +62,7 @@ function reformat($s)
 		return strtr($s, '[]', '``');
 	} elseif ($config['system'] === 'postgre') {
 		return strtr($s, '[]', '""');
-	} elseif (in_array($config['system'], ['odbc', 'sqlite', 'sqlsrv'], true)) {
+	} elseif (in_array($config['system'], ['odbc', 'sqlite', 'sqlsrv'], strict: true)) {
 		return $s;
 	} else {
 		trigger_error("Unsupported driver $config[system]", E_USER_WARNING);
@@ -73,7 +73,7 @@ function reformat($s)
 function num($n)
 {
 	$config = $GLOBALS['config'];
-	if (substr($config['dsn'] ?? '', 0, 5) === 'odbc:') {
+	if (str_starts_with($config['dsn'] ?? '', 'odbc:')) {
 		$n = is_float($n) ? "$n.0" : (string) $n;
 	}
 	return $n;
