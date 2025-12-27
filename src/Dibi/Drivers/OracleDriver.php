@@ -100,7 +100,7 @@ class OracleDriver implements Dibi\Driver
 	}
 
 
-	public static function createException(string $message, $code, string $sql): Dibi\DriverException
+	public static function createException(string $message, int|string $code, string $sql): Dibi\DriverException
 	{
 		if (in_array($code, [1, 2299, 38911], strict: true)) {
 			return new Dibi\UniqueConstraintViolationException($message, $code, $sql);

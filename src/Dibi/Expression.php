@@ -16,7 +16,7 @@ class Expression
 	private readonly array $values;
 
 
-	public function __construct(...$values)
+	public function __construct(mixed ...$values)
 	{
 		$this->values = $values;
 	}

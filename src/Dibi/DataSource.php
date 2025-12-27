@@ -60,7 +60,7 @@ class DataSource implements IDataSource
 	/**
 	 * Adds conditions to query.
 	 */
-	public function where($cond): static
+	public function where(mixed $cond): static
 	{
 		$this->conds[] = is_array($cond)
 			? $cond // TODO: not consistent with select and orderBy

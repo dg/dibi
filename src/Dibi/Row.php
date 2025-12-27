@@ -77,25 +77,25 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 
-	final public function offsetSet($nm, $val): void
+	final public function offsetSet(mixed $nm, mixed $val): void
 	{
 		$this->$nm = $val;
 	}
 
 
-	final public function offsetGet($nm): mixed
+	final public function offsetGet(mixed $nm): mixed
 	{
 		return $this->$nm;
 	}
 
 
-	final public function offsetExists($nm): bool
+	final public function offsetExists(mixed $nm): bool
 	{
 		return isset($this->$nm);
 	}
 
 
-	final public function offsetUnset($nm): void
+	final public function offsetUnset(mixed $nm): void
 	{
 		unset($this->$nm);
 	}

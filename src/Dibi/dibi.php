@@ -139,7 +139,7 @@ class dibi
 	/**
 	 * Monostate for Dibi\Connection.
 	 */
-	public static function __callStatic(string $name, array $args)
+	public static function __callStatic(string $name, array $args): mixed
 	{
 		return self::getConnection()->$name(...$args);
 	}

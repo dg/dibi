@@ -301,7 +301,7 @@ class Result implements IDataSource
 
 
 	/** @deprecated */
-	private function oldFetchAssoc(string $assoc)
+	private function oldFetchAssoc(string $assoc): array
 	{
 		$this->seek(0);
 		$row = $this->fetch();

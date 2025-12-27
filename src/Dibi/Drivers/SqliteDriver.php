@@ -85,7 +85,7 @@ class SqliteDriver implements Dibi\Driver
 	}
 
 
-	public static function createException(string $message, $code, string $sql): Dibi\DriverException
+	public static function createException(string $message, int|string $code, string $sql): Dibi\DriverException
 	{
 		if ($code !== 19) {
 			return new Dibi\DriverException($message, $code, $sql);

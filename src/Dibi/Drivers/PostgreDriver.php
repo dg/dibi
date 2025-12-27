@@ -127,7 +127,11 @@ class PostgreDriver implements Dibi\Driver
 	}
 
 
-	public static function createException(string $message, $code = 0, ?string $sql = null): Dibi\DriverException
+	public static function createException(
+		string $message,
+		int|string $code = 0,
+		?string $sql = null,
+	): Dibi\DriverException
 	{
 		if ($code === 0 && preg_match('#^ERROR:\s+(\S+):\s*#', $message, $m)) {
 			$code = $m[1];

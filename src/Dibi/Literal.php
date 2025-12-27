@@ -16,7 +16,7 @@ class Literal
 	private readonly string $value;
 
 
-	public function __construct($value)
+	public function __construct(mixed $value)
 	{
 		$this->value = (string) $value;
 	}

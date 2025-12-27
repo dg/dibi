@@ -207,7 +207,7 @@ interface IConnection
 	 * Generates (translates) and executes SQL query.
 	 * @throws Exception
 	 */
-	function query(...$args): Result;
+	function query(mixed ...$args): Result;
 
 	/**
 	 * Gets the number of affected rows by the last INSERT, UPDATE or DELETE query.

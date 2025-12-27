@@ -185,7 +185,7 @@ class Connection implements IConnection
 	 * Returns configuration variable. If no $key is passed, returns the entire array.
 	 * @see self::__construct
 	 */
-	final public function getConfig(?string $key = null, $default = null): mixed
+	final public function getConfig(?string $key = null, mixed $default = null): mixed
 	{
 		return $key === null
 			? $this->config
@@ -464,7 +464,7 @@ class Connection implements IConnection
 	}
 
 
-	public function select(...$args): Fluent
+	public function select(mixed ...$args): Fluent
 	{
 		return $this->command()->select(...$args);
 	}
@@ -637,7 +637,7 @@ class Connection implements IConnection
 	}
 
 
-	public static function expression(...$args): Expression
+	public static function expression(mixed ...$args): Expression
 	{
 		return new Expression(...$args);
 	}
@@ -673,7 +673,7 @@ class Connection implements IConnection
 	/**
 	 * Prevents unserialization.
 	 */
-	public function __unserialize($_)
+	public function __unserialize(array $_): never
 	{
 		throw new NotSupportedException('You cannot serialize or unserialize ' . static::class . ' instances.');
 	}
@@ -682,13 +682,13 @@ class Connection implements IConnection
 	/**
 	 * Prevents serialization.
 	 */
-	public function __serialize()
+	public function __serialize(): array
 	{
 		throw new NotSupportedException('You cannot serialize or unserialize ' . static::class . ' instances.');
 	}
 
 
-	protected function onEvent($arg): void
+	protected function onEvent(Event $arg): void
 	{
 		foreach ($this->onEvent as $handler) {
 			$handler($arg);
