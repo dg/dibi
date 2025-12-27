@@ -96,8 +96,6 @@ class Fluent implements IDataSource
 		'LEFT JOIN' => 'FROM',
 		'RIGHT JOIN' => 'FROM',
 	];
-
-	private readonly Connection $connection;
 	private array $setups = [];
 	private ?string $command = null;
 	private array $clauses = [];
@@ -108,10 +106,9 @@ class Fluent implements IDataSource
 	private static HashMap $normalizer;
 
 
-	public function __construct(Connection $connection)
-	{
-		$this->connection = $connection;
-
+	public function __construct(
+		private readonly Connection $connection,
+	) {
 		if (!isset(self::$normalizer)) {
 			self::$normalizer = new HashMap(self::_formatClause(...));
 		}

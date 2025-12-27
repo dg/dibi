@@ -214,7 +214,7 @@ class PostgreDriver implements Dibi\Driver
 	 */
 	public function inTransaction(): bool
 	{
-		return !in_array(pg_transaction_status($this->connection), [PGSQL_TRANSACTION_UNKNOWN, PGSQL_TRANSACTION_IDLE], true);
+		return !in_array(pg_transaction_status($this->connection), [PGSQL_TRANSACTION_UNKNOWN, PGSQL_TRANSACTION_IDLE], strict: true);
 	}
 
 
