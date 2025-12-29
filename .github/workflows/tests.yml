@@ -126,7 +126,7 @@ jobs:
               run: cp ./tests/databases.github.ini ./tests/databases.ini
 
             - run: composer install --no-progress --prefer-dist
-            - run: vendor/bin/tester -p phpdbg tests -s -C --coverage ./coverage.xml --coverage-src ./src
+            - run: composer tester -- -p phpdbg --coverage ./coverage.xml --coverage-src ./src
             - if: failure()
               uses: actions/upload-artifact@v4
               with:
