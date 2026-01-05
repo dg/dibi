@@ -455,7 +455,7 @@ class Result implements IDataSource
 			}
 
 			$value = $row[$key];
-			$format = $this->formats[$type] ?? null;
+			$format = $this->formats[$type ?? ''] ?? null;
 
 			if ($type === null || $format === 'native') {
 				$row[$key] = $value;
