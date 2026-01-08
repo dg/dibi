@@ -15,10 +15,13 @@ namespace Dibi\Reflection;
  * Reflection metadata class for a foreign key.
  *
  * @property-read string $name
- * @property-read array $references
+ * @property-read array{name: string, local: string[], table: string, foreign: string[], onDelete?: string, onUpdate?: string} $references
  */
 class ForeignKey
 {
+	/**
+	 * @param  array{name: string, local: string[], table: string, foreign: string[], onDelete?: string, onUpdate?: string}  $references
+	 */
 	public function __construct(
 		private readonly string $name,
 		private readonly array $references,
@@ -32,6 +35,7 @@ class ForeignKey
 	}
 
 
+	/** @return array{name: string, local: string[], table: string, foreign: string[], onDelete?: string, onUpdate?: string} */
 	public function getReferences(): array
 	{
 		return $this->references;

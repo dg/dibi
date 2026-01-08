@@ -22,8 +22,14 @@ class DataSource implements IDataSource
 	private ?Result $result = null;
 	private ?int $count = null;
 	private ?int $totalCount = null;
+
+	/** @var array<string, ?string>  column name => alias */
 	private array $cols = [];
+
+	/** @var array<string, string>  column name => direction */
 	private array $sorting = [];
+
+	/** @var list<mixed>  WHERE conditions */
 	private array $conds = [];
 	private ?int $offset = null;
 	private ?int $limit = null;
@@ -150,6 +156,7 @@ class DataSource implements IDataSource
 
 	/**
 	 * Fetches all records from table.
+	 * @return Row[]|array[]
 	 */
 	public function fetchAll(): array
 	{
@@ -159,6 +166,7 @@ class DataSource implements IDataSource
 
 	/**
 	 * Fetches all records from table and returns associative tree.
+	 * @return mixed[]
 	 */
 	public function fetchAssoc(string $assoc): array
 	{
@@ -168,6 +176,7 @@ class DataSource implements IDataSource
 
 	/**
 	 * Fetches all records from table like $key => $value pairs.
+	 * @return mixed[]
 	 */
 	public function fetchPairs(?string $key = null, ?string $value = null): array
 	{

@@ -20,6 +20,8 @@ final class Translator
 	private readonly Connection $connection;
 	private readonly Driver $driver;
 	private int $cursor = 0;
+
+	/** @var list<mixed>  SQL arguments */
 	private array $args;
 
 	/** @var string[] */
@@ -42,6 +44,7 @@ final class Translator
 
 	/**
 	 * Generates SQL. Can be called only once.
+	 * @param  mixed[]  $args
 	 * @throws Exception
 	 */
 	public function translate(array $args): string

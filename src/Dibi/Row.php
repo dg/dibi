@@ -18,6 +18,7 @@ use function array_keys, count, str_starts_with;
 #[\AllowDynamicProperties]
 class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 {
+	/** @param  array<string, mixed>  $arr */
 	public function __construct(array $arr)
 	{
 		foreach ($arr as $k => $v) {
@@ -26,6 +27,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 
+	/** @return array<string, mixed> */
 	public function toArray(): array
 	{
 		return (array) $this;

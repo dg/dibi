@@ -38,6 +38,8 @@ class Event
 	public readonly Result|DriverException|null $result;
 	public float $time;
 	public ?int $count = null;
+
+	/** @var array{string, int}|null  [file, line] */
 	public ?array $source = null;
 
 

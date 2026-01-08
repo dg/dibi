@@ -23,6 +23,7 @@ class Panel implements Tracy\IBarPanel
 {
 	public static int $maxLength = 1000;
 
+	/** @var Event[] */
 	private array $events = [];
 
 

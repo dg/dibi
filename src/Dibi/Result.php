@@ -22,7 +22,7 @@ class Result implements IDataSource
 {
 	private ?ResultDriver $driver;
 
-	/** Translate table */
+	/** @var array<string, ?string>  column name => Type constant */
 	private array $types = [];
 	private ?Reflection\Result $meta;
 
@@ -34,6 +34,8 @@ class Result implements IDataSource
 
 	/** @var callable|null  returned object factory */
 	private $rowFactory;
+
+	/** @var array<string, ?string>  Type constant => format string */
 	private array $formats = [];
 
 
@@ -370,6 +372,7 @@ class Result implements IDataSource
 
 	/**
 	 * Fetches all records from table like $key => $value pairs.
+	 * @return mixed[]
 	 * @throws \InvalidArgumentException
 	 */
 	final public function fetchPairs(?string $key = null, ?string $value = null): array
@@ -446,6 +449,7 @@ class Result implements IDataSource
 
 	/**
 	 * Converts values to specified type and format.
+	 * @param  array<string, mixed>  $row
 	 */
 	private function normalize(array &$row): void
 	{
@@ -552,6 +556,7 @@ class Result implements IDataSource
 
 	/**
 	 * Returns columns type.
+	 * @return array<string, ?string>
 	 */
 	final public function getTypes(): array
 	{
@@ -571,6 +576,7 @@ class Result implements IDataSource
 
 	/**
 	 * Sets type formats.
+	 * @param  array<string, ?string>  $formats
 	 */
 	final public function setFormats(array $formats): static
 	{

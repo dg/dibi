@@ -23,11 +23,11 @@ use const PHP_SAPI;
  */
 class Connection implements IConnection
 {
-	/** function (Event $event); Occurs after query is executed */
+	/** @var array<callable(Event): void>  Occurs after query is executed */
 	public ?array $onEvent = [];
 	private array $config;
 
-	/** @var string[]  resultset formats */
+	/** @var array<string, ?string>  Type constant => format string */
 	private array $formats;
 	private ?Driver $driver = null;
 	private ?Translator $translator = null;

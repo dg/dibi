@@ -15,12 +15,15 @@ namespace Dibi\Reflection;
  * Reflection metadata class for a index or primary key.
  *
  * @property-read string $name
- * @property-read array $columns
+ * @property-read Column[] $columns
  * @property-read bool $unique
  * @property-read bool $primary
  */
 class Index
 {
+	/**
+	 * @param  array{name: string, columns: Column[], unique?: bool, primary?: bool}  $info
+	 */
 	public function __construct(
 		private readonly array $info,
 	) {
@@ -33,6 +36,7 @@ class Index
 	}
 
 
+	/** @return Column[] */
 	public function getColumns(): array
 	{
 		return $this->info['columns'];
