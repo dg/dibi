@@ -32,6 +32,7 @@ class ForeignKey
 	}
 
 
+	/** @return array{name: string, local: string[], table: string, foreign: string[], onDelete?: string, onUpdate?: string} */
 	public function getReferences(): array
 	{
 		return $this->references;

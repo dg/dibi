@@ -140,6 +140,7 @@ class Helpers
 
 	/**
 	 * Finds the best suggestion.
+	 * @param  string[]  $items
 	 * @internal
 	 */
 	public static function getSuggestion(array $items, string $value): ?string

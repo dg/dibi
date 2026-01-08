@@ -15,7 +15,7 @@ namespace Dibi\Reflection;
  * Reflection metadata class for a index or primary key.
  *
  * @property-read string $name
- * @property-read array $columns
+ * @property-read Column[] $columns
  * @property-read bool $unique
  * @property-read bool $primary
  */
@@ -33,6 +33,7 @@ class Index
 	}
 
 
+	/** @return Column[] */
 	public function getColumns(): array
 	{
 		return $this->info['columns'];

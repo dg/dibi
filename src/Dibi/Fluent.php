@@ -55,6 +55,7 @@ class Fluent implements IDataSource
 	/** @deprecated use Fluent::Remove */
 	public const REMOVE = self::Remove;
 
+	/** @var array<string, list<string>> */
 	public static array $masks = [
 		'SELECT' => ['SELECT', 'DISTINCT', 'FROM', 'WHERE', 'GROUP BY',
 			'HAVING', 'ORDER BY', 'LIMIT', 'OFFSET', ],
@@ -63,7 +64,7 @@ class Fluent implements IDataSource
 		'DELETE' => ['DELETE', 'FROM', 'USING', 'WHERE', 'ORDER BY', 'LIMIT'],
 	];
 
-	/** default modifiers for arrays */
+	/** @var array<string, string>  default modifiers for arrays */
 	public static array $modifiers = [
 		'SELECT' => '%n',
 		'FROM' => '%n',
@@ -76,7 +77,7 @@ class Fluent implements IDataSource
 		'GROUP BY' => '%by',
 	];
 
-	/** clauses separators */
+	/** @var array<string, string|false>  clauses separators */
 	public static array $separators = [
 		'SELECT' => ',',
 		'FROM' => ',',
@@ -91,16 +92,22 @@ class Fluent implements IDataSource
 		'INTO' => false,
 	];
 
-	/** clauses */
+	/** @var array<string, string>  clause switches */
 	public static array $clauseSwitches = [
 		'JOIN' => 'FROM',
 		'INNER JOIN' => 'FROM',
 		'LEFT JOIN' => 'FROM',
 		'RIGHT JOIN' => 'FROM',
 	];
+
+	/** @var list<list<mixed>>  Result setup calls */
 	private array $setups = [];
 	private ?string $command = null;
+
+	/** @var array<string, ?list<mixed>> */
 	private array $clauses = [];
+
+	/** @var array<string, true> */
 	private array $flags = [];
 	private $cursor;
 
@@ -323,6 +330,7 @@ class Fluent implements IDataSource
 
 	/**
 	 * Fetches all records from table.
+	 * @return Row[]|array[]
 	 */
 	public function fetchAll(?int $offset = null, ?int $limit = null): array
 	{
@@ -333,6 +341,7 @@ class Fluent implements IDataSource
 	/**
 	 * Fetches all records from table and returns associative tree.
 	 * @param  string  $assoc  associative descriptor
+	 * @return mixed[]
 	 */
 	public function fetchAssoc(string $assoc): array
 	{
@@ -342,6 +351,7 @@ class Fluent implements IDataSource
 
 	/**
 	 * Fetches all records from table like $key => $value pairs.
+	 * @return mixed[]
 	 */
 	public function fetchPairs(?string $key = null, ?string $value = null): array
 	{
@@ -407,6 +417,8 @@ class Fluent implements IDataSource
 
 	/**
 	 * Generates parameters for Translator.
+	 * @param  list<mixed>  $args
+	 * @return list<mixed>
 	 */
 	protected function _export(?string $clause = null, array $args = []): array
 	{
