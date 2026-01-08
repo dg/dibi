@@ -14,15 +14,15 @@ use function array_values, strtolower;
 /**
  * Reflection metadata class for a result set.
  *
- * @property-read array $columns
- * @property-read array $columnNames
+ * @property-read list<Column> $columns
+ * @property-read list<string> $columnNames
  */
 class Result
 {
-	/** @var Column[]|null */
+	/** @var ?list<Column> */
 	private ?array $columns;
 
-	/** @var Column[]|null */
+	/** @var ?array<Column> */
 	private ?array $names;
 
 

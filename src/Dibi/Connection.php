@@ -21,11 +21,13 @@ use const PHP_SAPI;
  */
 class Connection implements IConnection
 {
-	/** function (Event $event); Occurs after query is executed */
+	/** @var ?array<callable(Event): void>  Occurs after query is executed */
 	public ?array $onEvent = [];
+
+	/** @var array<string, mixed> */
 	private array $config;
 
-	/** @var string[]  resultset formats */
+	/** @var array<string, ?string>  Type constant => format string */
 	private array $formats;
 	private ?Driver $driver = null;
 	private ?Translator $translator = null;
@@ -60,6 +62,7 @@ class Connection implements IConnection
 	 *       - errorsOnly (bool) => log only errors
 	 *   - substitutes (array) => map of driver specific substitutes (under development)
 	 *   - onConnect (array) => list of SQL queries to execute (by Connection::query()) after connection is established
+	 * @param  array<string, mixed>  $config
 	 * @throws Exception
 	 */
 	public function __construct(array $config, ?string $name = null)
@@ -418,6 +421,11 @@ class Connection implements IConnection
 	}
 
 
+	/**
+	 * @template T
+	 * @param  callable(self): T  $callback
+	 * @return T
+	 */
 	public function transaction(callable $callback): mixed
 	{
 		if ($this->transactionDepth === 0) {
@@ -472,6 +480,7 @@ class Connection implements IConnection
 
 	/**
 	 * @param  string|string[]  $table
+	 * @param  iterable<string, mixed>  $args
 	 */
 	public function update($table, iterable $args): Fluent
 	{
@@ -479,6 +488,7 @@ class Connection implements IConnection
 	}
 
 
+	/** @param  iterable<string, mixed>  $args */
 	public function insert(string $table, iterable $args): Fluent
 	{
 		if ($args instanceof Traversable) {
@@ -602,7 +612,7 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch results - shortcut for query() & fetchAll().
-	 * @return Row[]|array[]
+	 * @return list<Row|mixed[]>
 	 * @throws Exception
 	 */
 	public function fetchAll(#[Language('GenericSQL')] mixed ...$args): array
@@ -623,6 +633,7 @@ class Connection implements IConnection
 
 	/**
 	 * Executes SQL query and fetch pairs - shortcut for query() & fetchPairs().
+	 * @return mixed[]
 	 * @throws Exception
 	 */
 	public function fetchPairs(#[Language('GenericSQL')] mixed ...$args): array
@@ -648,7 +659,7 @@ class Connection implements IConnection
 
 	/**
 	 * Import SQL dump from file.
-	 * @param  callable  $onProgress  function (int $count, ?float $percent): void
+	 * @param  ?(callable(int, ?float): void)  $onProgress
 	 * @return int  count of sql commands
 	 */
 	public function loadFile(string $file, ?callable $onProgress = null): int
@@ -672,6 +683,7 @@ class Connection implements IConnection
 
 	/**
 	 * Prevents unserialization.
+	 * @param  array<string, mixed>  $_
 	 */
 	public function __unserialize(array $_): never
 	{
@@ -681,6 +693,7 @@ class Connection implements IConnection
 
 	/**
 	 * Prevents serialization.
+	 * @return array<string, mixed>
 	 */
 	public function __serialize(): array
 	{

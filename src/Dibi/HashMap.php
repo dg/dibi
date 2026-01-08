@@ -15,21 +15,25 @@ namespace Dibi;
 #[\AllowDynamicProperties]
 abstract class HashMapBase
 {
+	/** @var \Closure(string): mixed */
 	private \Closure $callback;
 
 
+	/** @param  callable(string): mixed  $callback */
 	public function __construct(callable $callback)
 	{
 		$this->callback = $callback(...);
 	}
 
 
+	/** @param  callable(string): mixed  $callback */
 	public function setCallback(callable $callback): void
 	{
 		$this->callback = $callback(...);
 	}
 
 
+	/** @return \Closure(string): mixed */
 	public function getCallback(): \Closure
 	{
 		return $this->callback;

@@ -10,25 +10,25 @@
  * Static container class for Dibi connections.
  *
  * @method static void disconnect()
- * @method static Dibi\Result query(...$args)
- * @method static Dibi\Result nativeQuery(...$args)
- * @method static bool test(...$args)
- * @method static Dibi\DataSource dataSource(...$args)
- * @method static Dibi\Row|null fetch(...$args)
- * @method static array fetchAll(...$args)
- * @method static mixed fetchSingle(...$args)
- * @method static array fetchPairs(...$args)
+ * @method static Dibi\Result query(mixed ...$args)
+ * @method static Dibi\Result nativeQuery(string $sql)
+ * @method static bool test(mixed ...$args)
+ * @method static Dibi\DataSource dataSource(mixed ...$args)
+ * @method static Dibi\Row|null fetch(mixed ...$args)
+ * @method static list<Dibi\Row|array<string, mixed>> fetchAll(mixed ...$args)
+ * @method static mixed fetchSingle(mixed ...$args)
+ * @method static array<string, mixed> fetchPairs(mixed ...$args)
  * @method static int getAffectedRows()
- * @method static int getInsertId(string $sequence = null)
- * @method static void begin(string $savepoint = null)
- * @method static void commit(string $savepoint = null)
- * @method static void rollback(string $savepoint = null)
- * @method static mixed transaction(callable $callback)
+ * @method static int getInsertId(?string $sequence = null)
+ * @method static void begin(?string $savepoint = null)
+ * @method static void commit(?string $savepoint = null)
+ * @method static void rollback(?string $savepoint = null)
+ * @method static mixed transaction(callable(Dibi\Connection): mixed $callback)
  * @method static Dibi\Reflection\Database getDatabaseInfo()
  * @method static Dibi\Fluent command()
- * @method static Dibi\Fluent select(...$args)
- * @method static Dibi\Fluent update(string|string[] $table, array $args)
- * @method static Dibi\Fluent insert(string $table, array $args)
+ * @method static Dibi\Fluent select(mixed ...$args)
+ * @method static Dibi\Fluent update(string|string[] $table, iterable<string, mixed> $args)
+ * @method static Dibi\Fluent insert(string $table, iterable<string, mixed> $args)
  * @method static Dibi\Fluent delete(string $table)
  * @method static Dibi\HashMap getSubstitutes()
  * @method static int loadFile(string $file)
@@ -84,7 +84,7 @@ class dibi
 
 	/**
 	 * Creates a new Connection object and connects it to specified database.
-	 * @param  array   $config  connection parameters
+	 * @param  array<string, mixed>  $config  connection parameters
 	 * @throws Dibi\Exception
 	 */
 	public static function connect(array $config = [], string $name = '0'): Dibi\Connection
@@ -138,6 +138,7 @@ class dibi
 
 	/**
 	 * Monostate for Dibi\Connection.
+	 * @param  list<mixed>  $args
 	 */
 	public static function __callStatic(string $name, array $args): mixed
 	{

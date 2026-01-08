@@ -28,7 +28,10 @@ class SqliteDriver implements Dibi\Driver
 	private string $fmtDateTime;
 
 
-	/** @throws Dibi\NotSupportedException */
+	/**
+	 * @param  array<string, mixed>  $config
+	 * @throws Dibi\NotSupportedException
+	 */
 	public function __construct(array $config)
 	{
 		if (!extension_loaded('sqlite3')) {
@@ -265,6 +268,7 @@ class SqliteDriver implements Dibi\Driver
 
 	/**
 	 * Registers an user defined function for use in SQL statements.
+	 * @param  callable(mixed...): mixed  $callback
 	 */
 	public function registerFunction(string $name, callable $callback, int $numArgs = -1): void
 	{
@@ -274,6 +278,8 @@ class SqliteDriver implements Dibi\Driver
 
 	/**
 	 * Registers an aggregating user defined function for use in SQL statements.
+	 * @param  callable(mixed, int, mixed...): mixed  $rowCallback
+	 * @param  callable(mixed, int): mixed  $agrCallback
 	 */
 	public function registerAggregateFunction(
 		string $name,

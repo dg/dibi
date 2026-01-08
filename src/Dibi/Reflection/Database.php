@@ -14,9 +14,9 @@ use function array_values, strtolower;
 /**
  * Reflection metadata class for a database.
  *
- * @property-read string $name
- * @property-read array $tables
- * @property-read array $tableNames
+ * @property-read string|null $name
+ * @property-read list<Table> $tables
+ * @property-read list<string> $tableNames
  */
 class Database
 {

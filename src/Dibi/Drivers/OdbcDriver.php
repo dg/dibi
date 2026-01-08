@@ -30,7 +30,10 @@ class OdbcDriver implements Dibi\Driver
 	private bool $microseconds = true;
 
 
-	/** @throws Dibi\NotSupportedException */
+	/**
+	 * @param  array<string, mixed>  $config
+	 * @throws Dibi\NotSupportedException
+	 */
 	public function __construct(array $config)
 	{
 		if (!extension_loaded('odbc')) {

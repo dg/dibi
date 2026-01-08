@@ -12,10 +12,13 @@ use function array_keys, count, str_starts_with;
 
 /**
  * Result set single row.
+ * @implements \ArrayAccess<int|string, mixed>
+ * @implements \IteratorAggregate<int|string, mixed>
  */
 #[\AllowDynamicProperties]
 class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 {
+	/** @param  mixed[]  $arr */
 	public function __construct(array $arr)
 	{
 		foreach ($arr as $k => $v) {
@@ -24,6 +27,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 
+	/** @return mixed[] */
 	public function toArray(): array
 	{
 		return (array) $this;
@@ -71,6 +75,7 @@ class Row implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 
+	/** @return \ArrayIterator<int|string, mixed> */
 	final public function getIterator(): \ArrayIterator
 	{
 		return new \ArrayIterator((array) $this);

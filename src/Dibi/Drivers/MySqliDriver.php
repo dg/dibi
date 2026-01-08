@@ -49,7 +49,10 @@ class MySqliDriver implements Dibi\Driver
 	private bool $buffered = false;
 
 
-	/** @throws Dibi\NotSupportedException */
+	/**
+	 * @param  array<string, mixed>  $config
+	 * @throws Dibi\NotSupportedException
+	 */
 	public function __construct(array $config)
 	{
 		if (!extension_loaded('mysqli')) {
@@ -180,6 +183,7 @@ class MySqliDriver implements Dibi\Driver
 
 	/**
 	 * Retrieves information about the most recently executed query.
+	 * @return array<string, int>
 	 */
 	public function getInfo(): array
 	{

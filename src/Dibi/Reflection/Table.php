@@ -16,10 +16,10 @@ use function array_values, strtolower;
  *
  * @property-read string $name
  * @property-read bool $view
- * @property-read array $columns
- * @property-read array $columnNames
- * @property-read array $foreignKeys
- * @property-read array $indexes
+ * @property-read list<Column> $columns
+ * @property-read list<string> $columnNames
+ * @property-read list<ForeignKey> $foreignKeys
+ * @property-read list<Index> $indexes
  * @property-read Index $primaryKey
  */
 class Table
@@ -39,6 +39,7 @@ class Table
 	private ?Index $primaryKey;
 
 
+	/** @param  array{name: string, view?: bool}  $info */
 	public function __construct(Dibi\Reflector $reflector, array $info)
 	{
 		$this->reflector = $reflector;

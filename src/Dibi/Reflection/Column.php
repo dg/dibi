@@ -17,7 +17,7 @@ use Dibi;
  * @property-read string $fullName
  * @property-read Table $table
  * @property-read string $type
- * @property-read mixed $nativeType
+ * @property-read string $nativeType
  * @property-read int|null $size
  * @property-read bool $nullable
  * @property-read bool $autoIncrement
@@ -27,6 +27,7 @@ class Column
 {
 	public function __construct(
 		private readonly ?Dibi\Reflector $reflector,
+		/** @var  array{name: string, nativetype: string, table?: ?string, fullname?: ?string, size?: int|null, nullable?: bool, default?: mixed, autoincrement?: bool, vendor?: array<string, mixed>} */
 		private array $info,
 	) {
 	}

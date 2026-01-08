@@ -10,6 +10,7 @@ namespace Dibi;
 
 /**
  * External result set iterator.
+ * @implements \Iterator<int, Row|mixed[]>
  */
 class ResultIterator implements \Iterator, \Countable
 {
@@ -75,6 +76,7 @@ class ResultIterator implements \Iterator, \Countable
 
 	/**
 	 * Required by the Countable interface.
+	 * @return int<0, max>
 	 */
 	public function count(): int
 	{

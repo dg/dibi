@@ -13,6 +13,7 @@ namespace Dibi;
  */
 class Expression
 {
+	/** @var list<mixed> */
 	private readonly array $values;
 
 
@@ -22,6 +23,7 @@ class Expression
 	}
 
 
+	/** @return list<mixed> */
 	public function getValues(): array
 	{
 		return $this->values;

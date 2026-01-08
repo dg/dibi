@@ -138,6 +138,7 @@ class Helpers
 
 	/**
 	 * Finds the best suggestion.
+	 * @param  string[]  $items
 	 * @internal
 	 */
 	public static function getSuggestion(array $items, string $value): ?string
@@ -218,6 +219,7 @@ class Helpers
 
 	/**
 	 * Apply configuration alias or default values.
+	 * @param  array<string, mixed>  $config
 	 */
 	public static function alias(array &$config, string $key, string $alias): void
 	{
@@ -236,6 +238,7 @@ class Helpers
 	/**
 	 * Import SQL dump from file.
 	 * Returns count of sql commands
+	 * @param  (callable(int, float|null): void)|null  $onProgress
 	 */
 	public static function loadFromFile(Connection $connection, string $file, ?callable $onProgress = null): int
 	{

@@ -161,6 +161,7 @@ class FirebirdReflector implements Dibi\Reflector
 
 	/**
 	 * Returns list of indices in given table (the constraints are not listed).
+	 * @return list<mixed>
 	 */
 	public function getIndices(string $table): array
 	{
@@ -182,6 +183,7 @@ class FirebirdReflector implements Dibi\Reflector
 
 	/**
 	 * Returns list of constraints in given table.
+	 * @return list<mixed>
 	 */
 	public function getConstraints(string $table): array
 	{
@@ -206,6 +208,7 @@ class FirebirdReflector implements Dibi\Reflector
 	/**
 	 * Returns metadata for all triggers in a table or database.
 	 * (Only if user has permissions on ALTER TABLE, INSERT/UPDATE/DELETE record in table)
+	 * @return list<mixed[]>
 	 */
 	public function getTriggersMeta(?string $table = null): array
 	{
@@ -254,6 +257,7 @@ class FirebirdReflector implements Dibi\Reflector
 	/**
 	 * Returns list of triggers for given table.
 	 * (Only if user has permissions on ALTER TABLE, INSERT/UPDATE/DELETE record in table)
+	 * @return list<mixed>
 	 */
 	public function getTriggers(?string $table = null): array
 	{
@@ -276,6 +280,7 @@ class FirebirdReflector implements Dibi\Reflector
 
 	/**
 	 * Returns metadata from stored procedures and their input and output parameters.
+	 * @return list<mixed[]>
 	 */
 	public function getProceduresMeta(): array
 	{
@@ -346,6 +351,7 @@ class FirebirdReflector implements Dibi\Reflector
 
 	/**
 	 * Returns list of generators.
+	 * @return list<mixed>
 	 */
 	public function getGenerators(): array
 	{
@@ -365,6 +371,7 @@ class FirebirdReflector implements Dibi\Reflector
 
 	/**
 	 * Returns list of user defined functions (UDF).
+	 * @return list<mixed>
 	 */
 	public function getFunctions(): array
 	{

@@ -10,6 +10,7 @@ namespace Dibi;
 
 /**
  * Provides an interface between a dataset and data-aware components.
+ * @extends \IteratorAggregate<int, Row|mixed[]>
  */
 interface IDataSource extends \Countable, \IteratorAggregate
 {
@@ -121,6 +122,7 @@ interface ResultDriver
 	/**
 	 * Fetches the row at current position and moves the internal cursor to the next position.
 	 * @param  bool  $type  true for associative array, false for numeric
+	 * @return mixed[]|null
 	 * @internal
 	 */
 	function fetch(bool $type): ?array;
@@ -132,7 +134,7 @@ interface ResultDriver
 
 	/**
 	 * Returns metadata for all columns in a result set.
-	 * @return array of {name, nativetype [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor ]}
+	 * @return list<array{name: string, nativetype: string, table?: ?string, fullname?: ?string, type?: ?string, vendor?: mixed[]}>
 	 */
 	function getResultColumns(): array;
 
@@ -155,24 +157,25 @@ interface Reflector
 {
 	/**
 	 * Returns list of tables.
-	 * @return array of {name [, (bool) view ]}
+	 * @return list<array{name: string, view: bool}>
 	 */
 	function getTables(): array;
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @return array of {name, nativetype [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor ]}
+	 * @return list<array{name: string, nativetype: string, table?: string, fullname?: string, size?: ?int, nullable?: bool, default?: mixed, autoincrement?: bool, vendor?: array<string, mixed>}>
 	 */
 	function getColumns(string $table): array;
 
 	/**
 	 * Returns metadata for all indexes in a table.
-	 * @return array of {name, (array of names) columns [, (bool) unique, (bool) primary ]}
+	 * @return list<array{name: string, columns: list<string>, unique?: bool, primary?: bool}>
 	 */
 	function getIndexes(string $table): array;
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
+	 * @return list<array{name: mixed, table: mixed, column?: mixed, local?: string[], foreign?: string[]|null, onDelete?: string, onUpdate?: string}>
 	 */
 	function getForeignKeys(string $table): array;
 }

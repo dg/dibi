@@ -21,6 +21,7 @@ class Panel implements Tracy\IBarPanel
 {
 	public static int $maxLength = 1000;
 
+	/** @var list<Event> */
 	private array $events = [];
 
 
@@ -54,6 +55,7 @@ class Panel implements Tracy\IBarPanel
 
 	/**
 	 * Returns blue-screen custom tab.
+	 * @return array{tab: string, panel: string}|null
 	 */
 	public static function renderException(?\Throwable $e): ?array
 	{
