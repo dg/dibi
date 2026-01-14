@@ -17,23 +17,22 @@ namespace Dibi;
 #[\AllowDynamicProperties]
 abstract class HashMapBase
 {
-	/** @var callable */
-	private $callback;
+	private \Closure $callback;
 
 
 	public function __construct(callable $callback)
 	{
-		$this->callback = $callback;
+		$this->callback = $callback(...);
 	}
 
 
 	public function setCallback(callable $callback): void
 	{
-		$this->callback = $callback;
+		$this->callback = $callback(...);
 	}
 
 
-	public function getCallback(): callable
+	public function getCallback(): \Closure
 	{
 		return $this->callback;
 	}

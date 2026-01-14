@@ -31,9 +31,7 @@ class Result implements IDataSource
 
 	/** returned object class */
 	private ?string $rowClass = Row::class;
-
-	/** @var callable|null  returned object factory */
-	private $rowFactory;
+	private ?\Closure $rowFactory = null;
 	private array $formats = [];
 
 
@@ -150,7 +148,7 @@ class Result implements IDataSource
 	 */
 	public function setRowFactory(callable $callback): static
 	{
-		$this->rowFactory = $callback;
+		$this->rowFactory = $callback(...);
 		return $this;
 	}
 
