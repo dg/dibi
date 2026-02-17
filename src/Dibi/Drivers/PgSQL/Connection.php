@@ -132,8 +132,8 @@ class Connection implements Drivers\Connection
 
 	public static function createException(string $message, $code = null, ?string $sql = null): Dibi\DriverException
 	{
-		if ($code === null && preg_match('#^ERROR:\s+(\S+):\s*#', $message, $m)) {
-			$code = $m[1];
+		if ($code === null && preg_match('#^(ERROR|FATAL):\s+(\S+):\s*#', $message, $m)) {
+			$code = $m[2];
 			$message = substr($message, strlen($m[0]));
 		}
 
