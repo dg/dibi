@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: query exceptions.
  * @dataProvider ../databases.ini sqlite
  */
-
-declare(strict_types=1);
 
 use Tester\Assert;
 
