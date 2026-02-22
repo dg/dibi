@@ -7,6 +7,7 @@
 
 namespace Dibi\Drivers\Engines;
 
+use Dibi;
 use Dibi\Drivers\Connection;
 use Dibi\Drivers\Engine;
 
@@ -19,6 +20,68 @@ class PostgreSQLEngine implements Engine
 	public function __construct(
 		private readonly Connection $driver,
 	) {
+	}
+
+
+	public function escapeIdentifier(string $value): string
+	{
+		// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+		return '"' . str_replace('"', '""', $value) . '"';
+	}
+
+
+	public function escapeBool(bool $value): string
+	{
+		return $value ? 'TRUE' : 'FALSE';
+	}
+
+
+	public function escapeDate(\DateTimeInterface $value): string
+	{
+		return $value->format("'Y-m-d'");
+	}
+
+
+	public function escapeDateTime(\DateTimeInterface $value): string
+	{
+		return $value->format("'Y-m-d H:i:s.u'");
+	}
+
+
+	public function escapeDateInterval(\DateInterval $value): string
+	{
+		throw new Dibi\NotImplementedException;
+	}
+
+
+	/**
+	 * Encodes string for use in a LIKE statement.
+	 */
+	public function escapeLike(string $value, int $pos): string
+	{
+		$bs = substr($this->driver->escapeText('\\'), 1, -1); // standard_conforming_strings = on/off
+		$value = substr($this->driver->escapeText($value), 1, -1);
+		$value = strtr($value, ['%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\']);
+		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'");
+	}
+
+
+	/**
+	 * Injects LIMIT/OFFSET to the SQL query.
+	 */
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	{
+		if ($limit < 0 || $offset < 0) {
+			throw new Dibi\NotSupportedException('Negative offset or limit.');
+		}
+
+		if ($limit !== null) {
+			$sql .= ' LIMIT ' . $limit;
+		}
+
+		if ($offset) {
+			$sql .= ' OFFSET ' . $offset;
+		}
 	}
 
 
@@ -63,7 +126,7 @@ class PostgreSQLEngine implements Engine
 	 */
 	public function getColumns(string $table): array
 	{
-		$_table = $this->driver->escapeText($this->driver->escapeIdentifier($table));
+		$_table = $this->driver->escapeText($this->escapeIdentifier($table));
 
 		$res = $this->driver->query("
 			SELECT *
@@ -123,7 +186,7 @@ class PostgreSQLEngine implements Engine
 	 */
 	public function getIndexes(string $table): array
 	{
-		$_table = $this->driver->escapeText($this->driver->escapeIdentifier($table));
+		$_table = $this->driver->escapeText($this->escapeIdentifier($table));
 		$res = $this->driver->query("
 			SELECT
 				a.attnum AS ordinal_position,
@@ -173,7 +236,7 @@ class PostgreSQLEngine implements Engine
 	 */
 	public function getForeignKeys(string $table): array
 	{
-		$_table = $this->driver->escapeText($this->driver->escapeIdentifier($table));
+		$_table = $this->driver->escapeText($this->escapeIdentifier($table));
 
 		$res = $this->driver->query("
 			SELECT

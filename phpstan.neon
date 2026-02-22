@@ -26,9 +26,6 @@ parameters:
 		-
 			identifier: ternary.alwaysTrue
 			path: src/Dibi/Helpers.php
-		-
-			identifier: method.nameCase
-			path: src/Dibi/Helpers.php
 
 		# Translator: switch-case type narrowing in formatValue()
 		-

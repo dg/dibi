@@ -43,6 +43,7 @@ class Connection
 	/** @var array<string, ?string>  Type constant => format string */
 	private array $formats;
 	private ?Drivers\Connection $driver = null;
+	private Drivers\Engine $engine;
 	private ?Translator $translator = null;
 
 	/** @var array<string, callable(object): Expression | null> */
@@ -692,6 +693,17 @@ class Connection
 	}
 
 
+	public function getDatabaseEngine(): Drivers\Engine
+	{
+		if (!$this->driver) {
+			$this->connect();
+		}
+
+		assert($this->driver !== null);
+		return $this->engine ??= $this->driver->getReflector();
+	}
+
+
 	/**
 	 * Gets a information about the current database.
 	 */
@@ -702,7 +714,7 @@ class Connection
 			assert($this->driver !== null);
 		}
 
-		return new Reflection\Database($this->driver->getReflector(), $this->config['database'] ?? null);
+		return new Reflection\Database($this->getDatabaseEngine(), $this->config['database'] ?? null);
 	}
 
 

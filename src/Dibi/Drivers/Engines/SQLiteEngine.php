@@ -7,6 +7,7 @@
 
 namespace Dibi\Drivers\Engines;
 
+use Dibi;
 use Dibi\Drivers\Connection;
 use Dibi\Drivers\Engine;
 
@@ -18,7 +19,64 @@ class SQLiteEngine implements Engine
 {
 	public function __construct(
 		private readonly Connection $driver,
+		private readonly string $fmtDate = "'Y-m-d'",
+		private readonly string $fmtDateTime = "'Y-m-d H:i:s.u'",
 	) {
+	}
+
+
+	public function escapeIdentifier(string $value): string
+	{
+		return '[' . strtr($value, '[]', '  ') . ']';
+	}
+
+
+	public function escapeBool(bool $value): string
+	{
+		return $value ? '1' : '0';
+	}
+
+
+	public function escapeDate(\DateTimeInterface $value): string
+	{
+		return $value->format($this->fmtDate);
+	}
+
+
+	public function escapeDateTime(\DateTimeInterface $value): string
+	{
+		return $value->format($this->fmtDateTime);
+	}
+
+
+	public function escapeDateInterval(\DateInterval $value): string
+	{
+		throw new Dibi\NotImplementedException;
+	}
+
+
+	/**
+	 * Encodes string for use in a LIKE statement.
+	 */
+	public function escapeLike(string $value, int $pos): string
+	{
+		$value = addcslashes(str_replace("'", "''", $value), '%_\\');
+		return ($pos & 1 ? "'%" : "'") . $value . ($pos & 2 ? "%'" : "'") . " ESCAPE '\\'";
+	}
+
+
+	/**
+	 * Injects LIMIT/OFFSET to the SQL query.
+	 */
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	{
+		if ($limit < 0 || $offset < 0) {
+			throw new Dibi\NotSupportedException('Negative offset or limit.');
+
+		} elseif ($limit !== null || $offset) {
+			$sql .= ' LIMIT ' . ($limit ?? '-1')
+				. ($offset ? ' OFFSET ' . $offset : '');
+		}
 	}
 
 
@@ -48,7 +106,7 @@ class SQLiteEngine implements Engine
 	 */
 	public function getColumns(string $table): array
 	{
-		$res = $this->driver->query("PRAGMA table_info({$this->driver->escapeIdentifier($table)})")
+		$res = $this->driver->query("PRAGMA table_info({$this->escapeIdentifier($table)})")
 			?? throw new \LogicException('Unexpected null result.');
 		$columns = [];
 		while ($row = $res->fetch(true)) {
@@ -76,7 +134,7 @@ class SQLiteEngine implements Engine
 	 */
 	public function getIndexes(string $table): array
 	{
-		$res = $this->driver->query("PRAGMA index_list({$this->driver->escapeIdentifier($table)})")
+		$res = $this->driver->query("PRAGMA index_list({$this->escapeIdentifier($table)})")
 			?? throw new \LogicException('Unexpected null result.');
 		$indexes = [];
 		while ($row = $res->fetch(true)) {
@@ -86,7 +144,7 @@ class SQLiteEngine implements Engine
 		}
 
 		foreach ($indexes as $index => $values) {
-			$res = $this->driver->query("PRAGMA index_info({$this->driver->escapeIdentifier($index)})")
+			$res = $this->driver->query("PRAGMA index_info({$this->escapeIdentifier($index)})")
 				?? throw new \LogicException('Unexpected null result.');
 			while ($row = $res->fetch(true)) {
 				$indexes[$index]['columns'][$row['seqno']] = $row['name'];
@@ -130,7 +188,7 @@ class SQLiteEngine implements Engine
 	 */
 	public function getForeignKeys(string $table): array
 	{
-		$res = $this->driver->query("PRAGMA foreign_key_list({$this->driver->escapeIdentifier($table)})")
+		$res = $this->driver->query("PRAGMA foreign_key_list({$this->escapeIdentifier($table)})")
 			?? throw new \LogicException('Unexpected null result.');
 		$keys = [];
 		while ($row = $res->fetch(true)) {

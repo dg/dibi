@@ -157,25 +157,6 @@ class Helpers
 	}
 
 
-	/** @internal */
-	public static function escape(Drivers\Connection $driver, mixed $value, string $type): string
-	{
-		$types = [
-			Type::Text => 'text',
-			Type::Binary => 'binary',
-			Type::Bool => 'bool',
-			Type::Date => 'date',
-			Type::DateTime => 'datetime',
-			Fluent::Identifier => 'identifier',
-		];
-		if (isset($types[$type])) {
-			return $driver->{'escape' . $types[$type]}($value);
-		} else {
-			throw new \InvalidArgumentException('Unsupported type.');
-		}
-	}
-
-
 	/**
 	 * Heuristic type detection.
 	 * @internal
