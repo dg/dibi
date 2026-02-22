@@ -116,7 +116,7 @@ class PostgreDriver implements Dibi\Driver
 		$res = @pg_query($this->connection, $sql); // intentionally @
 
 		if ($res === false) {
-			throw static::createException(pg_last_error($this->connection), null, $sql);
+			throw static::createException(pg_last_error($this->connection), sql: $sql);
 
 		} elseif ($res instanceof PgSql\Result) {
 			$this->affectedRows = Helpers::false2Null(pg_affected_rows($res));
@@ -129,9 +129,9 @@ class PostgreDriver implements Dibi\Driver
 	}
 
 
-	public static function createException(string $message, $code = null, ?string $sql = null): Dibi\DriverException
+	public static function createException(string $message, $code = 0, ?string $sql = null): Dibi\DriverException
 	{
-		if ($code === null && preg_match('#^ERROR:\s+(\S+):\s*#', $message, $m)) {
+		if ($code === 0 && preg_match('#^ERROR:\s+(\S+):\s*#', $message, $m)) {
 			$code = $m[1];
 			$message = substr($message, strlen($m[0]));
 		}
