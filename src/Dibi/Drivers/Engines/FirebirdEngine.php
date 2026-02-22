@@ -5,14 +5,16 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\Engines;
 
+use Dibi\Drivers\Connection;
+use Dibi\Drivers\Engine;
 
 
 /**
  * The reflector for Firebird/InterBase database.
  */
-class FirebirdReflector implements Engine
+class FirebirdEngine implements Engine
 {
 	public function __construct(
 		private readonly Connection $driver,

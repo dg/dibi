@@ -5,16 +5,17 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\MySQLi;
 
 use Dibi;
+use Dibi\Drivers;
 use const MYSQLI_TYPE_LONG, MYSQLI_TYPE_SHORT, MYSQLI_TYPE_TIME, MYSQLI_TYPE_TINY;
 
 
 /**
  * The driver for MySQL result set.
  */
-class MySqliResult implements Result
+class Result implements Drivers\Result
 {
 	public function __construct(
 		private readonly \mysqli_result $resultSet,

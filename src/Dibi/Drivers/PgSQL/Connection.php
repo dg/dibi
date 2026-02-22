@@ -5,9 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\PgSQL;
 
 use Dibi;
+use Dibi\Drivers;
 use Dibi\Helpers;
 use PgSql;
 use function in_array, is_array, strlen;
@@ -25,7 +26,7 @@ use function in_array, is_array, strlen;
  *   - resource (PgSql\Connection) => existing connection resource
  *   - connect_type (int) => see pg_connect()
  */
-class PostgreDriver implements Connection
+class Connection implements Drivers\Connection
 {
 	private PgSql\Connection $connection;
 	private ?int $affectedRows;
@@ -238,18 +239,18 @@ class PostgreDriver implements Connection
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Engine
+	public function getReflector(): Drivers\Engine
 	{
-		return new PostgreReflector($this);
+		return new Drivers\Engines\PostgreSQLEngine($this);
 	}
 
 
 	/**
 	 * Result set driver factory.
 	 */
-	public function createResultDriver(PgSql\Result $resource): PostgreResult
+	public function createResultDriver(PgSql\Result $resource): Result
 	{
-		return new PostgreResult($resource);
+		return new Result($resource);
 	}
 
 

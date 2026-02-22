@@ -21,6 +21,19 @@ use const PHP_SAPI;
  */
 class Connection
 {
+	private const Drivers = [
+		'firebird' => Drivers\Ibase\Connection::class,
+		'mysqli' => Drivers\MySQLi\Connection::class,
+		'odbc' => Drivers\ODBC\Connection::class,
+		'oracle' => Drivers\OCI8\Connection::class,
+		'pdo' => Drivers\PDO\Connection::class,
+		'postgre' => Drivers\PgSQL\Connection::class,
+		'sqlite3' => Drivers\SQLite3\Connection::class,
+		'sqlite' => Drivers\SQLite3\Connection::class,
+		'sqlsrv' => Drivers\SQLSrv\Connection::class,
+	];
+
+
 	/** @var array<callable(Event): void>  Occurs after query is executed */
 	public array $onEvent = [];
 
@@ -132,8 +145,7 @@ class Connection
 			$class = $this->config['driver'];
 
 		} else {
-			$class = preg_replace(['#\W#', '#sql#'], ['_', 'Sql'], ucfirst(strtolower($this->config['driver'])));
-			$class = "Dibi\\Drivers\\{$class}Driver";
+			$class = self::Drivers[strtolower($this->config['driver'])] ?? throw new Exception("Unknown driver '{$this->config['driver']}'.");
 			if (!class_exists($class)) {
 				throw new Exception("Unable to create instance of Dibi driver '$class'.");
 			}
@@ -290,7 +302,7 @@ class Connection
 			throw $e;
 		}
 
-		$res = $this->createResultSet($res ?? new Drivers\NoDataResult(max(0, $this->driver->getAffectedRows())));
+		$res = $this->createResultSet($res ?? new Drivers\Dummy\Result(max(0, $this->driver->getAffectedRows())));
 		if ($event) {
 			$this->onEvent($event->done($res));
 		}

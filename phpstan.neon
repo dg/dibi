@@ -38,28 +38,25 @@ parameters:
 		# ODBC driver: PHP 8.4 changed resource to Odbc\Connection/Result objects
 		-
 			message: '#.#'
-			path: src/Dibi/Drivers/OdbcDriver.php
+			path: src/Dibi/Drivers/ODBC/Connection.php
 		-
 			message: '#.#'
-			path: src/Dibi/Drivers/OdbcResult.php
+			path: src/Dibi/Drivers/ODBC/Result.php
 		-
 			message: '#.#'
-			path: src/Dibi/Drivers/OdbcReflector.php
+			path: src/Dibi/Drivers/Engines/ODBCEngine.php
 
 		# Table: $foreignKeys property only read (initForeignKeys throws NotImplementedException)
 		-
 			identifier: property.onlyRead
 			path: src/Dibi/Reflection/Table.php
 
-		# PostgreDriver: connection loss guard (connection type is non-nullable)
+		# PgSQL\Connection: connection loss guard (connection type is non-nullable)
 		-
 			identifier: booleanNot.alwaysFalse
-			path: src/Dibi/Drivers/PostgreDriver.php
+			path: src/Dibi/Drivers/PgSQL/Connection.php
 
 		# Connection: dynamic driver instantiation (new $class) and runtime callable check
-		-
-			identifier: assign.propertyType
-			path: src/Dibi/Connection.php
 		-
 			identifier: instanceof.alwaysTrue
 			path: src/Dibi/Connection.php
@@ -67,29 +64,25 @@ parameters:
 		-
 			identifier: nullCoalesce.initializedProperty
 			paths:
-				- src/Dibi/Drivers/PdoDriver.php
-				- src/Dibi/Drivers/PdoResult.php
+				- src/Dibi/Drivers/PDO/Connection.php
+				- src/Dibi/Drivers/PDO/Result.php
 
-		# Reflectors: dynamically built arrays can't be tracked by PHPStan
+		# Engines: dynamically built arrays can't be tracked by PHPStan
 		-
 			identifier: return.type
 			paths:
-				- src/Dibi/Drivers/FirebirdReflector.php
-				- src/Dibi/Drivers/PostgreReflector.php
+				- src/Dibi/Drivers/Engines/FirebirdEngine.php
+				- src/Dibi/Drivers/Engines/PostgreSQLEngine.php
 		-
 			identifier: offsetAccess.notFound
 			paths:
-				- src/Dibi/Drivers/MySqlReflector.php
-				- src/Dibi/Drivers/SqliteReflector.php
+				- src/Dibi/Drivers/Engines/MySQLEngine.php
+				- src/Dibi/Drivers/Engines/SQLiteEngine.php
 
-		# Firebird: preg_match offsets accessed only after confirming ERROR_EXCEPTION_THROWN error code
+		# preg_match(): PHPStan can't prove the match always succeeds at this point in execution
 		-
 			identifier: offsetAccess.notFound
 			paths:
-				- src/Dibi/Drivers/FirebirdDriver.php
-				- src/Dibi/Drivers/FirebirdResult.php
-
-		# Result: preg_match offsets for TimeInterval format (#^(-?)(\d+)\D(\d+)\D(\d+)\z#)
-		-
-			identifier: offsetAccess.notFound
-			path: src/Dibi/Result.php
+				- src/Dibi/Drivers/Firebird/Connection.php
+				- src/Dibi/Drivers/Firebird/Result.php
+				- src/Dibi/Result.php

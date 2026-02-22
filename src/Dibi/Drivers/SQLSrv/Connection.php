@@ -5,9 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\SQLSrv;
 
 use Dibi;
+use Dibi\Drivers;
 use Dibi\Helpers;
 use function is_resource, sprintf;
 
@@ -24,7 +25,7 @@ use function is_resource, sprintf;
  *   - charset => character encoding to set (default is UTF-8)
  *   - resource (resource) => existing connection resource
  */
-class SqlsrvDriver implements Connection
+class Connection implements Drivers\Connection
 {
 	/** @var resource */
 	private $connection;
@@ -170,9 +171,9 @@ class SqlsrvDriver implements Connection
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Engine
+	public function getReflector(): Drivers\Engine
 	{
-		return new SqlsrvReflector($this);
+		return new Drivers\Engines\SQLServerEngine($this);
 	}
 
 
@@ -180,9 +181,9 @@ class SqlsrvDriver implements Connection
 	 * Result set driver factory.
 	 * @param  resource  $resource
 	 */
-	public function createResultDriver($resource): SqlsrvResult
+	public function createResultDriver($resource): Result
 	{
-		return new SqlsrvResult($resource);
+		return new Result($resource);
 	}
 
 

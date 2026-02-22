@@ -5,31 +5,35 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\ODBC;
 
 use Dibi;
-use Dibi\Helpers;
-use const SQLITE3_ASSOC, SQLITE3_BLOB, SQLITE3_FLOAT, SQLITE3_INTEGER, SQLITE3_NULL, SQLITE3_NUM, SQLITE3_TEXT;
+use Dibi\Drivers;
+use function is_resource;
 
 
 /**
- * The driver for SQLite result set.
+ * The driver interacting with result set via ODBC connections.
  */
-class SqliteResult implements Result
+class Result implements Drivers\Result
 {
+	private int $row = 0;
+
+
 	public function __construct(
-		private readonly \SQLite3Result $resultSet,
+		/** @var resource */
+		private $resultSet,
 	) {
 	}
 
 
 	/**
 	 * Returns the number of rows in a result set.
-	 * @throws Dibi\NotSupportedException
 	 */
 	public function getRowCount(): int
 	{
-		throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
+		// will return -1 with many drivers :-(
+		return odbc_num_rows($this->resultSet);
 	}
 
 
@@ -39,17 +43,32 @@ class SqliteResult implements Result
 	 */
 	public function fetch(bool $assoc): ?array
 	{
-		return Helpers::false2Null($this->resultSet->fetchArray($assoc ? SQLITE3_ASSOC : SQLITE3_NUM));
+		if ($assoc) {
+			return Dibi\Helpers::false2Null(odbc_fetch_array($this->resultSet, ++$this->row));
+		} else {
+			$set = $this->resultSet;
+			if (!odbc_fetch_row($set, ++$this->row)) {
+				return null;
+			}
+
+			$count = odbc_num_fields($set);
+			$cols = [];
+			for ($i = 1; $i <= $count; $i++) {
+				$cols[] = odbc_result($set, $i);
+			}
+
+			return $cols;
+		}
 	}
 
 
 	/**
 	 * Moves cursor position without fetching row.
-	 * @throws Dibi\NotSupportedException
 	 */
 	public function seek(int $row): bool
 	{
-		throw new Dibi\NotSupportedException('Cannot seek an unbuffered result set.');
+		$this->row = $row;
+		return true;
 	}
 
 
@@ -58,7 +77,7 @@ class SqliteResult implements Result
 	 */
 	public function free(): void
 	{
-		$this->resultSet->finalize();
+		odbc_free_result($this->resultSet);
 	}
 
 
@@ -67,15 +86,14 @@ class SqliteResult implements Result
 	 */
 	public function getResultColumns(): array
 	{
-		$count = $this->resultSet->numColumns();
+		$count = odbc_num_fields($this->resultSet);
 		$columns = [];
-		$types = [SQLITE3_INTEGER => 'int', SQLITE3_FLOAT => 'float', SQLITE3_TEXT => 'text', SQLITE3_BLOB => 'blob', SQLITE3_NULL => 'null'];
-		for ($i = 0; $i < $count; $i++) {
+		for ($i = 1; $i <= $count; $i++) {
 			$columns[] = [
-				'name' => $this->resultSet->columnName($i),
+				'name' => odbc_field_name($this->resultSet, $i),
 				'table' => null,
-				'fullname' => $this->resultSet->columnName($i),
-				'nativetype' => $types[$this->resultSet->columnType($i)] ?? '',
+				'fullname' => odbc_field_name($this->resultSet, $i),
+				'nativetype' => odbc_field_type($this->resultSet, $i),
 			];
 		}
 
@@ -85,10 +103,11 @@ class SqliteResult implements Result
 
 	/**
 	 * Returns the result set resource.
+	 * @return resource|null
 	 */
-	public function getResultResource(): \SQLite3Result
+	public function getResultResource(): mixed
 	{
-		return $this->resultSet;
+		return is_resource($this->resultSet) ? $this->resultSet : null;
 	}
 
 

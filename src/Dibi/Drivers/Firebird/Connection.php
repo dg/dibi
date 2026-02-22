@@ -5,9 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\Ibase;
 
 use Dibi;
+use Dibi\Drivers;
 use Dibi\Helpers;
 use function is_resource;
 
@@ -23,7 +24,7 @@ use function is_resource;
  *   - buffers (int) => buffers is the number of database buffers to allocate for the server-side cache. If 0 or omitted, server chooses its own default.
  *   - resource (resource) => existing connection resource
  */
-class FirebirdDriver implements Connection
+class Connection implements Drivers\Connection
 {
 	public const ErrorExceptionThrown = -836;
 
@@ -202,9 +203,9 @@ class FirebirdDriver implements Connection
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Engine
+	public function getReflector(): Drivers\Engine
 	{
-		return new FirebirdReflector($this);
+		return new Drivers\Engines\FirebirdEngine($this);
 	}
 
 
@@ -212,9 +213,9 @@ class FirebirdDriver implements Connection
 	 * Result set driver factory.
 	 * @param  resource  $resource
 	 */
-	public function createResultDriver($resource): FirebirdResult
+	public function createResultDriver($resource): Result
 	{
-		return new FirebirdResult($resource);
+		return new Result($resource);
 	}
 
 

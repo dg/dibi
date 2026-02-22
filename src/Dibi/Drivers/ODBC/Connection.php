@@ -5,9 +5,10 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\ODBC;
 
 use Dibi;
+use Dibi\Drivers;
 use function is_resource;
 
 
@@ -22,7 +23,7 @@ use function is_resource;
  *   - resource (resource) => existing connection resource
  *   - microseconds (bool) => use microseconds in datetime format?
  */
-class OdbcDriver implements Connection
+class Connection implements Drivers\Connection
 {
 	/** @var resource */
 	private $connection;
@@ -177,9 +178,9 @@ class OdbcDriver implements Connection
 	/**
 	 * Returns the connection reflector.
 	 */
-	public function getReflector(): Engine
+	public function getReflector(): Drivers\Engine
 	{
-		return new OdbcReflector($this);
+		return new Drivers\Engines\ODBCEngine($this);
 	}
 
 
@@ -187,9 +188,9 @@ class OdbcDriver implements Connection
 	 * Result set driver factory.
 	 * @param  resource  $resource
 	 */
-	public function createResultDriver($resource): OdbcResult
+	public function createResultDriver($resource): Result
 	{
-		return new OdbcResult($resource);
+		return new Result($resource);
 	}
 
 

@@ -5,16 +5,18 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\Engines;
 
 use Dibi;
+use Dibi\Drivers\Connection;
+use Dibi\Drivers\Engine;
 
 
 /**
  * The reflector for MySQL databases.
  * @internal
  */
-class MySqlReflector implements Engine
+class MySQLEngine implements Engine
 {
 	public function __construct(
 		private readonly Connection $driver,

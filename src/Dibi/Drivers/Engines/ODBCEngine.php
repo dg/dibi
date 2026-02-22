@@ -5,15 +5,17 @@
  * Copyright (c) 2005 David Grudl (https://davidgrudl.com)
  */
 
-namespace Dibi\Drivers;
+namespace Dibi\Drivers\Engines;
 
 use Dibi;
+use Dibi\Drivers\Connection;
+use Dibi\Drivers\Engine;
 
 
 /**
- * The reflector for Oracle database.
+ * The reflector for ODBC connections.
  */
-class OracleReflector implements Engine
+class ODBCEngine implements Engine
 {
 	public function __construct(
 		private readonly Connection $driver,
@@ -26,17 +28,18 @@ class OracleReflector implements Engine
 	 */
 	public function getTables(): array
 	{
-		$res = $this->driver->query('SELECT * FROM cat') ?? throw new \LogicException('Unexpected null result.');
+		$res = odbc_tables($this->driver->getResource());
 		$tables = [];
-		while ($row = $res->fetch(false)) {
-			if ($row[1] === 'TABLE' || $row[1] === 'VIEW') {
+		while ($row = odbc_fetch_array($res)) {
+			if ($row['TABLE_TYPE'] === 'TABLE' || $row['TABLE_TYPE'] === 'VIEW') {
 				$tables[] = [
-					'name' => $row[0],
-					'view' => $row[1] === 'VIEW',
+					'name' => $row['TABLE_NAME'],
+					'view' => $row['TABLE_TYPE'] === 'VIEW',
 				];
 			}
 		}
 
+		odbc_free_result($res);
 		return $tables;
 	}
 
@@ -46,21 +49,22 @@ class OracleReflector implements Engine
 	 */
 	public function getColumns(string $table): array
 	{
-		$res = $this->driver->query('SELECT * FROM "ALL_TAB_COLUMNS" WHERE "TABLE_NAME" = ' . $this->driver->escapeText($table))
-			?? throw new \LogicException('Unexpected null result.');
+		$res = odbc_columns($this->driver->getResource());
 		$columns = [];
-		while ($row = $res->fetch(true)) {
-			$columns[] = [
-				'table' => $row['TABLE_NAME'],
-				'name' => $row['COLUMN_NAME'],
-				'nativetype' => $row['DATA_TYPE'],
-				'size' => $row['DATA_LENGTH'] ?? null,
-				'nullable' => $row['NULLABLE'] === 'Y',
-				'default' => $row['DATA_DEFAULT'],
-				'vendor' => $row,
-			];
+		while ($row = odbc_fetch_array($res)) {
+			if ($row['TABLE_NAME'] === $table) {
+				$columns[] = [
+					'name' => $row['COLUMN_NAME'],
+					'table' => $table,
+					'nativetype' => $row['TYPE_NAME'],
+					'size' => $row['COLUMN_SIZE'],
+					'nullable' => (bool) $row['NULLABLE'],
+					'default' => $row['COLUMN_DEF'],
+				];
+			}
 		}
 
+		odbc_free_result($res);
 		return $columns;
 	}
 
