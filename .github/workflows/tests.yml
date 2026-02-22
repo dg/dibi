@@ -8,7 +8,7 @@ env:
 
 jobs:
     tests:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         strategy:
             matrix:
                 php: ['8.2', '8.3', '8.4', '8.5']
@@ -96,11 +96,34 @@ jobs:
                   tools: ${{ env.php-tools }}
                   coverage: none
 
+            - name: Install MS ODBC Driver for SQL Server
+              run: |
+                set -euxo pipefail
+
+                sudo apt-get update
+                sudo apt-get install -y curl ca-certificates gnupg
+
+                # Microsoft apt repo key (non-interactive; fixes "gpg: cannot open /dev/tty")
+                sudo install -d -m 0755 /etc/apt/keyrings
+                curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+                  | sudo gpg --dearmor --batch --yes --no-tty -o /etc/apt/keyrings/microsoft.gpg
+                sudo chmod a+r /etc/apt/keyrings/microsoft.gpg
+
+                # Microsoft apt repo for current Ubuntu runner
+                . /etc/os-release
+                echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/ubuntu/${VERSION_ID}/prod ${VERSION_CODENAME} main" \
+                  | sudo tee /etc/apt/sources.list.d/microsoft-prod.list > /dev/null
+
+                sudo apt-get update
+                sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
+
+                # Create DB inside the MSSQL service container
+                docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd \
+                  -S localhost -U SA -P 'YourStrong!Passw0rd' \
+                  -Q "CREATE DATABASE dibi_test" -N -C
+
             - name: Create databases.ini
               run: cp ./tests/databases.github.ini ./tests/databases.ini
-
-            - name: Create MS SQL Database
-              run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE dibi_test' -N -C
 
             - run: composer install --no-progress --prefer-dist
             - run: vendor/bin/tester -p phpdbg tests -s -C --coverage ./coverage.xml --coverage-src ./src
