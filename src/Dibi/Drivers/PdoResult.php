@@ -15,7 +15,7 @@ use PDO;
 /**
  * The driver for PDO result set.
  */
-class PdoResult implements Dibi\ResultDriver
+class PdoResult implements Result
 {
 	public function __construct(
 		private \PDOStatement $resultSet,

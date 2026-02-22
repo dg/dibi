@@ -7,13 +7,12 @@
 
 namespace Dibi\Drivers;
 
-use Dibi;
 
 
 /**
  * The driver for no result set.
  */
-class NoDataResult implements Dibi\ResultDriver
+class NoDataResult implements Result
 {
 	public function __construct(
 		private readonly int $rows,

@@ -7,16 +7,15 @@
 
 namespace Dibi\Drivers;
 
-use Dibi;
 
 
 /**
  * The reflector for PostgreSQL database.
  */
-class PostgreReflector implements Dibi\Reflector
+class PostgreReflector implements Engine
 {
 	public function __construct(
-		private readonly Dibi\Driver $driver,
+		private readonly Connection $driver,
 	) {
 	}
 

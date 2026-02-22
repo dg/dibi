@@ -29,7 +29,7 @@ class Connection
 
 	/** @var array<string, ?string>  Type constant => format string */
 	private array $formats;
-	private ?Driver $driver = null;
+	private ?Drivers\Connection $driver = null;
 	private ?Translator $translator = null;
 
 	/** @var array<string, callable(object): Expression | null> */
@@ -123,12 +123,12 @@ class Connection
 	 */
 	final public function connect(): void
 	{
-		if ($this->config['driver'] instanceof Driver) {
+		if ($this->config['driver'] instanceof Drivers\Connection) {
 			$this->driver = $this->config['driver'];
 			$this->translator = new Translator($this);
 			return;
 
-		} elseif (is_subclass_of($this->config['driver'], Driver::class)) {
+		} elseif (is_subclass_of($this->config['driver'], Drivers\Connection::class)) {
 			$class = $this->config['driver'];
 
 		} else {
@@ -199,7 +199,7 @@ class Connection
 	/**
 	 * Returns the driver and connects to a database in lazy mode.
 	 */
-	final public function getDriver(): Driver
+	final public function getDriver(): Drivers\Connection
 	{
 		if (!$this->driver) {
 			$this->connect();
@@ -464,7 +464,7 @@ class Connection
 	/**
 	 * Result set factory.
 	 */
-	public function createResultSet(ResultDriver $resultDriver): Result
+	public function createResultSet(Drivers\Result $resultDriver): Result
 	{
 		return (new Result($resultDriver, $this->config['result']['normalize'] ?? true))
 			->setFormats($this->formats);

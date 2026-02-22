@@ -15,8 +15,8 @@ use function array_filter, array_keys, array_splice, array_values, count, explod
  */
 final class Translator
 {
-	private readonly Connection $connection;
-	private readonly Driver $driver;
+	private Connection $connection;
+	private readonly Drivers\Connection $driver;
 	private int $cursor = 0;
 
 	/** @var list<mixed>  SQL arguments */

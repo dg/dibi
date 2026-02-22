@@ -14,10 +14,10 @@ use Dibi;
  * The reflector for MySQL databases.
  * @internal
  */
-class MySqlReflector implements Dibi\Reflector
+class MySqlReflector implements Engine
 {
 	public function __construct(
-		private readonly Dibi\Driver $driver,
+		private readonly Connection $driver,
 	) {
 	}
 

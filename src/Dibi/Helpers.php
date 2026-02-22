@@ -158,7 +158,7 @@ class Helpers
 
 
 	/** @internal */
-	public static function escape(Driver $driver, mixed $value, string $type): string
+	public static function escape(Drivers\Connection $driver, mixed $value, string $type): string
 	{
 		$types = [
 			Type::Text => 'text',

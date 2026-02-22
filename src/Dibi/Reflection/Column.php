@@ -26,7 +26,7 @@ use Dibi;
 class Column
 {
 	public function __construct(
-		private readonly ?Dibi\Reflector $reflector,
+		private readonly ?Dibi\Drivers\Engine $reflector,
 		/** @var  array{name: string, nativetype: string, table?: ?string, fullname?: ?string, size?: int|null, nullable?: bool, default?: mixed, autoincrement?: bool, vendor?: array<string, mixed>} */
 		private array $info,
 	) {

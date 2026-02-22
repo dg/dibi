@@ -24,7 +24,7 @@ use function array_values, strtolower;
  */
 class Table
 {
-	private readonly Dibi\Reflector $reflector;
+	private readonly Dibi\Drivers\Engine $reflector;
 	private string $name;
 	private bool $view;
 
@@ -40,7 +40,7 @@ class Table
 
 
 	/** @param  array{name: string, view?: bool}  $info */
-	public function __construct(Dibi\Reflector $reflector, array $info)
+	public function __construct(Dibi\Drivers\Engine $reflector, array $info)
 	{
 		$this->reflector = $reflector;
 		$this->name = $info['name'];
