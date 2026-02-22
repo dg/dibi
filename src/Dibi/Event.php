@@ -33,7 +33,7 @@ class Event
 	public readonly Connection $connection;
 	public int $type;
 	public readonly string $sql;
-	public readonly Result|DriverException|null $result;
+	public Result|DriverException|null $result = null;
 	public float $time;
 	public ?int $count = null;
 
@@ -56,14 +56,14 @@ class Event
 			$this->type = $types[strtoupper($matches[1])];
 		}
 
-		$dibiDir = dirname((new \ReflectionClass('dibi'))->getFileName()) . DIRECTORY_SEPARATOR;
+		$dibiDir = dirname((string) (new \ReflectionClass('dibi'))->getFileName()) . DIRECTORY_SEPARATOR;
 		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $row) {
 			if (
 				isset($row['file'])
 				&& preg_match('~\.(php.?|phtml)$~', $row['file'])
 				&& !str_starts_with($row['file'], $dibiDir)
 			) {
-				$this->source = [$row['file'], (int) $row['line']];
+				$this->source = [$row['file'], (int) ($row['line'] ?? 0)];
 				break;
 			}
 		}

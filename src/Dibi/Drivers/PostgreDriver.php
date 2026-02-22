@@ -10,7 +10,7 @@ namespace Dibi\Drivers;
 use Dibi;
 use Dibi\Helpers;
 use PgSql;
-use function in_array, is_array, is_resource, strlen;
+use function in_array, is_array, strlen;
 
 
 /**
@@ -64,17 +64,20 @@ class PostgreDriver implements Dibi\Driver
 
 			$connectType = $config['connect_type'] ?? PGSQL_CONNECT_FORCE_NEW;
 
-			set_error_handler(function (int $severity, string $message) use (&$error) {
+			set_error_handler(function (int $severity, string $message, string $file, int $line) use (&$error): bool {
 				$error = $message;
+				return false;
 			});
-			$this->connection = empty($config['persistent'])
+			$conn = empty($config['persistent'])
 				? pg_connect($string, $connectType)
 				: pg_pconnect($string, $connectType);
 			restore_error_handler();
-		}
 
-		if (!$this->connection instanceof PgSql\Connection) {
-			throw new Dibi\DriverException($error ?: 'Connecting error.');
+			if (!$conn instanceof PgSql\Connection) {
+				throw new Dibi\DriverException($error ?: 'Connecting error.');
+			}
+
+			$this->connection = $conn;
 		}
 
 		pg_set_error_verbosity($this->connection, PGSQL_ERRORS_VERBOSE);
@@ -115,15 +118,13 @@ class PostgreDriver implements Dibi\Driver
 	{
 		$this->affectedRows = null;
 		$res = @pg_query($this->connection, $sql); // intentionally @
-
-		if ($res === false) {
+		if (!$res instanceof PgSql\Result) {
 			throw static::createException(pg_last_error($this->connection), sql: $sql);
+		}
 
-		} elseif ($res instanceof PgSql\Result) {
-			$this->affectedRows = Helpers::false2Null(pg_affected_rows($res));
-			if (pg_num_fields($res)) {
-				return $this->createResultDriver($res);
-			}
+		$this->affectedRows = Helpers::false2Null(pg_affected_rows($res));
+		if (pg_num_fields($res)) {
+			return $this->createResultDriver($res);
 		}
 
 		return null;

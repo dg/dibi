@@ -41,7 +41,7 @@ class Column
 
 	public function getFullName(): string
 	{
-		return $this->info['fullname'] ?? null;
+		return $this->info['fullname'] ?? $this->info['name'];
 	}
 
 

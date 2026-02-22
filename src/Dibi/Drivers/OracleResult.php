@@ -68,11 +68,11 @@ class OracleResult implements Dibi\ResultDriver
 		$count = oci_num_fields($this->resultSet);
 		$columns = [];
 		for ($i = 1; $i <= $count; $i++) {
-			$type = oci_field_type($this->resultSet, $i);
+			$type = (string) oci_field_type($this->resultSet, $i);
 			$columns[] = [
-				'name' => oci_field_name($this->resultSet, $i),
+				'name' => (string) oci_field_name($this->resultSet, $i),
 				'table' => null,
-				'fullname' => oci_field_name($this->resultSet, $i),
+				'fullname' => (string) oci_field_name($this->resultSet, $i),
 				'type' => $type === 'LONG' ? Dibi\Type::Text : null,
 				'nativetype' => $type === 'NUMBER' && oci_field_scale($this->resultSet, $i) === 0 ? 'INTEGER' : $type,
 			];

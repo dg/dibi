@@ -7,7 +7,7 @@
 
 namespace Dibi;
 
-use function array_map, array_unique, explode, fclose, fgets, fopen, fstat, getenv, htmlspecialchars, is_float, is_int, is_string, levenshtein, max, mb_strlen, ob_end_flush, ob_get_clean, ob_start, preg_match, preg_replace, preg_replace_callback, rtrim, set_time_limit, str_ends_with, str_repeat, str_starts_with, strlen, strtoupper, substr, trim, wordwrap;
+use function array_map, array_unique, explode, fclose, fgets, fopen, fstat, getenv, htmlspecialchars, is_float, is_int, is_string, levenshtein, max, mb_strlen, ob_end_flush, ob_get_clean, ob_start, preg_match, preg_replace, preg_replace_callback, rtrim, set_time_limit, str_ends_with, str_repeat, str_starts_with, strlen, strtoupper, strval, substr, trim, wordwrap;
 use const PHP_SAPI;
 
 
@@ -28,14 +28,14 @@ class Helpers
 			foreach ($sql as $i => $row) {
 				if ($i === 0) {
 					foreach ($row as $col => $foo) {
-						$len = mb_strlen($col);
+						$len = mb_strlen((string) $col);
 						$maxLen = max($len, $maxLen);
 					}
 				}
 
 				echo $hasColors ? "\033[1;37m#row: $i\033[0m\n" : "#row: $i\n";
 				foreach ($row as $col => $val) {
-					$spaces = $maxLen - mb_strlen($col) + 2;
+					$spaces = $maxLen - mb_strlen((string) $col) + 2;
 					echo "$col" . str_repeat(' ', $spaces) . "$val\n";
 				}
 
@@ -99,7 +99,7 @@ class Helpers
 						} elseif (!empty($m[3])) { // most important keywords
 							return "\033[1;34m" . $m[3] . "\033[0m";
 
-						} elseif (!empty($m[4])) { // other keywords
+						} elseif ($m[4] !== '') { // other keywords
 							return "\033[1;32m" . $m[4] . "\033[0m";
 						}
 					}, $sql);
@@ -119,7 +119,7 @@ class Helpers
 					} elseif (!empty($m[3])) { // most important keywords
 						return '<strong style="color:blue">' . $m[3] . '</strong>';
 
-					} elseif (!empty($m[4])) { // other keywords
+					} elseif ($m[4] !== '') { // other keywords
 						return '<strong style="color:green">' . $m[4] . '</strong>';
 					}
 				}, $sql);
@@ -265,7 +265,7 @@ class Helpers
 				$sql = '';
 				$count++;
 				if ($onProgress) {
-					$onProgress($count, isset($stat['size']) ? $size * 100 / $stat['size'] : null);
+					$onProgress($count, $stat ? $size * 100 / $stat['size'] : null);
 				}
 			} else {
 				$sql .= $s;
@@ -276,7 +276,7 @@ class Helpers
 			$driver->query($sql);
 			$count++;
 			if ($onProgress) {
-				$onProgress($count, isset($stat['size']) ? 100 : null);
+				$onProgress($count, $stat ? 100 : null);
 			}
 		}
 

@@ -1,5 +1,5 @@
 parameters:
-	level: 5
+	level: 8
 
 	paths:
 		- src
@@ -7,3 +7,85 @@ parameters:
 	ignoreErrors:
 		# The namespace is referenced, not the class.
 		- '#Class dibi referenced with incorrect case: Dibi#'
+
+		# HashMap: intentional dynamic properties with #[AllowDynamicProperties]
+		-
+			identifier: property.notFound
+			path: src/Dibi/HashMap.php
+		-
+			identifier: booleanAnd.rightAlwaysTrue
+			path: src/Dibi/HashMap.php
+
+		# Helpers: various false positives
+		-
+			identifier: binaryOp.invalid
+			path: src/Dibi/Helpers.php
+		-
+			identifier: notIdentical.alwaysTrue
+			path: src/Dibi/Helpers.php
+		-
+			identifier: ternary.alwaysTrue
+			path: src/Dibi/Helpers.php
+		-
+			identifier: method.nameCase
+			path: src/Dibi/Helpers.php
+
+		# Translator: switch-case type narrowing in formatValue()
+		-
+			message: '#.#'
+			path: src/Dibi/Translator.php
+
+		# ODBC driver: PHP 8.4 changed resource to Odbc\Connection/Result objects
+		-
+			message: '#.#'
+			path: src/Dibi/Drivers/OdbcDriver.php
+		-
+			message: '#.#'
+			path: src/Dibi/Drivers/OdbcResult.php
+		-
+			message: '#.#'
+			path: src/Dibi/Drivers/OdbcReflector.php
+
+		# Table: $foreignKeys property only read (initForeignKeys throws NotImplementedException)
+		-
+			identifier: property.onlyRead
+			path: src/Dibi/Reflection/Table.php
+
+		# PostgreDriver: connection loss guard (connection type is non-nullable)
+		-
+			identifier: booleanNot.alwaysFalse
+			path: src/Dibi/Drivers/PostgreDriver.php
+
+		# Connection: dynamic driver instantiation (new $class) and runtime callable check
+		-
+			identifier: assign.propertyType
+			path: src/Dibi/Connection.php
+		-
+			identifier: instanceof.alwaysTrue
+			path: src/Dibi/Connection.php
+
+		# Result: $data is built via reference ($x = &$data), PHPStan can't track it
+		-
+			identifier: return.type
+			path: src/Dibi/Result.php
+		-
+			identifier: nullCoalesce.variable
+			path: src/Dibi/Result.php
+
+		-
+			identifier: nullCoalesce.initializedProperty
+			paths:
+				- src/Dibi/Drivers/PdoDriver.php
+				- src/Dibi/Drivers/PdoResult.php
+
+		# Reflectors: dynamically built arrays can't be tracked by PHPStan
+		-
+			identifier: return.type
+			paths:
+				- src/Dibi/Drivers/FirebirdReflector.php
+				- src/Dibi/Drivers/PostgreReflector.php
+		-
+			identifier: offsetAccess.notFound
+			paths:
+				- src/Dibi/Drivers/MySqlReflector.php
+				- src/Dibi/Drivers/SqliteReflector.php

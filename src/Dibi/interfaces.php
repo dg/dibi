@@ -169,7 +169,7 @@ interface Reflector
 
 	/**
 	 * Returns metadata for all indexes in a table.
-	 * @return list<array{name: string, columns: list<string>, unique?: bool, primary?: bool}>
+	 * @return list<array{name: string, columns: string[], unique?: bool, primary?: bool}>
 	 */
 	function getIndexes(string $table): array;
 

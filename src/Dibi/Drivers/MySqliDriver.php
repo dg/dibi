@@ -87,7 +87,7 @@ class MySqliDriver implements Dibi\Driver
 			$foo = &$config['flags'];
 			$foo = &$config['database'];
 
-			$this->connection = mysqli_init();
+			$this->connection = mysqli_init() ?: throw new Dibi\DriverException('Cannot initialize MySQLi.');
 			if (isset($config['options'])) {
 				foreach ($config['options'] as $key => $value) {
 					$this->connection->options($key, $value);
@@ -105,7 +105,7 @@ class MySqliDriver implements Dibi\Driver
 			);
 
 			if ($this->connection->connect_errno) {
-				throw new Dibi\DriverException($this->connection->connect_error, $this->connection->connect_errno);
+				throw new Dibi\DriverException($this->connection->connect_error ?? 'Connection failed', $this->connection->connect_errno);
 			}
 		}
 
@@ -188,7 +188,7 @@ class MySqliDriver implements Dibi\Driver
 	public function getInfo(): array
 	{
 		$res = [];
-		preg_match_all('#(.+?): +(\d+) *#', $this->connection->info, $matches, PREG_SET_ORDER);
+		preg_match_all('#(.+?): +(\d+) *#', $this->connection->info ?? '', $matches, PREG_SET_ORDER);
 		if (preg_last_error()) {
 			throw new Dibi\PcreException;
 		}
@@ -208,7 +208,7 @@ class MySqliDriver implements Dibi\Driver
 	{
 		return $this->connection->affected_rows === -1
 			? null
-			: $this->connection->affected_rows;
+			: (int) $this->connection->affected_rows;
 	}
 
 
@@ -217,7 +217,7 @@ class MySqliDriver implements Dibi\Driver
 	 */
 	public function getInsertId(?string $sequence): ?int
 	{
-		return $this->connection->insert_id ?: null;
+		return ((int) $this->connection->insert_id) ?: null;
 	}
 
 

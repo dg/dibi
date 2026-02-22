@@ -18,7 +18,7 @@ use PDO;
 class PdoResult implements Dibi\ResultDriver
 {
 	public function __construct(
-		private ?\PDOStatement $resultSet,
+		private \PDOStatement $resultSet,
 		private readonly string $driverName,
 	) {
 	}
@@ -57,7 +57,7 @@ class PdoResult implements Dibi\ResultDriver
 	 */
 	public function free(): void
 	{
-		$this->resultSet = null;
+		unset($this->resultSet);
 	}
 
 
@@ -99,7 +99,7 @@ class PdoResult implements Dibi\ResultDriver
 	 */
 	public function getResultResource(): ?\PDOStatement
 	{
-		return $this->resultSet;
+		return $this->resultSet ?? null;
 	}
 
 

@@ -64,7 +64,7 @@ class SqlsrvDriver implements Dibi\Driver
 			$this->connection = sqlsrv_connect($config['host'], $options);
 			if (!is_resource($this->connection)) {
 				$info = sqlsrv_errors(SQLSRV_ERR_ERRORS);
-				throw new Dibi\DriverException($info[0]['message'], $info[0]['code']);
+				throw new Dibi\DriverException($info[0]['message'] ?? 'Unknown error.', $info[0]['code'] ?? 0);
 			}
 
 			sqlsrv_configure('WarningsReturnAsErrors', 1);
@@ -90,18 +90,16 @@ class SqlsrvDriver implements Dibi\Driver
 		$this->affectedRows = null;
 		$res = sqlsrv_query($this->connection, $sql);
 
-		if ($res === false) {
-			$info = sqlsrv_errors();
-			throw new Dibi\DriverException($info[0]['message'], $info[0]['code'], $sql);
-
-		} elseif (is_resource($res)) {
+		if (is_resource($res)) {
 			$this->affectedRows = Helpers::false2Null(sqlsrv_rows_affected($res));
 			return sqlsrv_num_fields($res)
 				? $this->createResultDriver($res)
 				: null;
-		}
 
-		return null;
+		} else {
+			$info = sqlsrv_errors();
+			throw new Dibi\DriverException($info[0]['message'] ?? 'Unknown error.', $info[0]['code'] ?? 0, $sql);
+		}
 	}
 
 
@@ -122,7 +120,7 @@ class SqlsrvDriver implements Dibi\Driver
 		$res = sqlsrv_query($this->connection, 'SELECT SCOPE_IDENTITY()');
 		if (is_resource($res)) {
 			$row = sqlsrv_fetch_array($res, SQLSRV_FETCH_NUMERIC);
-			return Dibi\Helpers::intVal($row[0]);
+			return $row ? Dibi\Helpers::intVal($row[0]) : null;
 		}
 
 		return null;

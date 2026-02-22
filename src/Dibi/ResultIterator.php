@@ -80,6 +80,6 @@ class ResultIterator implements \Iterator, \Countable
 	 */
 	public function count(): int
 	{
-		return $this->result->getRowCount();
+		return max(0, $this->result->getRowCount());
 	}
 }

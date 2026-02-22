@@ -53,6 +53,7 @@ class DibiExtension3 extends Nette\DI\CompilerExtension
 	public function loadConfiguration(): void
 	{
 		$container = $this->getContainerBuilder();
+		/** @var array<string, mixed> $config */
 		$config = $this->getConfig();
 		$this->debugMode ??= $container->parameters['debugMode'];
 		$this->cliMode ??= $container->parameters['consoleMode'];

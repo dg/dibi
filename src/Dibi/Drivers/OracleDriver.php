@@ -48,15 +48,17 @@ class OracleDriver implements Dibi\Driver
 
 		if (isset($config['resource'])) {
 			$this->connection = $config['resource'];
-		} elseif (empty($config['persistent'])) {
-			$this->connection = @oci_new_connect($config['username'], $config['password'], $config['database'], $config['charset']); // intentionally @
 		} else {
-			$this->connection = @oci_pconnect($config['username'], $config['password'], $config['database'], $config['charset']); // intentionally @
-		}
+			$conn = empty($config['persistent'])
+				? @oci_new_connect($config['username'], $config['password'], $config['database'], $config['charset']) // intentionally @
+				: @oci_pconnect($config['username'], $config['password'], $config['database'], $config['charset']); // intentionally @
 
-		if (!$this->connection) {
-			$err = oci_error();
-			throw new Dibi\DriverException($err['message'], $err['code']);
+			if (!$conn) {
+				$err = oci_error() ?: ['message' => 'Unknown error', 'code' => 0];
+				throw new Dibi\DriverException($err['message'], $err['code']);
+			}
+
+			$this->connection = $conn;
 		}
 
 		if (isset($config['schema'])) {
@@ -96,7 +98,7 @@ class OracleDriver implements Dibi\Driver
 			}
 		} else {
 			$err = oci_error($this->connection);
-			throw new Dibi\DriverException($err['message'], $err['code'], $sql);
+			throw new Dibi\DriverException($err['message'] ?? 'Unknown error', $err['code'] ?? 0, $sql);
 		}
 
 		return null;
@@ -134,7 +136,7 @@ class OracleDriver implements Dibi\Driver
 	 */
 	public function getInsertId(?string $sequence): ?int
 	{
-		$row = $this->query("SELECT $sequence.CURRVAL AS ID FROM DUAL")->fetch(true);
+		$row = ($this->query("SELECT $sequence.CURRVAL AS ID FROM DUAL") ?? throw new \LogicException('Unexpected null result.'))->fetch(true);
 		return isset($row['ID']) ? Dibi\Helpers::intVal($row['ID']) : null;
 	}
 
@@ -156,7 +158,7 @@ class OracleDriver implements Dibi\Driver
 	{
 		if (!oci_commit($this->connection)) {
 			$err = oci_error($this->connection);
-			throw new Dibi\DriverException($err['message'], $err['code']);
+			throw new Dibi\DriverException($err['message'] ?? 'Unknown error', $err['code'] ?? 0);
 		}
 
 		$this->autocommit = true;
@@ -171,7 +173,7 @@ class OracleDriver implements Dibi\Driver
 	{
 		if (!oci_rollback($this->connection)) {
 			$err = oci_error($this->connection);
-			throw new Dibi\DriverException($err['message'], $err['code']);
+			throw new Dibi\DriverException($err['message'] ?? 'Unknown error', $err['code'] ?? 0);
 		}
 
 		$this->autocommit = true;

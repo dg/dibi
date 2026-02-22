@@ -98,7 +98,7 @@ class dibi
 	 */
 	public static function isConnected(): bool
 	{
-		return (self::$connection !== null) && self::$connection->isConnected();
+		return isset(self::$connection) && self::$connection->isConnected();
 	}
 
 
@@ -109,7 +109,7 @@ class dibi
 	public static function getConnection(?string $name = null): Dibi\Connection
 	{
 		if ($name === null) {
-			if (self::$connection === null) {
+			if (!isset(self::$connection)) {
 				throw new Dibi\Exception('Dibi is not connected to database.');
 			}
 

@@ -19,7 +19,7 @@ class Expression
 
 	public function __construct(mixed ...$values)
 	{
-		$this->values = $values;
+		$this->values = array_values($values);
 	}
 
 

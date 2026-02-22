@@ -21,8 +21,8 @@ use const PHP_SAPI;
  */
 class Connection implements IConnection
 {
-	/** @var ?array<callable(Event): void>  Occurs after query is executed */
-	public ?array $onEvent = [];
+	/** @var array<callable(Event): void>  Occurs after query is executed */
+	public array $onEvent = [];
 
 	/** @var array<string, mixed> */
 	private array $config;
@@ -203,6 +203,7 @@ class Connection implements IConnection
 	{
 		if (!$this->driver) {
 			$this->connect();
+			assert($this->driver !== null);
 		}
 
 		return $this->driver;
@@ -229,6 +230,7 @@ class Connection implements IConnection
 			$this->connect();
 		}
 
+		assert($this->translator !== null);
 		return (clone $this->translator)->translate($args);
 	}
 
@@ -272,6 +274,7 @@ class Connection implements IConnection
 	{
 		if (!$this->driver) {
 			$this->connect();
+			assert($this->driver !== null);
 		}
 
 		\dibi::$sql = $sql;
@@ -304,6 +307,7 @@ class Connection implements IConnection
 	{
 		if (!$this->driver) {
 			$this->connect();
+			assert($this->driver !== null);
 		}
 
 		$rows = $this->driver->getAffectedRows();
@@ -323,6 +327,7 @@ class Connection implements IConnection
 	{
 		if (!$this->driver) {
 			$this->connect();
+			assert($this->driver !== null);
 		}
 
 		$id = $this->driver->getInsertId($sequence);
@@ -345,6 +350,7 @@ class Connection implements IConnection
 
 		if (!$this->driver) {
 			$this->connect();
+			assert($this->driver !== null);
 		}
 
 		$event = $this->onEvent ? new Event($this, Event::BEGIN, $savepoint) : null;
@@ -374,6 +380,7 @@ class Connection implements IConnection
 
 		if (!$this->driver) {
 			$this->connect();
+			assert($this->driver !== null);
 		}
 
 		$event = $this->onEvent ? new Event($this, Event::COMMIT, $savepoint) : null;
@@ -403,6 +410,7 @@ class Connection implements IConnection
 
 		if (!$this->driver) {
 			$this->connect();
+			assert($this->driver !== null);
 		}
 
 		$event = $this->onEvent ? new Event($this, Event::ROLLBACK, $savepoint) : null;
@@ -550,6 +558,10 @@ class Connection implements IConnection
 		};
 
 		foreach ($types as $type) {
+			if (!$type instanceof \ReflectionNamedType) {
+				continue;
+			}
+
 			if ($type->isBuiltin() || $type->allowsNull()) {
 				throw new Exception("Object translator must have exactly one parameter with non-nullable class typehint, got '$type'.");
 			}
@@ -675,6 +687,7 @@ class Connection implements IConnection
 	{
 		if (!$this->driver) {
 			$this->connect();
+			assert($this->driver !== null);
 		}
 
 		return new Reflection\Database($this->driver->getReflector(), $this->config['database'] ?? null);

@@ -382,9 +382,9 @@ class Fluent implements IDataSource
 	/** @return int<0, max> */
 	public function count(): int
 	{
-		return Helpers::intVal($this->query([
+		return max(0, Helpers::intVal($this->query([
 			'SELECT COUNT(*) FROM (%ex', $this->_export(), ') [data]',
-		])->fetchSingle());
+		])->fetchSingle()));
 	}
 
 

@@ -8,7 +8,6 @@
 namespace Dibi\Reflection;
 
 use Dibi;
-use function array_values, strtolower;
 
 
 /**
@@ -19,11 +18,11 @@ use function array_values, strtolower;
  */
 class Result
 {
-	/** @var ?list<Column> */
-	private ?array $columns;
+	/** @var list<Column> */
+	private array $columns;
 
-	/** @var ?array<Column> */
-	private ?array $names;
+	/** @var array<Column> */
+	private array $names;
 
 
 	public function __construct(
@@ -36,7 +35,7 @@ class Result
 	public function getColumns(): array
 	{
 		$this->initColumns();
-		return array_values($this->columns);
+		return $this->columns;
 	}
 
 

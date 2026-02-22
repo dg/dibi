@@ -250,7 +250,7 @@ class DataSource implements IDataSource
 				: $this->getTotalCount();
 		}
 
-		return $this->count;
+		return max(0, $this->count);
 	}
 
 

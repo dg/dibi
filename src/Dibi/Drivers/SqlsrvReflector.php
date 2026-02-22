@@ -27,7 +27,8 @@ class SqlsrvReflector implements Dibi\Reflector
 	 */
 	public function getTables(): array
 	{
-		$res = $this->driver->query("SELECT TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES WHERE [TABLE_SCHEMA] = 'dbo'");
+		$res = $this->driver->query("SELECT TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES WHERE [TABLE_SCHEMA] = 'dbo'")
+			?? throw new \LogicException('Unexpected null result.');
 		$tables = [];
 		while ($row = $res->fetch(false)) {
 			$tables[] = [
@@ -50,7 +51,7 @@ class SqlsrvReflector implements Dibi\Reflector
 			FROM sys.columns c
 			INNER JOIN sys.tables t ON c.object_id = t.object_id
 			WHERE t.name = {$this->driver->escapeText($table)}
-		");
+		") ?? throw new \LogicException('Unexpected null result.');
 
 		$autoIncrements = [];
 		while ($row = $res->fetch(true)) {
@@ -71,7 +72,7 @@ class SqlsrvReflector implements Dibi\Reflector
 					And CCU.COLUMN_NAME = C.COLUMN_NAME
 			) As Z
 			WHERE C.TABLE_NAME = {$this->driver->escapeText($table)}
-		");
+		") ?? throw new \LogicException('Unexpected null result.');
 		$columns = [];
 		while ($row = $res->fetch(true)) {
 			$columns[] = [
@@ -95,13 +96,15 @@ class SqlsrvReflector implements Dibi\Reflector
 	 */
 	public function getIndexes(string $table): array
 	{
-		$keyUsagesRes = $this->driver->query(sprintf('EXEC [sys].[sp_helpindex] @objname = %s', $this->driver->escapeText($table)));
+		$keyUsagesRes = $this->driver->query(sprintf('EXEC [sys].[sp_helpindex] @objname = %s', $this->driver->escapeText($table)))
+			?? throw new \LogicException('Unexpected null result.');
 		$keyUsages = [];
 		while ($row = $keyUsagesRes->fetch(true)) {
 			$keyUsages[$row['index_name']] = explode(',', $row['index_keys']);
 		}
 
-		$res = $this->driver->query("SELECT [i].* FROM [sys].[indexes] [i] INNER JOIN [sys].[tables] [t] ON [i].[object_id] = [t].[object_id] WHERE [t].[name] = {$this->driver->escapeText($table)}");
+		$res = $this->driver->query("SELECT [i].* FROM [sys].[indexes] [i] INNER JOIN [sys].[tables] [t] ON [i].[object_id] = [t].[object_id] WHERE [t].[name] = {$this->driver->escapeText($table)}")
+			?? throw new \LogicException('Unexpected null result.');
 		$indexes = [];
 		while ($row = $res->fetch(true)) {
 			$indexes[$row['name']]['name'] = $row['name'];

@@ -26,7 +26,7 @@ class OracleReflector implements Dibi\Reflector
 	 */
 	public function getTables(): array
 	{
-		$res = $this->driver->query('SELECT * FROM cat');
+		$res = $this->driver->query('SELECT * FROM cat') ?? throw new \LogicException('Unexpected null result.');
 		$tables = [];
 		while ($row = $res->fetch(false)) {
 			if ($row[1] === 'TABLE' || $row[1] === 'VIEW') {
@@ -46,7 +46,8 @@ class OracleReflector implements Dibi\Reflector
 	 */
 	public function getColumns(string $table): array
 	{
-		$res = $this->driver->query('SELECT * FROM "ALL_TAB_COLUMNS" WHERE "TABLE_NAME" = ' . $this->driver->escapeText($table));
+		$res = $this->driver->query('SELECT * FROM "ALL_TAB_COLUMNS" WHERE "TABLE_NAME" = ' . $this->driver->escapeText($table))
+			?? throw new \LogicException('Unexpected null result.');
 		$columns = [];
 		while ($row = $res->fetch(true)) {
 			$columns[] = [

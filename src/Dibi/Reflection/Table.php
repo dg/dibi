@@ -36,7 +36,7 @@ class Table
 
 	/** @var Index[] */
 	private array $indexes;
-	private ?Index $primaryKey;
+	private ?Index $primaryKey = null;
 
 
 	/** @param  array{name: string, view?: bool}  $info */
@@ -117,7 +117,7 @@ class Table
 	}
 
 
-	public function getPrimaryKey(): Index
+	public function getPrimaryKey(): ?Index
 	{
 		$this->initIndexes();
 		return $this->primaryKey;
@@ -141,10 +141,12 @@ class Table
 			$this->initColumns();
 			$this->indexes = [];
 			foreach ($this->reflector->getIndexes($this->name) as $info) {
-				foreach ($info['columns'] as $key => $name) {
-					$info['columns'][$key] = $this->columns[strtolower($name)];
+				$cols = [];
+				foreach ($info['columns'] as $name) {
+					$cols[] = $this->columns[strtolower($name)];
 				}
 
+				$info['columns'] = $cols;
 				$this->indexes[strtolower($info['name'])] = new Index($info);
 				if (!empty($info['primary'])) {
 					$this->primaryKey = $this->indexes[strtolower($info['name'])];

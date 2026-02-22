@@ -32,7 +32,7 @@ class MySqliResult implements Dibi\ResultDriver
 			throw new Dibi\NotSupportedException('Row count is not available for unbuffered queries.');
 		}
 
-		return $this->resultSet->num_rows;
+		return (int) $this->resultSet->num_rows;
 	}
 
 
@@ -43,7 +43,7 @@ class MySqliResult implements Dibi\ResultDriver
 	public function fetch(bool $assoc): ?array
 	{
 		return $assoc
-			? $this->resultSet->fetch_assoc()
+			? (($row = $this->resultSet->fetch_assoc()) === false ? null : $row)
 			: $this->resultSet->fetch_row();
 	}
 

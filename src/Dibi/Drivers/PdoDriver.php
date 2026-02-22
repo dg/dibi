@@ -25,7 +25,7 @@ use function sprintf;
  */
 class PdoDriver implements Dibi\Driver
 {
-	private ?PDO $connection;
+	private PDO $connection;
 	private ?int $affectedRows;
 	private string $driverName;
 
@@ -73,7 +73,7 @@ class PdoDriver implements Dibi\Driver
 	 */
 	public function disconnect(): void
 	{
-		$this->connection = null;
+		unset($this->connection);
 	}
 
 
@@ -166,7 +166,7 @@ class PdoDriver implements Dibi\Driver
 	 */
 	public function getResource(): ?PDO
 	{
-		return $this->connection;
+		return $this->connection ?? null;
 	}
 
 
