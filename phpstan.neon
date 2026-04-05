@@ -64,14 +64,6 @@ parameters:
 			identifier: instanceof.alwaysTrue
 			path: src/Dibi/Connection.php
 
-		# Result: $data is built via reference ($x = &$data), PHPStan can't track it
-		-
-			identifier: return.type
-			path: src/Dibi/Result.php
-		-
-			identifier: nullCoalesce.variable
-			path: src/Dibi/Result.php
-
 		-
 			identifier: nullCoalesce.initializedProperty
 			paths:
@@ -89,3 +81,15 @@ parameters:
 			paths:
 				- src/Dibi/Drivers/MySqlReflector.php
 				- src/Dibi/Drivers/SqliteReflector.php
+
+		# Firebird: preg_match offsets accessed only after confirming ERROR_EXCEPTION_THROWN error code
+		-
+			identifier: offsetAccess.notFound
+			paths:
+				- src/Dibi/Drivers/FirebirdDriver.php
+				- src/Dibi/Drivers/FirebirdResult.php
+
+		# Result: preg_match offsets for TimeInterval format (#^(-?)(\d+)\D(\d+)\D(\d+)\z#)
+		-
+			identifier: offsetAccess.notFound
+			path: src/Dibi/Result.php
