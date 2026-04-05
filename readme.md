@@ -37,6 +37,24 @@ composer require dibi/dibi
 The Dibi 5.1 requires PHP version 8.2 and supports PHP up to 8.5.
 
 
+Running Tests
+-------------
+
+Run tests against SQLite (no setup needed):
+
+```
+composer run tester
+```
+
+To test against MySQL, PostgreSQL, etc., start the Docker containers and copy the configuration:
+
+```
+docker compose up -d
+cp tests/databases.docker.ini tests/databases.ini
+vendor/bin/tester tests -s -c tests/php-win.ini
+```
+
+
 Usage
 -----
 
